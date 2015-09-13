@@ -1,6 +1,7 @@
 
 #include "FfmpegStreamer.h"
 #include "MainContent.h"
+#include "Trace/Trace.h"
 
 
 MainContent::MainContent(DocumentWindow* main_window)
@@ -53,5 +54,19 @@ void MainContent::resized()
 
 void MainContent::setTitle(String title_text)
 {
-  this->mainWindow->setName(GUI::APP_NAME + " - " + title_text) ;
+  this->mainWindow->setName(APP::APP_NAME + " - " + title_text) ;
+}
+
+void MainContent::warning(String message_text)
+{
+  Trace::TraceWarning(message_text) ;
+  AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon  ,
+                                   GUI::APP_WARNING_TITLE , message_text) ;
+}
+
+void MainContent::error(String message_text)
+{
+  Trace::TraceError(message_text) ;
+  AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon ,
+                                   GUI::APP_ERROR_TITLE     , message_text) ;
 }

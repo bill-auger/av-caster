@@ -1,6 +1,5 @@
 # nix
-Builds/Linux/build
-Builds/Linux/.gdbinit
+Builds/LinuxMakefile/build
 *~
 *.kate-swp
 .kateproject*

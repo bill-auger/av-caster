@@ -17,11 +17,13 @@
 
 /* state */
 
-#  define DEBUG_TRACE_SHUTDOWN Trace::TraceState("clean shutdown - bye") ;
+#  define DEBUG_TRACE_SHUTDOWN_IN  Trace::TraceState("shutting down") ;
+#  define DEBUG_TRACE_SHUTDOWN_OUT Trace::TraceState("clean shutdown - bye") ;
 
 #else // DEBUG
 
-#  define DEBUG_TRACE_SHUTDOWN ;
+#  define DEBUG_TRACE_SHUTDOWN_IN ;
+#  define DEBUG_TRACE_SHUTDOWN_OUT ;
 
 #endif // DEBUG
 #endif  // TRACEMAIN_H_INCLUDED

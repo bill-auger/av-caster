@@ -32,7 +32,13 @@ public:
   static bool TraceAvconv( String msg) ;
   static bool TraceVerbose(String msg) ;
   static bool TraceState(  String msg) ;
+  static bool TraceWarning(String msg) ;
   static bool TraceError(  String msg) ;
+
+  static const String THREAD_EXIT_MSG ;
+  static const String PROCESS_ERROR_MSG ;
+  static const String CAMERA_ERROR_MSG ;
+  static const String NETWORK_ERROR_MSG ;
 } ;
 
 #endif // DEBUG

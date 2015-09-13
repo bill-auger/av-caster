@@ -28,8 +28,8 @@ public:
 //     if (FfmpegStreamer::Initialize(this , main_content , command_line))
     {
       // start GUI update timers
-      startTimer(CLIENT::GUI_TIMER_HI_ID , CLIENT::GUI_UPDATE_HI_IVL) ;
-      startTimer(CLIENT::GUI_TIMER_LO_ID , CLIENT::GUI_UPDATE_LO_IVL) ;
+      startTimer(APP::GUI_TIMER_HI_ID , APP::GUI_UPDATE_HI_IVL) ;
+      startTimer(APP::GUI_TIMER_LO_ID , APP::GUI_UPDATE_LO_IVL) ;
     }
     else quit() ;
   }
@@ -43,16 +43,16 @@ public:
 
   void shutdown() override
   {
-DBG("FfmpegStreamerApplication::shutdown()") ;
+DEBUG_TRACE_SHUTDOWN_IN
 
     FfmpegStreamer::Shutdown() ;
 
     this->mainWindow = nullptr ;
 
-DEBUG_TRACE_SHUTDOWN
+DEBUG_TRACE_SHUTDOWN_OUT
   }
 
-  void         systemRequestedQuit()        override { DBG("FfmpegStreamerApplication::systemRequestedQuit()") ; this->quit() ; }
+  void         systemRequestedQuit()        override { this->quit() ; }
   const String getApplicationName()         override { return ProjectInfo::projectName ; }
   const String getApplicationVersion()      override { return ProjectInfo::versionString ; }
   bool         moreThanOneInstanceAllowed() override { return false ; }
@@ -70,7 +70,7 @@ DEBUG_TRACE_SHUTDOWN
 
   public:
 
-    MainWindow(FfmpegStreamerApplication* app) : DocumentWindow(GUI::APP_NAME             ,
+    MainWindow(FfmpegStreamerApplication* app) : DocumentWindow(APP::APP_NAME             ,
                                                                 Colour(0xff202020)        ,
                                                                 DocumentWindow::allButtons)
     {

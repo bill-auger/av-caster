@@ -9,7 +9,6 @@
 #ifndef MAINCONTENT_H_INCLUDED
 #define MAINCONTENT_H_INCLUDED
 
-#include "../JuceLibraryCode/JuceHeader.h"
 #include "Statusbar.h"
 
 
@@ -34,6 +33,8 @@ private:
   DocumentWindow*          mainWindow ;
 
   void setTitle(String title_text) ;
+  void warning( String message_text) ;
+  void error(   String message_text) ;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContent)
 } ;
