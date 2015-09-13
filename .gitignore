@@ -1,0 +1,19 @@
+# nix
+Builds/Linux/build
+Builds/Linux/.gdbinit
+*~
+*.kate-swp
+.kateproject*
+
+# win
+*Debug
+*Release
+*.ncb
+*.suo
+*.user
+[Tt]humbs.db
+*.DS_Store
+
+# etc
+mk*
+dbg*

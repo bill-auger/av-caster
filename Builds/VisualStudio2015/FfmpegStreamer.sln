@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2015
+Project("{77FF41D2-26D0-3EB3-0A28-59FC7CF2F748}") = "FfmpegStreamer", "FfmpegStreamer.vcxproj", "{11C3E5F0-346C-7111-1206-A2C7ACC432C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11C3E5F0-346C-7111-1206-A2C7ACC432C9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{11C3E5F0-346C-7111-1206-A2C7ACC432C9}.Debug|Win32.Build.0 = Debug|Win32
+		{11C3E5F0-346C-7111-1206-A2C7ACC432C9}.Release|Win32.ActiveCfg = Release|Win32
+		{11C3E5F0-346C-7111-1206-A2C7ACC432C9}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
