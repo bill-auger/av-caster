@@ -1,60 +1,73 @@
 /*
   ==============================================================================
 
-    FfmpegStreamer.cpp
+    AvCaster.cpp
     Created: 12 Sep 2015 10:26:17am
     Author:  bill
 
   ==============================================================================
 */
 
-#include "FfmpegStreamer.h"
+#include "AvCaster.h"
 #include "Trace/Trace.h"
 
 
-/* FfmpegStreamer class variables */
+/* AvCaster class variables */
 
-// JUCEApplication* FfmpegStreamer::App = nullptr ; // Initialize()
-MainContent*                FfmpegStreamer::Gui       = nullptr ; // Initialize()
-ScopedPointer<FfmpegStream> FfmpegStreamer::MuxStream = nullptr ; // Initialize()
+// JUCEApplication* AvCaster::App = nullptr ; // Initialize()
+MainContent*            AvCaster::Gui           = nullptr ; // Initialize()
+ScopedPointer<AvStream> AvCaster::MuxStream     = nullptr ; // Initialize()
+Array<Alert*>           AvCaster::Alerts ;
+bool                    AvCaster::IsAlertModal  = false ;   // Warning() , Error()
 
 
-/* FfmpegStreamer class methods */
+/* AvCaster class methods */
 
-bool FfmpegStreamer::Initialize(MainContent* main_content , const String& args)
-// bool FfmpegStreamer::Initialize(JUCEApplication* main_app , MainContent* main_content , const String& args)
+bool AvCaster::Initialize(MainContent* main_content , const String& args)
+// bool AvCaster::Initialize(JUCEApplication* main_app , MainContent* main_content , const String& args)
 {
 //   App = main_app ;
   Gui       = main_content ;
-  MuxStream = new FfmpegStream(APP::MUX_THREAD_NAME) ;
+  MuxStream = new AvStream(APP::MUX_THREAD_NAME) ;
 
   return true ;
 }
 
-void FfmpegStreamer::Shutdown()
+void AvCaster::Shutdown()
 {
-DBG("FfmpegStreamer::Shutdown()") ;
+DBG("AvCaster::Shutdown()") ;
 
-  if (!MuxStream->stopThread(2000)) { DBG("FfmpegStreamer::Shutdown() forcefully killing all avconv processes") ; system("killall avconv") ; }
+  if (!MuxStream->stopThread(2000)) { DBG("AvCaster::Shutdown() forcefully killing all avconv processes") ; system("killall avconv") ; }
 //   App = nullptr ;
   MuxStream = nullptr ;
+  Alerts.clear() ;
 }
 
-void FfmpegStreamer::HandleTimer(int timer_id)
+void AvCaster::HandleTimer(int timer_id)
 {
   switch (timer_id)
   {
     case APP::GUI_TIMER_HI_ID:
       if (MuxStream->isThreadRunning()) UpdateStatusGUI() ;
       break ;
-
+    case APP::GUI_TIMER_MED_ID:
+      if (!IsAlertModal && Alerts.size() > 0)
+        switch (Alerts[0]->messageType)
+        {
+          case GUI::ALERT_TYPE_WARNING:
+            Gui->warning(Alerts[0]->messageText) ; Alerts.remove(0) ; break ;
+          case GUI::ALERT_TYPE_ERROR:
+            Gui->error  (Alerts[0]->messageText) ; Alerts.remove(0) ; break ;
+          default:                                                    break ;
+        }
+      break ;
     case APP::GUI_TIMER_LO_ID:
       if (!MuxStream->isThreadRunning()) MuxStream->startThread() ;
       break ;
   }
 }
 
-void FfmpegStreamer::UpdateStatusGUI()
+void AvCaster::UpdateStatusGUI()
 {
   Gui->statusbar->setStatusL("Frame: "    + String(MuxStream->currentFrame  ) + " " +
                              "FPS: "      + String(MuxStream->currentFps    )) ;
@@ -64,14 +77,29 @@ void FfmpegStreamer::UpdateStatusGUI()
                              "Duration: " + String(MuxStream->currentTime   )) ;
 }
 
-void FfmpegStreamer::Warning(String message_text) { Gui->warning(message_text) ; }
+void AvCaster::Warning(String message_text)
+{
+  Alerts.add(new Alert(GUI::ALERT_TYPE_WARNING , message_text)) ;
+}
 
-void FfmpegStreamer::Error(String message_text) { Gui->error(message_text) ; }
+void AvCaster::Error(String message_text)
+{
+  Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
+}
+
+ModalComponentManager::Callback* AvCaster::getModalCb()
+{
+  IsAlertModal = true ;
+
+  return ModalCallbackFunction::create(OnModalDismissed , 0) ;
+}
+
+void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
 
-/* FfmpegStream instance methods */
+/* AvStream instance methods */
 
-void FfmpegStream::run()
+void AvStream::run()
 {
   Trace::TraceState("starting '" + this->getThreadName() +"' process") ;
 
@@ -97,7 +125,7 @@ void FfmpegStream::run()
   this->desktopW = area.getWidth() ;
   this->desktopH = area.getHeight() ;
 */
-DBG("FfmpegStream::run() desktopW=" + String(desktopW) + " desktopH=" + String(desktopH)) ;
+  Trace::TraceState("detected desktop dimensions " + String(desktopW) + "x" + String(desktopH)) ;
 
 /* mac and windows only
 // Returns a list of the available cameras on this machine.
@@ -110,7 +138,7 @@ DBG("video_devs=" + video_devs[0]) ;
     video_devs.remove(0) ;
   }
 */
-/*
+/* mac and windows only
 You can open one of these devices by calling openDevice().
 static CameraDevice* CameraDevice::openDevice   (
     int   deviceIndex,
@@ -135,54 +163,30 @@ static CameraDevice* CameraDevice::openDevice   (
       ++device_info_dir ;
     }
   }
-  else FfmpegStreamer::Warning(GUI::NO_CAMERAS_ERROR_MSG) ;
+  else AvCaster::Warning(GUI::NO_CAMERAS_ERROR_MSG) ;
 
   // test selected capture device
   if (this->proc->start(APP::AVPLAY_TEST_CAM_COMMAND + this->captureDevice))
     while (!!readProcOutputLines())
     {
       if (hasSubstring(this->proc_out_lines , APP::AVCONV_CAM_BUSY_ERROR))
-        FfmpegStreamer::Warning(GUI::CAM_BUSY_ERROR_MSG) ;
+        AvCaster::Warning(GUI::CAM_BUSY_ERROR_MSG) ;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return ;
-
-
-
-
-
-
-
-
-String SCREEN_N   = ":0.0" ;
-String SCREEN_W   = "1280" ;
-String SCREEN_H   = "800" ;
-String SCREEN_RES = "800x600" ;
-String STREAM_W   = "768" ;
-String STREAM_H   = "480" ;
-String STREAM_RES = "768x480" ;
-uint8  FPS        = 12 ;
-String CBR        = "800k" ;
-String GOP        = String(FPS * 4) ;
-//#define AUDIO_CHANNELS 2
-String AUDIO_SAMPLERATE = "22050" ;
-String AUDIO_BITRATE    = "128k" ;
-String QUALITY          = "ultrafast" ;
+String SCREEN_N   = ":0.0" ; // input
+String SCREEN_W   = "1280" ; // input
+String SCREEN_H   = "800" ; // input
+String SCREEN_RES = SCREEN_W + "x" + SCREEN_H ; // input
+String STREAM_W   = "768" ; // output
+String STREAM_H   = "480" ;// output
+String STREAM_RES = "768x480" ;// output
+uint8  FPS        = 12 ; // output (referenced both)
+String CBR        = "800k" ; // output
+String GOP        = String(FPS * 4) ; // implicit
+String QUALITY    = "ultrafast" ; // output
+//#define AUDIO_CHANNELS 2 // input
+String AUDIO_SAMPLERATE = "22050" ; // input
+String AUDIO_BITRATE    = "128k" ; // input
 
 String SCREENCAP_INPUT  = "-f x11grab -s " + SCREEN_RES + " -r " + String(FPS) + " -i " + SCREEN_N ;
 String JACK_INPUT       = "-f jack -i " + APP::JACK_CLIENT_NAME ;
@@ -194,6 +198,7 @@ String DUMP_FILE        = "-y /code/livecoding.mp4" ;
 String FILE_OUTPUT      = "-f flv " + DUMP_FILE ;
 
 String MAIN_INPUT    = SCREENCAP_INPUT ;
+// String OVERLAY_INPUT = WEBCAM_INPUT ;
 String AUDIO_INPUT   = JACK_INPUT ;
 String VIDEO_OUTPUT  = X264_OUUTPUT ;
 String AUDIO_OUTPUT  = AAC_OUTPUT ;
@@ -204,13 +209,16 @@ String AVCONV_MUX_COMMAND = "avconv " + MAIN_INPUT    + " " +
                                         VIDEO_OUTPUT  + " " +
 //                                          AUDIO_OUTPUT  + " " +
                                         STREAM_OUTPUT       ;
-// DBG("FfmpegStream::run() cmd='" + AVCONV_MUX_COMMAND + "'") ;
+#ifdef NO_STREAM_OUT
+  while (!threadShouldExit()) sleep(APP::MUX_THREAD_SLEEP) ; return ;
+#endif // NO_STREAM_OUT
+// DBG("AvStream::run() cmd='" + AVCONV_MUX_COMMAND + "'") ;
 
   // start avconv process and restart if it dies unexpectedly
   while (!threadShouldExit())
   {
     if (!this->proc->start(AVCONV_MUX_COMMAND))
-    { FfmpegStreamer::Error(GUI::SHELL_ERROR_MSG) ; return ; }
+    { AvCaster::Error(GUI::SHELL_ERROR_MSG) ; return ; }
 
     // non-blocking read from proc pipe
     String tail = String::empty ;
@@ -254,28 +262,28 @@ String AVCONV_MUX_COMMAND = "avconv " + MAIN_INPUT    + " " +
   }
 }
 
-bool FfmpegStream::isSystemSane()
+bool AvStream::isSystemSane()
 {
   // test binary dependencies
   if (!this->proc->start(APP::TEST_WHICH_COMMAND   ) && readProcOutput()) // TODO:not cross-platform
-  { FfmpegStreamer::Error(GUI::WHICH_BIN_ERROR_MSG    ) ; return false ; }
+  { AvCaster::Error(GUI::WHICH_BIN_ERROR_MSG    ) ; return false ; }
   if (!this->proc->start(APP::TEST_AVCONV_COMMAND  ) && readProcOutput())
-  { FfmpegStreamer::Error(GUI::AVCONV_BIN_ERROR_MSG   ) ; return false ; }
+  { AvCaster::Error(GUI::AVCONV_BIN_ERROR_MSG   ) ; return false ; }
   if (!this->proc->start(APP::TEST_AVPLAY_COMMAND  ) && readProcOutput())
-  { FfmpegStreamer::Error(GUI::AVPLAY_BIN_ERROR_MSG   ) ; return false ; }
+  { AvCaster::Error(GUI::AVPLAY_BIN_ERROR_MSG   ) ; return false ; }
   if (!this->proc->start(APP::TEST_X11UTILS_COMMAND) && readProcOutput()) // TODO:not cross-platform
-    FfmpegStreamer::Warning(GUI::XWINIFO_BIN_ERROR_MSG) ; // non-fatal
+    AvCaster::Warning(GUI::XWINIFO_BIN_ERROR_MSG) ; // non-fatal
 
   return true ;
 }
 
-bool FfmpegStream::readProcOutput()
+bool AvStream::readProcOutput()
 {
   this->proc_out[0] = '\0' ;
   return (this->proc->readProcessOutput(this->proc_out , APP::PROC_BUFFER_SIZE) > 0) ;
 }
 
-int FfmpegStream::readProcOutputLines()
+int AvStream::readProcOutputLines()
 {
   StringArray lines ;
   if (readProcOutput())
@@ -291,7 +299,7 @@ int FfmpegStream::readProcOutputLines()
   return (this->proc_out_lines = lines).size() ;
 }
 
-String FfmpegStream::findSubstring(StringArray haystack , String needle)
+String AvStream::findSubstring(StringArray haystack , String needle)
 {
   String* line = haystack.begin() ;
   while (line != haystack.end())
@@ -300,12 +308,12 @@ String FfmpegStream::findSubstring(StringArray haystack , String needle)
   return String::empty ;
 }
 
-bool FfmpegStream::hasSubstring(StringArray haystack , String needle)
+bool AvStream::hasSubstring(StringArray haystack , String needle)
 {
   return findSubstring(haystack , needle).isNotEmpty() ;
 }
 
-bool FfmpegStream::hasAnySubstring(StringArray haystack , StringArray needles)
+bool AvStream::hasAnySubstring(StringArray haystack , StringArray needles)
 {
   String* needle = needles.begin() ;
   while (needle != needles.end()) if (hasSubstring(haystack , *needle)) return true ;
@@ -313,7 +321,7 @@ bool FfmpegStream::hasAnySubstring(StringArray haystack , StringArray needles)
   return false ;
 }
 
-bool FfmpegStream::areRuntimeErrors()
+bool AvStream::areRuntimeErrors()
 {
   return hasAnySubstring(this->proc_out_lines , APP::AVCONV_RUNTIME_ERRORS) ;
 }

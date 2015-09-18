@@ -14,6 +14,7 @@
 
 // enable debug features
 #define DEBUG_ANSI_COLORS
+#define NO_STREAM_OUT
 
 // tracing
 #define DEBUG_TRACE        DEBUG && 1

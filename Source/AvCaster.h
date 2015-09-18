@@ -1,32 +1,47 @@
 /*
   ==============================================================================
 
-    FfmpegStreamer.h
+    AvCaster.h
     Created: 12 Sep 2015 10:26:17am
     Author:  bill
 
   ==============================================================================
 */
 
-#ifndef FFMPEGSTREAMER_H_INCLUDED
-#define FFMPEGSTREAMER_H_INCLUDED
+#ifndef AVCASTER_H_INCLUDED
+#define AVCASTER_H_INCLUDED
 
 #include "Constants.h"
 #include "MainContent.h"
 
 
-class FfmpegStream : public Thread
+class Alert
 {
-  friend class FfmpegStreamer ;
+public:
+
+  Alert(GUI::AlertType message_type , String message_text)
+  {
+    this->messageType = message_type ;
+    this->messageText = message_text ;
+  }
+
+  GUI::AlertType messageType ;
+  String         messageText ;
+} ;
+
+class AvStream : public Thread
+{
+  friend class AvCaster ;
 
 
 public:
-  ~FfmpegStream() { this->proc->kill() ; delete this->proc ; }
+
+  ~AvStream() { this->proc->kill() ; delete this->proc ; }
 
 
 private:
 
-  FfmpegStream(const String& thread_name) : Thread(thread_name)
+  AvStream(const String& thread_name) : Thread(thread_name)
   {
     this->proc           = new ChildProcess() ;
     this->proc_out[0]    = '\0' ;
@@ -72,15 +87,19 @@ private:
 } ;
 
 
-class FfmpegStreamer
+class AvCaster
 {
-  friend class FfmpegStreamerApplication ;
+  friend class AvCasterApplication ;
 
 public:
 
   // GUI dispatchers
   static void Warning(String message_text) ;
   static void Error(  String message_text) ;
+
+  // callbacks and event handlers
+  static ModalComponentManager::Callback* getModalCb() ;
+  static void                             OnModalDismissed(int result , int unused) ;
 
 
 private:
@@ -96,8 +115,10 @@ private:
   static void UpdateStatusGUI() ;
 
 //   static JUCEApplication* App ;
-  static MainContent*                Gui ;
-  static ScopedPointer<FfmpegStream> MuxStream ;
+  static MainContent*            Gui ;
+  static ScopedPointer<AvStream> MuxStream ;
+  static Array<Alert*>           Alerts ;
+  static bool                    IsAlertModal ;
 } ;
 
-#endif  // FFMPEGSTREAMER_H_INCLUDED
+#endif  // AVCASTER_H_INCLUDED

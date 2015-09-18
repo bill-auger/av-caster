@@ -1,5 +1,6 @@
 # nix
 Builds/LinuxMakefile/build
+Builds/LinuxMakefile/.gdbinit
 *~
 *.kate-swp
 .kateproject*
@@ -16,3 +17,6 @@ Builds/LinuxMakefile/build
 # etc
 mk*
 dbg*
+Source/OutputConfig.cpp
+Source/OutputConfig.h
+

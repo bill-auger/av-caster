@@ -15,7 +15,7 @@
 /** this is the main GUI container class */
 class MainContent : public Component
 {
-  friend class FfmpegStreamer ;
+  friend class AvCaster ;
 
 
 public:
@@ -29,8 +29,9 @@ public:
 
 private:
 
-  ScopedPointer<Statusbar> statusbar ;
   DocumentWindow*          mainWindow ;
+  ScopedPointer<Statusbar> outputConfig ;
+  ScopedPointer<Statusbar> statusbar ;
 
   void setTitle(String title_text) ;
   void warning( String message_text) ;

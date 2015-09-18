@@ -8,9 +8,9 @@
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
-    <string>com.bill-auger.FfmpegStreamer</string>
+    <string>com.bill-auger.AvCaster</string>
     <key>CFBundleName</key>
-    <string>FfmpegStreamer</string>
+    <string>AvCaster</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleSignature</key>

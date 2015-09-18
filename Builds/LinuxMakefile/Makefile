@@ -23,7 +23,7 @@ ifeq ($(CONFIG),Debug)
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -L/usr/X11R6/lib/ -lGL -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
 
-  TARGET := ffmpeg-streamer-dbg
+  TARGET := av-caster-dbg
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
 endif
@@ -43,13 +43,13 @@ ifeq ($(CONFIG),Release)
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lGL -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
 
-  TARGET := ffmpeg-streamer
+  TARGET := av-caster
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/FfmpegStreamer_7944a81b.o \
+  $(OBJDIR)/AvCaster_86a5e2ca.o \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainContent_6313eee1.o \
   $(OBJDIR)/Statusbar_a0c28bc2.o \
@@ -71,23 +71,23 @@ OBJECTS := \
 .PHONY: clean
 
 $(OUTDIR)/$(TARGET): $(OBJECTS) $(RESOURCES)
-	@echo Linking FfmpegStreamer
+	@echo Linking AvCaster
 	-@mkdir -p $(BINDIR)
 	-@mkdir -p $(LIBDIR)
 	-@mkdir -p $(OUTDIR)
 	@$(BLDCMD)
 
 clean:
-	@echo Cleaning FfmpegStreamer
+	@echo Cleaning AvCaster
 	@$(CLEANCMD)
 
 strip:
-	@echo Stripping FfmpegStreamer
+	@echo Stripping AvCaster
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/FfmpegStreamer_7944a81b.o: ../../Source/FfmpegStreamer.cpp
+$(OBJDIR)/AvCaster_86a5e2ca.o: ../../Source/AvCaster.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling FfmpegStreamer.cpp"
+	@echo "Compiling AvCaster.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp

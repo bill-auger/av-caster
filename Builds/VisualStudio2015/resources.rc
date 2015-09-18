@@ -13,9 +13,9 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileDescription",  "FfmpegStreamer\0"
+      VALUE "FileDescription",  "AvCaster\0"
       VALUE "FileVersion",  "1.0.0\0"
-      VALUE "ProductName",  "FfmpegStreamer\0"
+      VALUE "ProductName",  "AvCaster\0"
       VALUE "ProductVersion",  "1.0.0\0"
     END
   END

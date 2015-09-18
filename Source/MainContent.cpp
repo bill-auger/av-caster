@@ -1,5 +1,5 @@
 
-#include "FfmpegStreamer.h"
+#include "AvCaster.h"
 #include "MainContent.h"
 #include "Trace/Trace.h"
 
@@ -13,6 +13,10 @@ MainContent::MainContent(DocumentWindow* main_window)
   setName("MainContent") ;
   setSize(GUI::CONTENT_W , GUI::CONTENT_H) ;
 
+  // output configuration
+  this->outputConfig = new OutputConfig() ;
+  this->addChildAndSetID(this->outputConfig , GUI::OUTPUT_GUI_ID) ;
+
   // statusbar
   this->statusbar = new Statusbar() ;
   this->addChildAndSetID(this->statusbar , GUI::STATUS_GUI_ID) ;
@@ -22,7 +26,8 @@ MainContent::MainContent(DocumentWindow* main_window)
 
 MainContent::~MainContent()
 {
-  this->statusbar = nullptr ;
+  this->outputConfig = nullptr ;
+  this->statusbar    = nullptr ;
 }
 
 void MainContent::paint(Graphics& g)
@@ -43,13 +48,20 @@ void MainContent::resized()
   int content_w = window_w - GUI::PAD2 ;
   int content_h = window_h - GUI::STATUSBAR_H - GUI::PAD3 ;
 
+  // output config
+  int output_x = GUI::PAD ;
+  int output_y = GUI::PAD ;
+  int output_w = content_w ;
+  int output_h = content_h ;
+
   // statusbar
   int status_x = GUI::PAD ;
   int status_y = window_h - GUI::STATUSBAR_H - GUI::PAD ;
   int status_w = content_w ;
   int status_h = GUI::STATUSBAR_H ;
 
-  this->statusbar->setBounds(status_x , status_y , status_w , status_h) ;
+  this->outputConfig->setBounds(output_x , output_y , output_w , output_h) ;
+  this->statusbar   ->setBounds(status_x , status_y , status_w , status_h) ;
 }
 
 void MainContent::setTitle(String title_text)
@@ -60,13 +72,15 @@ void MainContent::setTitle(String title_text)
 void MainContent::warning(String message_text)
 {
   Trace::TraceWarning(message_text) ;
-  AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon  ,
-                                   GUI::APP_WARNING_TITLE , message_text) ;
+  AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon , GUI::MODAL_WARNING_TITLE ,
+                                   message_text          , String::empty            ,
+                                   nullptr               , AvCaster::getModalCb()   ) ;
 }
 
 void MainContent::error(String message_text)
 {
   Trace::TraceError(message_text) ;
-  AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon ,
-                                   GUI::APP_ERROR_TITLE     , message_text) ;
+  AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon , GUI::MODAL_ERROR_TITLE ,
+                                   message_text             , String::empty          ,
+                                   nullptr                  , AvCaster::getModalCb() ) ;
 }

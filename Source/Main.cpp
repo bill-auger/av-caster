@@ -8,28 +8,29 @@
   ==============================================================================
 */
 
-#include "FfmpegStreamer.h"
+#include "AvCaster.h"
 #include "./Trace/TraceMain.h"
 
 
 //==============================================================================
-class FfmpegStreamerApplication : public JUCEApplication , public MultiTimer
+class AvCasterApplication : public JUCEApplication , public MultiTimer
 {
 public:
 
-  FfmpegStreamerApplication() {}
+  AvCasterApplication() {}
 
   void initialise(const String& command_line) override
   {
     this->mainWindow          = new MainWindow(this) ;
     MainContent* main_content = (MainContent*)this->mainWindow->mainContent ;
 
-    if (FfmpegStreamer::Initialize(main_content , command_line))
-//     if (FfmpegStreamer::Initialize(this , main_content , command_line))
+    if (AvCaster::Initialize(main_content , command_line))
+//     if (AvCaster::Initialize(this , main_content , command_line))
     {
       // start GUI update timers
-      startTimer(APP::GUI_TIMER_HI_ID , APP::GUI_UPDATE_HI_IVL) ;
-      startTimer(APP::GUI_TIMER_LO_ID , APP::GUI_UPDATE_LO_IVL) ;
+      startTimer(APP::GUI_TIMER_HI_ID  , APP::GUI_UPDATE_HI_IVL) ;
+      startTimer(APP::GUI_TIMER_MED_ID , APP::GUI_UPDATE_MED_IVL) ;
+      startTimer(APP::GUI_TIMER_LO_ID  , APP::GUI_UPDATE_LO_IVL) ;
     }
     else quit() ;
   }
@@ -45,7 +46,7 @@ public:
   {
 DEBUG_TRACE_SHUTDOWN_IN
 
-    FfmpegStreamer::Shutdown() ;
+    AvCaster::Shutdown() ;
 
     this->mainWindow = nullptr ;
 
@@ -65,14 +66,14 @@ DEBUG_TRACE_SHUTDOWN_OUT
   */
   class MainWindow : public DocumentWindow
   {
-    friend class FfmpegStreamerApplication ;
+    friend class AvCasterApplication ;
 
 
   public:
 
-    MainWindow(FfmpegStreamerApplication* app) : DocumentWindow(APP::APP_NAME             ,
-                                                                Colour(0xff202020)        ,
-                                                                DocumentWindow::allButtons)
+    MainWindow(AvCasterApplication* app) : DocumentWindow(APP::APP_NAME             ,
+                                                          Colour(0xff202020)        ,
+                                                          DocumentWindow::allButtons)
     {
       this->app = app ;
 
@@ -98,7 +99,7 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
   private:
 
-    FfmpegStreamerApplication* app ;
+    AvCasterApplication* app ;
     ScopedPointer<MainContent> mainContent ;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)
@@ -107,11 +108,11 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
 private:
 
-  void timerCallback(int timer_id) override { FfmpegStreamer::HandleTimer(timer_id) ; }
+  void timerCallback(int timer_id) override { AvCaster::HandleTimer(timer_id) ; }
 
   ScopedPointer<MainWindow> mainWindow ;
 } ;
 
 //==============================================================================
 // This macro generates the main() routine that launches the app.
-START_JUCE_APPLICATION(FfmpegStreamerApplication)
+START_JUCE_APPLICATION(AvCasterApplication)
