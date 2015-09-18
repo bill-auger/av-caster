@@ -64,11 +64,12 @@ namespace GUI
   static const String CONTENT_GUI_ID = "main-content-gui" ;
   static const int    BORDERS_W      = 2 ;
   static const int    TITLEBAR_H     = 24 ;
-  static const int    CONTENT_W      = 640 - BORDERS_W ;
-  static const int    CONTENT_H      = 480 - BORDERS_W - TITLEBAR_H ;
+  static const int    CONTENT_W      = 800 - BORDERS_W ;
+  static const int    CONTENT_H      = 600 - BORDERS_W - TITLEBAR_H ;
 
   // OutputConfig
-  static const String OUTPUT_GUI_ID = "output-config-gui" ;
+  static const String OUTPUT_GUI_ID         = "output-config-gui" ;
+  static const String OUTPUT_MONITOR_GUI_ID = "output-monitor-gui" ;
 
   // StatusBar
   static const String STATUS_GUI_ID    = "statusbar-gui" ;
@@ -88,6 +89,8 @@ namespace GUI
   static const String XWINIFO_BIN_ERROR_MSG = "The `xwininfo` program was not found on your system.  " + APP::APP_NAME + " has no way to know the size of your screen.  Be sure to select a screen capture resolution that is within the bounds of you display resolution or else the program will not work properly." ;
   static const String NO_CAMERAS_ERROR_MSG  = "No video capture devices were found on you system.  If you indeed have one mounted , you will need to enter its mountpoint manually." ;
   static const String CAM_BUSY_ERROR_MSG    = "The selected capture device is already in use." ;
+  static const String GST_INIT_ERROR_MSG    = "Not all elements could be created." ;
+  static const String GST_STATE_ERROR_MSG   = "Unable to set the pipeline to the playing state." ;
 }
 
 #endif // CONSTANTS_H_INCLUDED

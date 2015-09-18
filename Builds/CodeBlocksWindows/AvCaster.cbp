@@ -106,6 +106,10 @@
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
+    <Unit filename="../../Source/OutputConfig.h">
+      <Option compile="0"/>
+      <Option link="0"/>
+    </Unit>
     <Unit filename="../../Source/Statusbar.h">
       <Option compile="0"/>
       <Option link="0"/>
@@ -121,6 +125,7 @@
     <Unit filename="../../Source/AvCaster.cpp"/>
     <Unit filename="../../Source/Main.cpp"/>
     <Unit filename="../../Source/MainContent.cpp"/>
+    <Unit filename="../../Source/OutputConfig.cpp"/>
     <Unit filename="../../Source/Statusbar.cpp"/>
     <Unit filename="../../Source/Trace/Trace.cpp"/>
     <Unit filename="../../JuceLibraryCode/modules/juce_audio_basics/buffers/juce_AudioDataConverters.cpp">

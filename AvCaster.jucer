@@ -8,6 +8,7 @@
       <FILE id="zCkODj" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
       <FILE id="IHfl77" name="AvCaster.h" compile="0" resource="0" file="Source/AvCaster.h"/>
       <FILE id="U6Fm4Z" name="MainContent.h" compile="0" resource="0" file="Source/MainContent.h"/>
+      <FILE id="uoYh4l" name="OutputConfig.h" compile="0" resource="0" file="Source/OutputConfig.h"/>
       <FILE id="X0O50Z" name="Statusbar.h" compile="0" resource="0" file="Source/Statusbar.h"/>
       <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>
       <FILE id="ltIPwf" name="TraceMain.h" compile="0" resource="0" file="Source/Trace/TraceMain.h"/>
@@ -16,6 +17,8 @@
       <FILE id="zm6wrJ" name="AvCaster.cpp" compile="1" resource="0" file="Source/AvCaster.cpp"/>
       <FILE id="CQoHWx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="eLauah" name="MainContent.cpp" compile="1" resource="0" file="Source/MainContent.cpp"/>
+      <FILE id="nRcwV3" name="OutputConfig.cpp" compile="1" resource="0"
+            file="Source/OutputConfig.cpp"/>
       <FILE id="XuwkKa" name="Statusbar.cpp" compile="1" resource="0" file="Source/Statusbar.cpp"/>
       <FILE id="iZf5Wa" name="Trace.cpp" compile="1" resource="0" file="Source/Trace/Trace.cpp"/>
     </GROUP>
@@ -90,7 +93,8 @@
         <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
       </MODULEPATHS>
     </VS2008>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-0.10&#96;"
+                extraLinkerFlags="&#96;pkg-config --libs gstreamer-0.10&#96;&#10;&#96;pkg-config --libs gstreamer-interfaces-0.10&#96;&#10;">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
                        targetName="av-caster-dbg"/>

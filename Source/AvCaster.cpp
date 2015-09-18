@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include <gst/interfaces/xoverlay.h>
+
 #include "AvCaster.h"
 #include "Trace/Trace.h"
 
@@ -15,10 +17,11 @@
 /* AvCaster class variables */
 
 // JUCEApplication* AvCaster::App = nullptr ; // Initialize()
-MainContent*            AvCaster::Gui           = nullptr ; // Initialize()
-ScopedPointer<AvStream> AvCaster::MuxStream     = nullptr ; // Initialize()
+MainContent*            AvCaster::Gui              = nullptr ; // Initialize()
+GstElement*             AvCaster::OutputMonitorGst = nullptr ; // Initialize()
+ScopedPointer<AvStream> AvCaster::MuxStream        = nullptr ; // Initialize()
 Array<Alert*>           AvCaster::Alerts ;
-bool                    AvCaster::IsAlertModal  = false ;   // Warning() , Error()
+bool                    AvCaster::IsAlertModal     = false ;   // Warning() , Error()
 
 
 /* AvCaster class methods */
@@ -30,6 +33,33 @@ bool AvCaster::Initialize(MainContent* main_content , const String& args)
   Gui       = main_content ;
   MuxStream = new AvStream(APP::MUX_THREAD_NAME) ;
 
+  if (!SetVideoWindowHandles()) return false ;
+
+  return true ;
+}
+
+bool AvCaster::SetVideoWindowHandles()
+{
+  //GstBus *bus;
+  // initialize gStreamer
+  int argc = 0 ; char** argv = {0} ; gst_init(&argc , &argv) ;
+  OutputMonitorGst = gst_element_factory_make("playbin2" , "playbin2") ;
+  if (!OutputMonitorGst) { AvCaster::Error(GUI::GST_INIT_ERROR_MSG) ; return false ; }
+
+  // set GUI handles
+  Component* outputMonitor = Gui->outputConfig->findChildWithID(GUI::OUTPUT_MONITOR_GUI_ID) ;
+  if (outputMonitor != nullptr)
+  {
+    guintptr window_handle = (guintptr)(outputMonitor->getWindowHandle()) ;
+    gst_x_overlay_set_window_handle(GST_X_OVERLAY(OutputMonitorGst) , window_handle) ;
+  }
+  else return false ;
+
+char* SampleVideo = "http://docs.gstreamer.com/media/sintel_trailer-480p.webm" ;
+  g_object_set(OutputMonitorGst , "uri" , SampleVideo , NULL) ;
+  if (gst_element_set_state(OutputMonitorGst , GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
+  { AvCaster::Error(GUI::GST_STATE_ERROR_MSG) ; return false ; }
+
   return true ;
 }
 
@@ -37,10 +67,14 @@ void AvCaster::Shutdown()
 {
 DBG("AvCaster::Shutdown()") ;
 
+  Alerts.clear() ;
+
   if (!MuxStream->stopThread(2000)) { DBG("AvCaster::Shutdown() forcefully killing all avconv processes") ; system("killall avconv") ; }
 //   App = nullptr ;
   MuxStream = nullptr ;
-  Alerts.clear() ;
+
+  gst_element_set_state(OutputMonitorGst , GST_STATE_NULL) ;
+  gst_object_unref(OutputMonitorGst) ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
@@ -105,123 +139,33 @@ void AvStream::run()
 
   if (threadShouldExit() || !isSystemSane()) { signalThreadShouldExit() ; return ; }
 
-  if (this->proc->start(APP::DISPLAY_DIMS_COMMAND) && readProcOutput())
-  {
-    StringArray tokens     = StringArray::fromTokens(this->proc_out , false) ;
-    tokens.removeEmptyStrings(true) ;
-    int         width_idx  = tokens.indexOf(APP::DISPLAY_DIMS_WIDTH_TOKEN ) + 1 ;
-    int         height_idx = tokens.indexOf(APP::DISPLAY_DIMS_HEIGHT_TOKEN) + 1 ;
-    if (!!width_idx && !!height_idx)
-    {
-      this->desktopW = tokens[width_idx ].getIntValue() ;
-      this->desktopH = tokens[height_idx].getIntValue() ;
-    }
-  }
-  else { this->desktopW = 0 ; this->desktopH = 0 ; }
-/*
-  // the JUCE way - does not reflect resolution changes
-  //                but would eliminate platform-specific xwininfo binary dependency
-  Rectangle<int> area = Desktop::getInstance().getDisplays().getMainDisplay().totalArea ;
-  this->desktopW = area.getWidth() ;
-  this->desktopH = area.getHeight() ;
-*/
-  Trace::TraceState("detected desktop dimensions " + String(desktopW) + "x" + String(desktopH)) ;
+  detectDisplayDimensions() ;
+  Trace::TraceState("detected desktop dimensions " + String(this->desktopW) + "x" + String(this->desktopH)) ;
 
-/* mac and windows only
-// Returns a list of the available cameras on this machine.
-  StringArray video_devs = juce::CameraDevice::getAvailableDevices() ;
-DBG(video_devs.joinIntoString("\n")) ;
-  while (video_devs.size())
-  {
-DBG("video_devs=" + video_devs[0]) ;
+  detectCaptureDevices() ;
+  Trace::TraceState("detected " + String(this->cameraDevices.size()) + " capture devices") ;
 
-    video_devs.remove(0) ;
-  }
-*/
-/* mac and windows only
-You can open one of these devices by calling openDevice().
-static CameraDevice* CameraDevice::openDevice   (
-    int   deviceIndex,
-    int   minWidth = 128,
-    int   minHeight = 64,
-    int   maxWidth = 1024,
-    int   maxHeight = 768
-  )
-*/
-  // get capture devices
-  File*       capture_devices_dir = new File(APP::CAPTURE_DEVICES_DIR) ;
-  Array<File> device_info_dirs ;
-  this->captureDevices.clear() ;
-  if (capture_devices_dir->containsSubDirectories()                                       &&
-    !!capture_devices_dir->findChildFiles(device_info_dirs , File::findDirectories , false))
-  {
-    File* device_info_dir = device_info_dirs.begin() ;
-    while (device_info_dir != device_info_dirs.end())
-    {
-      String device_name = device_info_dir->getChildFile("name").loadFileAsString() ;
-      this->captureDevices.add(device_name) ;
-      ++device_info_dir ;
-    }
-  }
-  else AvCaster::Warning(GUI::NO_CAMERAS_ERROR_MSG) ;
+  sanitizeParams() ;
 
-  // test selected capture device
-  if (this->proc->start(APP::AVPLAY_TEST_CAM_COMMAND + this->captureDevice))
-    while (!!readProcOutputLines())
-    {
-      if (hasSubstring(this->proc_out_lines , APP::AVCONV_CAM_BUSY_ERROR))
-        AvCaster::Warning(GUI::CAM_BUSY_ERROR_MSG) ;
-    }
+return ;
 
-String SCREEN_N   = ":0.0" ; // input
-String SCREEN_W   = "1280" ; // input
-String SCREEN_H   = "800" ; // input
-String SCREEN_RES = SCREEN_W + "x" + SCREEN_H ; // input
-String STREAM_W   = "768" ; // output
-String STREAM_H   = "480" ;// output
-String STREAM_RES = "768x480" ;// output
-uint8  FPS        = 12 ; // output (referenced both)
-String CBR        = "800k" ; // output
-String GOP        = String(FPS * 4) ; // implicit
-String QUALITY    = "ultrafast" ; // output
-//#define AUDIO_CHANNELS 2 // input
-String AUDIO_SAMPLERATE = "22050" ; // input
-String AUDIO_BITRATE    = "128k" ; // input
-
-String SCREENCAP_INPUT  = "-f x11grab -s " + SCREEN_RES + " -r " + String(FPS) + " -i " + SCREEN_N ;
-String JACK_INPUT       = "-f jack -i " + APP::JACK_CLIENT_NAME ;
-String X264_OUUTPUT     = "-vcodec libx264 -preset " + QUALITY + " -s " + STREAM_RES +
-                          " -g " + GOP + " -vb " + CBR + " -maxrate " + CBR + " -bufsize " + CBR ;
-String AAC_OUTPUT       = "-acodec aac -ar " + AUDIO_SAMPLERATE + " -ab " + AUDIO_BITRATE  + " -strict experimental" ;
-String DUMP_FILE        = "-y /code/livecoding.mp4" ;
-// String FILE_OUTPUT      = "-f flv " + DUMP_FILE ;
-String FILE_OUTPUT      = "-f flv " + DUMP_FILE ;
-
-String MAIN_INPUT    = SCREENCAP_INPUT ;
-// String OVERLAY_INPUT = WEBCAM_INPUT ;
-String AUDIO_INPUT   = JACK_INPUT ;
-String VIDEO_OUTPUT  = X264_OUUTPUT ;
-String AUDIO_OUTPUT  = AAC_OUTPUT ;
-String STREAM_OUTPUT = FILE_OUTPUT ;
-
-String AVCONV_MUX_COMMAND = "avconv " + MAIN_INPUT    + " " +
-//                                          AUDIO_INPUT   + " " +
-                                        VIDEO_OUTPUT  + " " +
-//                                          AUDIO_OUTPUT  + " " +
-                                        STREAM_OUTPUT       ;
-#ifdef NO_STREAM_OUT
+#ifndef NO_STREAM_OUT
   while (!threadShouldExit()) sleep(APP::MUX_THREAD_SLEEP) ; return ;
 #endif // NO_STREAM_OUT
-// DBG("AvStream::run() cmd='" + AVCONV_MUX_COMMAND + "'") ;
+DBG("AvStream::run() cmd='" + buildAvconvMuxCommand() + "'") ;
 
   // start avconv process and restart if it dies unexpectedly
   while (!threadShouldExit())
   {
-    if (!this->proc->start(AVCONV_MUX_COMMAND))
-    { AvCaster::Error(GUI::SHELL_ERROR_MSG) ; return ; }
+    Trace::TraceState("restarting stream") ;
+
+    if (!this->proc->start(buildAvconvMuxCommand()))
+    { AvCaster::Error(GUI::SHELL_ERROR_MSG) ; signalThreadShouldExit() ; return ; }
+
+// TODO: we're spinning wild somewhere here
+DBG("areRuntimeErrors outer=" + String(areRuntimeErrors())) ;
 
     // non-blocking read from proc pipe
-    String tail = String::empty ;
     while (!threadShouldExit() && this->proc->isRunning() && !areRuntimeErrors())
     {
       sleep(APP::MUX_THREAD_SLEEP) ;
@@ -230,6 +174,8 @@ String AVCONV_MUX_COMMAND = "avconv " + MAIN_INPUT    + " " +
         // dump avconv output
         String* line = this->proc_out_lines.begin() ;
         while (line != this->proc_out_lines.end()) Trace::TraceAvconv(*line++) ;
+
+DBG("areRuntimeErrors inner=" + String(areRuntimeErrors())) ;
 
         // break on runtim error
         if (areRuntimeErrors()) break ;
@@ -260,6 +206,191 @@ String AVCONV_MUX_COMMAND = "avconv " + MAIN_INPUT    + " " +
         Trace::TraceError(Trace::NETWORK_ERROR_MSG) ;
     }
   }
+}
+
+void AvStream::detectDisplayDimensions()
+{
+#ifndef CROSS_PLATFORM_RESOLUTION_DETECTION
+  if (this->proc->start(APP::DISPLAY_DIMS_COMMAND) && readProcOutput())
+  {
+    StringArray tokens     = StringArray::fromTokens(this->proc_out , false) ;
+    tokens.removeEmptyStrings(true) ;
+    int         width_idx  = tokens.indexOf(APP::DISPLAY_DIMS_WIDTH_TOKEN ) + 1 ;
+    int         height_idx = tokens.indexOf(APP::DISPLAY_DIMS_HEIGHT_TOKEN) + 1 ;
+    if (!!width_idx && !!height_idx)
+    {
+      this->desktopW = tokens[width_idx ].getIntValue() ;
+      this->desktopH = tokens[height_idx].getIntValue() ;
+    }
+  }
+  else { this->desktopW = 0 ; this->desktopH = 0 ; }
+#else // CROSS_PLATFORM_RESOLUTION_DETECTION
+/* the JUCE way - does not reflect resolution changes (issue #2 issue #4)
+                  but would eliminate platform-specific xwininfo binary dependency
+  Rectangle<int> area = Desktop::getInstance().getDisplays().getMainDisplay().totalArea ;
+  this->desktopW = area.getWidth() ;
+  this->desktopH = area.getHeight() ;
+*/
+#endif // CROSS_PLATFORM_RESOLUTION_DETECTION
+}
+
+void AvStream::detectCaptureDevices()
+{
+#ifndef _WIN32
+#  ifndef _MAC
+  File*       capture_devices_dir = new File(APP::CAPTURE_DEVICES_DIR) ;
+  Array<File> device_info_dirs ;
+  this->cameraDevices.clear() ;
+  if (capture_devices_dir->containsSubDirectories()                                       &&
+    !!capture_devices_dir->findChildFiles(device_info_dirs , File::findDirectories , false))
+  {
+    File* device_info_dir = device_info_dirs.begin() ;
+    while (device_info_dir != device_info_dirs.end())
+    {
+      String device_name = device_info_dir->getChildFile("name").loadFileAsString() ;
+      this->cameraDevices.add(device_name) ;
+      ++device_info_dir ;
+    }
+  }
+  else AvCaster::Warning(GUI::NO_CAMERAS_ERROR_MSG) ;
+
+  return ;
+#  endif // _MAC
+#endif // _WIN32
+
+/* mac and windows only (issue #6 issue #8)
+// Returns a list of the available cameras on this machine.
+  StringArray video_devs = juce::CameraDevice::getAvailableDevices() ;
+DBG(video_devs.joinIntoString("\n")) ;
+  while (video_devs.size())
+  {
+DBG("video_devs=" + video_devs[0]) ;
+
+    video_devs.remove(0) ;
+  }
+*/
+/* mac and windows only (issue #6 issue #8)
+You can open one of these devices by calling openDevice().
+static CameraDevice* CameraDevice::openDevice   (
+    int   deviceIndex,
+    int   minWidth = 128,
+    int   minHeight = 64,
+    int   maxWidth = 1024,
+    int   maxHeight = 768
+  )
+*/
+}
+
+void AvStream::sanitizeParams()
+{
+  // test selected capture device
+  if (this->proc->start(APP::AVPLAY_TEST_CAM_COMMAND + this->cameraDevice))
+    while (!!readProcOutputLines())
+    {
+      if (hasSubstring(this->proc_out_lines , APP::AVCONV_CAM_BUSY_ERROR))
+        AvCaster::Warning(GUI::CAM_BUSY_ERROR_MSG) ;
+    }
+
+  // sanity check capture params
+  if (this->captureW == 0 || this->offsetX + this->captureW > this->desktopW)
+    this->captureW = this->desktopW ;
+  if (this->captureH == 0 || this->offsetY + this->captureH > this->desktopH)
+    this->captureH = this->desktopH ;
+  // TODO: test for device/screen existence
+//     if (deviceNotExist) this->displayDevice = 0 ;
+//     if (screenNotExist) this->displayScreen = 0 ;
+}
+
+String AvStream::buildAvconvMuxCommand()
+{
+// TODO: these should be value holders for GUI
+this->framerate = "12" ;
+this->cameraResolution = "160x120" ;
+this->cameraDevice = "/dev/video0" ;
+this->audioInput = JACK_AUDIO ;
+this->outputQuality = "faster" ;
+this->outputResolution = "768x480" ;
+this->videoBitrate = "800k" ;
+this->samplerate = "22050" ;
+this->audioBitrate = "128k";
+this->outputDest = "av-caster.mp4" ;
+  String screen_dev = ":" + String(this->displayDevice) + "." + String(this->displayScreen) ;
+  String screen_res = String(this->captureW) + "x" + String(this->captureH) ;
+  String output_gop = String(this->framerate.getIntValue() * 4) ;
+
+  String screencap_input = "-f x11grab -s " + screen_res + " -r " + this->framerate + " -i " + screen_dev ;
+  String camera_input    = "-f video4linux2 -s " + this->cameraResolution +" -i " + this->cameraDevice ;
+  String alsa_input      = "-f alsa -i hw:0" ;
+  String pulse_input     = "-f pulse -name ffmpeg -sample_rate " + this->samplerate + " -i default" ;
+  String jack_input      = "-f jack -i " + APP::JACK_CLIENT_NAME ;
+  String x264_video      = "-vcodec libx264 -preset " + this->outputQuality + " -s " + this->outputResolution +
+                            " -g " + output_gop + " -vb " + this->videoBitrate + " -maxrate " + this->videoBitrate + " -bufsize " + this->videoBitrate ;
+  String aac_audio       = "-acodec aac -ar " + this->samplerate + " -ab " + this->audioBitrate + " -strict experimental" ;
+  String file_output     = "-f flv -y " + this->outputDest ;
+  String net_output      = "rtmp://usmedia3.livecoding.tv:1935/livecodingtv/" + this->outputDest ;
+  String main_input ;
+  String overlay_input ;
+  String audio_input ;
+  String audio_output ;
+  String video_output ;
+  String output_stream ;
+main_input = screencap_input ; // GUI nyi
+/*
+  switch (this->mainInput)
+  {
+    case AvStream::SCREENCAP_INPUT:    main_input = screencap_input ;    break ;
+    case AvStream::INTERSTITIAL_INPUT: main_input = interstitial_input ; break ;
+    default:                                                             break ;
+  }
+*/
+overlay_input = camera_input ; // GUI nyi
+/*
+  switch (this->overlayInput)
+  {
+    case AvStream::CAMERA_INPUT: overlay_input = camera_input ; break ;
+    case AvStream::LOGO_INPUT:   overlay_input = logo_input ;   break ;
+    default:                                                    break ;
+  }
+*/
+  switch (this->audioInput)
+  {
+    case AvStream::ALSA_AUDIO:  audio_input = alsa_input ;  break ;
+    case AvStream::PULSE_AUDIO: audio_input = pulse_input ; break ;
+    case AvStream::JACK_AUDIO:  audio_input = jack_input ;  break ;
+    default:                                                break ;
+  }
+audio_output = aac_audio ; // GUI nyi
+/*
+  switch (this->audioCodec)
+  {
+    case AvStream::AAC_AUDIO: audio_output = aac_audio ; break ;
+    case AvStream::MP3_AUDIO: audio_output = mp3_audio ; break ;
+    default:                                             break ;
+  }
+*/
+video_output = x264_video ; // GUI nyi
+/*
+  switch (this->videoCodec)
+  {
+    case AvStream::X264_VIDEO: video_output = x264_video ; break ;
+    default:                                               break ;
+  }
+*/
+output_stream = file_output ; // GUI nyi
+/*
+  switch (this->outputStream)
+  {
+    case AvStream::FILE_OUTPUT: output_stream = file_output ; break ;
+    case AvStream::NET_OUTPUT:  output_stream = net_output ;  break ;
+    default:                                                  break ;
+  }
+*/
+  return "avconv " + screencap_input + " " +
+                     overlay_input   + " " +
+                     audio_input     + " " +
+                     video_output    + " " +
+                     audio_output    + " " +
+                     output_stream         ;
 }
 
 bool AvStream::isSystemSane()

@@ -129,6 +129,7 @@
         <File RelativePath="..\..\Source\Constants.h"/>
         <File RelativePath="..\..\Source\AvCaster.h"/>
         <File RelativePath="..\..\Source\MainContent.h"/>
+        <File RelativePath="..\..\Source\OutputConfig.h"/>
         <File RelativePath="..\..\Source\Statusbar.h"/>
         <File RelativePath="..\..\Source\Trace\Trace.h"/>
         <File RelativePath="..\..\Source\Trace\TraceMain.h"/>
@@ -137,6 +138,7 @@
         <File RelativePath="..\..\Source\AvCaster.cpp"/>
         <File RelativePath="..\..\Source\Main.cpp"/>
         <File RelativePath="..\..\Source\MainContent.cpp"/>
+        <File RelativePath="..\..\Source\OutputConfig.cpp"/>
         <File RelativePath="..\..\Source\Statusbar.cpp"/>
         <File RelativePath="..\..\Source\Trace\Trace.cpp"/>
       </Filter>

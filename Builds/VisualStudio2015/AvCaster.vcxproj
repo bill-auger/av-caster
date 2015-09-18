@@ -132,6 +132,7 @@
     <ClCompile Include="..\..\Source\AvCaster.cpp"/>
     <ClCompile Include="..\..\Source\Main.cpp"/>
     <ClCompile Include="..\..\Source\MainContent.cpp"/>
+    <ClCompile Include="..\..\Source\OutputConfig.cpp"/>
     <ClCompile Include="..\..\Source\Statusbar.cpp"/>
     <ClCompile Include="..\..\Source\Trace\Trace.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioDataConverters.cpp">
@@ -1253,6 +1254,7 @@
     <ClInclude Include="..\..\Source\Constants.h"/>
     <ClInclude Include="..\..\Source\AvCaster.h"/>
     <ClInclude Include="..\..\Source\MainContent.h"/>
+    <ClInclude Include="..\..\Source\OutputConfig.h"/>
     <ClInclude Include="..\..\Source\Statusbar.h"/>
     <ClInclude Include="..\..\Source\Trace\Trace.h"/>
     <ClInclude Include="..\..\Source\Trace\TraceMain.h"/>

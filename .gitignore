@@ -17,6 +17,3 @@ Builds/LinuxMakefile/.gdbinit
 # etc
 mk*
 dbg*
-Source/OutputConfig.cpp
-Source/OutputConfig.h
-
