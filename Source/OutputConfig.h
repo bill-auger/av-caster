@@ -17,11 +17,14 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_D4159CE0CC0E4616__
-#define __JUCE_HEADER_D4159CE0CC0E4616__
+#ifndef OUTPUTCONFIG_H_INCLUDED
+#define OUTPUTCONFIG_H_INCLUDED
 
 //[Headers]     -- You can add your own extra header files here --
+
 #include "JuceHeader.h"
+#include "GstreamerVideo.h"
+
 //[/Headers]
 
 
@@ -38,6 +41,9 @@ class OutputConfig  : public Component,
                       public SliderListener,
                       public ComboBoxListener
 {
+friend class AvCaster ;
+
+
 public:
     //==============================================================================
     OutputConfig ();
@@ -102,7 +108,10 @@ private:
     ScopedPointer<ComboBox> fpsCombo;
     ScopedPointer<Label> bitrateLabel;
     ScopedPointer<ComboBox> bitrateCombo;
-    ScopedPointer<Component> outputMonitor;
+    ScopedPointer<GroupComponent> monitorsGroup;
+    ScopedPointer<GstreamerVideo> screencapMonitor;
+    ScopedPointer<GstreamerVideo> cameratMonitor;
+    ScopedPointer<GstreamerVideo> outputMonitor;
 
 
     //==============================================================================
@@ -112,4 +121,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_D4159CE0CC0E4616__
+#endif // OUTPUTCONFIG_H_INCLUDED

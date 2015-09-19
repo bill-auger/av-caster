@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\AvCaster.cpp"/>
+    <ClCompile Include="..\..\Source\GstreamerVideo.cpp"/>
     <ClCompile Include="..\..\Source\Main.cpp"/>
     <ClCompile Include="..\..\Source\MainContent.cpp"/>
     <ClCompile Include="..\..\Source\OutputConfig.cpp"/>
@@ -1251,8 +1252,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_video\juce_video.cpp"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\Constants.h"/>
     <ClInclude Include="..\..\Source\AvCaster.h"/>
+    <ClInclude Include="..\..\Source\Constants.h"/>
+    <ClInclude Include="..\..\Source\GstreamerVideo.h"/>
     <ClInclude Include="..\..\Source\MainContent.h"/>
     <ClInclude Include="..\..\Source\OutputConfig.h"/>
     <ClInclude Include="..\..\Source\Statusbar.h"/>

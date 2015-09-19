@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include <gst/interfaces/xoverlay.h>
-
 #include "AvCaster.h"
 #include "Trace/Trace.h"
 
@@ -17,11 +15,10 @@
 /* AvCaster class variables */
 
 // JUCEApplication* AvCaster::App = nullptr ; // Initialize()
-MainContent*            AvCaster::Gui              = nullptr ; // Initialize()
-GstElement*             AvCaster::OutputMonitorGst = nullptr ; // Initialize()
-ScopedPointer<AvStream> AvCaster::MuxStream        = nullptr ; // Initialize()
+MainContent*            AvCaster::Gui          = nullptr ; // Initialize()
+ScopedPointer<AvStream> AvCaster::MuxStream    = nullptr ; // Initialize()
 Array<Alert*>           AvCaster::Alerts ;
-bool                    AvCaster::IsAlertModal     = false ;   // Warning() , Error()
+bool                    AvCaster::IsAlertModal = false ;   // Warning() , Error()
 
 
 /* AvCaster class methods */
@@ -32,33 +29,6 @@ bool AvCaster::Initialize(MainContent* main_content , const String& args)
 //   App = main_app ;
   Gui       = main_content ;
   MuxStream = new AvStream(APP::MUX_THREAD_NAME) ;
-
-  if (!SetVideoWindowHandles()) return false ;
-
-  return true ;
-}
-
-bool AvCaster::SetVideoWindowHandles()
-{
-  //GstBus *bus;
-  // initialize gStreamer
-  int argc = 0 ; char** argv = {0} ; gst_init(&argc , &argv) ;
-  OutputMonitorGst = gst_element_factory_make("playbin2" , "playbin2") ;
-  if (!OutputMonitorGst) { AvCaster::Error(GUI::GST_INIT_ERROR_MSG) ; return false ; }
-
-  // set GUI handles
-  Component* outputMonitor = Gui->outputConfig->findChildWithID(GUI::OUTPUT_MONITOR_GUI_ID) ;
-  if (outputMonitor != nullptr)
-  {
-    guintptr window_handle = (guintptr)(outputMonitor->getWindowHandle()) ;
-    gst_x_overlay_set_window_handle(GST_X_OVERLAY(OutputMonitorGst) , window_handle) ;
-  }
-  else return false ;
-
-char* SampleVideo = "http://docs.gstreamer.com/media/sintel_trailer-480p.webm" ;
-  g_object_set(OutputMonitorGst , "uri" , SampleVideo , NULL) ;
-  if (gst_element_set_state(OutputMonitorGst , GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
-  { AvCaster::Error(GUI::GST_STATE_ERROR_MSG) ; return false ; }
 
   return true ;
 }
@@ -72,9 +42,6 @@ DBG("AvCaster::Shutdown()") ;
   if (!MuxStream->stopThread(2000)) { DBG("AvCaster::Shutdown() forcefully killing all avconv processes") ; system("killall avconv") ; }
 //   App = nullptr ;
   MuxStream = nullptr ;
-
-  gst_element_set_state(OutputMonitorGst , GST_STATE_NULL) ;
-  gst_object_unref(OutputMonitorGst) ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
@@ -121,7 +88,9 @@ void AvCaster::Error(String message_text)
   Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
 }
 
-ModalComponentManager::Callback* AvCaster::getModalCb()
+void AvCaster::StartOutputMonitor() { Gui->outputConfig->outputMonitor->start() ; }
+
+ModalComponentManager::Callback* AvCaster::GetModalCb()
 {
   IsAlertModal = true ;
 
@@ -147,12 +116,13 @@ void AvStream::run()
 
   sanitizeParams() ;
 
-return ;
 
-#ifndef NO_STREAM_OUT
+AvCaster::StartOutputMonitor() ;
+#ifdef NO_STREAM_OUT
   while (!threadShouldExit()) sleep(APP::MUX_THREAD_SLEEP) ; return ;
 #endif // NO_STREAM_OUT
 DBG("AvStream::run() cmd='" + buildAvconvMuxCommand() + "'") ;
+
 
   // start avconv process and restart if it dies unexpectedly
   while (!threadShouldExit())

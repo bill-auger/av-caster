@@ -81,11 +81,15 @@
       <Add option="-Wno-strict-overflow"/>
     </Compiler>
     <Linker/>
+    <Unit filename="../../Source/AvCaster.h">
+      <Option compile="0"/>
+      <Option link="0"/>
+    </Unit>
     <Unit filename="../../Source/Constants.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../Source/AvCaster.h">
+    <Unit filename="../../Source/GstreamerVideo.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
@@ -110,6 +114,7 @@
       <Option link="0"/>
     </Unit>
     <Unit filename="../../Source/AvCaster.cpp"/>
+    <Unit filename="../../Source/GstreamerVideo.cpp"/>
     <Unit filename="../../Source/Main.cpp"/>
     <Unit filename="../../Source/MainContent.cpp"/>
     <Unit filename="../../Source/OutputConfig.cpp"/>

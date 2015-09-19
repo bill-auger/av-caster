@@ -74,7 +74,7 @@ void MainContent::warning(String message_text)
   Trace::TraceWarning(message_text) ;
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon , GUI::MODAL_WARNING_TITLE ,
                                    message_text          , String::empty            ,
-                                   nullptr               , AvCaster::getModalCb()   ) ;
+                                   nullptr               , AvCaster::GetModalCb()   ) ;
 }
 
 void MainContent::error(String message_text)
@@ -82,5 +82,5 @@ void MainContent::error(String message_text)
   Trace::TraceError(message_text) ;
   AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon , GUI::MODAL_ERROR_TITLE ,
                                    message_text             , String::empty          ,
-                                   nullptr                  , AvCaster::getModalCb() ) ;
+                                   nullptr                  , AvCaster::GetModalCb() ) ;
 }

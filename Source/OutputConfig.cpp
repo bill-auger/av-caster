@@ -390,7 +390,21 @@ OutputConfig::OutputConfig ()
     bitrateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     bitrateCombo->addListener (this);
 
-    addAndMakeVisible (outputMonitor = new Component());
+    addAndMakeVisible (monitorsGroup = new GroupComponent ("monitorsGroup",
+                                                           TRANS("Monitors")));
+    monitorsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
+    monitorsGroup->setColour (GroupComponent::textColourId, Colours::white);
+
+    addAndMakeVisible (screencapMonitor = new GstreamerVideo());
+    screencapMonitor->setExplicitFocusOrder (20);
+    screencapMonitor->setName ("screencapMonitor");
+
+    addAndMakeVisible (cameratMonitor = new GstreamerVideo());
+    cameratMonitor->setExplicitFocusOrder (21);
+    cameratMonitor->setName ("cameratMonitor");
+
+    addAndMakeVisible (outputMonitor = new GstreamerVideo());
+    outputMonitor->setExplicitFocusOrder (22);
     outputMonitor->setName ("outputMonitor");
 
 
@@ -401,10 +415,6 @@ OutputConfig::OutputConfig ()
 
 
     //[Constructor] You can add your own custom stuff here..
-
-  outputMonitor->setComponentID(GUI::OUTPUT_MONITOR_GUI_ID) ;
-//   outputMonitor->setBufferedToImage(true) ;
-
     //[/Constructor]
 }
 
@@ -456,6 +466,9 @@ OutputConfig::~OutputConfig()
     fpsCombo = nullptr;
     bitrateLabel = nullptr;
     bitrateCombo = nullptr;
+    monitorsGroup = nullptr;
+    screencapMonitor = nullptr;
+    cameratMonitor = nullptr;
     outputMonitor = nullptr;
 
 
@@ -529,7 +542,10 @@ void OutputConfig::resized()
     fpsCombo->setBounds (404, 392, 48, 24);
     bitrateLabel->setBounds (340, 424, 64, 24);
     bitrateCombo->setBounds (404, 424, 80, 24);
-    outputMonitor->setBounds (24, 472, 160, 120);
+    monitorsGroup->setBounds (16, 476, getWidth() - 32, 164);
+    screencapMonitor->setBounds (40, 504, 160, 120);
+    cameratMonitor->setBounds (224, 504, 160, 120);
+    outputMonitor->setBounds (408, 504, 160, 120);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -822,9 +838,18 @@ BEGIN_JUCER_METADATA
   <COMBOBOX name="bitrateCombo" id="54c30dff37473763" memberName="bitrateCombo"
             virtualName="" explicitFocusOrder="19" pos="404 424 80 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <GENERICCOMPONENT name="outputMonitor" id="e325f449948d4757" memberName="outputMonitor"
-                    virtualName="" explicitFocusOrder="0" pos="24 472 160 120" class="Component"
+  <GROUPCOMPONENT name="monitorsGroup" id="6607ba656d5c8919" memberName="monitorsGroup"
+                  virtualName="" explicitFocusOrder="0" pos="16 476 32M 164" outlinecol="ffffffff"
+                  textcol="ffffffff" title="Monitors"/>
+  <GENERICCOMPONENT name="screencapMonitor" id="e325f449948d4757" memberName="screencapMonitor"
+                    virtualName="" explicitFocusOrder="20" pos="40 504 160 120" class="GstreamerVideo"
                     params=""/>
+  <GENERICCOMPONENT name="cameratMonitor" id="d0775393cc917ebd" memberName="cameratMonitor"
+                    virtualName="" explicitFocusOrder="21" pos="224 504 160 120"
+                    class="GstreamerVideo" params=""/>
+  <GENERICCOMPONENT name="outputMonitor" id="86739304b5358cf8" memberName="outputMonitor"
+                    virtualName="" explicitFocusOrder="22" pos="408 504 160 120"
+                    class="GstreamerVideo" params=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

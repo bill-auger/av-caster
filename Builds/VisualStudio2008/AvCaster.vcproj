@@ -126,8 +126,9 @@
   <Files>
     <Filter Name="AvCaster">
       <Filter Name="Headers">
-        <File RelativePath="..\..\Source\Constants.h"/>
         <File RelativePath="..\..\Source\AvCaster.h"/>
+        <File RelativePath="..\..\Source\Constants.h"/>
+        <File RelativePath="..\..\Source\GstreamerVideo.h"/>
         <File RelativePath="..\..\Source\MainContent.h"/>
         <File RelativePath="..\..\Source\OutputConfig.h"/>
         <File RelativePath="..\..\Source\Statusbar.h"/>
@@ -136,6 +137,7 @@
       </Filter>
       <Filter Name="Source">
         <File RelativePath="..\..\Source\AvCaster.cpp"/>
+        <File RelativePath="..\..\Source\GstreamerVideo.cpp"/>
         <File RelativePath="..\..\Source\Main.cpp"/>
         <File RelativePath="..\..\Source\MainContent.cpp"/>
         <File RelativePath="..\..\Source\OutputConfig.cpp"/>

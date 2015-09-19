@@ -44,13 +44,16 @@ namespace APP
   static const String AVPLAY_TEST_CAM_COMMAND   = "avplay -f video4linux2 -i " ;
 
   // avconv state
-  // static const String AVCONV_READY_MSG          = "Press ctrl-c to stop encoding" ;
+  static const String      AVCONV_STATS_PREFIX   = "frame=" ;
+// static const String AVCONV_READY_MSG          = "Press ctrl-c to stop encoding" ;
   static const String      AVCONV_CAM_BUSY_ERROR = "Input/output error" ;
   static const String      AVCONV_CAMERA_ERROR   = "Invalid data found when processing input" ;
   static const String      AVCONV_NETWORK_ERROR  = "av_interleaved_write_frame(): Operation not permitted" ;
-  static const String      AVCONV_STATS_PREFIX   = "frame=" ;
   static const StringArray AVCONV_RUNTIME_ERRORS = StringArray::fromLines(APP::AVCONV_CAMERA_ERROR  + '\n' +
                                                                           APP::AVCONV_NETWORK_ERROR        ) ;
+
+  // user messages
+  static const char* GSTREAMER_INIT_EXCEPTION_MSG = "error initializing gStreamer" ;
 }
 
 namespace GUI
@@ -65,11 +68,10 @@ namespace GUI
   static const int    BORDERS_W      = 2 ;
   static const int    TITLEBAR_H     = 24 ;
   static const int    CONTENT_W      = 800 - BORDERS_W ;
-  static const int    CONTENT_H      = 600 - BORDERS_W - TITLEBAR_H ;
+  static const int    CONTENT_H      = 720 - BORDERS_W - TITLEBAR_H ;
 
   // OutputConfig
-  static const String OUTPUT_GUI_ID         = "output-config-gui" ;
-  static const String OUTPUT_MONITOR_GUI_ID = "output-monitor-gui" ;
+  static const String OUTPUT_GUI_ID = "output-config-gui" ;
 
   // StatusBar
   static const String STATUS_GUI_ID    = "statusbar-gui" ;

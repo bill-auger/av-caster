@@ -307,6 +307,9 @@
     <ClCompile Include="..\..\Source\AvCaster.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\GstreamerVideo.cpp">
+      <Filter>AvCaster\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
@@ -1539,10 +1542,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\AvCaster.h">
+      <Filter>AvCaster\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Constants.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\AvCaster.h">
+    <ClInclude Include="..\..\Source\GstreamerVideo.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\MainContent.h">

@@ -11,8 +11,6 @@
 #ifndef AVCASTER_H_INCLUDED
 #define AVCASTER_H_INCLUDED
 
-#include <gst/gst.h>
-
 #include "Constants.h"
 #include "MainContent.h"
 
@@ -170,11 +168,12 @@ class AvCaster
 public:
 
   // GUI dispatchers
-  static void Warning(String message_text) ;
-  static void Error(  String message_text) ;
+  static void Warning(           String message_text) ;
+  static void Error(             String message_text) ;
+  static void StartOutputMonitor() ;
 
   // callbacks and event handlers
-  static ModalComponentManager::Callback* getModalCb() ;
+  static ModalComponentManager::Callback* GetModalCb() ;
   static void                             OnModalDismissed(int result , int unused) ;
 
 
@@ -184,7 +183,6 @@ private:
   static bool Initialize(MainContent* main_content , const String& args) ;
 //   static bool Initialize(JUCEApplication* main_app , MainContent* main_content ,
 //                          const String&    args                                 ) ;
-  static bool SetVideoWindowHandles() ;
   static void Shutdown() ;
 
   // callbacks and event handlers
@@ -193,7 +191,6 @@ private:
 
 //   static JUCEApplication* App ;
   static MainContent*            Gui ;
-  static GstElement*             OutputMonitorGst ;
   static ScopedPointer<AvStream> MuxStream ;
   static Array<Alert*>           Alerts ;
   static bool                    IsAlertModal ;
