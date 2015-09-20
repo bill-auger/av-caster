@@ -26,22 +26,39 @@ class GstreamerInitException : public std::exception
 
 /**
 This is a custom JUCE component that hosts a gStreamer video output.
+
+To use this class simply instantiate one, passing in a reference Component*
+and the relative X and Y positions for this component.
+
+The GstreamerVideo component will add itself as a top-level window on the desktop
+and will attempt to keep itself positioned at the specified coordinates
+'within' the supplied reference component when its position changes
+via a ComponentListener registered on the reference component.
+
+  @param follow_window a reference Component* for this GstreamerVideo position
+  @param local_x       X position relative to the reference component
+  @param local_y       Y position relative to the reference component
 */
-class GstreamerVideo : public Component
+class GstreamerVideo : public Component , ComponentListener
 {
 public:
 
-  GstreamerVideo() ;
+  GstreamerVideo(Component* follow_window , int local_x , int local_y) ;
   ~GstreamerVideo() ;
 
   void paint(Graphics&) ;
   void resized() ;
-  bool start(String uri) ;
-  bool attachNativeWindow() ;
+  void componentMovedOrResized(Component& a_component , bool wasMoved  , bool wasResized) ;
+
+  inline void setPosition() ;
+  bool        start(String uri) ;
+  bool        attachNativeWindow() ;
 
 
 private:
 
+  Point<int>* localPosition ;
+  Component*  followWindow ;
   GstElement* gstElement ;
 
 

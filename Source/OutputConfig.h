@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef OUTPUTCONFIG_H_INCLUDED
-#define OUTPUTCONFIG_H_INCLUDED
+#ifndef __JUCE_HEADER_D4159CE0CC0E4616__
+#define __JUCE_HEADER_D4159CE0CC0E4616__
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -41,16 +41,16 @@ class OutputConfig  : public Component,
                       public SliderListener,
                       public ComboBoxListener
 {
-  friend class MainContent ;
-
-
 public:
     //==============================================================================
-    OutputConfig ();
+    OutputConfig (Component* main_window);
     ~OutputConfig();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+
+ friend class MainContent ;
+
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -62,6 +62,11 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+
+  ScopedPointer<GstreamerVideo> screencapMonitor ;
+  ScopedPointer<GstreamerVideo> cameratMonitor ;
+  ScopedPointer<GstreamerVideo> outputMonitor ;
+
     //[/UserVariables]
 
     //==============================================================================
@@ -109,9 +114,6 @@ private:
     ScopedPointer<Label> bitrateLabel;
     ScopedPointer<ComboBox> bitrateCombo;
     ScopedPointer<GroupComponent> monitorsGroup;
-    ScopedPointer<GstreamerVideo> screencapMonitor;
-    ScopedPointer<GstreamerVideo> cameratMonitor;
-    ScopedPointer<GstreamerVideo> outputMonitor;
 
 
     //==============================================================================
@@ -121,4 +123,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // OUTPUTCONFIG_H_INCLUDED
+#endif   // __JUCE_HEADER_D4159CE0CC0E4616__

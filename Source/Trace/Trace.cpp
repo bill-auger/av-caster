@@ -8,11 +8,7 @@
   ==============================================================================
 */
 
-#if DEBUG
-
-#  include "../Constants.h"
-#  include "../AvCaster.h"
-#  include "Trace.h"
+#include "Trace.h"
 
 
 /* Trace class public class methods */
@@ -30,9 +26,12 @@ bool Trace::TraceWarning(String msg) { if (DEBUG_TRACE_STATE)  DBG("\033[1;33m[W
 bool Trace::TraceError(String msg)   { if (DEBUG_TRACE_STATE)  DBG("\033[0;31m[ERROR]:   " + msg + "\033[0m") ; return true ; }
 #endif // DEBUG_ANSI_COLORS
 
+String Trace::NullOr(void* a_pointer , String if_valid_msg)
+{
+  return (a_pointer == nullptr) ? String("NULL") : if_valid_msg ;
+}
+
 const String Trace::THREAD_EXIT_MSG   = "closing stream: " ;
 const String Trace::PROCESS_ERROR_MSG = "avconv process died - restarting" ;
 const String Trace::CAMERA_ERROR_MSG  = "camera device error - restarting" ;
 const String Trace::NETWORK_ERROR_MSG = "connection error - restarting" ;
-
-#endif // #if DEBUG

@@ -39,7 +39,7 @@ DBG("AvCaster::Shutdown()") ;
 
   Alerts.clear() ;
 
-  if (!MuxStream->stopThread(2000)) { DBG("AvCaster::Shutdown() forcefully killing all avconv processes") ; system("killall avconv") ; }
+  if (!MuxStream->stopThread(2000)) { DBG("AvCaster::Shutdown() forcefully killing all avconv processes") ; int retval = system("killall avconv") ; }
 //   App = nullptr ;
   MuxStream = nullptr ;
 }
@@ -63,6 +63,11 @@ void AvCaster::HandleTimer(int timer_id)
         }
       break ;
     case APP::GUI_TIMER_LO_ID:
+
+#ifndef DEBUG_NO_INSTANTIATE_MONITORS
+if (!MuxStream->isThreadRunning()) AvCaster::StartOutputMonitor() ;
+#endif // DEBUG_NO_INSTANTIATE_MONITORS
+
       if (!MuxStream->isThreadRunning()) MuxStream->startThread() ;
       break ;
   }
@@ -116,13 +121,10 @@ void AvStream::run()
 
   sanitizeParams() ;
 
-
-AvCaster::StartOutputMonitor() ;
 #ifdef NO_STREAM_OUT
   while (!threadShouldExit()) sleep(APP::MUX_THREAD_SLEEP) ; return ;
 #endif // NO_STREAM_OUT
 DBG("AvStream::run() cmd='" + buildAvconvMuxCommand() + "'") ;
-
 
   // start avconv process and restart if it dies unexpectedly
   while (!threadShouldExit())

@@ -30,7 +30,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-OutputConfig::OutputConfig ()
+OutputConfig::OutputConfig (Component* main_window)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -395,20 +395,16 @@ OutputConfig::OutputConfig ()
     monitorsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     monitorsGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (screencapMonitor = new GstreamerVideo());
-    screencapMonitor->setExplicitFocusOrder (20);
-    screencapMonitor->setName ("screencapMonitor");
-
-    addAndMakeVisible (cameratMonitor = new GstreamerVideo());
-    cameratMonitor->setExplicitFocusOrder (21);
-    cameratMonitor->setName ("cameratMonitor");
-
-    addAndMakeVisible (outputMonitor = new GstreamerVideo());
-    outputMonitor->setExplicitFocusOrder (22);
-    outputMonitor->setName ("outputMonitor");
-
 
     //[UserPreSize]
+
+#ifndef DEBUG_NO_INSTANTIATE_MONITORS
+  // video monitors
+  this->screencapMonitor = new GstreamerVideo(main_window , GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y) ;
+  this->cameratMonitor   = new GstreamerVideo(main_window , GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y) ;
+  this->outputMonitor    = new GstreamerVideo(main_window , GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y) ;
+#endif // DEBUG_NO_INSTANTIATE_MONITORS
+
     //[/UserPreSize]
 
     setSize (600, 400);
@@ -467,12 +463,14 @@ OutputConfig::~OutputConfig()
     bitrateLabel = nullptr;
     bitrateCombo = nullptr;
     monitorsGroup = nullptr;
-    screencapMonitor = nullptr;
-    cameratMonitor = nullptr;
-    outputMonitor = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
+
+  screencapMonitor = nullptr ;
+  cameratMonitor   = nullptr ;
+  outputMonitor    = nullptr ;
+
     //[/Destructor]
 }
 
@@ -543,9 +541,6 @@ void OutputConfig::resized()
     bitrateLabel->setBounds (340, 424, 64, 24);
     bitrateCombo->setBounds (404, 424, 80, 24);
     monitorsGroup->setBounds (16, 476, getWidth() - 32, 164);
-    screencapMonitor->setBounds (40, 504, 160, 120);
-    cameratMonitor->setBounds (224, 504, 160, 120);
-    outputMonitor->setBounds (408, 504, 160, 120);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -656,9 +651,9 @@ void OutputConfig::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="OutputConfig" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="600" initialHeight="400">
+                 parentClasses="public Component" constructorParams="Component* main_window"
+                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
+                 overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="ff101010">
     <ROUNDRECT pos="8 8 16M 16M" cornerSize="10" fill="solid: ff202020" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffffffff"/>
@@ -841,15 +836,6 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="monitorsGroup" id="6607ba656d5c8919" memberName="monitorsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 476 32M 164" outlinecol="ffffffff"
                   textcol="ffffffff" title="Monitors"/>
-  <GENERICCOMPONENT name="screencapMonitor" id="e325f449948d4757" memberName="screencapMonitor"
-                    virtualName="" explicitFocusOrder="20" pos="40 504 160 120" class="GstreamerVideo"
-                    params=""/>
-  <GENERICCOMPONENT name="cameratMonitor" id="d0775393cc917ebd" memberName="cameratMonitor"
-                    virtualName="" explicitFocusOrder="21" pos="224 504 160 120"
-                    class="GstreamerVideo" params=""/>
-  <GENERICCOMPONENT name="outputMonitor" id="86739304b5358cf8" memberName="outputMonitor"
-                    virtualName="" explicitFocusOrder="22" pos="408 504 160 120"
-                    class="GstreamerVideo" params=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

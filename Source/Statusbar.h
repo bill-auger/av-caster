@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_F2E0B75AF969001E__
-#define __JUCE_HEADER_F2E0B75AF969001E__
+#ifndef STATUSBAR_H_INCLUDED
+#define STATUSBAR_H_INCLUDED
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
@@ -70,4 +70,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_F2E0B75AF969001E__
+#endif // STATUSBAR_H_INCLUDED

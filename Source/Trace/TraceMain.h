@@ -10,7 +10,7 @@
 
 #ifndef TRACEMAIN_H_INCLUDED
 #define TRACEMAIN_H_INCLUDED
-#if DEBUG
+#ifdef DEBUG
 
 #  include "Trace.h"
 
