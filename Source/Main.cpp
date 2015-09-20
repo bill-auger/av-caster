@@ -96,6 +96,9 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
     void closeButtonPressed() override { this->app->systemRequestedQuit() ; }
 
+    // TODO: docs say we should call the superclass implementation here - but does not seem necessary
+    void moved() override { this->mainContent->mainWindowMoved() ; }
+
 
   private:
 

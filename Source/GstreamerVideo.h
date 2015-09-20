@@ -36,7 +36,8 @@ public:
 
   void paint(Graphics&) ;
   void resized() ;
-  bool start() ;
+  bool start(String uri) ;
+  bool attachNativeWindow() ;
 
 
 private:

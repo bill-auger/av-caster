@@ -64,6 +64,41 @@ void MainContent::resized()
   this->statusbar   ->setBounds(status_x , status_y , status_w , status_h) ;
 }
 
+void MainContent::startMonitors()
+{
+String SampleVideo = "http://docs.gstreamer.com/media/sintel_trailer-480p.webm" ;
+  this->outputConfig->screencapMonitor->start(String::empty) ; // TODO:
+  this->outputConfig->cameratMonitor  ->start(String::empty) ; // TODO:
+  this->outputConfig->outputMonitor   ->start(SampleVideo) ;
+}
+
+void MainContent::mainWindowMoved()
+{
+// (see also ComponentListener::componentMovedOrResized())
+
+  bool are_detached = this->outputConfig->screencapMonitor->isOnDesktop() &&
+                      this->outputConfig->cameratMonitor  ->isOnDesktop() &&
+                      this->outputConfig->outputMonitor   ->isOnDesktop()  ;
+
+  Point<int> screencap_pos = (are_detached) ? localPointToGlobal(*GUI::SCREENCAP_MONITOR_POS) :
+                                                                 *GUI::SCREENCAP_MONITOR_POS ;
+  Point<int> camera_pos    = (are_detached) ? localPointToGlobal(*GUI::CAMERA_MONITOR_POS   ) :
+                                                                 *GUI::CAMERA_MONITOR_POS    ;
+  Point<int> output_pos    = (are_detached) ? localPointToGlobal(*GUI::OUTPUT_MONITOR_POS   ) :
+                                                                 *GUI::OUTPUT_MONITOR_POS    ;
+
+// DBG("SCREENCAP_MONITOR_POS=" + GUI::SCREENCAP_MONITOR_POS->toString()) ;
+// DBG("screencap_pos=" + screencap_pos.toString()) ;
+// DBG("CAMERA_MONITOR_POS=" + GUI::CAMERA_MONITOR_POS->toString()) ;
+// DBG("camera_pos=" + camera_pos.toString()) ;
+// DBG("OUTPUT_MONITOR_POS=" + GUI::OUTPUT_MONITOR_POS->toString()) ;
+// DBG("output_pos=" + output_pos.toString()) ;
+
+  this->outputConfig->screencapMonitor->setTopLeftPosition(screencap_pos) ;
+  this->outputConfig->cameratMonitor  ->setTopLeftPosition(camera_pos   ) ;
+  this->outputConfig->outputMonitor   ->setTopLeftPosition(output_pos   ) ;
+}
+
 void MainContent::setTitle(String title_text)
 {
   this->mainWindow->setName(APP::APP_NAME + " - " + title_text) ;

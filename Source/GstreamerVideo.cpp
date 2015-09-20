@@ -28,23 +28,7 @@ GstreamerVideo::GstreamerVideo()
 
 //   setBufferedToImage(true) ;
   setOpaque(true) ;
-}
-
-bool GstreamerVideo::start()
-{
-char* SampleVideo = "http://docs.gstreamer.com/media/sintel_trailer-480p.webm" ;
-
-  // get native X window handle
-  if (!isOnDesktop()) addToDesktop(0) ; // ComponentPeer::windowRepaintedExplictly
-  guintptr window_handle = (guintptr)(getWindowHandle()) ;
-  gst_x_overlay_set_window_handle(GST_X_OVERLAY(this->gstElement) , window_handle) ;
-
-  // attach media and begin rolling
-  g_object_set(this->gstElement , "uri" , SampleVideo , NULL) ;
-  if (gst_element_set_state(this->gstElement , GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
-  { AvCaster::Error(GUI::GST_STATE_ERROR_MSG) ; return false ; }
-
-  return true ;
+  setAlwaysOnTop(true) ;
 }
 
 GstreamerVideo::~GstreamerVideo()
@@ -56,3 +40,23 @@ GstreamerVideo::~GstreamerVideo()
 void GstreamerVideo::paint(Graphics& g) { }
 
 void GstreamerVideo::resized() { }
+
+bool GstreamerVideo::start(String uri)
+{
+  if (!isOnDesktop()) attachNativeWindow() ;
+  if (uri.isEmpty()) return false ;
+
+  // attach media and begin rolling
+  g_object_set(this->gstElement , "uri" , uri.toStdString().c_str() , NULL) ;
+  if (gst_element_set_state(this->gstElement , GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
+  { AvCaster::Error(GUI::GST_STATE_ERROR_MSG) ; return false ; }
+
+  return true ;
+}
+
+bool GstreamerVideo::attachNativeWindow()
+{
+  addToDesktop(0) ; // ComponentPeer::windowRepaintedExplictly
+  guintptr window_handle = (guintptr)(getWindowHandle()) ;
+  gst_x_overlay_set_window_handle(GST_X_OVERLAY(this->gstElement) , window_handle) ;
+}

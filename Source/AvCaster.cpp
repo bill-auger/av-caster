@@ -88,7 +88,7 @@ void AvCaster::Error(String message_text)
   Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
 }
 
-void AvCaster::StartOutputMonitor() { Gui->outputConfig->outputMonitor->start() ; }
+void AvCaster::StartOutputMonitor() { Gui->startMonitors() ; }
 
 ModalComponentManager::Callback* AvCaster::GetModalCb()
 {
@@ -197,6 +197,7 @@ void AvStream::detectDisplayDimensions()
 #else // CROSS_PLATFORM_RESOLUTION_DETECTION
 /* the JUCE way - does not reflect resolution changes (issue #2 issue #4)
                   but would eliminate platform-specific xwininfo binary dependency
+                  (see ComponentPeer::handleScreenSizeChange and/or Component::getParentMonitorArea)
   Rectangle<int> area = Desktop::getInstance().getDisplays().getMainDisplay().totalArea ;
   this->desktopW = area.getWidth() ;
   this->desktopH = area.getHeight() ;

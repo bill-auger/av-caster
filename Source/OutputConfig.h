@@ -41,7 +41,7 @@ class OutputConfig  : public Component,
                       public SliderListener,
                       public ComboBoxListener
 {
-friend class AvCaster ;
+  friend class MainContent ;
 
 
 public:

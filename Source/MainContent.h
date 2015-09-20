@@ -16,6 +16,7 @@
 /** this is the main GUI container class */
 class MainContent : public Component
 {
+  friend class AvCasterApplication ;
   friend class AvCaster ;
 
 
@@ -26,6 +27,8 @@ public:
 
   void paint(Graphics&) ;
   void resized() ;
+  void startMonitors() ;
+  void mainWindowMoved() ;
 
 
 private:

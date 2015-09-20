@@ -71,7 +71,16 @@ namespace GUI
   static const int    CONTENT_H      = 720 - BORDERS_W - TITLEBAR_H ;
 
   // OutputConfig
-  static const String OUTPUT_GUI_ID = "output-config-gui" ;
+  static const String      OUTPUT_GUI_ID         = "output-config-gui" ;
+//   static const int         MONITORS_W            = 160 ; // unused
+//   static const int         MONITORS_H            = 120 ; // unused
+  static const int         MONITORS_Y            = 504 ;
+  static const int         SCREENCAP_MONITOR_X   = 40 ;
+  static const int         CAMERA_MONITOR_X      = 224 ;
+  static const int         OUTPUT_MONITOR_X      = 408 ;
+  static const Point<int>* SCREENCAP_MONITOR_POS = new Point<int>(GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y) ;
+  static const Point<int>* CAMERA_MONITOR_POS    = new Point<int>(GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y) ;
+  static const Point<int>* OUTPUT_MONITOR_POS    = new Point<int>(GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y) ;
 
   // StatusBar
   static const String STATUS_GUI_ID    = "statusbar-gui" ;
