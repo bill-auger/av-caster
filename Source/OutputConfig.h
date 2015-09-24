@@ -49,7 +49,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 
- friend class MainContent ;
+//  friend class MainContent ;
 
     //[/UserMethods]
 
@@ -62,11 +62,6 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-
-  ScopedPointer<GstreamerVideo> screencapMonitor ;
-  ScopedPointer<GstreamerVideo> cameratMonitor ;
-  ScopedPointer<GstreamerVideo> outputMonitor ;
-
     //[/UserVariables]
 
     //==============================================================================

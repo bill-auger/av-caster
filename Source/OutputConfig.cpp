@@ -397,14 +397,6 @@ OutputConfig::OutputConfig (Component* main_window)
 
 
     //[UserPreSize]
-
-#ifndef DEBUG_NO_INSTANTIATE_MONITORS
-  // video monitors
-  this->screencapMonitor = new GstreamerVideo(main_window , GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y) ;
-  this->cameratMonitor   = new GstreamerVideo(main_window , GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y) ;
-  this->outputMonitor    = new GstreamerVideo(main_window , GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y) ;
-#endif // DEBUG_NO_INSTANTIATE_MONITORS
-
     //[/UserPreSize]
 
     setSize (600, 400);
@@ -466,11 +458,6 @@ OutputConfig::~OutputConfig()
 
 
     //[Destructor]. You can add your own custom destruction code here..
-
-  screencapMonitor = nullptr ;
-  cameratMonitor   = nullptr ;
-  outputMonitor    = nullptr ;
-
     //[/Destructor]
 }
 

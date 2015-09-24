@@ -31,9 +31,12 @@ public:
 
 private:
 
-  DocumentWindow*             mainWindow ;
-  ScopedPointer<OutputConfig> outputConfig ;
-  ScopedPointer<Statusbar>    statusbar ;
+  DocumentWindow*               mainWindow ;
+  ScopedPointer<OutputConfig>   outputConfig ;
+  ScopedPointer<GstreamerVideo> screencapMonitor ;
+  ScopedPointer<GstreamerVideo> cameraMonitor ;
+  ScopedPointer<GstreamerVideo> outputMonitor ;
+  ScopedPointer<Statusbar>      statusbar ;
 
   void setTitle(String title_text) ;
   void warning( String message_text) ;

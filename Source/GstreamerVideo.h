@@ -11,17 +11,8 @@
 #ifndef GSTREAMERVIDEO_H_INCLUDED
 #define GSTREAMERVIDEO_H_INCLUDED
 
-#include <exception>
-#include <gst/gst.h>
-
 #include "Constants.h"
 #include "JuceHeader.h"
-
-
-class GstreamerInitException : public std::exception
-{
-  virtual const char* what() const throw() { return APP::GSTREAMER_INIT_EXCEPTION_MSG ; }
-} ;
 
 
 /**
@@ -51,15 +42,14 @@ public:
   void componentMovedOrResized(Component& a_component , bool wasMoved  , bool wasResized) ;
 
   inline void setPosition() ;
-  bool        start(String uri) ;
-  bool        attachNativeWindow() ;
+  void        start() ;
+  void        stop() ;
 
 
 private:
 
-  Point<int>* localPosition ;
-  Component*  followWindow ;
-  GstElement* gstElement ;
+  Component*                 followWindow ;
+  ScopedPointer<Point<int> > localPosition ;
 
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GstreamerVideo)

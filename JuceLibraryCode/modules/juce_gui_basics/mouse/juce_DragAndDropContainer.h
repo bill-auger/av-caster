@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2015 - ROLI Ltd.
+   Copyright (c) 2013 - Raw Material Software Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -101,9 +101,6 @@ public:
         @see startDragging
     */
     var getCurrentDragDescription() const;
-
-    /** If a drag is in progress, this allows the image being shown to be dynamically updated. */
-    void setCurrentDragImage (const Image& newImage);
 
     /** Utility to find the DragAndDropContainer for a given Component.
 

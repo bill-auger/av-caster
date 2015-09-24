@@ -17,6 +17,11 @@ MainContent::MainContent(DocumentWindow* main_window)
   this->outputConfig = new OutputConfig(main_window) ;
   this->addChildAndSetID(this->outputConfig , GUI::OUTPUT_GUI_ID) ;
 
+  // video monitors
+  this->screencapMonitor = new GstreamerVideo(main_window , GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y) ;
+  this->cameraMonitor    = new GstreamerVideo(main_window , GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y) ;
+  this->outputMonitor    = new GstreamerVideo(main_window , GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y) ;
+
   // statusbar
   this->statusbar = new Statusbar() ;
   this->addChildAndSetID(this->statusbar , GUI::STATUS_GUI_ID) ;
@@ -26,8 +31,11 @@ MainContent::MainContent(DocumentWindow* main_window)
 
 MainContent::~MainContent()
 {
-  this->outputConfig = nullptr ;
-  this->statusbar    = nullptr ;
+  this->outputConfig     = nullptr ;
+  this->screencapMonitor = nullptr ;
+  this->cameraMonitor    = nullptr ;
+  this->outputMonitor    = nullptr ;
+  this->statusbar        = nullptr ;
 }
 
 void MainContent::paint(Graphics& g)
@@ -66,10 +74,9 @@ void MainContent::resized()
 
 void MainContent::startMonitors()
 {
-String SampleVideo = "http://docs.gstreamer.com/media/sintel_trailer-480p.webm" ;
-  this->outputConfig->screencapMonitor->start(String::empty) ; // TODO:
-  this->outputConfig->cameratMonitor  ->start(String::empty) ; // TODO:
-  this->outputConfig->outputMonitor   ->start(SampleVideo) ;
+  this->screencapMonitor->start() ;
+  this->cameraMonitor   ->start() ;
+  this->outputMonitor   ->start() ;
 }
 
 void MainContent::setTitle(String title_text)

@@ -2,10 +2,12 @@
 
 <JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.bill-auger.AvCaster" includeBinaryInAppConfig="1"
-              jucerVersion="3.2.0">
+              jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
     <GROUP id="{12F99024-8A51-4F04-3891-07F59C6B6881}" name="Headers">
       <FILE id="IHfl77" name="AvCaster.h" compile="0" resource="0" file="Source/AvCaster.h"/>
+      <FILE id="y9Co3C" name="AvCasterConfig.h" compile="0" resource="0"
+            file="Source/AvCasterConfig.h"/>
       <FILE id="zCkODj" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
       <FILE id="WCDvxk" name="GstreamerVideo.h" compile="0" resource="0"
             file="Source/GstreamerVideo.h"/>
@@ -17,6 +19,8 @@
     </GROUP>
     <GROUP id="{B76039D2-8BDF-7740-0816-1A69395E900D}" name="Source">
       <FILE id="zm6wrJ" name="AvCaster.cpp" compile="1" resource="0" file="Source/AvCaster.cpp"/>
+      <FILE id="zF9KTX" name="AvCasterConfig.cpp" compile="1" resource="0"
+            file="Source/AvCasterConfig.cpp"/>
       <FILE id="Ohfo1z" name="GstreamerVideo.cpp" compile="1" resource="0"
             file="Source/GstreamerVideo.cpp"/>
       <FILE id="CQoHWx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
@@ -41,14 +45,6 @@
         <MODULEPATH id="juce_graphics" path="../juce/modules"/>
         <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../juce/modules"/>
-        <MODULEPATH id="juce_video" path="../juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/VisualStudio2015">
@@ -64,14 +60,6 @@
         <MODULEPATH id="juce_graphics" path="../juce/modules"/>
         <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../juce/modules"/>
-        <MODULEPATH id="juce_video" path="../juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
       </MODULEPATHS>
     </VS2015>
     <VS2008 targetFolder="Builds/VisualStudio2008">
@@ -87,18 +75,10 @@
         <MODULEPATH id="juce_graphics" path="../juce/modules"/>
         <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../juce/modules"/>
-        <MODULEPATH id="juce_video" path="../juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
       </MODULEPATHS>
     </VS2008>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-0.10&#96;"
-                extraLinkerFlags="&#96;pkg-config --libs gstreamer-0.10&#96;&#10;&#96;pkg-config --libs gstreamer-interfaces-0.10&#96;&#10;">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-1.0&#96;"
+                extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
                        targetName="av-caster-dbg"/>
@@ -111,14 +91,6 @@
         <MODULEPATH id="juce_graphics" path="../juce/modules"/>
         <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../juce/modules"/>
-        <MODULEPATH id="juce_video" path="../juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <CODEBLOCKS_WINDOWS targetFolder="Builds/CodeBlocksWindows">
@@ -132,14 +104,6 @@
         <MODULEPATH id="juce_graphics" path="../juce/modules"/>
         <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../juce/modules"/>
-        <MODULEPATH id="juce_video" path="../juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
       </MODULEPATHS>
     </CODEBLOCKS_WINDOWS>
     <CODEBLOCKS_LINUX targetFolder="Builds/CodeBlocksLinux">
@@ -153,31 +117,15 @@
         <MODULEPATH id="juce_graphics" path="../juce/modules"/>
         <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../juce/modules"/>
-        <MODULEPATH id="juce_video" path="../juce/modules"/>
-        <MODULEPATH id="juce_opengl" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../juce/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce/modules"/>
       </MODULEPATHS>
     </CODEBLOCKS_LINUX>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_video" showAllCode="1" useLocalCopy="1"/>
   </MODULES>
   <JUCEOPTIONS/>
 </JUCERPROJECT>

@@ -18,7 +18,6 @@ namespace APP
 {
   // names and IDs
   static const String APP_NAME         = "AvCaster" ;
-  static const String MUX_THREAD_NAME  = "MuxStream" ;
   static const String JACK_CLIENT_NAME = APP_NAME ;
 
   // timers

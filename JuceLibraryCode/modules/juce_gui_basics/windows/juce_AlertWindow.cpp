@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2015 - ROLI Ltd.
+   Copyright (c) 2013 - Raw Material Software Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -343,24 +343,22 @@ void AlertWindow::updateLayout (const bool onlyIncreaseSize)
     const int titleH = 24;
     const int iconWidth = 80;
 
-    LookAndFeel& lf = getLookAndFeel();
+    const Font font (getLookAndFeel().getAlertWindowMessageFont());
 
-    const Font messageFont (lf.getAlertWindowMessageFont());
+    const int wid = jmax (font.getStringWidth (text),
+                          font.getStringWidth (getName()));
 
-    const int wid = jmax (messageFont.getStringWidth (text),
-                          messageFont.getStringWidth (getName()));
-
-    const int sw = (int) std::sqrt (messageFont.getHeight() * wid);
+    const int sw = (int) std::sqrt (font.getHeight() * wid);
     int w = jmin (300 + sw * 2, (int) (getParentWidth() * 0.7f));
     const int edgeGap = 10;
     const int labelHeight = 18;
     int iconSpace = 0;
 
     AttributedString attributedText;
-    attributedText.append (getName(), lf.getAlertWindowTitleFont());
+    attributedText.append (getName(), font.withHeight (font.getHeight() * 1.1f).boldened());
 
     if (text.isNotEmpty())
-        attributedText.append ("\n\n" + text, messageFont);
+        attributedText.append ("\n\n" + text, font);
 
     attributedText.setColour (findColour (textColourId));
 
@@ -385,18 +383,18 @@ void AlertWindow::updateLayout (const bool onlyIncreaseSize)
 
     int buttonW = 40;
     for (int i = 0; i < buttons.size(); ++i)
-        buttonW += 16 + buttons.getUnchecked (i)->getWidth();
+        buttonW += 16 + buttons.getUnchecked(i)->getWidth();
 
     w = jmax (buttonW, w);
 
     h += (textBoxes.size() + comboBoxes.size() + progressBars.size()) * 50;
 
     if (buttons.size() > 0)
-        h += 20 + buttons.getUnchecked (0)->getHeight();
+        h += 20 + buttons.getUnchecked(0)->getHeight();
 
     for (int i = customComps.size(); --i >= 0;)
     {
-        Component* c = customComps.getUnchecked (i);
+        Component* c = customComps.getUnchecked(i);
         w = jmax (w, (c->getWidth() * 100) / 80);
         h += 10 + c->getHeight();
 

@@ -16,8 +16,6 @@
 
 // enable debug features
 #define DEBUG_ANSI_COLORS
-// #define DEBUG_NO_INSTANTIATE_MONITORS
-#define NO_STREAM_OUT
 
 // tracing
 #ifdef DEBUG

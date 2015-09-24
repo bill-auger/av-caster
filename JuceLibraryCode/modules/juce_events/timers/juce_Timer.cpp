@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2015 - ROLI Ltd.
+   Copyright (c) 2013 - Raw Material Software Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -112,10 +112,10 @@ public:
     {
         const LockType::ScopedLockType sl (lock);
 
-        while (firstTimer != nullptr && firstTimer->timerCountdownMs <= 0)
+        while (firstTimer != nullptr && firstTimer->countdownMs <= 0)
         {
             Timer* const t = firstTimer;
-            t->timerCountdownMs = t->timerPeriodMs;
+            t->countdownMs = t->periodMs;
 
             removeTimer (t);
             addTimer (t);
@@ -169,11 +169,11 @@ public:
     {
         if (instance != nullptr)
         {
-            tim->timerCountdownMs = newCounter;
-            tim->timerPeriodMs = newCounter;
+            tim->countdownMs = newCounter;
+            tim->periodMs = newCounter;
 
-            if ((tim->nextTimer != nullptr && tim->nextTimer->timerCountdownMs < tim->timerCountdownMs)
-                 || (tim->previousTimer != nullptr && tim->previousTimer->timerCountdownMs > tim->timerCountdownMs))
+            if ((tim->next != nullptr && tim->next->countdownMs < tim->countdownMs)
+                 || (tim->previous != nullptr && tim->previous->countdownMs > tim->countdownMs))
             {
                 instance->removeTimer (tim);
                 instance->addTimer (tim);
@@ -186,7 +186,7 @@ public:
 
 private:
     Timer* volatile firstTimer;
-    Atomic<int> callbackNeeded;
+    Atomic <int> callbackNeeded;
 
     struct CallTimersMessage  : public MessageManager::MessageBase
     {
@@ -210,28 +210,28 @@ private:
 
         Timer* i = firstTimer;
 
-        if (i == nullptr || i->timerCountdownMs > t->timerCountdownMs)
+        if (i == nullptr || i->countdownMs > t->countdownMs)
         {
-            t->nextTimer = firstTimer;
+            t->next = firstTimer;
             firstTimer = t;
         }
         else
         {
-            while (i->nextTimer != nullptr && i->nextTimer->timerCountdownMs <= t->timerCountdownMs)
-                i = i->nextTimer;
+            while (i->next != nullptr && i->next->countdownMs <= t->countdownMs)
+                i = i->next;
 
             jassert (i != nullptr);
 
-            t->nextTimer = i->nextTimer;
-            t->previousTimer = i;
-            i->nextTimer = t;
+            t->next = i->next;
+            t->previous = i;
+            i->next = t;
         }
 
-        if (t->nextTimer != nullptr)
-            t->nextTimer->previousTimer = t;
+        if (t->next != nullptr)
+            t->next->previous = t;
 
-        jassert ((t->nextTimer == nullptr || t->nextTimer->timerCountdownMs >= t->timerCountdownMs)
-                  && (t->previousTimer == nullptr || t->previousTimer->timerCountdownMs <= t->timerCountdownMs));
+        jassert ((t->next == nullptr || t->next->countdownMs >= t->countdownMs)
+                  && (t->previous == nullptr || t->previous->countdownMs <= t->countdownMs));
 
         notify();
     }
@@ -244,32 +244,32 @@ private:
         jassert (timerExists (t));
        #endif
 
-        if (t->previousTimer != nullptr)
+        if (t->previous != nullptr)
         {
             jassert (firstTimer != t);
-            t->previousTimer->nextTimer = t->nextTimer;
+            t->previous->next = t->next;
         }
         else
         {
             jassert (firstTimer == t);
-            firstTimer = t->nextTimer;
+            firstTimer = t->next;
         }
 
-        if (t->nextTimer != nullptr)
-            t->nextTimer->previousTimer = t->previousTimer;
+        if (t->next != nullptr)
+            t->next->previous = t->previous;
 
-        t->nextTimer = nullptr;
-        t->previousTimer = nullptr;
+        t->next = nullptr;
+        t->previous = nullptr;
     }
 
     int getTimeUntilFirstTimer (const int numMillisecsElapsed) const
     {
         const LockType::ScopedLockType sl (lock);
 
-        for (Timer* t = firstTimer; t != nullptr; t = t->nextTimer)
-            t->timerCountdownMs -= numMillisecsElapsed;
+        for (Timer* t = firstTimer; t != nullptr; t = t->next)
+            t->countdownMs -= numMillisecsElapsed;
 
-        return firstTimer != nullptr ? firstTimer->timerCountdownMs : 1000;
+        return firstTimer != nullptr ? firstTimer->countdownMs : 1000;
     }
 
     void handleAsyncUpdate() override
@@ -280,7 +280,7 @@ private:
    #if JUCE_DEBUG
     bool timerExists (Timer* const t) const noexcept
     {
-        for (Timer* tt = firstTimer; tt != nullptr; tt = tt->nextTimer)
+        for (Timer* tt = firstTimer; tt != nullptr; tt = tt->next)
             if (tt == t)
                 return true;
 
@@ -296,18 +296,18 @@ Timer::TimerThread::LockType Timer::TimerThread::lock;
 
 //==============================================================================
 Timer::Timer() noexcept
-   : timerCountdownMs (0),
-     timerPeriodMs (0),
-     previousTimer (nullptr),
-     nextTimer (nullptr)
+   : countdownMs (0),
+     periodMs (0),
+     previous (nullptr),
+     next (nullptr)
 {
 }
 
 Timer::Timer (const Timer&) noexcept
-   : timerCountdownMs (0),
-     timerPeriodMs (0),
-     previousTimer (nullptr),
-     nextTimer (nullptr)
+   : countdownMs (0),
+     periodMs (0),
+     previous (nullptr),
+     next (nullptr)
 {
 }
 
@@ -320,10 +320,10 @@ void Timer::startTimer (const int interval) noexcept
 {
     const TimerThread::LockType::ScopedLockType sl (TimerThread::lock);
 
-    if (timerPeriodMs == 0)
+    if (periodMs == 0)
     {
-        timerCountdownMs = interval;
-        timerPeriodMs = jmax (1, interval);
+        countdownMs = interval;
+        periodMs = jmax (1, interval);
         TimerThread::add (this);
     }
     else
@@ -344,10 +344,10 @@ void Timer::stopTimer() noexcept
 {
     const TimerThread::LockType::ScopedLockType sl (TimerThread::lock);
 
-    if (timerPeriodMs > 0)
+    if (periodMs > 0)
     {
         TimerThread::remove (this);
-        timerPeriodMs = 0;
+        periodMs = 0;
     }
 }
 

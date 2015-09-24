@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2015 - ROLI Ltd.
+   Copyright (c) 2013 - Raw Material Software Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -240,9 +240,6 @@ void FileBrowserComponent::setRoot (const File& newRootDirectory)
     currentRoot = newRootDirectory;
     fileList->setDirectory (currentRoot, true, true);
 
-    if (FileTreeComponent* tree = dynamic_cast<FileTreeComponent*> (fileListComponent.get()))
-        tree->refresh();
-
     String currentRootName (currentRoot.getFullPathName());
     if (currentRootName.isEmpty())
         currentRootName = File::separatorString;
@@ -387,7 +384,7 @@ void FileBrowserComponent::fileDoubleClicked (const File& f)
     {
         setRoot (f);
 
-        if ((flags & canSelectDirectories) != 0 && (flags & doNotClearFileNameOnRootChange) == 0)
+        if ((flags & canSelectDirectories) != 0)
             filenameBox.setText (String::empty);
     }
     else
@@ -432,9 +429,7 @@ void FileBrowserComponent::textEditorReturnKeyPressed (TextEditor&)
         {
             setRoot (f);
             chosenFiles.clear();
-
-            if ((flags & doNotClearFileNameOnRootChange) == 0)
-                filenameBox.setText (String());
+            filenameBox.setText (String::empty);
         }
         else
         {
@@ -560,7 +555,7 @@ void FileBrowserComponent::getDefaultRoots (StringArray& rootNames, StringArray&
     rootPaths.add (String::empty);
     rootNames.add (String::empty);
 
-    Array<File> volumes;
+    Array <File> volumes;
     File vol ("/Volumes");
     vol.findChildFiles (volumes, File::findDirectories, false);
 

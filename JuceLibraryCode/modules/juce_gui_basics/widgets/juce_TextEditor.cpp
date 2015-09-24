@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2015 - ROLI Ltd.
+   Copyright (c) 2013 - Raw Material Software Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -921,7 +921,6 @@ TextEditor::TextEditor (const String& name,
       totalNumChars (0),
       caretPosition (0),
       passwordCharacter (passwordChar),
-      keyboardType (TextInputTarget::textKeyboard),
       dragType (notDragging)
 {
     setOpaque (true);
@@ -1293,8 +1292,8 @@ void TextEditor::moveCaret (int newCaretPos)
 {
     if (newCaretPos < 0)
         newCaretPos = 0;
-    else
-        newCaretPos = jmin (newCaretPos, getTotalNumChars());
+    else if (newCaretPos > getTotalNumChars())
+        newCaretPos = getTotalNumChars();
 
     if (newCaretPos != getCaretPosition())
     {
@@ -1504,8 +1503,8 @@ void TextEditor::moveCaretTo (const int newPosition, const bool isSelecting)
 
 int TextEditor::getTextIndexAt (const int x, const int y)
 {
-    return indexAtPosition ((float) (x + viewport->getViewPositionX() - leftIndent - borderSize.getLeft()),
-                            (float) (y + viewport->getViewPositionY() - topIndent  - borderSize.getTop()));
+    return indexAtPosition ((float) (x + viewport->getViewPositionX() - leftIndent),
+                            (float) (y + viewport->getViewPositionY() - topIndent));
 }
 
 void TextEditor::insertTextAtCaret (const String& t)
@@ -2129,7 +2128,7 @@ void TextEditor::enablementChanged()
     repaint();
 }
 
-void TextEditor::setTemporaryUnderlining (const Array<Range<int> >& newUnderlinedSections)
+void TextEditor::setTemporaryUnderlining (const Array <Range<int> >& newUnderlinedSections)
 {
     underlinedSections = newUnderlinedSections;
     repaint();

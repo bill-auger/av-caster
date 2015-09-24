@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2015 - ROLI Ltd.
+   Copyright (c) 2013 - Raw Material Software Ltd.
 
    Permission to use, copy, modify, and/or distribute this software for any purpose with
    or without fee is hereby granted, provided that the above copyright notice and this
@@ -86,7 +86,12 @@ public:
         if (text.getAddress() == nullptr || text.isEmpty())
             return CharPointerType (&(emptyString.text));
 
-        const size_t bytesNeeded = sizeof (CharType) + CharPointerType::getBytesRequiredFor (text);
+        CharPointer t (text);
+        size_t bytesNeeded = sizeof (CharType);
+
+        while (! t.isEmpty())
+            bytesNeeded += CharPointerType::getBytesRequiredFor (t.getAndAdvance());
+
         const CharPointerType dest (createUninitialisedBytes (bytesNeeded));
         CharPointerType (dest).writeAll (text);
         return dest;
@@ -561,9 +566,9 @@ struct HashGenerator
     enum { multiplier = sizeof (Type) > 4 ? 101 : 31 };
 };
 
-int String::hashCode() const noexcept       { return HashGenerator<int>    ::calculate (text); }
-int64 String::hashCode64() const noexcept   { return HashGenerator<int64>  ::calculate (text); }
-size_t String::hash() const noexcept        { return HashGenerator<size_t> ::calculate (text); }
+int String::hashCode() const noexcept       { return HashGenerator<int>        ::calculate (text); }
+int64 String::hashCode64() const noexcept   { return HashGenerator<int64>      ::calculate (text); }
+std::size_t String::hash() const noexcept   { return HashGenerator<std::size_t>::calculate (text); }
 
 //==============================================================================
 JUCE_API bool JUCE_CALLTYPE operator== (const String& s1, const String& s2) noexcept            { return s1.compare (s2) == 0; }
@@ -715,8 +720,7 @@ int String::compareNatural (StringRef other) const noexcept
 //==============================================================================
 void String::append (const String& textToAppend, size_t maxCharsToTake)
 {
-    appendCharPointer (this == &textToAppend ? String (textToAppend).text
-                                             : textToAppend.text, maxCharsToTake);
+    appendCharPointer (textToAppend.text, maxCharsToTake);
 }
 
 void String::appendCharPointer (const CharPointerType textToAppend)
@@ -760,9 +764,6 @@ String& String::operator+= (const String& other)
 {
     if (isEmpty())
         return operator= (other);
-
-    if (this == &other)
-        return operator+= (String (*this));
 
     appendCharPointer (other.text);
     return *this;
@@ -1612,10 +1613,10 @@ String String::upToLastOccurrenceOf (StringRef sub,
 
 bool String::isQuotedString() const
 {
-    const juce_wchar trimmedStart = trimStart()[0];
+    const String trimmed (trimStart());
 
-    return trimmedStart == '"'
-        || trimmedStart == '\'';
+    return trimmed[0] == '"'
+        || trimmed[0] == '\'';
 }
 
 String String::unquoted() const
@@ -2224,7 +2225,7 @@ public:
         return CharPointer_UTF32 (buffer);
     }
 
-    void runTest() override
+    void runTest()
     {
         Random r = getRandom();
 
@@ -2517,13 +2518,14 @@ public:
             beginTest ("var");
 
             var v1 = 0;
-            var v2 = 0.16;
-            var v3 = "0.16";
+            var v2 = 0.1;
+            var v3 = "0.1";
             var v4 = (int64) 0;
             var v5 = 0.0;
             expect (! v2.equals (v1));
             expect (! v1.equals (v2));
             expect (v2.equals (v3));
+            expect (v3.equals (v2));
             expect (! v3.equals (v1));
             expect (! v1.equals (v3));
             expect (v1.equals (v4));

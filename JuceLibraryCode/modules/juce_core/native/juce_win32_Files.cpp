@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2015 - ROLI Ltd.
+   Copyright (c) 2013 - Raw Material Software Ltd.
 
    Permission to use, copy, modify, and/or distribute this software for any purpose with
    or without fee is hereby granted, provided that the above copyright notice and this
@@ -137,22 +137,17 @@ bool File::existsAsFile() const
 bool File::isDirectory() const
 {
     const DWORD attr = WindowsFileHelpers::getAtts (fullPath);
-    return (attr & FILE_ATTRIBUTE_DIRECTORY) != 0 && attr != INVALID_FILE_ATTRIBUTES;
+    return ((attr & FILE_ATTRIBUTE_DIRECTORY) != 0) && (attr != INVALID_FILE_ATTRIBUTES);
 }
 
 bool File::hasWriteAccess() const
 {
-    if (fullPath.isEmpty())
-        return true;
+    if (exists())
+        return (WindowsFileHelpers::getAtts (fullPath) & FILE_ATTRIBUTE_READONLY) == 0;
 
-    const DWORD attr = WindowsFileHelpers::getAtts (fullPath);
-
-    // NB: According to MS, the FILE_ATTRIBUTE_READONLY attribute doesn't work for
-    // folders, and can be incorrectly set for some special folders, so we'll just say
-    // that folders are always writable.
-    return attr == INVALID_FILE_ATTRIBUTES
-            || (attr & FILE_ATTRIBUTE_DIRECTORY) != 0
-            || (attr & FILE_ATTRIBUTE_READONLY) == 0;
+    // on windows, it seems that even read-only directories can still be written into,
+    // so checking the parent directory's permissions would return the wrong result..
+    return true;
 }
 
 bool File::setFileReadOnlyInternal (const bool shouldBeReadOnly) const
@@ -292,12 +287,12 @@ void FileOutputStream::closeHandle()
     CloseHandle ((HANDLE) fileHandle);
 }
 
-ssize_t FileOutputStream::writeInternal (const void* bufferToWrite, size_t numBytes)
+ssize_t FileOutputStream::writeInternal (const void* buffer, size_t numBytes)
 {
     if (fileHandle != nullptr)
     {
         DWORD actualNum = 0;
-        if (! WriteFile ((HANDLE) fileHandle, bufferToWrite, (DWORD) numBytes, &actualNum, 0))
+        if (! WriteFile ((HANDLE) fileHandle, buffer, (DWORD) numBytes, &actualNum, 0))
             status = WindowsFileHelpers::getResultForLastError();
 
         return (ssize_t) actualNum;
@@ -788,26 +783,25 @@ void File::revealToUser() const
 class NamedPipe::Pimpl
 {
 public:
-    Pimpl (const String& pipeName, const bool createPipe, bool mustNotExist)
+    Pimpl (const String& pipeName, const bool createPipe)
         : filename ("\\\\.\\pipe\\" + File::createLegalFileName (pipeName)),
           pipeH (INVALID_HANDLE_VALUE),
           cancelEvent (CreateEvent (0, FALSE, FALSE, 0)),
           connected (false), ownsPipe (createPipe), shouldStop (false)
     {
         if (createPipe)
-        {
             pipeH = CreateNamedPipe (filename.toWideCharPointer(),
                                      PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, 0,
                                      PIPE_UNLIMITED_INSTANCES, 4096, 4096, 0, 0);
-
-            if (mustNotExist && GetLastError() == ERROR_ALREADY_EXISTS)
-                closePipeHandle();
-        }
     }
 
     ~Pimpl()
     {
-        closePipeHandle();
+        disconnectPipe();
+
+        if (pipeH != INVALID_HANDLE_VALUE)
+            CloseHandle (pipeH);
+
         CloseHandle (cancelEvent);
     }
 
@@ -866,16 +860,6 @@ public:
         {
             DisconnectNamedPipe (pipeH);
             connected = false;
-        }
-    }
-
-    void closePipeHandle()
-    {
-        if (pipeH != INVALID_HANDLE_VALUE)
-        {
-            disconnectPipe();
-            CloseHandle (pipeH);
-            pipeH = INVALID_HANDLE_VALUE;
         }
     }
 
@@ -995,9 +979,9 @@ void NamedPipe::close()
     }
 }
 
-bool NamedPipe::openInternal (const String& pipeName, const bool createPipe, bool mustNotExist)
+bool NamedPipe::openInternal (const String& pipeName, const bool createPipe)
 {
-    pimpl = new Pimpl (pipeName, createPipe, mustNotExist);
+    pimpl = new Pimpl (pipeName, createPipe);
 
     if (createPipe && pimpl->pipeH == INVALID_HANDLE_VALUE)
     {

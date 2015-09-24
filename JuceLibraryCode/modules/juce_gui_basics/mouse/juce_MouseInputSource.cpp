@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2015 - ROLI Ltd.
+   Copyright (c) 2013 - Raw Material Software Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -331,17 +331,10 @@ public:
                       Time time, const MouseWheelDetails& wheel)
     {
         Desktop::getInstance().incrementMouseWheelCounter();
+
         Point<float> screenPos;
-
-        // This will make sure that when the wheel spins in its inertial phase, any events
-        // continue to be sent to the last component that the mouse was over when it was being
-        // actively controlled by the user. This avoids confusion when scrolling through nested
-        // scrollable components.
-        if (lastNonInertialWheelTarget == nullptr || ! wheel.isInertial)
-            lastNonInertialWheelTarget = getTargetForGesture (peer, positionWithinPeer, time, screenPos);
-
-        if (Component* target = lastNonInertialWheelTarget)
-            sendMouseWheel (*target, screenPos, time, wheel);
+        if (Component* current = getTargetForGesture (peer, positionWithinPeer, time, screenPos))
+            sendMouseWheel (*current, screenPos, time, wheel);
     }
 
     void handleMagnifyGesture (ComponentPeer& peer, Point<float> positionWithinPeer,
@@ -358,10 +351,13 @@ public:
 
     int getNumberOfMultipleClicks() const noexcept
     {
-        int numClicks = 1;
+        int numClicks = 0;
 
-        if (! hasMouseMovedSignificantlySincePressed())
+        if (mouseDowns[0].time != Time())
         {
+            if (! mouseMovedSignificantlySincePressed)
+                ++numClicks;
+
             for (int i = 1; i < numElementsInArray (mouseDowns); ++i)
             {
                 if (mouseDowns[0].canBePartOfMultipleClickWith (mouseDowns[i], MouseEvent::getDoubleClickTimeout() * jmin (i, 2)))
@@ -474,7 +470,7 @@ public:
     bool isUnboundedMouseModeOn, isCursorVisibleUntilOffscreen;
 
 private:
-    WeakReference<Component> componentUnderMouse, lastNonInertialWheelTarget;
+    WeakReference<Component> componentUnderMouse;
     ComponentPeer* lastPeer;
 
     void* currentCursorHandle;
@@ -519,7 +515,6 @@ private:
             mouseDowns[0].peerID = 0;
 
         mouseMovedSignificantlySincePressed = false;
-        lastNonInertialWheelTarget = nullptr;
     }
 
     void registerMouseDrag (Point<float> screenPos) noexcept
