@@ -26,6 +26,7 @@ public:
 
   void paint(Graphics&) ;
   void resized() ;
+  void instantiate(ValueTree config_store) ;
   void startMonitors() ;
 
 

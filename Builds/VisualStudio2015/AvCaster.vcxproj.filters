@@ -8,6 +8,9 @@
     <Filter Include="AvCaster\Headers">
       <UniqueIdentifier>{F7EC2F34-0A47-6CA9-C26A-387406BEF86F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AvCaster\Headers\Trace">
+      <UniqueIdentifier>{3B7F33ED-6B8B-CFE6-60A9-C49913C31EAC}</UniqueIdentifier>
+    </Filter>
     <Filter Include="AvCaster\Source">
       <UniqueIdentifier>{4F03CD23-F21F-9C0D-B349-86305356DA89}</UniqueIdentifier>
     </Filter>
@@ -1023,6 +1026,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Trace\Trace.h">
+      <Filter>AvCaster\Headers\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Trace\TraceAvCasterConfig.h">
+      <Filter>AvCaster\Headers\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Trace\TraceMain.h">
+      <Filter>AvCaster\Headers\Trace</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\AvCaster.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
@@ -1042,12 +1054,6 @@
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Statusbar.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Trace\Trace.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Trace\TraceMain.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharacterFunctions.h">

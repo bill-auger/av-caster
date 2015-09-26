@@ -3,7 +3,7 @@
 
     AvCaster.cpp
     Created: 12 Sep 2015 10:26:17am
-    Author:  bill
+    Author:  bill-auger
 
   ==============================================================================
 */
@@ -37,15 +37,42 @@ GstElement*   AvCaster::OutputBin       = nullptr ;
 GstElement*   AvCaster::OutputSink      = nullptr ;
 
 
-/* AvCaster class methods */
+/* AvCaster public class methods */
+
+void AvCaster::Warning(String message_text)
+{
+  Alerts.add(new Alert(GUI::ALERT_TYPE_WARNING , message_text)) ;
+}
+
+void AvCaster::Error(String message_text)
+{
+  Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
+}
+
+ModalComponentManager::Callback* AvCaster::GetModalCb()
+{
+  IsAlertModal = true ;
+
+  return ModalCallbackFunction::create(OnModalDismissed , 0) ;
+}
+
+void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
+
+
+/* AvCaster private class methods */
 
 bool AvCaster::Initialize(MainContent* main_content , const String& args)
 {
   Gui = main_content ;
 
-  // load persistent configuration and Initialize gStreamer
-  if ((Config = new AvCasterConfig()) == nullptr ||
-     !InitGstreamer()                             ) return false ;
+  // load persistent configuration
+  if ((Config = new AvCasterConfig()) == nullptr) return false ;
+
+  // instantiate GUI
+  Gui->instantiate(Config->configStore) ;
+
+  // initialize gStreamer
+  if (!InitGstreamer()) return false ;
 
   return true ;
 }
@@ -91,12 +118,14 @@ bool AvCaster::InitGstreamer()
   gst_element_link_many(                   CameraSource    , CameraSink   ,                 nullptr) ;
 //   gst_element_link_many(videoconvert    , x264enc       , flvmux , OutputSink , nullptr) ;
 
-Config->captureW = 1679 ; Config->captureH = 1049 ; // TODO: connect these to GUI
   // configure plugins
-  g_object_set(G_OBJECT(ScreencapSource) , "endx"         , Config->captureW , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "endy"         , Config->captureH , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "use-damage"   , false            , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "show-pointer" , true             , NULL) ;
+  int capture_w = int(Config->configStore[CONFIG::CAPTURE_W_ID]) ;
+  int capture_h = int(Config->configStore[CONFIG::CAPTURE_H_ID]) ;
+capture_w = 1679 ; capture_h = 1049 ;
+  g_object_set(G_OBJECT(ScreencapSource) , "endx"         , capture_w , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "endy"         , capture_h , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "use-damage"   , false     , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "show-pointer" , true      , NULL) ;
 // g_object_set(G_OBJECT(x264enc        ) , "bitrate"      , 800   , NULL) ;
 // g_object_set(G_OBJECT(flvmux         ) , "name"         , "mux" , NULL) ;
 // g_object_set(G_OBJECT(flvmux         ) , "streamable"   , true  , NULL) ;
@@ -124,8 +153,6 @@ Config->captureW = 1679 ; Config->captureH = 1049 ; // TODO: connect these to GU
 
 void AvCaster::Shutdown()
 {
-DBG("AvCaster::Shutdown()") ;
-
   Alerts.clear() ;
   Config = nullptr ;
 
@@ -166,23 +193,6 @@ void AvCaster::UpdateStatusGUI()
 */
 }
 
-void AvCaster::Warning(String message_text)
-{
-  Alerts.add(new Alert(GUI::ALERT_TYPE_WARNING , message_text)) ;
-}
-
-void AvCaster::Error(String message_text)
-{
-  Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
-}
+void AvCaster::HandleConfigChanged(const Identifier& a_key) {}
 
 void AvCaster::StartMonitors() { Gui->startMonitors() ; }
-
-ModalComponentManager::Callback* AvCaster::GetModalCb()
-{
-  IsAlertModal = true ;
-
-  return ModalCallbackFunction::create(OnModalDismissed , 0) ;
-}
-
-void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }

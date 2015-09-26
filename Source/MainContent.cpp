@@ -12,21 +12,6 @@ MainContent::MainContent(DocumentWindow* main_window)
   // MainContent
   setName("MainContent") ;
   setSize(GUI::CONTENT_W , GUI::CONTENT_H) ;
-
-  // configuration
-  this->outputConfig = new OutputConfig(main_window) ;
-  this->addChildAndSetID(this->outputConfig , GUI::OUTPUT_GUI_ID) ;
-
-  // video monitors
-  this->screencapMonitor = new GstreamerVideo(main_window , GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y) ;
-  this->cameraMonitor    = new GstreamerVideo(main_window , GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y) ;
-  this->outputMonitor    = new GstreamerVideo(main_window , GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y) ;
-
-  // statusbar
-  this->statusbar = new Statusbar() ;
-  this->addChildAndSetID(this->statusbar , GUI::STATUS_GUI_ID) ;
-  this->statusbar->setAlwaysOnTop(true) ;
-  this->statusbar->setStatusL(GUI::INIT_STATUS_TEXT) ;
 }
 
 MainContent::~MainContent()
@@ -70,6 +55,32 @@ void MainContent::resized()
 
   this->outputConfig->setBounds(output_x , output_y , output_w , output_h) ;
   this->statusbar   ->setBounds(status_x , status_y , status_w , status_h) ;
+}
+
+void MainContent::instantiate(ValueTree config_store)
+{
+  // configuration
+  this->outputConfig = new OutputConfig(this->mainWindow , config_store) ;
+  this->addChildAndSetID(this->outputConfig , GUI::OUTPUT_GUI_ID) ;
+
+  // video monitors
+  this->screencapMonitor = new GstreamerVideo(this->mainWindow                           ,
+                                              GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y ,
+                                              GUI::MONITORS_W          , GUI::MONITORS_H ) ;
+  this->cameraMonitor    = new GstreamerVideo(this->mainWindow                           ,
+                                              GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y ,
+                                              GUI::MONITORS_W          , GUI::MONITORS_H ) ;
+  this->outputMonitor    = new GstreamerVideo(this->mainWindow                           ,
+                                              GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y ,
+                                              GUI::MONITORS_W          , GUI::MONITORS_H ) ;
+
+  // statusbar
+  this->statusbar = new Statusbar() ;
+  this->addChildAndSetID(this->statusbar , GUI::STATUS_GUI_ID) ;
+  this->statusbar->setAlwaysOnTop(true) ;
+  this->statusbar->setStatusL(GUI::INIT_STATUS_TEXT) ;
+
+  resized() ;
 }
 
 void MainContent::startMonitors()

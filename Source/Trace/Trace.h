@@ -25,7 +25,7 @@
 #endif // DEBUG
 #define DEBUG_TRACE        DEBUG_DEFINED && 1
 #define DEBUG_TRACE_EVENTS DEBUG_DEFINED && 1
-#define DEBUG_TRACE_AVCONV DEBUG_DEFINED && 0
+#define DEBUG_TRACE_CONFIG DEBUG_DEFINED && 1
 #define DEBUG_TRACE_STATE  DEBUG_DEFINED && 1
 #define DEBUG_TRACE_VB     DEBUG_DEFINED && 1
 
@@ -52,7 +52,7 @@ public:
 
   static bool TraceEvent(  String msg) ;
   static bool TraceGui(    String msg) ;
-  static bool TraceAvconv( String msg) ;
+  static bool TraceConfig( String msg) ;
   static bool TraceVerbose(String msg) ;
   static bool TraceState(  String msg) ;
   static bool TraceWarning(String msg) ;
@@ -60,8 +60,6 @@ public:
 
   static String NullOr(void* a_pointer , String if_valid_msg) ;
 
-  static const String THREAD_EXIT_MSG ;
-  static const String PROCESS_ERROR_MSG ;
   static const String CAMERA_ERROR_MSG ;
   static const String NETWORK_ERROR_MSG ;
 } ;

@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.2.0
+  Created with Introjucer version: 3.1.1
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
+  Copyright 2004-13 by Raw Material Software Ltd.
 
   ==============================================================================
 */
@@ -30,7 +30,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-OutputConfig::OutputConfig (Component* main_window)
+OutputConfig::OutputConfig (Component* main_window, ValueTree config_store)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -339,39 +339,22 @@ OutputConfig::OutputConfig (Component* main_window)
     outputResCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     outputResCombo->addListener (this);
 
-    addAndMakeVisible (qualityLabel = new Label ("qualityLabel",
-                                                 TRANS("Quality:")));
-    qualityLabel->setFont (Font (15.00f, Font::plain));
-    qualityLabel->setJustificationType (Justification::centredLeft);
-    qualityLabel->setEditable (false, false, false);
-    qualityLabel->setColour (Label::textColourId, Colours::white);
-    qualityLabel->setColour (TextEditor::textColourId, Colours::black);
-    qualityLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (framerateLabel = new Label ("framerateLabel",
+                                                   TRANS("FPS:")));
+    framerateLabel->setFont (Font (15.00f, Font::plain));
+    framerateLabel->setJustificationType (Justification::centredLeft);
+    framerateLabel->setEditable (false, false, false);
+    framerateLabel->setColour (Label::textColourId, Colours::white);
+    framerateLabel->setColour (TextEditor::textColourId, Colours::black);
+    framerateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (qualityCombo = new ComboBox ("qualityCombo"));
-    qualityCombo->setExplicitFocusOrder (17);
-    qualityCombo->setEditableText (false);
-    qualityCombo->setJustificationType (Justification::centredLeft);
-    qualityCombo->setTextWhenNothingSelected (String::empty);
-    qualityCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    qualityCombo->addListener (this);
-
-    addAndMakeVisible (fpsLabel = new Label ("fpsLabel",
-                                             TRANS("FPS:")));
-    fpsLabel->setFont (Font (15.00f, Font::plain));
-    fpsLabel->setJustificationType (Justification::centredLeft);
-    fpsLabel->setEditable (false, false, false);
-    fpsLabel->setColour (Label::textColourId, Colours::white);
-    fpsLabel->setColour (TextEditor::textColourId, Colours::black);
-    fpsLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (fpsCombo = new ComboBox ("fpsCombo"));
-    fpsCombo->setExplicitFocusOrder (18);
-    fpsCombo->setEditableText (false);
-    fpsCombo->setJustificationType (Justification::centredLeft);
-    fpsCombo->setTextWhenNothingSelected (String::empty);
-    fpsCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    fpsCombo->addListener (this);
+    addAndMakeVisible (framerateCombo = new ComboBox ("framerateCombo"));
+    framerateCombo->setExplicitFocusOrder (18);
+    framerateCombo->setEditableText (false);
+    framerateCombo->setJustificationType (Justification::centredLeft);
+    framerateCombo->setTextWhenNothingSelected (String::empty);
+    framerateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    framerateCombo->addListener (this);
 
     addAndMakeVisible (bitrateLabel = new Label ("bitrateLabel",
                                                  TRANS("Bitrate:")));
@@ -403,6 +386,11 @@ OutputConfig::OutputConfig (Component* main_window)
 
 
     //[Constructor] You can add your own custom stuff here..
+
+  this->configStore = config_store ;
+  populateComboBoxes() ;
+  //this->displaySlider->setRange(0 , GUI::MAX_DISPLAY_N , 1) ; // TODO: ?
+
     //[/Constructor]
 }
 
@@ -448,10 +436,8 @@ OutputConfig::~OutputConfig()
     outputGroup = nullptr;
     outputResLabel = nullptr;
     outputResCombo = nullptr;
-    qualityLabel = nullptr;
-    qualityCombo = nullptr;
-    fpsLabel = nullptr;
-    fpsCombo = nullptr;
+    framerateLabel = nullptr;
+    framerateCombo = nullptr;
     bitrateLabel = nullptr;
     bitrateCombo = nullptr;
     monitorsGroup = nullptr;
@@ -521,10 +507,8 @@ void OutputConfig::resized()
     outputGroup->setBounds (16, 368, getWidth() - 32, 100);
     outputResLabel->setBounds (32, 392, 80, 24);
     outputResCombo->setBounds (120, 392, 200, 24);
-    qualityLabel->setBounds (32, 424, 80, 24);
-    qualityCombo->setBounds (120, 424, 200, 24);
-    fpsLabel->setBounds (340, 392, 64, 24);
-    fpsCombo->setBounds (404, 392, 48, 24);
+    framerateLabel->setBounds (340, 392, 64, 24);
+    framerateCombo->setBounds (404, 392, 48, 24);
     bitrateLabel->setBounds (340, 424, 64, 24);
     bitrateCombo->setBounds (404, 424, 80, 24);
     monitorsGroup->setBounds (16, 476, getWidth() - 32, 164);
@@ -535,96 +519,205 @@ void OutputConfig::resized()
 void OutputConfig::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
+
+  Identifier key ;
+  var        value = var((int)sliderThatWasMoved->getValue()) ;
+
     //[/UsersliderValueChanged_Pre]
 
     if (sliderThatWasMoved == displaySlider)
     {
         //[UserSliderCode_displaySlider] -- add your slider handling code here..
+
+      key = CONFIG::DISPLAY_N_ID ;
+
         //[/UserSliderCode_displaySlider]
     }
     else if (sliderThatWasMoved == screenSlider)
     {
         //[UserSliderCode_screenSlider] -- add your slider handling code here..
+
+      key = CONFIG::SCREEN_N_ID ;
+
         //[/UserSliderCode_screenSlider]
     }
     else if (sliderThatWasMoved == nChannelsSlider)
     {
         //[UserSliderCode_nChannelsSlider] -- add your slider handling code here..
+
+      key = CONFIG::N_CHANNELS_ID ;
+
         //[/UserSliderCode_nChannelsSlider]
     }
 
     //[UsersliderValueChanged_Post]
+
+  setConfig(key , value) ;
+
     //[/UsersliderValueChanged_Post]
 }
 
 void OutputConfig::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
+
+  int        option_n = comboBoxThatHasChanged->getSelectedItemIndex() ;
+  Identifier key ;
+  var        value ;
+
     //[/UsercomboBoxChanged_Pre]
 
     if (comboBoxThatHasChanged == cameraDevCombo)
     {
         //[UserComboBoxCode_cameraDevCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::CAMERA_DEV_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_CAMERA_DEV) ;
+
+      this->cameraDevCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_cameraDevCombo]
     }
     else if (comboBoxThatHasChanged == cameraResCombo)
     {
         //[UserComboBoxCode_cameraResCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::CAMERA_RES_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_CAMERA_RES) ;
+
+      this->cameraResCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_cameraResCombo]
     }
     else if (comboBoxThatHasChanged == audioApiCombo)
     {
         //[UserComboBoxCode_audioApiCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::AUDIO_API_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_AUDIO_API) ;
+
+      this->audioApiCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_audioApiCombo]
     }
     else if (comboBoxThatHasChanged == samplerateCombo)
     {
         //[UserComboBoxCode_samplerateCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::SAMPLERATE_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_SAMPLERATE) ;
+
+      this->samplerateCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_samplerateCombo]
     }
     else if (comboBoxThatHasChanged == audioBitrateCombo)
     {
         //[UserComboBoxCode_audioBitrateCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::AUDIO_BITRATE_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_AUDIO_BITRATE) ;
+
+      this->audioBitrateCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_audioBitrateCombo]
     }
     else if (comboBoxThatHasChanged == textStyleCombo)
     {
         //[UserComboBoxCode_textStyleCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::TEXT_STYLE_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_TEXT_STYLE) ;
+
+      this->textStyleCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_textStyleCombo]
     }
     else if (comboBoxThatHasChanged == textPosCombo)
     {
         //[UserComboBoxCode_textPosCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::TEXT_POS_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_TEXT_POS) ;
+
+      this->textPosCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_textPosCombo]
     }
     else if (comboBoxThatHasChanged == outputResCombo)
     {
         //[UserComboBoxCode_outputResCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::OUTPUT_RES_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_OUTPUT_RES) ;
+
+      this->outputResCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_outputResCombo]
     }
-    else if (comboBoxThatHasChanged == qualityCombo)
+    else if (comboBoxThatHasChanged == framerateCombo)
     {
-        //[UserComboBoxCode_qualityCombo] -- add your combo box handling code here..
-        //[/UserComboBoxCode_qualityCombo]
-    }
-    else if (comboBoxThatHasChanged == fpsCombo)
-    {
-        //[UserComboBoxCode_fpsCombo] -- add your combo box handling code here..
-        //[/UserComboBoxCode_fpsCombo]
+        //[UserComboBoxCode_framerateCombo] -- add your combo box handling code here..
+        //[/UserComboBoxCode_framerateCombo]
     }
     else if (comboBoxThatHasChanged == bitrateCombo)
     {
         //[UserComboBoxCode_bitrateCombo] -- add your combo box handling code here..
+
+      key   = CONFIG::BITRATE_ID ;
+      value = var((~option_n) ? option_n : CONFIG::DEFAULT_BITRATE) ;
+
+      this->bitrateCombo->setSelectedItemIndex(option_n) ;
+
         //[/UserComboBoxCode_bitrateCombo]
     }
 
     //[UsercomboBoxChanged_Post]
+
+  setConfig(key , value) ;
+
     //[/UsercomboBoxChanged_Post]
 }
 
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void OutputConfig::populateComboBoxes()
+{
+//this->cameraDevCombo // deferred
+  this->cameraResCombo   ->addItemList(         CONFIG::CAMERA_RESOLUTIONS    , 1) ;
+  this->cameraResCombo   ->setSelectedItemIndex(CONFIG::DEFAULT_CAMERA_RES    , juce::dontSendNotification) ;
+  this->audioApiCombo    ->addItemList(         CONFIG::AUDIO_APIS            , 1) ;
+  this->audioApiCombo    ->setSelectedItemIndex(CONFIG::DEFAULT_AUDIO_API     , juce::dontSendNotification) ;
+//this->audioDevCombo   // deferred GUI nyi
+//this->audioCodecCombo // GUI nyi
+//this->audioCodecCombo  ->addItemList(         CONFIG::AUDIO_CODECS          , 1) ;
+//this->audioCodecCombo  ->setSelectedItemIndex(CONFIG::DEFAULT_AUDIO_CODEC   , juce::dontSendNotification) ;
+  this->samplerateCombo  ->addItemList(         CONFIG::AUDIO_SAMPLERATES     , 1) ;
+  this->samplerateCombo  ->setSelectedItemIndex(CONFIG::DEFAULT_SAMPLERATE    , juce::dontSendNotification) ;
+  this->audioBitrateCombo->addItemList(         CONFIG::AUDIO_BITRATES        , 1) ;
+  this->audioBitrateCombo->setSelectedItemIndex(CONFIG::DEFAULT_AUDIO_BITRATE , juce::dontSendNotification) ;
+  this->textStyleCombo   ->addItemList(         CONFIG::TEXT_STYLES           , 1) ;
+  this->textStyleCombo   ->setSelectedItemIndex(CONFIG::DEFAULT_TEXT_STYLE    , juce::dontSendNotification) ;
+  this->textPosCombo     ->addItemList(         CONFIG::TEXT_POSITIONS        , 1) ;
+  this->textPosCombo     ->setSelectedItemIndex(CONFIG::DEFAULT_TEXT_POS      , juce::dontSendNotification) ;
+//this->outputStreamCombo // GUI nyi
+//this->outputResCombo   ->addItemList(         CONFIG::OUTPUT_STREAMS        , 1) ;
+//this->outputResCombo   ->setSelectedItemIndex(CONFIG::DEFAULT_OUTPUT_STREAM , juce::dontSendNotification) ;
+  this->outputResCombo   ->addItemList(         CONFIG::OUTPUT_RESOLUTIONS    , 1) ;
+  this->outputResCombo   ->setSelectedItemIndex(CONFIG::DEFAULT_OUTPUT_RES    , juce::dontSendNotification) ;
+  this->framerateCombo   ->addItemList(         CONFIG::OUTPUT_FRAMERATES     , 1) ;
+  this->framerateCombo   ->setSelectedItemIndex(CONFIG::DEFAULT_FRAMERATE     , juce::dontSendNotification) ;
+  this->bitrateCombo     ->addItemList(         CONFIG::OUTPUT_BITRATES       , 1) ;
+  this->bitrateCombo     ->setSelectedItemIndex(CONFIG::DEFAULT_BITRATE       , juce::dontSendNotification) ;
+}
+
+void OutputConfig::setConfig(Identifier a_key , var a_value)
+{
+  if (a_key.isValid()) this->configStore.setProperty(a_key , a_value , nullptr) ;
+}
+
 //[/MiscUserCode]
 
 
@@ -638,7 +731,7 @@ void OutputConfig::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="OutputConfig" componentName=""
-                 parentClasses="public Component" constructorParams="Component* main_window"
+                 parentClasses="public Component" constructorParams="Component* main_window, ValueTree config_store"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="ff101010">
@@ -796,22 +889,14 @@ BEGIN_JUCER_METADATA
   <COMBOBOX name="outputResCombo" id="be92db8f9d61539a" memberName="outputResCombo"
             virtualName="" explicitFocusOrder="16" pos="120 392 200 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="qualityLabel" id="3e3fc79312764817" memberName="qualityLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 424 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Quality:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="qualityCombo" id="71cfff3261da7b1a" memberName="qualityCombo"
-            virtualName="" explicitFocusOrder="17" pos="120 424 200 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="fpsLabel" id="45b2235a7a1f9614" memberName="fpsLabel" virtualName=""
-         explicitFocusOrder="0" pos="340 392 64 24" textCol="ffffffff"
+  <LABEL name="framerateLabel" id="45b2235a7a1f9614" memberName="framerateLabel"
+         virtualName="" explicitFocusOrder="0" pos="340 392 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="FPS:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="fpsCombo" id="2560e172b011e11c" memberName="fpsCombo" virtualName=""
-            explicitFocusOrder="18" pos="404 392 48 24" editable="0" layout="33"
-            items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+  <COMBOBOX name="framerateCombo" id="2560e172b011e11c" memberName="framerateCombo"
+            virtualName="" explicitFocusOrder="18" pos="404 392 48 24" editable="0"
+            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="bitrateLabel" id="bc6b3717e710f16c" memberName="bitrateLabel"
          virtualName="" explicitFocusOrder="0" pos="340 424 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Bitrate:" editableSingleClick="0"

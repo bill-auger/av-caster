@@ -3,7 +3,7 @@
 
     AvCaster.h
     Created: 12 Sep 2015 10:26:17am
-    Author:  bill
+    Author:  bill-auger
 
   ==============================================================================
 */
@@ -37,14 +37,14 @@ public:
 class AvCaster
 {
   friend class AvCasterApplication ;
+  friend class AvCasterConfig ;
 
 
 public:
 
   // GUI dispatchers
-  static void Warning(      String message_text) ;
-  static void Error(        String message_text) ;
-  static void StartMonitors() ;
+  static void Warning(String message_text) ;
+  static void Error(  String message_text) ;
 
   // callbacks and event handlers
   static ModalComponentManager::Callback* GetModalCb() ;
@@ -63,8 +63,10 @@ private:
   static void Shutdown() ;
 
   // callbacks and event handlers
-  static void HandleTimer(    int timer_id) ;
+  static void HandleTimer(        int timer_id) ;
   static void UpdateStatusGUI() ;
+  static void HandleConfigChanged(const Identifier& a_key) ;
+  static void StartMonitors() ;
 
   static MainContent*  Gui ;
   static Array<Alert*> Alerts ;

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="1.0.0"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.0.3"
               bundleIdentifier="com.bill-auger.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
     <GROUP id="{12F99024-8A51-4F04-3891-07F59C6B6881}" name="Headers">
+      <GROUP id="{E5A092F4-256B-C2BA-D268-F46AC54BD85A}" name="Trace">
+        <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>
+        <FILE id="XY5wkX" name="TraceAvCasterConfig.h" compile="0" resource="0"
+              file="Source/Trace/TraceAvCasterConfig.h"/>
+        <FILE id="ltIPwf" name="TraceMain.h" compile="0" resource="0" file="Source/Trace/TraceMain.h"/>
+      </GROUP>
       <FILE id="IHfl77" name="AvCaster.h" compile="0" resource="0" file="Source/AvCaster.h"/>
       <FILE id="y9Co3C" name="AvCasterConfig.h" compile="0" resource="0"
             file="Source/AvCasterConfig.h"/>
@@ -14,8 +20,6 @@
       <FILE id="U6Fm4Z" name="MainContent.h" compile="0" resource="0" file="Source/MainContent.h"/>
       <FILE id="uoYh4l" name="OutputConfig.h" compile="0" resource="0" file="Source/OutputConfig.h"/>
       <FILE id="X0O50Z" name="Statusbar.h" compile="0" resource="0" file="Source/Statusbar.h"/>
-      <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>
-      <FILE id="ltIPwf" name="TraceMain.h" compile="0" resource="0" file="Source/Trace/TraceMain.h"/>
     </GROUP>
     <GROUP id="{B76039D2-8BDF-7740-0816-1A69395E900D}" name="Source">
       <FILE id="zm6wrJ" name="AvCaster.cpp" compile="1" resource="0" file="Source/AvCaster.cpp"/>

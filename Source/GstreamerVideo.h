@@ -34,7 +34,8 @@ class GstreamerVideo : public Component , ComponentListener
 {
 public:
 
-  GstreamerVideo(Component* follow_window , int local_x , int local_y) ;
+  GstreamerVideo(Component* follow_window , int local_x   , int local_y  ,
+                                            int initial_w , int initial_h) ;
   ~GstreamerVideo() ;
 
   void paint(Graphics&) ;

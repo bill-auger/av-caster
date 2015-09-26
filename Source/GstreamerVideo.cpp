@@ -13,13 +13,16 @@
 #include "GstreamerVideo.h"
 
 
-GstreamerVideo::GstreamerVideo(Component* follow_window , int local_x , int local_y)
+GstreamerVideo::GstreamerVideo(Component* follow_window , int local_x   , int local_y  ,
+                                                          int initial_w , int initial_h)
 {
   // initialize GUI
-  this->followWindow  = follow_window ;
-  this->localPosition = new Point<int>(local_x , local_y + GUI::TITLEBAR_H) ;
+  DocumentWindow* main_window   = (DocumentWindow*)follow_window->getTopLevelComponent() ;
+  int             titlebar_h    = main_window->getTitleBarHeight() ;
+  this->          followWindow  = follow_window ;
+  this->          localPosition = new Point<int>(local_x , local_y + titlebar_h) ;
 
-  setSize(GUI::MONITOR_W , GUI::MONITOR_H) ;
+  setSize(initial_w , initial_h) ;
   setOpaque(true) ;
   setAlwaysOnTop(true) ;
 

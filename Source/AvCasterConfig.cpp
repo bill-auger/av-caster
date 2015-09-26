@@ -10,43 +10,34 @@
 
 #include "AvCasterConfig.h"
 #include "AvCaster.h"
-#include "Trace/Trace.h"
+#include "Trace/TraceAvCasterConfig.h"
 
 
 AvCasterConfig::AvCasterConfig()
 {
-  // screen configuration
-//     this->mainInput = 0 ; // GUI nyi
-  this->desktopW      = 0 ; this->desktopH      = 0 ;
-  this->displayDevice = 0 ; this->displayScreen = 0 ;
-  this->captureW      = 0 ; this->captureH      = 0 ;
-  this->offsetX       = 0 ; this->offsetY       = 0 ;
-  // camera configuration
-//     this->overlayInput = 0 ; // GUI nyi
-  this->cameraDevices     = StringArray() ; this->cameraDevice     = "" ;
-  this->cameraResolutions = StringArray() ; this->cameraResolution = "" ;
-  // audio configuration
-  this->audioInputs   = StringArray() ;
-  this->audioInput    = 0 ; // this->audioCodec = 0 ;// GUI nyi
-  this->nChannels     = 0 ;
-  this->samplerates   = StringArray() ; this->samplerate   = "" ;
-  this->audioBitrates = StringArray() ; this->audioBitrate = "" ;
-  // text configuration
-  this->overlayText   = "" ;
-  this->textStyles    = StringArray() ; this->textStyle    = "" ;
-  this->textPositions = StringArray() ; this->textPosition = "" ;
-  // output configuration
-//    this->outputStreams     = StringArray() ; this->outputStream     = 0 ;  // GUI nyi
-  this->outputDest        = "" ;         // this->videoCodec       = 0 ; // GUI nyi
-  this->outputResolutions = StringArray() ; this->outputResolution = "" ;
-  this->outputQualities   = StringArray() ; this->outputQuality    = "" ;
-  this->framerates        = StringArray() ; this->framerate        = "" ;
-  this->videoBitrates     = StringArray() ; this->videoBitrate     = "" ;
+  // load default and stored configs // TODO: default config nyi
+  File dataDir = File::getSpecialLocation(File::userApplicationDataDirectory) ;
+  if (!dataDir.isDirectory()) return ;
+
+  this->configFile               = dataDir.getChildFile(CONFIG::STORAGE_FILENAME) ;
+  FileInputStream* config_stream = new FileInputStream(this->configFile) ;
+
+  XmlElement* default_xml   = XmlDocument::parse(CONFIG::DEFAULT_CONFIG_XML) ;
+  ValueTree   stored_config = (config_stream->openedOk()) ? ValueTree::readFromStream(*config_stream) :
+                                                            ValueTree::invalid                        ;
+
+DEBUG_TRACE_LOAD_CONFIG
+
+  // create shared config ValueTree from persistent storage or default xml
+  this->configStore = ((validateConfig(stored_config)) ? stored_config                      :
+                      ((default_xml != nullptr       ) ? ValueTree::fromXml(*default_xml) :
+                                                         ValueTree::invalid               ) ) ;
+  storeConfig() ;
+
   // status display
   this->currentFrame = 0 ;   this->currentFps     = 0 ;
   this->currentQ     = 0.0 ; this->currentSize    = String::empty ;
   this->currentTime  = 0.0 ; this->currentBitrate = String::empty ;
-
 
   detectDisplayDimensions() ;
   Trace::TraceState("detected desktop dimensions " + String(this->desktopW) + "x" + String(this->desktopH)) ;
@@ -54,41 +45,54 @@ AvCasterConfig::AvCasterConfig()
   detectCaptureDevices() ;
   Trace::TraceState("detected " + String(this->cameraDevices.size()) + " capture devices") ;
 
-  sanitizeParams() ;
+//   sanitizeParams() ;
+
+  // cleanup init
+  delete config_stream ; if (default_xml != nullptr) delete default_xml ;
 }
 
-AvCasterConfig::~AvCasterConfig() {}
+AvCasterConfig::~AvCasterConfig() { storeConfig() ; }
 
 
 /* AvCasterConfig private instance methods */
 
+bool AvCasterConfig::validateConfig(ValueTree configStore)
+{
+  var    config_version    = configStore[CONFIG::CONFIG_VERSION_ID] ;
+  double stored_version    = double(config_version) ;
+  bool   do_versions_match = stored_version == CONFIG::CONFIG_VERSION ;
+  bool   has_stored_config = configStore.isValid() && do_versions_match ;
+  if (!do_versions_match) {;} // TODO: convert (if ever necessary)
+
+DEBUG_TRACE_VALIDATE_CONFIG
+
+  return has_stored_config ; // TODO: better validations
+}
+
+void AvCasterConfig::storeConfig()
+{
+  this->configFile.deleteFile() ;
+
+  // create storage directory
+  File user_dir   = File::getSpecialLocation(File::userApplicationDataDirectory) ;
+  File config_dir = user_dir.getChildFile(CONFIG::STORAGE_DIRNAME) ;
+  config_dir.createDirectory() ;
+
+  // marshall configuration out to persistent binary storage
+  FileOutputStream* config_stream = new FileOutputStream(this->configFile) ;
+  if (!config_stream->failedToOpen()) this->configStore.writeToStream(*config_stream) ;
+  else AvCaster::Error(GUI::STORAGE_WRITE_ERROR_MSG) ;
+  delete config_stream ;
+}
+
 void AvCasterConfig::detectDisplayDimensions()
 {
-#define CROSS_PLATFORM_RESOLUTION_DETECTION
-#ifndef CROSS_PLATFORM_RESOLUTION_DETECTION
-  if (this->proc->start(APP::DISPLAY_DIMS_COMMAND) && readProcOutput())
-  {
-    StringArray tokens     = StringArray::fromTokens(this->proc_out , false) ;
-    tokens.removeEmptyStrings(true) ;
-    int         width_idx  = tokens.indexOf(APP::DISPLAY_DIMS_WIDTH_TOKEN ) + 1 ;
-    int         height_idx = tokens.indexOf(APP::DISPLAY_DIMS_HEIGHT_TOKEN) + 1 ;
-    if (!!width_idx && !!height_idx)
-    {
-      this->desktopW = tokens[width_idx ].getIntValue() ;
-      this->desktopH = tokens[height_idx].getIntValue() ;
-    }
-  }
-
-#else // CROSS_PLATFORM_RESOLUTION_DETECTION
-
 /* the JUCE way - does not reflect resolution changes (issue #2 issue #4)
                   but would eliminate platform-specific xwininfo binary dependency
                   (see ComponentPeer::handleScreenSizeChange and/or Component::getParentMonitorArea) */
   Rectangle<int> area = Desktop::getInstance().getDisplays().getMainDisplay().totalArea ;
-  this->desktopW = area.getWidth() ;
-  this->desktopH = area.getHeight() ;
-
-#endif // CROSS_PLATFORM_RESOLUTION_DETECTION
+  this->desktopW      = area.getWidth() ;
+  this->desktopH      = area.getHeight() ;
 }
 
 void AvCasterConfig::detectCaptureDevices()
@@ -145,16 +149,27 @@ void AvCasterConfig::sanitizeParams()
   if (this->proc->start(APP::AVPLAY_TEST_CAM_COMMAND + this->cameraDevice))
     while (!!readProcOutputLines())
     {
-      if (hasSubstring(this->proc_out_lines , APP::AVCONV_CAM_BUSY_ERROR))
+      if (hasSubstring(this->proc_out_lines , APP::AVPLAY_CAM_BUSY_ERROR))
         AvCaster::Warning(GUI::CAM_BUSY_ERROR_MSG) ;
     }
 */
   // sanity check capture params
-  if (this->captureW == 0 || this->offsetX + this->captureW > this->desktopW)
-    this->captureW = this->desktopW ;
-  if (this->captureH == 0 || this->offsetY + this->captureH > this->desktopH)
-    this->captureH = this->desktopH ;
+  int capture_w = int(configStore[CONFIG::CAPTURE_W_ID]) ;
+  int capture_h = int(configStore[CONFIG::CAPTURE_H_ID]) ;
+  int offset_x  = int(configStore[CONFIG::OFFSET_X_ID ]) ;
+  int offset_y  = int(configStore[CONFIG::OFFSET_Y_ID ]) ;
+  if (capture_w == 0 || offset_x + capture_w > this->desktopW)
+    this->configStore.setProperty(CONFIG::CAPTURE_W_ID , var(this->desktopW) , nullptr) ;
+  if (capture_h == 0 || offset_y + capture_h > this->desktopH)
+    this->configStore.setProperty(CONFIG::CAPTURE_H_ID , var(this->desktopH) , nullptr) ;
   // TODO: test for device/screen existence
 //     if (deviceNotExist) this->displayDevice = 0 ;
 //     if (screenNotExist) this->displayScreen = 0 ;
+}
+
+void AvCasterConfig::valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key)
+{
+DEBUG_TRACE_CONFIG_TREE_CHANGED
+
+  AvCaster::HandleConfigChanged(a_key) ;
 }

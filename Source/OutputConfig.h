@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.2.0
+  Created with Introjucer version: 3.1.1
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright (c) 2015 - ROLI Ltd.
+  Copyright 2004-13 by Raw Material Software Ltd.
 
   ==============================================================================
 */
@@ -43,7 +43,7 @@ class OutputConfig  : public Component,
 {
 public:
     //==============================================================================
-    OutputConfig (Component* main_window);
+    OutputConfig (Component* main_window, ValueTree config_store);
     ~OutputConfig();
 
     //==============================================================================
@@ -62,6 +62,12 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+
+  void populateComboBoxes() ;
+  void setConfig(Identifier a_key , var a_value) ;
+
+  ValueTree configStore ;
+
     //[/UserVariables]
 
     //==============================================================================
@@ -102,10 +108,8 @@ private:
     ScopedPointer<GroupComponent> outputGroup;
     ScopedPointer<Label> outputResLabel;
     ScopedPointer<ComboBox> outputResCombo;
-    ScopedPointer<Label> qualityLabel;
-    ScopedPointer<ComboBox> qualityCombo;
-    ScopedPointer<Label> fpsLabel;
-    ScopedPointer<ComboBox> fpsCombo;
+    ScopedPointer<Label> framerateLabel;
+    ScopedPointer<ComboBox> framerateCombo;
     ScopedPointer<Label> bitrateLabel;
     ScopedPointer<ComboBox> bitrateCombo;
     ScopedPointer<GroupComponent> monitorsGroup;

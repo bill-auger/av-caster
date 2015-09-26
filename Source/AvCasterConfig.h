@@ -14,7 +14,12 @@
 #include "Constants.h"
 
 
-class AvCasterConfig
+/**
+  LinJamConfig is the model class
+  it holds the runtime configuration via shared value holders
+      and handles persistence via JUCE binary storage TODO: persistence nyi
+*/
+class AvCasterConfig : ValueTree::Listener
 {
   friend class AvCaster ;
 
@@ -22,6 +27,9 @@ class AvCasterConfig
 public:
 
   ~AvCasterConfig() ;
+
+  void componentMovedOrResized(Component& a_component , bool wasMoved  , bool wasResized) ;
+
 
   enum AudioApi      { ALSA_AUDIO , PULSE_AUDIO , JACK_AUDIO } ;
 /* TODO: GUI nyi
@@ -32,60 +40,40 @@ public:
   enum OutputStream  { FILE_OUTPUT , NET_OUTPUT } ;
 */
 
+  // config root
+  ValueTree configStore ; // STORAGE_ID node
+
 
 private:
 
   AvCasterConfig() ;
 
+  // persistence
+  bool validateConfig(ValueTree configStore) ;
+  void storeConfig() ;
+
+  // runtime params
   void detectDisplayDimensions() ;
   void detectCaptureDevices() ;
   void sanitizeParams() ;
+  void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
+
+  // unused ValueTree::Listener interface implementations
+  void valueTreeChildAdded(       ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;
+  void valueTreeChildRemoved(     ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;
+  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ; } ;
+  void valueTreeParentChanged(    ValueTree& a_node)                            override { UNUSED(a_node) ;        } ;
+  void valueTreeRedirected(       ValueTree& a_node)                            override { UNUSED(a_node) ;        } ;
 
 
-  // screen configuration
-//   uint8 mainInput ; // GUI nyi
-  uint16 desktopW ;
-  uint16 desktopH ;
-  uint8  displayDevice ;
-  uint8  displayScreen ;
-  uint16 captureW ;
-  uint16 captureH ;
-  uint16 offsetX ;
-  uint16 offsetY ;
-  // camera configuration
-//   uint8 overlayInput ; // GUI nyi
+  File configFile ;
+
+  // configuration
+  uint16      desktopW ;
+  uint16      desktopH ;
   StringArray cameraDevices ;
-  String      cameraDevice ;
-  StringArray cameraResolutions ;
-  String      cameraResolution ;
-  // audio configuration
-  StringArray audioInputs ;
-  uint8       audioInput ;
-//   uint8       audioCodec ; // GUI nyi
-  uint8       nChannels ;
-  StringArray samplerates ;
-  String      samplerate ;
-  StringArray audioBitrates ;
-  String      audioBitrate ;
-  // output configuration
-//   StringArray outputStreams; // GUI nyi
-//   uint8       outputStream ; // GUI nyi
-  String      outputDest ;
-  uint8       videoCodec ;
-  StringArray outputResolutions ;
-  String      outputResolution ;
-  StringArray outputQualities ;
-  String      outputQuality ;
-  StringArray framerates ;
-  String      framerate ;
-  StringArray videoBitrates ;
-  String      videoBitrate ;
-  // text configuration
-  String      overlayText ;
-  StringArray textStyles ;
-  String      textStyle ;
-  StringArray textPositions ;
-  String      textPosition ;
+//   StringArray audioDevices ;
+
   // status display
   uint32 currentFrame ;
   uint8  currentFps ;

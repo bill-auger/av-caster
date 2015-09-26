@@ -31,7 +31,7 @@
             BufferSecurityCheck=""
             DebugInformationFormat="4"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=1.0.0;JUCE_APP_VERSION_HEX=0x10000"
+            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.0.3;JUCE_APP_VERSION_HEX=0x3"
             RuntimeLibrary="1"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -86,7 +86,7 @@
             InlineFunctionExpansion="1"
             StringPooling="true"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=1.0.0;JUCE_APP_VERSION_HEX=0x10000"
+            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.0.3;JUCE_APP_VERSION_HEX=0x3"
             RuntimeLibrary="0"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -126,6 +126,11 @@
   <Files>
     <Filter Name="AvCaster">
       <Filter Name="Headers">
+        <Filter Name="Trace">
+          <File RelativePath="..\..\Source\Trace\Trace.h"/>
+          <File RelativePath="..\..\Source\Trace\TraceAvCasterConfig.h"/>
+          <File RelativePath="..\..\Source\Trace\TraceMain.h"/>
+        </Filter>
         <File RelativePath="..\..\Source\AvCaster.h"/>
         <File RelativePath="..\..\Source\AvCasterConfig.h"/>
         <File RelativePath="..\..\Source\Constants.h"/>
@@ -133,8 +138,6 @@
         <File RelativePath="..\..\Source\MainContent.h"/>
         <File RelativePath="..\..\Source\OutputConfig.h"/>
         <File RelativePath="..\..\Source\Statusbar.h"/>
-        <File RelativePath="..\..\Source\Trace\Trace.h"/>
-        <File RelativePath="..\..\Source\Trace\TraceMain.h"/>
       </Filter>
       <Filter Name="Source">
         <File RelativePath="..\..\Source\AvCaster.cpp"/>
