@@ -1,15 +1,15 @@
 /*
   ==============================================================================
 
-    TraceMain.h
-    Created: 12 Sep 2015 10:29:01am
-    Author:  bill
+    Constants.h
+    Author:  bill-auger
 
   ==============================================================================
 */
 
 #ifndef TRACEMAIN_H_INCLUDED
 #define TRACEMAIN_H_INCLUDED
+
 #ifdef DEBUG
 
 #  include "Trace.h"

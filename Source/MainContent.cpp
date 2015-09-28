@@ -16,7 +16,7 @@ MainContent::MainContent(DocumentWindow* main_window)
 
 MainContent::~MainContent()
 {
-  this->outputConfig     = nullptr ;
+  this->config           = nullptr ;
   this->screencapMonitor = nullptr ;
   this->cameraMonitor    = nullptr ;
   this->outputMonitor    = nullptr ;
@@ -53,15 +53,15 @@ void MainContent::resized()
   int status_w = content_w ;
   int status_h = GUI::STATUSBAR_H ;
 
-  this->outputConfig->setBounds(output_x , output_y , output_w , output_h) ;
-  this->statusbar   ->setBounds(status_x , status_y , status_w , status_h) ;
+  this->config   ->setBounds(output_x , output_y , output_w , output_h) ;
+  this->statusbar->setBounds(status_x , status_y , status_w , status_h) ;
 }
 
 void MainContent::instantiate(ValueTree config_store)
 {
   // configuration
-  this->outputConfig = new OutputConfig(this->mainWindow , config_store) ;
-  this->addChildAndSetID(this->outputConfig , GUI::OUTPUT_GUI_ID) ;
+  this->config = new Config(this->mainWindow , config_store) ;
+  this->addChildAndSetID(this->config , GUI::OUTPUT_GUI_ID) ;
 
   // video monitors
   this->screencapMonitor = new GstreamerVideo(this->mainWindow                           ,

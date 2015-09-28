@@ -2,14 +2,32 @@
   ==============================================================================
 
     Constants.h
-    Created: 12 Sep 2015 10:27:53am
-    Author:  bill
+    Author:  bill-auger
 
   ==============================================================================
 */
 
 #ifndef CONSTANTS_H_INCLUDED
 #define CONSTANTS_H_INCLUDED
+
+// enable debug features
+#ifdef DEBUG
+#  define DEBUG_ANSI_COLORS
+// #  define QUIT_IMMEDIATELY
+#endif // DEBUG
+
+// tracing
+#ifdef DEBUG
+#  define DEBUG_DEFINED 1
+#else // DEBUG
+#  define DEBUG_DEFINED 0
+#endif // DEBUG
+#define DEBUG_TRACE        DEBUG_DEFINED && 1
+#define DEBUG_TRACE_EVENTS DEBUG_DEFINED && 1
+#define DEBUG_TRACE_CONFIG DEBUG_DEFINED && 1
+#define DEBUG_TRACE_STATE  DEBUG_DEFINED && 1
+#define DEBUG_TRACE_VB     DEBUG_DEFINED && 0
+
 
 #include "JuceHeader.h"
 
@@ -29,10 +47,10 @@ namespace APP
   static const uint8 MUX_THREAD_SLEEP = 125 ;
 
   // default ffmpeg params
-  static const String DEFAULT_CAPTURE_DEVICE = "/dev/video0" ;
+  static const String DEFAULT_CAMERA_DEVICE = "/dev/video0" ;
 
   // get device info
-  static const String CAPTURE_DEVICES_DIR     = "/sys/class/video4linux" ;
+  static const String CAMERA_DEVICES_DIR      = "/sys/class/video4linux" ;
   static const String AVPLAY_TEST_CAM_COMMAND = "avplay -f video4linux2 -i " ;
   static const String AVPLAY_CAM_BUSY_ERROR   = "Input/output error" ;
 }
@@ -51,7 +69,7 @@ namespace GUI
   static const int    CONTENT_W      = 800 - BORDERS_W ;
   static const int    CONTENT_H      = 720 - BORDERS_W - TITLEBAR_H ;
 
-  // OutputConfig
+  // Config
   static const String OUTPUT_GUI_ID       = "output-config-gui" ;
   static const int    MONITORS_W          = 160 ;
   static const int    MONITORS_H          = 120 ;
@@ -86,8 +104,8 @@ namespace CONFIG
   // screen IDs
   static const Identifier DISPLAY_N_ID     = "display-n" ;
   static const Identifier SCREEN_N_ID      = "screen-n" ;
-  static const Identifier CAPTURE_W_ID     = "capture-w" ;
-  static const Identifier CAPTURE_H_ID     = "capture-h" ;
+  static const Identifier SCREENCAP_W_ID   = "sceencap-w" ;
+  static const Identifier SCREENCAP_H_ID   = "sceencap-h" ;
   static const Identifier OFFSET_X_ID      = "offset-x" ;
   static const Identifier OFFSET_Y_ID      = "offset-y" ;
   // camera IDs
@@ -95,85 +113,60 @@ namespace CONFIG
   static const Identifier CAMERA_RES_ID    = "camera-res-idx" ;
   // audio IDs
   static const Identifier AUDIO_API_ID     = "audio-api-idx" ;
-  static const Identifier AUDIO_INPUT_ID   = "audio-input-idx" ;
+  static const Identifier AUDIO_DEVICE_ID  = "audio-device-idx" ;
   static const Identifier AUDIO_CODEC_ID   = "audio-codec-idx" ;
   static const Identifier N_CHANNELS_ID    = "n-channels" ;
   static const Identifier SAMPLERATE_ID    = "samplerate-idx" ;
   static const Identifier AUDIO_BITRATE_ID = "audio-bitrate-idx" ;
   // text IDs
-  static const Identifier OVERLAY_TEXT_ID  = "overlay-text-idx" ;
+  static const Identifier OVERLAY_TEXT_ID  = "overlay-text" ;
   static const Identifier TEXT_STYLE_ID    = "text-style-idx" ;
   static const Identifier TEXT_POS_ID      = "text-pos-idx" ;
   // output IDs
   static const Identifier OUTPUT_STREAM_ID = "output-stream-idx" ;
-  static const Identifier OUTPUT_DEST_ID   = "output-dest-idx" ;
-  static const Identifier OUTPUT_RES_ID    = "output-res-idx" ;
+  static const Identifier OUTPUT_W_ID      = "output-w" ;
+  static const Identifier OUTPUT_H_ID      = "output-h" ;
   static const Identifier FRAMERATE_ID     = "framerate-idx" ;
   static const Identifier BITRATE_ID       = "bitrate-idx" ;
+  static const Identifier OUTPUT_DEST_ID   = "output-dest" ;
 
   // root defaults
   // persistence and storage
 #ifdef _WIN32
-  static const String STORAGE_DIRNAME       = "AvCaster\\" ;
+  static const String STORAGE_DIRNAME           = "AvCaster\\" ;
 #else // _WIN32
-  static const String STORAGE_DIRNAME       = ".av-caster/" ;
+  static const String STORAGE_DIRNAME           = ".av-caster/" ;
 #endif // _WIN32
-  static const String STORAGE_FILENAME      = STORAGE_DIRNAME + "AvCaster.bin" ;
-  static const double CONFIG_VERSION        = 0.1 ;
+  static const String STORAGE_FILENAME          = STORAGE_DIRNAME + "AvCaster.bin" ;
+  static const double CONFIG_VERSION            = 0.1 ;
   // screen defulats
-  static const int    DEFAULT_DISPLAY_N     = 0 ;
-  static const int    DEFAULT_SCREEN_N      = 0 ;
-  static const int    DEFAULT_CAPTURE_W     = 640 ;
-  static const int    DEFAULT_CAPTURE_H     = 480 ;
-  static const int    DEFAULT_OFFSET_X      = 0 ;
-  static const int    DEFAULT_OFFSET_Y      = 0 ;
+  static const int    DEFAULT_DISPLAY_N         = 0 ;
+  static const int    DEFAULT_SCREEN_N          = 0 ;
+  static const int    DEFAULT_SCREENCAP_W       = 640 ;
+  static const int    DEFAULT_SCREENCAP_H       = 480 ;
+  static const int    DEFAULT_OFFSET_X          = 0 ;
+  static const int    DEFAULT_OFFSET_Y          = 0 ;
   // camera defulats
-  static const int    DEFAULT_CAMERA_DEV    = -1 ;
-  static const int    DEFAULT_CAMERA_RES    = 0 ;
+  static const int    DEFAULT_CAMERA_DEV_IDX    = -1 ;
+  static const int    DEFAULT_CAMERA_RES_IDX    = 0 ;
   // audio defulats
-  static const int    DEFAULT_AUDIO_API     = 0 ;
-  static const int    DEFAULT_AUDIO_INPUT   = -1 ;
-  static const int    DEFAULT_AUDIO_CODEC   = 0 ;
-  static const int    DEFAULT_N_CHANNELS    = 2 ;
-  static const int    DEFAULT_SAMPLERATE    = 0 ;
-  static const int    DEFAULT_AUDIO_BITRATE = 0 ;
+  static const int    DEFAULT_AUDIO_API_IDX     = 0 ;
+  static const int    DEFAULT_AUDIO_DEVICE_IDX  = -1 ;
+  static const int    DEFAULT_AUDIO_CODEC_IDX   = 0 ;
+  static const int    DEFAULT_N_CHANNELS        = 2 ;
+  static const int    DEFAULT_SAMPLERATE_IDX    = 0 ;
+  static const int    DEFAULT_AUDIO_BITRATE_IDX = 0 ;
   // text defulats
-  static const String DEFAULT_OVERLAY_TEXT  = "" ;
-  static const int    DEFAULT_TEXT_STYLE    = 0 ;
-  static const int    DEFAULT_TEXT_POS      = 0 ;
+  static const String DEFAULT_OVERLAY_TEXT      = "" ;
+  static const int    DEFAULT_TEXT_STYLE_IDX    = 0 ;
+  static const int    DEFAULT_TEXT_POS_IDX      = 0 ;
   // output defulats
-  static const int    DEFAULT_OUTPUT_STREAM = 0 ;
-  static const String DEFAULT_OUTPUT_DEST   = APP::APP_NAME + ".mp4" ;
-  static const int    DEFAULT_OUTPUT_RES    = 0 ;
-  static const int    DEFAULT_FRAMERATE     = 0 ;
-  static const int    DEFAULT_BITRATE       = 0 ;
-
-  static const String DEFAULT_CONFIG_XML = String("<?xml version=\"1.0\"?><"     +      \
-      String(STORAGE_ID)          +                                         " "  +      \
-        String(CONFIG_VERSION_ID) + "=\"" + String(CONFIG_VERSION       ) + "\"" +      \
-        String(DISPLAY_N_ID     ) + "=\"" + String(DEFAULT_DISPLAY_N    ) + "\"" +      \
-        String(SCREEN_N_ID      ) + "=\"" + String(DEFAULT_SCREEN_N     ) + "\"" +      \
-        String(CAPTURE_W_ID     ) + "=\"" + String(DEFAULT_CAPTURE_W    ) + "\"" +      \
-        String(CAPTURE_H_ID     ) + "=\"" + String(DEFAULT_CAPTURE_H    ) + "\"" +      \
-        String(OFFSET_X_ID      ) + "=\"" + String(DEFAULT_OFFSET_X     ) + "\"" +      \
-        String(OFFSET_Y_ID      ) + "=\"" + String(DEFAULT_OFFSET_Y     ) + "\"" +      \
-        String(CAMERA_DEV_ID    ) + "=\"" + String(DEFAULT_CAMERA_DEV   ) + "\"" +      \
-        String(CAMERA_RES_ID    ) + "=\"" + String(DEFAULT_CAMERA_RES   ) + "\"" +      \
-        String(AUDIO_API_ID     ) + "=\"" + String(DEFAULT_AUDIO_API    ) + "\"" +      \
-        String(AUDIO_INPUT_ID   ) + "=\"" + String(DEFAULT_AUDIO_INPUT  ) + "\"" +      \
-        String(AUDIO_CODEC_ID   ) + "=\"" + String(DEFAULT_AUDIO_CODEC  ) + "\"" +      \
-        String(N_CHANNELS_ID    ) + "=\"" + String(DEFAULT_N_CHANNELS   ) + "\"" +      \
-        String(SAMPLERATE_ID    ) + "=\"" + String(DEFAULT_SAMPLERATE   ) + "\"" +      \
-        String(AUDIO_BITRATE_ID ) + "=\"" + String(DEFAULT_AUDIO_BITRATE) + "\"" +      \
-        String(OVERLAY_TEXT_ID  ) + "=\"" + String(DEFAULT_OVERLAY_TEXT ) + "\"" +      \
-        String(TEXT_STYLE_ID    ) + "=\"" + String(DEFAULT_TEXT_STYLE   ) + "\"" +      \
-        String(TEXT_POS_ID      ) + "=\"" + String(DEFAULT_TEXT_POS     ) + "\"" +      \
-        String(OUTPUT_STREAM_ID ) + "=\"" + String(DEFAULT_OUTPUT_STREAM) + "\"" +      \
-        String(OUTPUT_DEST_ID   ) + "=\"" + String(DEFAULT_OUTPUT_DEST  ) + "\"" +      \
-        String(OUTPUT_RES_ID    ) + "=\"" + String(DEFAULT_OUTPUT_RES   ) + "\"" +      \
-        String(FRAMERATE_ID     ) + "=\"" + String(DEFAULT_FRAMERATE    ) + "\"" +      \
-        String(BITRATE_ID       ) + "=\"" + String(DEFAULT_BITRATE      ) + "\"" +      \
-      "></" + String(STORAGE_ID)                                                 + ">") ;
+  static const int    DEFAULT_OUTPUT_STREAM_IDX = 0 ;
+  static const int    DEFAULT_OUTPUT_W          = 640 ;
+  static const int    DEFAULT_OUTPUT_H          = 480 ;
+  static const int    DEFAULT_FRAMERATE_IDX     = 0 ;
+  static const int    DEFAULT_BITRATE_IDX       = 0 ;
+  static const String DEFAULT_OUTPUT_DEST       = APP::APP_NAME + ".mp4" ;
 
   static const StringArray CAMERA_RESOLUTIONS = StringArray::fromLines("160x120"    + newLine +
                                                                        "320x240"    + newLine +
@@ -195,9 +188,6 @@ namespace CONFIG
                                                                        "Bottom"               ) ;
   static const StringArray OUTPUT_STREAMS     = StringArray::fromLines("File"       + newLine +
                                                                        "RTMP"                 ) ;
-  static const StringArray OUTPUT_RESOLUTIONS = StringArray::fromLines("768x480"    + newLine +
-                                                                       "1280x800"   + newLine +
-                                                                       "1920x1200"            ) ;
   static const StringArray OUTPUT_FRAMERATES  = StringArray::fromLines("12"         + newLine +
                                                                        "20"         + newLine +
                                                                        "30"                   ) ;

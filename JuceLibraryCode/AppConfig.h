@@ -18,6 +18,7 @@
 // [BEGIN_USER_CODE_SECTION]
 
 #define UNUSED(x) (void)(x)
+#define STRING(a_var) a_var.toString()
 
 // [END_USER_CODE_SECTION]
 

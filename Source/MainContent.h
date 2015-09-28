@@ -1,7 +1,8 @@
 /*
   ==============================================================================
 
-    This file was auto-generated!
+    Constants.h
+    Author:  bill-auger
 
   ==============================================================================
 */
@@ -9,7 +10,8 @@
 #ifndef MAINCONTENT_H_INCLUDED
 #define MAINCONTENT_H_INCLUDED
 
-#include "OutputConfig.h"
+#include "Config.h"
+#include "GstreamerVideo.h"
 #include "Statusbar.h"
 
 
@@ -33,11 +35,11 @@ public:
 private:
 
   DocumentWindow*               mainWindow ;
-  ScopedPointer<OutputConfig>   outputConfig ;
+  ScopedPointer<Config        > config ;
   ScopedPointer<GstreamerVideo> screencapMonitor ;
   ScopedPointer<GstreamerVideo> cameraMonitor ;
   ScopedPointer<GstreamerVideo> outputMonitor ;
-  ScopedPointer<Statusbar>      statusbar ;
+  ScopedPointer<Statusbar     > statusbar ;
 
   void setTitle(String title_text) ;
   void warning( String message_text) ;

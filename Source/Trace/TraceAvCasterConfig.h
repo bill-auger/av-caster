@@ -1,8 +1,7 @@
 /*
   ==============================================================================
 
-    TraceAvCasterConfig.h
-    Created: 26 Sep 2015 9:11:08am
+    Constants.h
     Author:  bill-auger
 
   ==============================================================================
@@ -18,27 +17,42 @@
 
 /* persistence */
 
-bool DbgTracing = false ;
-#define DEBUG_TRACE_LOAD_CONFIG                                                   \
-  DbgTracing = true ;                                                             \
-  if (default_xml == nullptr || !default_xml->hasTagName(CONFIG::STORAGE_ID))     \
-       Trace::TraceConfig("default config invalid - bailing") ;                   \
-  else Trace::TraceConfig("default config loaded") ;                              \
-  if (!config_stream->openedOk())                                                 \
-      Trace::TraceConfig("stored config not found - falling back on defaults") ;  \
-  else if (!validateConfig(stored_config))                                        \
-      Trace::TraceConfig("stored config is invalid - falling back on defaults") ; \
-  else Trace::TraceConfig("stored config found") ;                                \
-  DbgTracing = false ;
+#  define DEBUG_TRACE_VALIDATE_CONFIG                                                      \
+  String stored_version = String(double(config_store[CONFIG::CONFIG_VERSION_ID])) ; \
+  String success_msg    = "stored config parsed successfully v" + stored_version ;  \
+  String not_found_msg  = "stored config not found - restoring defaults" ;          \
+  String invlaid_msg    = "stored config not invalid - restoring defaults" ;        \
+  Trace::TraceConfig(((!config_store.isValid())             ? not_found_msg   :     \
+                     ((!config_store.hasType(root_node_id)) ? invlaid_msg   :       \
+                                                              success_msg   ) )) ;
 
-#define DEBUG_TRACE_VALIDATE_CONFIG                                                            \
-  String latest_version = String(CONFIG::CONFIG_VERSION) ;                                 \
-  String success_msg    = "stored config parsed successfully v" + String(stored_version) ; \
-  String fail_msg       = "stored config not found or invalid" ;                           \
-  if (!DbgTracing)                                                                        \
-    Trace::TraceConfig(((has_stored_config) ? success_msg : fail_msg              ) +      \
-                       ((do_versions_match) ? ""                                  :        \
-                       " (latest is v" + latest_version + " - restoring defualts)")   )    ;
+#  define DEBUG_TRACE_SANITIZE_CONFIG                                                      \
+  if (!do_versions_match)                                                                  \
+    Trace::TraceConfig("upgrading config version to v" + String(CONFIG::CONFIG_VERSION)) ; \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::CONFIG_VERSION_ID) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::DISPLAY_N_ID     ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::SCREEN_N_ID      ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::SCREENCAP_W_ID   ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::SCREENCAP_H_ID   ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::OFFSET_X_ID      ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::CAMERA_DEV_ID    ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::CAMERA_DEV_ID    ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::CAMERA_RES_ID    ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::AUDIO_API_ID     ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::AUDIO_DEVICE_ID  ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::AUDIO_CODEC_ID   ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::N_CHANNELS_ID    ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::SAMPLERATE_ID    ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::AUDIO_BITRATE_ID ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::OVERLAY_TEXT_ID  ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::TEXT_STYLE_ID    ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::TEXT_POS_ID      ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::OUTPUT_STREAM_ID ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::OUTPUT_W_ID      ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::OUTPUT_H_ID      ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::FRAMERATE_ID     ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::BITRATE_ID       ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::OUTPUT_DEST_ID   ) ;
 
 
 /* state */
@@ -50,6 +64,8 @@ bool DbgTracing = false ;
 
 #else // DEBUG
 
+#  define DEBUG_TRACE_VALIDATE_CONFIG     ;
+#  define DEBUG_TRACE_SANITIZE_CONFIG     ;
 #  define DEBUG_TRACE_CONFIG_TREE_CHANGED ;
 
 #endif // DEBUG

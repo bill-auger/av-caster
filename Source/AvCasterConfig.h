@@ -1,9 +1,8 @@
 /*
   ==============================================================================
 
-    AvCasterConfig.h
-    Created: 26 Sep 2015 3:53:12am
-    Author:  me
+    Constants.h
+    Author:  bill-auger
 
   ==============================================================================
 */
@@ -37,7 +36,7 @@ public:
   enum OverlayInput  { CAMERA_INPUT , LOGO_INPUT } ;
   enum AudioCodec    { AAC_AUDIO , MP3_AUDIO } ;
   enum VideoCodec    { X264_VIDEO } ;
-  enum OutputStream  { FILE_OUTPUT , NET_OUTPUT } ;
+  enum OutputStream  { FILE_OUTPUT , RTMP_OUTPUT } ;
 */
 
   // config root
@@ -49,13 +48,15 @@ private:
   AvCasterConfig() ;
 
   // persistence
-  bool validateConfig(ValueTree configStore) ;
-  void storeConfig() ;
+  ValueTree validateConfig(ValueTree config_store , Identifier root_node_id) ;
+  void      sanitizeConfig() ;
+  void      storeConfig() ;
 
   // runtime params
   void detectDisplayDimensions() ;
   void detectCaptureDevices() ;
-  void sanitizeParams() ;
+  void sanitizeParams() ; // unused
+  void setConfig(Identifier a_key , var a_value) ;
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
   // unused ValueTree::Listener interface implementations

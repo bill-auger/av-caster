@@ -54,7 +54,7 @@ OBJECTS := \
   $(OBJDIR)/GstreamerVideo_5f816b50.o \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainContent_6313eee1.o \
-  $(OBJDIR)/OutputConfig_c4bbaaac.o \
+  $(OBJDIR)/Config_5aed31cb.o \
   $(OBJDIR)/Statusbar_a0c28bc2.o \
   $(OBJDIR)/Trace_fd3024bc.o \
   $(OBJDIR)/juce_core_aff681cc.o \
@@ -105,9 +105,9 @@ $(OBJDIR)/MainContent_6313eee1.o: ../../Source/MainContent.cpp
 	@echo "Compiling MainContent.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/OutputConfig_c4bbaaac.o: ../../Source/OutputConfig.cpp
+$(OBJDIR)/Config_5aed31cb.o: ../../Source/Config.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling OutputConfig.cpp"
+	@echo "Compiling Config.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Statusbar_a0c28bc2.o: ../../Source/Statusbar.cpp

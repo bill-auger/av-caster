@@ -74,6 +74,10 @@ bool AvCaster::Initialize(MainContent* main_content , const String& args)
   // initialize gStreamer
   if (!InitGstreamer()) return false ;
 
+#ifdef QUIT_IMMEDIATELY
+  return false ;
+#endif // QUIT_IMMEDIATELY
+
   return true ;
 }
 
@@ -81,16 +85,16 @@ bool AvCaster::InitGstreamer()
 {
   // instantiate pipeline
   gst_init(nullptr , nullptr) ;
-  if (!(Pipeline        = gst_pipeline_new        ("xvoverlay"))           ||
-      !(ScreencapBin    = gst_bin_new             ("screencap-bin"))       ||
+  if (!(Pipeline        = gst_pipeline_new        ("xvoverlay"          )) ||
+      !(ScreencapBin    = gst_bin_new             ("screencap-bin"      )) ||
 //    !(ScreencapSource = gst_element_factory_make("videotestsrc" , NULL)) || // OK
       !(ScreencapSource = gst_element_factory_make("ximagesrc"    , NULL)) ||
       !(Videoconvert    = gst_element_factory_make("videoconvert" , NULL)) ||
       !(ScreencapSink   = gst_element_factory_make("xvimagesink"  , NULL)) ||
-      !(CameraBin       = gst_bin_new             ("camera-bin"))          ||
+      !(CameraBin       = gst_bin_new             ("camera-bin"         )) ||
       !(CameraSource    = gst_element_factory_make("v4l2src"      , NULL)) ||
       !(CameraSink      = gst_element_factory_make("xvimagesink"  , NULL))  )//||
-//       !(OutputBin       = gst_bin_new             ("output-bin"))          ||
+//       !(OutputBin       = gst_bin_new             ("output-bin"         )) ||
 //       !(OutputSink      = gst_element_factory_make("xvimagesink"  , NULL))  )
   {
     AvCaster::Error(GUI::GST_INIT_ERROR_MSG) ; return false ;
@@ -109,8 +113,8 @@ bool AvCaster::InitGstreamer()
 //           (this is why we have CameraBin unused here - it is otherwise working)
 
   // configure pipeline
-//   gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    , CameraBin    ,                 nullptr) ;
-  gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    ,                                nullptr) ;
+  gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    , CameraBin    ,                 nullptr) ;
+//   gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    ,                                nullptr) ;
   gst_bin_add_many(GST_BIN(ScreencapBin) , ScreencapSource , Videoconvert , ScreencapSink , nullptr) ;
   gst_bin_add_many(GST_BIN(CameraBin   ) , CameraSource    , CameraSink   ,                 nullptr) ;
 //   gst_bin_add_many(GST_BIN(OutputBin   ) , videoconvert    , x264enc       , flvmux    , OutputSink , nullptr) ;
@@ -119,13 +123,14 @@ bool AvCaster::InitGstreamer()
 //   gst_element_link_many(videoconvert    , x264enc       , flvmux , OutputSink , nullptr) ;
 
   // configure plugins
-  int capture_w = int(Config->configStore[CONFIG::CAPTURE_W_ID]) ;
-  int capture_h = int(Config->configStore[CONFIG::CAPTURE_H_ID]) ;
-capture_w = 1679 ; capture_h = 1049 ;
-  g_object_set(G_OBJECT(ScreencapSource) , "endx"         , capture_w , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "endy"         , capture_h , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "use-damage"   , false     , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "show-pointer" , true      , NULL) ;
+  int screencap_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID]) ;
+  int screencap_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID]) ;
+DBG("screencap_w=" + String(screencap_w) + " screencap_h=" + String(screencap_h)) ;
+// screencap_w = 1680 ; screencap_h = 1050 ;
+  g_object_set(G_OBJECT(ScreencapSource) , "endx"         , screencap_w - 1 , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "endy"         , screencap_h - 1 , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "use-damage"   , false           , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "show-pointer" , true            , NULL) ;
 // g_object_set(G_OBJECT(x264enc        ) , "bitrate"      , 800   , NULL) ;
 // g_object_set(G_OBJECT(flvmux         ) , "name"         , "mux" , NULL) ;
 // g_object_set(G_OBJECT(flvmux         ) , "streamable"   , true  , NULL) ;
@@ -193,6 +198,7 @@ void AvCaster::UpdateStatusGUI()
 */
 }
 
-void AvCaster::HandleConfigChanged(const Identifier& a_key) {}
+// TODO: this method is actually unnecessary at this point (see note in issue #11)
+void AvCaster::HandleConfigChanged(const Identifier& a_key) { Gui->config->loadConfig() ; }
 
 void AvCaster::StartMonitors() { Gui->startMonitors() ; }

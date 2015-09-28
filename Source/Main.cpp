@@ -25,14 +25,13 @@ public:
     MainContent* main_content = (MainContent*)this->mainWindow->mainContent ;
 
     if (AvCaster::Initialize(main_content , command_line))
-//     if (AvCaster::Initialize(this , main_content , command_line))
     {
       // start GUI update timers
-      startTimer(APP::GUI_TIMER_HI_ID  , APP::GUI_UPDATE_HI_IVL) ;
+      startTimer(APP::GUI_TIMER_HI_ID  , APP::GUI_UPDATE_HI_IVL ) ;
       startTimer(APP::GUI_TIMER_MED_ID , APP::GUI_UPDATE_MED_IVL) ;
-      startTimer(APP::GUI_TIMER_LO_ID  , APP::GUI_UPDATE_LO_IVL) ;
+      startTimer(APP::GUI_TIMER_LO_ID  , APP::GUI_UPDATE_LO_IVL ) ;
     }
-    else quit() ;
+    else { shutdown() ; quit() ; }
   }
 
   void anotherInstanceStarted (const String& commandLine) override
