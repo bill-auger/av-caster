@@ -28,8 +28,6 @@ public:
 
   void paint(Graphics&) ;
   void resized() ;
-  void instantiate(ValueTree config_store) ;
-  void startMonitors() ;
 
 
 private:
@@ -41,9 +39,10 @@ private:
   ScopedPointer<GstreamerVideo> outputMonitor ;
   ScopedPointer<Statusbar     > statusbar ;
 
-  void setTitle(String title_text) ;
-  void warning( String message_text) ;
-  void error(   String message_text) ;
+  void instantiate(ValueTree config_store) ;
+  void setTitle(   String title_text) ;
+  void warning(    String message_text) ;
+  void error(      String message_text) ;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContent)
 } ;

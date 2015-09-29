@@ -8,7 +8,6 @@
   ==============================================================================
 */
 
-#include <gst/video/videooverlay.h>
 
 #include "AvCaster.h"
 #include "Trace/Trace.h"
@@ -112,48 +111,28 @@ bool AvCaster::InitGstreamer()
 //           block all pipeline progress (other elements show only first frame)
 //           (this is why we have CameraBin unused here - it is otherwise working)
 
+
   // configure pipeline
-  gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    , CameraBin    ,                 nullptr) ;
-//   gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    ,                                nullptr) ;
-  gst_bin_add_many(GST_BIN(ScreencapBin) , ScreencapSource , Videoconvert , ScreencapSink , nullptr) ;
-  gst_bin_add_many(GST_BIN(CameraBin   ) , CameraSource    , CameraSink   ,                 nullptr) ;
+  if (!!Config->cameraDevices.getNumProperties())
+       gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    , CameraBin    , /*OutputBin ,*/ nullptr) ;
+  else gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    ,                /*OutputBin ,*/ nullptr) ;
+  gst_bin_add_many(     GST_BIN(ScreencapBin) , ScreencapSource , Videoconvert , ScreencapSink , nullptr) ;
+  gst_bin_add_many(     GST_BIN(CameraBin   ) , CameraSource    , CameraSink   ,                 nullptr) ;
 //   gst_bin_add_many(GST_BIN(OutputBin   ) , videoconvert    , x264enc       , flvmux    , OutputSink , nullptr) ;
   gst_element_link_many(                   ScreencapSource , Videoconvert , ScreencapSink , nullptr) ;
   gst_element_link_many(                   CameraSource    , CameraSink   ,                 nullptr) ;
 //   gst_element_link_many(videoconvert    , x264enc       , flvmux , OutputSink , nullptr) ;
 
   // configure plugins
-  int screencap_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID]) ;
-  int screencap_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID]) ;
-DBG("screencap_w=" + String(screencap_w) + " screencap_h=" + String(screencap_h)) ;
-// screencap_w = 1680 ; screencap_h = 1050 ;
-  g_object_set(G_OBJECT(ScreencapSource) , "endx"         , screencap_w - 1 , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "endy"         , screencap_h - 1 , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "use-damage"   , false           , NULL) ;
-  g_object_set(G_OBJECT(ScreencapSource) , "show-pointer" , true            , NULL) ;
-// g_object_set(G_OBJECT(x264enc        ) , "bitrate"      , 800   , NULL) ;
-// g_object_set(G_OBJECT(flvmux         ) , "name"         , "mux" , NULL) ;
-// g_object_set(G_OBJECT(flvmux         ) , "streamable"   , true  , NULL) ;
-// gchar* url = "rtmp://127.0.0.1:1935/live1/live live=1" ;
-// g_object_set(G_OBJECT(rtmpsink) , "location"   , url   , NULL) ;
-
+  ConfigureStream() ;
 
   // attach GstreamerVideo native xwindows to gStreamer overlay sinks
-  StartMonitors() ;
-  guintptr screencap_window_handle = (guintptr)(Gui->screencapMonitor->getWindowHandle()) ;
-  guintptr camera_window_handle    = (guintptr)(Gui->cameraMonitor   ->getWindowHandle()) ;
-//   guintptr output_window_handle    = (guintptr)(Gui->outputMonitor   ->getWindowHandle()) ;
-  gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(ScreencapSink) , screencap_window_handle) ;
-  gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(CameraSink   ) , camera_window_handle   ) ;
-//   gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(OutputSink   ) , output_window_handle   ) ;
+  Gui->screencapMonitor->starting(ScreencapSink) ;
+  Gui->cameraMonitor   ->starting(CameraSink   ) ;
+  Gui->outputMonitor   ->starting(OutputSink   ) ;
 
   // set rolling
-  if (gst_element_set_state(Pipeline , GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
-  {
-    AvCaster::Error(GUI::GST_STATE_ERROR_MSG) ; return false ;
-  }
-
-  return true ;
+  return TogglePreview() ;
 }
 
 void AvCaster::Shutdown()
@@ -190,15 +169,58 @@ void AvCaster::UpdateStatusGUI()
 {
 /*
   Gui->statusbar->setStatusL("Frame: "    + String(MuxStream->currentFrame  ) + " " +
-                             "FPS: "      + String(MuxStream->currentFps    )) ;
+                             "FPS: "      + String(MuxStream->currentFps    )       ) ;
   Gui->statusbar->setStatusC("Bitrate: "  + String(MuxStream->currentBitrate) + " " +
-                             "Q: "        + String(MuxStream->currentQ      )) ;
+                             "Q: "        + String(MuxStream->currentQ      )       ) ;
   Gui->statusbar->setStatusR("Filesize: " + String(MuxStream->currentSize   ) + " " +
-                             "Duration: " + String(MuxStream->currentTime   )) ;
+                             "Duration: " + String(MuxStream->currentTime   )       ) ;
 */
 }
 
-// TODO: this method is actually unnecessary at this point (see note in issue #11)
-void AvCaster::HandleConfigChanged(const Identifier& a_key) { Gui->config->loadConfig() ; }
+/* TODO: we may want to reconfigure the stream here (e.g. text position)
+ *         => ConfigureStream() ;
+ *       or perform validations (e.g. screen resolution/orientation has changed)
+ *         => Gui->config->loadConfig() ;                                    */
+void AvCaster::HandleConfigChanged(const Identifier& a_key)
+{
+  if (a_key == CONFIG::IS_PREVIEW_ON_ID) TogglePreview() ;
+}
 
-void AvCaster::StartMonitors() { Gui->startMonitors() ; }
+void AvCaster::ConfigureStream()
+{
+  int screencap_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID]) ;
+  int screencap_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID]) ;
+DBG("screencap_w=" + String(screencap_w) + " screencap_h=" + String(screencap_h)) ;
+// screencap_w = 1680 ; screencap_h = 1050 ;
+  g_object_set(G_OBJECT(ScreencapSource) , "endx"         , screencap_w - 1 , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "endy"         , screencap_h - 1 , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "use-damage"   , false           , NULL) ;
+  g_object_set(G_OBJECT(ScreencapSource) , "show-pointer" , true            , NULL) ;
+// g_object_set(G_OBJECT(x264enc        ) , "bitrate"      , 800   , NULL) ;
+// g_object_set(G_OBJECT(flvmux         ) , "name"         , "mux" , NULL) ;
+// g_object_set(G_OBJECT(flvmux         ) , "streamable"   , true  , NULL) ;
+// gchar* url = "rtmp://127.0.0.1:1935/live1/live live=1" ;
+// g_object_set(G_OBJECT(rtmpsink) , "location"   , url   , NULL) ;
+}
+
+bool AvCaster::TogglePreview()
+{
+  bool     is_preview_on = bool(Config->configStore[CONFIG::IS_PREVIEW_ON_ID]) ;
+  GstState next_state    = (is_preview_on) ? GST_STATE_PLAYING : GST_STATE_PAUSED ;
+/*
+  Gui->screencapMonitor->setState(ScreencapSink, is_preview_on) ;
+  Gui->cameraMonitor   ->setState(CameraSink   , is_preview_on) ;
+  Gui->outputMonitor   ->setState(OutputSink   , is_preview_on) ;
+*/
+  return SetGstreamerState(Pipeline , next_state) ;
+}
+
+bool AvCaster::SetGstreamerState(GstElement* a_gst_element , GstState next_state)
+{
+  if (gst_element_set_state(a_gst_element , next_state) == GST_STATE_CHANGE_FAILURE)
+  {
+    AvCaster::Error(GUI::GST_STATE_ERROR_MSG) ; return false ;
+  }
+
+  return true ;
+}

@@ -17,17 +17,20 @@
 /**
 This is a custom JUCE component that hosts a gStreamer video output.
 
-To use this class simply instantiate one, passing in a reference Component*
-and the relative X and Y positions for this component.
+To use this class simply instantiate one, passing in a reference Component*,
+    the X and Y positions for this component relative to the reference Component*,
+    this component width, and this component height.
 
-The GstreamerVideo component will add itself as a top-level window on the desktop
-and will attempt to keep itself positioned at the specified coordinates
-'within' the supplied reference component when its position changes
-via a ComponentListener registered on the reference component.
+This GstreamerVideo component will add itself as a top-level window on the desktop
+    and will attempt to keep itself positioned at the specified coordinates
+    "within" the supplied reference component when its position changes
+    via a ComponentListener registered on the reference component.
 
   @param follow_window a reference Component* for this GstreamerVideo position
   @param local_x       X position relative to the reference component
   @param local_y       Y position relative to the reference component
+  @param initial_w     initial width  of this component drawing surface
+  @param initial_h     initial height of this component drawing surface
 */
 class GstreamerVideo : public Component , ComponentListener
 {
@@ -41,9 +44,10 @@ public:
   void resized() ;
   void componentMovedOrResized(Component& a_component , bool wasMoved  , bool wasResized) ;
 
-  inline void setPosition() ;
-  void        start() ;
-  void        stop() ;
+  void setPosition() ;
+  void setState(   GstElement* sink_element , bool is_preview_on) ;
+  void starting(   GstElement* sink_element) ;
+  void stopping() ;
 
 
 private:

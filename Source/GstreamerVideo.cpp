@@ -8,9 +8,11 @@
   ==============================================================================
 */
 
-#include "Trace/Trace.h"
+#include <gst/video/videooverlay.h>
+
 #include "AvCaster.h"
 #include "GstreamerVideo.h"
+#include "Trace/Trace.h"
 
 
 GstreamerVideo::GstreamerVideo(Component* follow_window , int local_x   , int local_y  ,
@@ -51,18 +53,25 @@ void GstreamerVideo::setPosition()
   this->setTopLeftPosition(followWindow->localPointToGlobal(*this->localPosition)) ;
 }
 
-void GstreamerVideo::start()
+void GstreamerVideo::setState(GstElement* sink_element , bool is_preview_on)
+{
+  if (is_preview_on) starting(sink_element) ; else stopping() ;
+}
+
+void GstreamerVideo::starting(GstElement* sink_element)
 {
   if (!isOnDesktop())
   {
     // subscribe to follow window position events
     this->followWindow->addComponentListener(this) ;
 
-    // detach from main window
-    addToDesktop(0) ; // ComponentPeer::windowRepaintedExplictly
+    // detach from main window and attach to gStreamer
+    addToDesktop(0) ;
+    guintptr window_handle = (guintptr)(this->getWindowHandle()) ;
+    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(sink_element) , window_handle) ;
   }
 
   setPosition() ; setVisible(true) ;
 }
 
-void GstreamerVideo::stop() { setVisible(true) ; }
+void GstreamerVideo::stopping() { setVisible(false) ; }

@@ -471,6 +471,13 @@ Config::Config (Component* main_window, ValueTree config_store)
     monitorsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     monitorsGroup->setColour (GroupComponent::textColourId, Colours::white);
 
+    addAndMakeVisible (monitorsToggle = new ToggleButton ("monitorsToggle"));
+    monitorsToggle->setExplicitFocusOrder (24);
+    monitorsToggle->setButtonText (TRANS("Preview"));
+    monitorsToggle->addListener (this);
+    monitorsToggle->setToggleState (true, dontSendNotification);
+    monitorsToggle->setColour (ToggleButton::textColourId, Colours::white);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -479,6 +486,9 @@ Config::Config (Component* main_window, ValueTree config_store)
 
 
     //[Constructor] You can add your own custom stuff here..
+
+  this->cameraDevices = this->configStore.getChildWithName(CONFIG::CAMERA_DEVICES_ID) ;
+  this->audioDevices  = this->configStore.getChildWithName(CONFIG::AUDIO_DEVICES_ID ) ;
 
   populateComboBoxes() ; loadConfig() ;
   this->screenWidthText ->addListener(this) ;
@@ -552,6 +562,7 @@ Config::~Config()
     outputDestLabel = nullptr;
     outputDestText = nullptr;
     monitorsGroup = nullptr;
+    monitorsToggle = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -633,6 +644,7 @@ void Config::resized()
     outputDestLabel->setBounds (32, 428, 80, 24);
     outputDestText->setBounds (120, 428, 592, 24);
     monitorsGroup->setBounds (16, 476, getWidth() - 32, 164);
+    monitorsToggle->setBounds (594, 504, 80, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -640,7 +652,7 @@ void Config::resized()
 void Config::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
-DBG("Config::sliderValueChanged()") ;
+
   Identifier key ;
   var        value = var((int)sliderThatWasMoved->getValue()) ;
 
@@ -801,10 +813,35 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[UsercomboBoxChanged_Post]
 
   value = var((~option_n) ? option_n : default_idx) ;
-  comboBoxThatHasChanged->setSelectedItemIndex(option_n) ;
+  comboBoxThatHasChanged->setSelectedItemIndex(int(value)) ;
   setConfig(key , value) ;
 
     //[/UsercomboBoxChanged_Post]
+}
+
+void Config::buttonClicked (Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+
+  Identifier a_key ;
+  var        a_value = var(buttonThatWasClicked->getToggleState()) ;
+
+    //[/UserbuttonClicked_Pre]
+
+    if (buttonThatWasClicked == monitorsToggle)
+    {
+        //[UserButtonCode_monitorsToggle] -- add your button handler code here..
+
+      a_key = CONFIG::IS_PREVIEW_ON_ID ;
+
+        //[/UserButtonCode_monitorsToggle]
+    }
+
+    //[UserbuttonClicked_Post]
+
+  setConfig(a_key , a_value) ;
+
+    //[/UserbuttonClicked_Post]
 }
 
 
@@ -844,35 +881,32 @@ void Config::populateComboBoxes()
 void Config::loadConfig()
 {
 //DEBUG_TRACE_DUMP_CONFIG
-DBG("Config::loadConfig() nChannelsSlider=" + String(this->nChannelsSlider->getValue()) +
-  " N_CHANNELS_ID=" + STRING(this->configStore[CONFIG::N_CHANNELS_ID]) ) ;
-  // TODO: populate these
-//   this->cameraDevCombo->addItemList(camera_devs , 1) ;
-//   this->audioDevCombo ->addItemList(audio_devs  , 1) ;
 
-  double display_n         = double(this->configStore[CONFIG::DISPLAY_N_ID    ]) ;
-  double screen_n          = double(this->configStore[CONFIG::SCREEN_N_ID     ]) ;
-  String screencap_w       = STRING(this->configStore[CONFIG::SCREENCAP_W_ID  ]) ;
-  String screencap_h       = STRING(this->configStore[CONFIG::SCREENCAP_H_ID  ]) ;
-  String offset_x          = STRING(this->configStore[CONFIG::OFFSET_X_ID     ]) ;
-  String offset_y          = STRING(this->configStore[CONFIG::OFFSET_Y_ID     ]) ;
-  int    camera_dev_idx    = int   (this->configStore[CONFIG::CAMERA_DEV_ID   ]) ;
-  int    camera_res_idx    = int   (this->configStore[CONFIG::CAMERA_RES_ID   ]) ;
-  int    audio_api_idx     = int   (this->configStore[CONFIG::AUDIO_API_ID    ]) ;
-  int    audio_dev_idx     = int   (this->configStore[CONFIG::AUDIO_DEVICE_ID ]) ;
-  int    audio_codec_idx   = int   (this->configStore[CONFIG::AUDIO_CODEC_ID  ]) ;
-  double n_channels        = double(this->configStore[CONFIG::N_CHANNELS_ID   ]) ;
-  int    samplerate_idx    = int   (this->configStore[CONFIG::SAMPLERATE_ID   ]) ;
-  int    audio_bitrate_idx = int   (this->configStore[CONFIG::AUDIO_BITRATE_ID]) ;
-  int    text_style_idx    = int   (this->configStore[CONFIG::TEXT_STYLE_ID   ]) ;
-  int    text_pos_idx      = int   (this->configStore[CONFIG::TEXT_POS_ID     ]) ;
-  String overlay_text      = STRING(this->configStore[CONFIG::OVERLAY_TEXT_ID ]) ;
-  int    output_stream_idx = int   (this->configStore[CONFIG::OUTPUT_STREAM_ID]) ;
-  String output_w_text     = STRING(this->configStore[CONFIG::OUTPUT_W_ID     ]) ;
-  String output_h_text     = STRING(this->configStore[CONFIG::OUTPUT_H_ID     ]) ;
-  int    framerate_idx     = int   (this->configStore[CONFIG::FRAMERATE_ID    ]) ;
-  int    bitrate_idx       = int   (this->configStore[CONFIG::BITRATE_ID      ]) ;
-  String output_dest_text  = STRING(this->configStore[CONFIG::OUTPUT_DEST_ID  ]) ;
+  double      display_n         = double(this->configStore[CONFIG::DISPLAY_N_ID    ]) ;
+  double      screen_n          = double(this->configStore[CONFIG::SCREEN_N_ID     ]) ;
+  String      screencap_w       = STRING(this->configStore[CONFIG::SCREENCAP_W_ID  ]) ;
+  String      screencap_h       = STRING(this->configStore[CONFIG::SCREENCAP_H_ID  ]) ;
+  String      offset_x          = STRING(this->configStore[CONFIG::OFFSET_X_ID     ]) ;
+  String      offset_y          = STRING(this->configStore[CONFIG::OFFSET_Y_ID     ]) ;
+  StringArray camera_devices    = node2Array(this->cameraDevices) ;
+  int         camera_dev_idx    = int   (this->configStore[CONFIG::CAMERA_DEV_ID   ]) ;
+  int         camera_res_idx    = int   (this->configStore[CONFIG::CAMERA_RES_ID   ]) ;
+  int         audio_api_idx     = int   (this->configStore[CONFIG::AUDIO_API_ID    ]) ;
+  StringArray audio_devices     = node2Array(this->audioDevices) ;
+  int         audio_dev_idx     = int   (this->configStore[CONFIG::AUDIO_DEVICE_ID ]) ;
+  int         audio_codec_idx   = int   (this->configStore[CONFIG::AUDIO_CODEC_ID  ]) ;
+  double      n_channels        = double(this->configStore[CONFIG::N_CHANNELS_ID   ]) ;
+  int         samplerate_idx    = int   (this->configStore[CONFIG::SAMPLERATE_ID   ]) ;
+  int         audio_bitrate_idx = int   (this->configStore[CONFIG::AUDIO_BITRATE_ID]) ;
+  int         text_style_idx    = int   (this->configStore[CONFIG::TEXT_STYLE_ID   ]) ;
+  int         text_pos_idx      = int   (this->configStore[CONFIG::TEXT_POS_ID     ]) ;
+  String      overlay_text      = STRING(this->configStore[CONFIG::OVERLAY_TEXT_ID ]) ;
+  int         output_stream_idx = int   (this->configStore[CONFIG::OUTPUT_STREAM_ID]) ;
+  String      output_w_text     = STRING(this->configStore[CONFIG::OUTPUT_W_ID     ]) ;
+  String      output_h_text     = STRING(this->configStore[CONFIG::OUTPUT_H_ID     ]) ;
+  int         framerate_idx     = int   (this->configStore[CONFIG::FRAMERATE_ID    ]) ;
+  int         bitrate_idx       = int   (this->configStore[CONFIG::BITRATE_ID      ]) ;
+  String      output_dest_text  = STRING(this->configStore[CONFIG::OUTPUT_DEST_ID  ]) ;
 
   this->displaySlider    ->setValue            (display_n) ;
   this->screenSlider     ->setValue            (42) ;
@@ -880,9 +914,11 @@ DBG("Config::loadConfig() nChannelsSlider=" + String(this->nChannelsSlider->getV
   this->screenHeightText ->setText             (screencap_h) ;
   this->xOffsetText      ->setText             (offset_x) ;
   this->yOffsetText      ->setText             (offset_y) ;
+  this->cameraDevCombo   ->addItemList(         camera_devices    , 1) ;
   this->cameraDevCombo   ->setSelectedItemIndex(camera_dev_idx    , juce::dontSendNotification) ;
   this->cameraResCombo   ->setSelectedItemIndex(camera_res_idx    , juce::dontSendNotification) ;
   this->audioApiCombo    ->setSelectedItemIndex(audio_api_idx     , juce::dontSendNotification) ;
+  this->audioDevCombo    ->addItemList(         audio_devices     , 1) ;
   this->audioDevCombo    ->setSelectedItemIndex(audio_dev_idx     , juce::dontSendNotification) ;
   this->audioCodecCombo  ->setSelectedItemIndex(audio_codec_idx   , juce::dontSendNotification) ;
   this->nChannelsSlider  ->setValue            (n_channels) ;
@@ -897,6 +933,19 @@ DBG("Config::loadConfig() nChannelsSlider=" + String(this->nChannelsSlider->getV
   this->framerateCombo   ->setSelectedItemIndex(framerate_idx     , juce::dontSendNotification) ;
   this->bitrateCombo     ->setSelectedItemIndex(bitrate_idx       , juce::dontSendNotification) ;
   this->outputDestText   ->setText             (output_dest_text) ;
+}
+
+StringArray Config::node2Array(ValueTree a_node)
+{
+  StringArray devices ; int n_devices = a_node.getNumProperties() ;
+  for (int device_n = 0 ; device_n < n_devices ; ++device_n)
+  {
+    Identifier device_name   = a_node.getPropertyName(device_n) ;
+    var        friendly_name = a_node.getProperty(device_name , "n/a") ;
+    devices.add(friendly_name) ;
+  }
+
+  return devices ;
 }
 
 void Config::setConfig(Identifier a_key , var a_value)
@@ -1141,6 +1190,10 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="monitorsGroup" id="6607ba656d5c8919" memberName="monitorsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 476 32M 164" outlinecol="ffffffff"
                   textcol="ffffffff" title="Monitors"/>
+  <TOGGLEBUTTON name="monitorsToggle" id="22cf1f64bccae1df" memberName="monitorsToggle"
+                virtualName="" explicitFocusOrder="24" pos="594 504 80 24" txtcol="ffffffff"
+                buttonText="Preview" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -39,7 +39,8 @@ this is the output configuration GUI
 class Config  : public Component,
                 public TextEditor::Listener,
                 public SliderListener,
-                public ComboBoxListener
+                public ComboBoxListener,
+                public ButtonListener
 {
 public:
     //==============================================================================
@@ -57,19 +58,24 @@ public:
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  void textEditorFocusLost(TextEditor& a_text_editor) ;
-  void populateComboBoxes() ;
-  void loadConfig() ;
-  void setConfig(Identifier a_key , var a_value) ;
+  void        textEditorFocusLost(TextEditor& a_text_editor) ;
+
+  void        populateComboBoxes() ;
+  void        loadConfig() ;
+  StringArray node2Array(        ValueTree a_node) ;
+  void        setConfig(         Identifier a_key , var a_value) ;
 
 
   ValueTree configStore ;
+  ValueTree cameraDevices ;
+  ValueTree audioDevices ;
 
     //[/UserVariables]
 
@@ -126,6 +132,7 @@ private:
     ScopedPointer<Label> outputDestLabel;
     ScopedPointer<TextEditor> outputDestText;
     ScopedPointer<GroupComponent> monitorsGroup;
+    ScopedPointer<ToggleButton> monitorsToggle;
 
 
     //==============================================================================

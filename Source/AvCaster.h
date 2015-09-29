@@ -65,7 +65,12 @@ private:
   static void HandleTimer(        int timer_id) ;
   static void UpdateStatusGUI() ;
   static void HandleConfigChanged(const Identifier& a_key) ;
-  static void StartMonitors() ;
+
+  // stream state
+  static void ConfigureStream() ;
+  static bool TogglePreview() ;
+  static bool SetGstreamerState(GstElement* a_gst_element , GstState next_state) ;
+
 
   static MainContent*  Gui ;
   static Array<Alert*> Alerts ;

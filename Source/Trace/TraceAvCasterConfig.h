@@ -18,13 +18,14 @@
 /* persistence */
 
 #  define DEBUG_TRACE_VALIDATE_CONFIG                                                      \
-  String stored_version = String(double(config_store[CONFIG::CONFIG_VERSION_ID])) ; \
-  String success_msg    = "stored config parsed successfully v" + stored_version ;  \
-  String not_found_msg  = "stored config not found - restoring defaults" ;          \
-  String invlaid_msg    = "stored config not invalid - restoring defaults" ;        \
-  Trace::TraceConfig(((!config_store.isValid())             ? not_found_msg   :     \
-                     ((!config_store.hasType(root_node_id)) ? invlaid_msg   :       \
-                                                              success_msg   ) )) ;
+  String success_msg    = "stored config parsed successfully v" + String(stored_version) ; \
+  String not_found_msg  = "stored config not found - restoring defaults" ;                 \
+  String invlaid_msg    = "stored config not invalid - restoring defaults" ;               \
+  Trace::TraceConfig(((!stored_config.isValid())             ? not_found_msg   :           \
+                     ((!stored_config.hasType(root_node_id)) ? invlaid_msg   :             \
+                                                              success_msg   ) )) ;         \
+  Trace::TraceMissingNode(config_store , CONFIG::CAMERA_DEVICES_ID) ;                      \
+  Trace::TraceMissingNode(config_store , CONFIG::AUDIO_DEVICES_ID ) ;
 
 #  define DEBUG_TRACE_SANITIZE_CONFIG                                                      \
   if (!do_versions_match)                                                                  \
@@ -52,7 +53,8 @@
   Trace::TraceMissingProperty(this->configStore , CONFIG::OUTPUT_H_ID      ) ;             \
   Trace::TraceMissingProperty(this->configStore , CONFIG::FRAMERATE_ID     ) ;             \
   Trace::TraceMissingProperty(this->configStore , CONFIG::BITRATE_ID       ) ;             \
-  Trace::TraceMissingProperty(this->configStore , CONFIG::OUTPUT_DEST_ID   ) ;
+  Trace::TraceMissingProperty(this->configStore , CONFIG::OUTPUT_DEST_ID   ) ;             \
+  Trace::TraceMissingProperty(this->configStore , CONFIG::IS_PREVIEW_ON_ID ) ;
 
 
 /* state */

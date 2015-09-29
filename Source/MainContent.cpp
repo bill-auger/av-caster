@@ -32,7 +32,7 @@ void MainContent::paint(Graphics& g)
 
 void MainContent::resized()
 {
-  if (this->statusbar == nullptr) return ;
+  if (this->config == nullptr || this->statusbar == nullptr) return ;
 
   int window_w = getWidth() ;
   int window_h = getHeight() ;
@@ -81,13 +81,6 @@ void MainContent::instantiate(ValueTree config_store)
   this->statusbar->setStatusL(GUI::INIT_STATUS_TEXT) ;
 
   resized() ;
-}
-
-void MainContent::startMonitors()
-{
-  this->screencapMonitor->start() ;
-  this->cameraMonitor   ->start() ;
-  this->outputMonitor   ->start() ;
 }
 
 void MainContent::setTitle(String title_text)

@@ -14,9 +14,9 @@
 
 
 /**
-  LinJamConfig is the model class
-  it holds the runtime configuration via shared value holders
-      and handles persistence via JUCE binary storage TODO: persistence nyi
+  AvCasterConfig is the model class for the AvCaster application
+  It holds the runtime configuration via shared value holders
+      and handles persistence via JUCE binary storage
 */
 class AvCasterConfig : ValueTree::Listener
 {
@@ -39,8 +39,10 @@ public:
   enum OutputStream  { FILE_OUTPUT , RTMP_OUTPUT } ;
 */
 
-  // config root
-  ValueTree configStore ; // STORAGE_ID node
+  // configuration/persistence
+  ValueTree configStore ;   // config root (STORAGE_ID node)
+  ValueTree cameraDevices ; // (CAMERA_DEVICES_ID node)
+  ValueTree audioDevices ;  // (AUDIO_DEVICES_ID node)
 
 
 private:
@@ -48,7 +50,8 @@ private:
   AvCasterConfig() ;
 
   // persistence
-  ValueTree validateConfig(ValueTree config_store , Identifier root_node_id) ;
+  ValueTree verifyConfig(  ValueTree config_store , Identifier root_node_id) ;
+  void      validateConfig() ;
   void      sanitizeConfig() ;
   void      storeConfig() ;
 
@@ -56,7 +59,7 @@ private:
   void detectDisplayDimensions() ;
   void detectCaptureDevices() ;
   void sanitizeParams() ; // unused
-  void setConfig(Identifier a_key , var a_value) ;
+  void validateConfigProperty(  Identifier a_key , var a_default_value) ;
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
   // unused ValueTree::Listener interface implementations
@@ -68,12 +71,6 @@ private:
 
 
   File configFile ;
-
-  // configuration
-  uint16      desktopW ;
-  uint16      desktopH ;
-  StringArray cameraDevices ;
-//   StringArray audioDevices ;
 
   // status display
   uint32 currentFrame ;

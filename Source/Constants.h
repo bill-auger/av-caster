@@ -98,9 +98,21 @@ namespace GUI
 
 namespace CONFIG
 {
+/*\ CAVEATS:
+|*|  when adding nodes or properties to AvCasterConfig->configStore be sure to:
+|*|    * if new node     - verify schema in   AvCasterConfig::validateConfig()
+|*|    * if new property - verify schema in   AvCasterConfig::validateConfig()
+|*|                      - sanitize data in   AvCasterConfig::sanitizeConfig()
+|*|    * validate and trace data/errors in    #define DEBUG_TRACE_VALIDATE_CONFIG
+|*|                                           #define DEBUG_TRACE_SANITIZE_CONFIG // nyi
+\*/
+
+  // nodes
+  static const Identifier STORAGE_ID        = "av-caster-config" ;
+  static const Identifier CAMERA_DEVICES_ID = "camera-devices" ;
+  static const Identifier AUDIO_DEVICES_ID  = "audio-devices" ;
   // config root
   static const Identifier CONFIG_VERSION_ID = "config-version" ;
-  static const Identifier STORAGE_ID        = "av-caster-config" ;
   // screen IDs
   static const Identifier DISPLAY_N_ID     = "display-n" ;
   static const Identifier SCREEN_N_ID      = "screen-n" ;
@@ -129,6 +141,7 @@ namespace CONFIG
   static const Identifier FRAMERATE_ID     = "framerate-idx" ;
   static const Identifier BITRATE_ID       = "bitrate-idx" ;
   static const Identifier OUTPUT_DEST_ID   = "output-dest" ;
+  static const Identifier IS_PREVIEW_ON_ID = "is-preview-on" ;
 
   // root defaults
   // persistence and storage
@@ -167,6 +180,7 @@ namespace CONFIG
   static const int    DEFAULT_FRAMERATE_IDX     = 0 ;
   static const int    DEFAULT_BITRATE_IDX       = 0 ;
   static const String DEFAULT_OUTPUT_DEST       = APP::APP_NAME + ".mp4" ;
+  static const bool   DEFAULT_IS_PREVIEW_ON     = true ;
 
   static const StringArray CAMERA_RESOLUTIONS = StringArray::fromLines("160x120"    + newLine +
                                                                        "320x240"    + newLine +

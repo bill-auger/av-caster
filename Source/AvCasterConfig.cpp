@@ -28,8 +28,10 @@ AvCasterConfig::AvCasterConfig()
   }
 
   // create shared config ValueTree from persistent storage or defaults
-  this->configStore = validateConfig(stored_config , CONFIG::STORAGE_ID) ;
-  sanitizeConfig() ; storeConfig() ;
+  this->configStore   = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
+  this->cameraDevices = this->configStore.getChildWithName(CONFIG::CAMERA_DEVICES_ID) ;
+  this->audioDevices  = this->configStore.getChildWithName(CONFIG::AUDIO_DEVICES_ID ) ;
+  validateConfig() ; sanitizeConfig() ; storeConfig() ;
 
   // subscribe to model changes
   this->configStore.addListener(this) ;
@@ -47,72 +49,57 @@ AvCasterConfig::~AvCasterConfig() { storeConfig() ; }
 
 /* AvCasterConfig private instance methods */
 
-ValueTree AvCasterConfig::validateConfig(ValueTree config_store , Identifier root_node_id)
+ValueTree AvCasterConfig::verifyConfig(ValueTree stored_config , Identifier root_node_id)
 {
-DEBUG_TRACE_VALIDATE_CONFIG
+  bool      is_config_valid = stored_config.isValid() && stored_config.hasType(root_node_id) ;
+  ValueTree config_store    = (is_config_valid) ? stored_config : ValueTree(CONFIG::STORAGE_ID) ;
 
-  bool is_config_valid = config_store.isValid() && config_store.hasType(root_node_id) ;
-
-  return (is_config_valid) ? config_store : ValueTree(CONFIG::STORAGE_ID) ;
-}
-
-void AvCasterConfig::sanitizeConfig()
-{
-  double stored_version    = double(this->configStore[CONFIG::CONFIG_VERSION_ID]) ;
-  bool   do_versions_match = stored_version == CONFIG::CONFIG_VERSION ;
+  double stored_version    = double(config_store[CONFIG::CONFIG_VERSION_ID]) ;
+  bool   do_versions_match = stored_version ==   CONFIG::CONFIG_VERSION ;
   if (!do_versions_match) { ; } // TODO: convert (if ever necessary)
 
-DEBUG_TRACE_SANITIZE_CONFIG
+DEBUG_TRACE_VALIDATE_CONFIG
 
-  if (!this->configStore.hasProperty(CONFIG::CONFIG_VERSION_ID))
-    setConfig(CONFIG::CONFIG_VERSION_ID , var(CONFIG::CONFIG_VERSION           )) ;
-  if (!this->configStore.hasProperty(CONFIG::DISPLAY_N_ID     ))
-    setConfig(CONFIG::DISPLAY_N_ID      , var(CONFIG::DEFAULT_DISPLAY_N        )) ;
-  if (!this->configStore.hasProperty(CONFIG::SCREEN_N_ID      ))
-    setConfig(CONFIG::SCREEN_N_ID       , var(CONFIG::DEFAULT_SCREEN_N         )) ;
-  if (!this->configStore.hasProperty(CONFIG::SCREENCAP_W_ID   ))
-    setConfig(CONFIG::SCREENCAP_W_ID    , var(CONFIG::DEFAULT_SCREENCAP_W      )) ;
-  if (!this->configStore.hasProperty(CONFIG::SCREENCAP_H_ID   ))
-    setConfig(CONFIG::SCREENCAP_H_ID    , var(CONFIG::DEFAULT_SCREENCAP_H      )) ;
-  if (!this->configStore.hasProperty(CONFIG::OFFSET_X_ID      ))
-    setConfig(CONFIG::OFFSET_X_ID       , var(CONFIG::DEFAULT_OFFSET_X         )) ;
-  if (!this->configStore.hasProperty(CONFIG::OFFSET_Y_ID      ))
-    setConfig(CONFIG::OFFSET_Y_ID       , var(CONFIG::DEFAULT_OFFSET_Y         )) ;
-  if (!this->configStore.hasProperty(CONFIG::CAMERA_DEV_ID    ))
-    setConfig(CONFIG::CAMERA_DEV_ID     , var(CONFIG::DEFAULT_CAMERA_DEV_IDX   )) ;
-  if (!this->configStore.hasProperty(CONFIG::CAMERA_RES_ID    ))
-    setConfig(CONFIG::CAMERA_RES_ID     , var(CONFIG::DEFAULT_CAMERA_RES_IDX   )) ;
-  if (!this->configStore.hasProperty(CONFIG::AUDIO_API_ID     ))
-    setConfig(CONFIG::AUDIO_API_ID      , var(CONFIG::DEFAULT_AUDIO_API_IDX    )) ;
-  if (!this->configStore.hasProperty(CONFIG::AUDIO_DEVICE_ID  ))
-    setConfig(CONFIG::AUDIO_DEVICE_ID   , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX )) ;
-  if (!this->configStore.hasProperty(CONFIG::AUDIO_CODEC_ID   ))
-    setConfig(CONFIG::AUDIO_CODEC_ID    , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX  )) ;
-  if (!this->configStore.hasProperty(CONFIG::N_CHANNELS_ID    ))
-    setConfig(CONFIG::N_CHANNELS_ID     , var(CONFIG::DEFAULT_N_CHANNELS       )) ;
-  if (!this->configStore.hasProperty(CONFIG::SAMPLERATE_ID    ))
-    setConfig(CONFIG::SAMPLERATE_ID     , var(CONFIG::DEFAULT_SAMPLERATE_IDX   )) ;
-  if (!this->configStore.hasProperty(CONFIG::AUDIO_BITRATE_ID ))
-    setConfig(CONFIG::AUDIO_BITRATE_ID  , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX)) ;
-  if (!this->configStore.hasProperty(CONFIG::OVERLAY_TEXT_ID  ))
-    setConfig(CONFIG::OVERLAY_TEXT_ID   , var(CONFIG::DEFAULT_OVERLAY_TEXT     )) ;
-  if (!this->configStore.hasProperty(CONFIG::TEXT_STYLE_ID    ))
-    setConfig(CONFIG::TEXT_STYLE_ID     , var(CONFIG::DEFAULT_TEXT_STYLE_IDX   )) ;
-  if (!this->configStore.hasProperty(CONFIG::TEXT_POS_ID      ))
-    setConfig(CONFIG::TEXT_POS_ID       , var(CONFIG::DEFAULT_TEXT_POS_IDX     )) ;
-  if (!this->configStore.hasProperty(CONFIG::OUTPUT_STREAM_ID ))
-    setConfig(CONFIG::OUTPUT_STREAM_ID  , var(CONFIG::DEFAULT_OUTPUT_STREAM_IDX)) ;
-  if (!this->configStore.hasProperty(CONFIG::OUTPUT_W_ID      ))
-    setConfig(CONFIG::OUTPUT_W_ID       , var(CONFIG::DEFAULT_OUTPUT_W         )) ;
-  if (!this->configStore.hasProperty(CONFIG::OUTPUT_H_ID      ))
-    setConfig(CONFIG::OUTPUT_H_ID       , var(CONFIG::DEFAULT_OUTPUT_H         )) ;
-  if (!this->configStore.hasProperty(CONFIG::FRAMERATE_ID     ))
-    setConfig(CONFIG::FRAMERATE_ID      , var(CONFIG::DEFAULT_FRAMERATE_IDX    )) ;
-  if (!this->configStore.hasProperty(CONFIG::BITRATE_ID       ))
-    setConfig(CONFIG::BITRATE_ID        , var(CONFIG::DEFAULT_BITRATE_IDX      )) ;
-  if (!this->configStore.hasProperty(CONFIG::OUTPUT_DEST_ID   ))
-    setConfig(CONFIG::OUTPUT_DEST_ID    , var(CONFIG::DEFAULT_OUTPUT_DEST      )) ;
+  // create missing nodes
+  if (!config_store.getChildWithName(CONFIG::CAMERA_DEVICES_ID).isValid())
+    config_store.addChild(ValueTree (CONFIG::CAMERA_DEVICES_ID) , -1 , nullptr) ;
+  if (!config_store.getChildWithName(CONFIG::AUDIO_DEVICES_ID ).isValid())
+    config_store.addChild(ValueTree (CONFIG::AUDIO_DEVICES_ID ) , -1 , nullptr) ;
+
+  return config_store ;
 }
+
+void AvCasterConfig::validateConfig()
+{
+  // transfer missing properties
+  validateConfigProperty(CONFIG::CONFIG_VERSION_ID , var(CONFIG::CONFIG_VERSION           )) ;
+  validateConfigProperty(CONFIG::DISPLAY_N_ID      , var(CONFIG::DEFAULT_DISPLAY_N        )) ;
+  validateConfigProperty(CONFIG::SCREEN_N_ID       , var(CONFIG::DEFAULT_SCREEN_N         )) ;
+  validateConfigProperty(CONFIG::SCREENCAP_W_ID    , var(CONFIG::DEFAULT_SCREENCAP_W      )) ;
+  validateConfigProperty(CONFIG::SCREENCAP_H_ID    , var(CONFIG::DEFAULT_SCREENCAP_H      )) ;
+  validateConfigProperty(CONFIG::OFFSET_X_ID       , var(CONFIG::DEFAULT_OFFSET_X         )) ;
+  validateConfigProperty(CONFIG::OFFSET_Y_ID       , var(CONFIG::DEFAULT_OFFSET_Y         )) ;
+  validateConfigProperty(CONFIG::CAMERA_DEV_ID     , var(CONFIG::DEFAULT_CAMERA_DEV_IDX   )) ;
+  validateConfigProperty(CONFIG::CAMERA_RES_ID     , var(CONFIG::DEFAULT_CAMERA_RES_IDX   )) ;
+  validateConfigProperty(CONFIG::AUDIO_API_ID      , var(CONFIG::DEFAULT_AUDIO_API_IDX    )) ;
+  validateConfigProperty(CONFIG::AUDIO_DEVICE_ID   , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX )) ;
+  validateConfigProperty(CONFIG::AUDIO_CODEC_ID    , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX  )) ;
+  validateConfigProperty(CONFIG::N_CHANNELS_ID     , var(CONFIG::DEFAULT_N_CHANNELS       )) ;
+  validateConfigProperty(CONFIG::SAMPLERATE_ID     , var(CONFIG::DEFAULT_SAMPLERATE_IDX   )) ;
+  validateConfigProperty(CONFIG::AUDIO_BITRATE_ID  , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX)) ;
+  validateConfigProperty(CONFIG::OVERLAY_TEXT_ID   , var(CONFIG::DEFAULT_OVERLAY_TEXT     )) ;
+  validateConfigProperty(CONFIG::TEXT_STYLE_ID     , var(CONFIG::DEFAULT_TEXT_STYLE_IDX   )) ;
+  validateConfigProperty(CONFIG::TEXT_POS_ID       , var(CONFIG::DEFAULT_TEXT_POS_IDX     )) ;
+  validateConfigProperty(CONFIG::OUTPUT_STREAM_ID  , var(CONFIG::DEFAULT_OUTPUT_STREAM_IDX)) ;
+  validateConfigProperty(CONFIG::OUTPUT_W_ID       , var(CONFIG::DEFAULT_OUTPUT_W         )) ;
+  validateConfigProperty(CONFIG::OUTPUT_H_ID       , var(CONFIG::DEFAULT_OUTPUT_H         )) ;
+  validateConfigProperty(CONFIG::FRAMERATE_ID      , var(CONFIG::DEFAULT_FRAMERATE_IDX    )) ;
+  validateConfigProperty(CONFIG::BITRATE_ID        , var(CONFIG::DEFAULT_BITRATE_IDX      )) ;
+  validateConfigProperty(CONFIG::OUTPUT_DEST_ID    , var(CONFIG::DEFAULT_OUTPUT_DEST      )) ;
+  validateConfigProperty(CONFIG::IS_PREVIEW_ON_ID  , var(CONFIG::DEFAULT_IS_PREVIEW_ON    )) ;
+}
+
+void AvCasterConfig::sanitizeConfig() { } // TODO: ?
 
 void AvCasterConfig::storeConfig()
 {
@@ -140,13 +127,16 @@ DEBUG_TRACE_DUMP_CONFIG
 void AvCasterConfig::detectDisplayDimensions()
 {
 /* the JUCE way - does not reflect resolution changes (issue #2 issue #4)
-                  but would eliminate platform-specific xwininfo binary dependency
-                  (see ComponentPeer::handleScreenSizeChange and/or Component::getParentMonitorArea) */
+                  (see ComponentPeer::handleScreenSizeChange and/or Component::getParentMonitorArea)
+                  gStreamer handles resolution changes gracefully so this  may not be strictly necessary */
+/*
   Rectangle<int> area = Desktop::getInstance().getDisplays().getMainDisplay().totalArea ;
+
   this->desktopW      = area.getWidth() ;
   this->desktopH      = area.getHeight() ;
 
   Trace::TraceState("detected desktop dimensions " + String(this->desktopW) + "x" + String(this->desktopH)) ;
+*/
 }
 
 void AvCasterConfig::detectCaptureDevices()
@@ -177,15 +167,16 @@ static CameraDevice* CameraDevice::openDevice   (
 
   File*       camera_devices_dir = new File(APP::CAMERA_DEVICES_DIR) ;
   Array<File> device_info_dirs ;
-  this->cameraDevices.clear() ;
+  this->cameraDevices.removeAllProperties(nullptr) ;
   if (camera_devices_dir->containsSubDirectories()                                       &&
     !!camera_devices_dir->findChildFiles(device_info_dirs , File::findDirectories , false))
   {
     File* device_info_dir = device_info_dirs.begin() ;
     while (device_info_dir != device_info_dirs.end())
     {
-      String device_name = device_info_dir->getChildFile("name").loadFileAsString() ;
-      this->cameraDevices.add(device_name) ;
+      String device_name   = device_info_dir->getFileName() ;
+      String friendly_name = device_info_dir->getChildFile("name").loadFileAsString() ;
+      this->cameraDevices.setProperty(Identifier(device_name) , friendly_name , nullptr) ;
       ++device_info_dir ;
     }
   }
@@ -193,7 +184,7 @@ static CameraDevice* CameraDevice::openDevice   (
 
 #endif // defined(_WIN32) || defined(_MAC)
 
-  Trace::TraceState("detected " + String(this->cameraDevices.size()) + " capture devices") ;
+  Trace::TraceState("detected " + String(this->cameraDevices.getNumProperties()) + " capture devices") ;
 }
 
 void AvCasterConfig::sanitizeParams()
@@ -227,9 +218,10 @@ void AvCasterConfig::sanitizeParams()
 
 /* getters/setter and listeners */
 
-void AvCasterConfig::setConfig(Identifier a_key , var a_value)
+void AvCasterConfig::validateConfigProperty(Identifier a_key , var a_default_value)
 {
-  this->configStore.setProperty(a_key , a_value , nullptr) ;
+  if (!this->configStore.hasProperty(a_key))
+    this->configStore.setProperty(a_key , a_default_value , nullptr) ;
 }
 
 void AvCasterConfig::valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key)
