@@ -16,11 +16,8 @@ MainContent::MainContent(DocumentWindow* main_window)
 
 MainContent::~MainContent()
 {
-  this->config           = nullptr ;
-  this->screencapMonitor = nullptr ;
-  this->cameraMonitor    = nullptr ;
-  this->outputMonitor    = nullptr ;
-  this->statusbar        = nullptr ;
+  this->config    = nullptr ;
+  this->statusbar = nullptr ;
 }
 
 void MainContent::paint(Graphics& g)
@@ -62,17 +59,6 @@ void MainContent::instantiate(ValueTree config_store)
   // configuration
   this->config = new Config(this->mainWindow , config_store) ;
   this->addChildAndSetID(this->config , GUI::OUTPUT_GUI_ID) ;
-
-  // video monitors
-  this->screencapMonitor = new GstreamerVideo(this->mainWindow                           ,
-                                              GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y ,
-                                              GUI::MONITORS_W          , GUI::MONITORS_H ) ;
-  this->cameraMonitor    = new GstreamerVideo(this->mainWindow                           ,
-                                              GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y ,
-                                              GUI::MONITORS_W          , GUI::MONITORS_H ) ;
-  this->outputMonitor    = new GstreamerVideo(this->mainWindow                           ,
-                                              GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y ,
-                                              GUI::MONITORS_W          , GUI::MONITORS_H ) ;
 
   // statusbar
   this->statusbar = new Statusbar() ;

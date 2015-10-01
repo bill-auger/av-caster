@@ -114,11 +114,19 @@ DEBUG_TRACE_DUMP_CONFIG
   File config_dir = user_dir.getChildFile(CONFIG::STORAGE_DIRNAME) ;
   config_dir.createDirectory() ;
 
+  // filter dynamic params
+  this->configStore.removeChild(this->cameraDevices , nullptr) ;
+  this->configStore.removeChild(this->audioDevices  , nullptr) ;
+
   // marshall configuration out to persistent binary storage
   FileOutputStream* config_stream = new FileOutputStream(this->configFile) ;
   if (!config_stream->failedToOpen()) this->configStore.writeToStream(*config_stream) ;
   else AvCaster::Error(GUI::STORAGE_WRITE_ERROR_MSG) ;
   delete config_stream ;
+
+  // restore dynamic params
+  this->configStore.addChild(this->cameraDevices , -1 , nullptr) ;
+  this->configStore.addChild(this->audioDevices  , -1 , nullptr) ;
 }
 
 
@@ -176,7 +184,7 @@ static CameraDevice* CameraDevice::openDevice   (
     {
       String device_name   = device_info_dir->getFileName() ;
       String friendly_name = device_info_dir->getChildFile("name").loadFileAsString() ;
-      this->cameraDevices.setProperty(Identifier(device_name) , friendly_name , nullptr) ;
+      this->cameraDevices.setProperty(Identifier(device_name) , var(friendly_name) , nullptr) ;
       ++device_info_dir ;
     }
   }

@@ -11,7 +11,6 @@
 #define MAINCONTENT_H_INCLUDED
 
 #include "Config.h"
-#include "GstreamerVideo.h"
 #include "Statusbar.h"
 
 
@@ -32,12 +31,9 @@ public:
 
 private:
 
-  DocumentWindow*               mainWindow ;
-  ScopedPointer<Config        > config ;
-  ScopedPointer<GstreamerVideo> screencapMonitor ;
-  ScopedPointer<GstreamerVideo> cameraMonitor ;
-  ScopedPointer<GstreamerVideo> outputMonitor ;
-  ScopedPointer<Statusbar     > statusbar ;
+  DocumentWindow*          mainWindow ;
+  ScopedPointer<Config   > config ;
+  ScopedPointer<Statusbar> statusbar ;
 
   void instantiate(ValueTree config_store) ;
   void setTitle(   String title_text) ;

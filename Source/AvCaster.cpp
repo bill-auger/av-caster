@@ -8,6 +8,7 @@
   ==============================================================================
 */
 
+#include <gst/video/videooverlay.h>
 
 #include "AvCaster.h"
 #include "Trace/Trace.h"
@@ -74,6 +75,7 @@ bool AvCaster::Initialize(MainContent* main_content , const String& args)
   if (!InitGstreamer()) return false ;
 
 #ifdef QUIT_IMMEDIATELY
+DBG("AvCaster::Initialize() QUIT_IMMEDIATELY") ;
   return false ;
 #endif // QUIT_IMMEDIATELY
 
@@ -82,57 +84,76 @@ bool AvCaster::Initialize(MainContent* main_content , const String& args)
 
 bool AvCaster::InitGstreamer()
 {
+/* TODO: not sure if we will need to handle signals
+bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
+gst_bus_set_sync_handler (bus, (GstBusSyncHandler) cbw, pipeline, NULL);
+static GstBusSyncReply cb(GstBus * bus, GstMessage * message, GstPipeline * pipeline)
+*/
+
   // instantiate pipeline
   gst_init(nullptr , nullptr) ;
   if (!(Pipeline        = gst_pipeline_new        ("xvoverlay"          )) ||
       !(ScreencapBin    = gst_bin_new             ("screencap-bin"      )) ||
-//    !(ScreencapSource = gst_element_factory_make("videotestsrc" , NULL)) || // OK
       !(ScreencapSource = gst_element_factory_make("ximagesrc"    , NULL)) ||
       !(Videoconvert    = gst_element_factory_make("videoconvert" , NULL)) ||
       !(ScreencapSink   = gst_element_factory_make("xvimagesink"  , NULL)) ||
       !(CameraBin       = gst_bin_new             ("camera-bin"         )) ||
       !(CameraSource    = gst_element_factory_make("v4l2src"      , NULL)) ||
-      !(CameraSink      = gst_element_factory_make("xvimagesink"  , NULL))  )//||
-//       !(OutputBin       = gst_bin_new             ("output-bin"         )) ||
-//       !(OutputSink      = gst_element_factory_make("xvimagesink"  , NULL))  )
-  {
-    AvCaster::Error(GUI::GST_INIT_ERROR_MSG) ; return false ;
-  }
+      !(CameraSink      = gst_element_factory_make("xvimagesink"  , NULL)) ||
+      !(OutputBin       = gst_bin_new             ("output-bin"         )) ||
+      !(OutputSink      = gst_element_factory_make("xvimagesink"  , NULL))  )
+  { AvCaster::Error(GUI::GST_INIT_ERROR_MSG) ; return false ; }
 
 
-// TODO: none of these are working yet
+// TODO: output chain
 // GstElement* videoconvert = gst_element_factory_make("videoconvert" , NULL) ;
 // GstElement* x264enc      = gst_element_factory_make("x264enc"      , NULL) ;
 // GstElement* flvmux       = gst_element_factory_make("flvmux"       , NULL) ;
 // GstElement* rtmpsink     = gst_element_factory_make("rtmpsink"     , NULL) ;
-
-
-// NOTE: mis-configured or blocked elements (e.g. v4l2 device already in use)
-//           block all pipeline progress (other elements show only first frame)
-//           (this is why we have CameraBin unused here - it is otherwise working)
+GstElement* videotestsrc = gst_element_factory_make("videotestsrc" , NULL) ;
+gst_bin_add_many(GST_BIN(OutputBin) , videotestsrc , OutputSink , nullptr) ;
+gst_element_link_many(videotestsrc , OutputSink , nullptr) ;
 
 
   // configure pipeline
-  if (!!Config->cameraDevices.getNumProperties())
-       gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    , CameraBin    , /*OutputBin ,*/ nullptr) ;
-  else gst_bin_add_many(GST_BIN(Pipeline    ) , ScreencapBin    ,                /*OutputBin ,*/ nullptr) ;
-  gst_bin_add_many(     GST_BIN(ScreencapBin) , ScreencapSource , Videoconvert , ScreencapSink , nullptr) ;
-  gst_bin_add_many(     GST_BIN(CameraBin   ) , CameraSource    , CameraSink   ,                 nullptr) ;
+  if ((Config->cameraDevices.getNumProperties() > 0         &&
+       !gst_bin_add(GST_BIN(Pipeline    ) , CameraBin      ) )                          ||
+       !gst_bin_add(GST_BIN(Pipeline    ) , ScreencapBin   )                            ||
+       !gst_bin_add(GST_BIN(Pipeline    ) , OutputBin      )                            ||
+       !gst_bin_add(GST_BIN(ScreencapBin) , ScreencapSource)                            ||
+       !gst_bin_add(GST_BIN(ScreencapBin) , Videoconvert   )                            ||
+       !gst_bin_add(GST_BIN(ScreencapBin) , ScreencapSink  )                            ||
+       !gst_bin_add(GST_BIN(CameraBin   ) , CameraSource   )                            ||
+       !gst_bin_add(GST_BIN(CameraBin   ) , CameraSink     )                            ||
 //   gst_bin_add_many(GST_BIN(OutputBin   ) , videoconvert    , x264enc       , flvmux    , OutputSink , nullptr) ;
-  gst_element_link_many(                   ScreencapSource , Videoconvert , ScreencapSink , nullptr) ;
-  gst_element_link_many(                   CameraSource    , CameraSink   ,                 nullptr) ;
+       !gst_element_link_many(ScreencapSource , Videoconvert , ScreencapSink , nullptr) ||
+       !gst_element_link_many(CameraSource    ,                CameraSink    , nullptr)  )
 //   gst_element_link_many(videoconvert    , x264enc       , flvmux , OutputSink , nullptr) ;
+  { AvCaster::Error(GUI::GST_INIT_ERROR_MSG) ; return false ; }
 
   // configure plugins
   ConfigureStream() ;
 
-  // attach GstreamerVideo native xwindows to gStreamer overlay sinks
-  Gui->screencapMonitor->starting(ScreencapSink) ;
-  Gui->cameraMonitor   ->starting(CameraSink   ) ;
-  Gui->outputMonitor   ->starting(OutputSink   ) ;
+  // attach native xwindow to gStreamer overlay sinks
+  guintptr window_handle = (guintptr)(Gui->getWindowHandle()) ;
+  gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(ScreencapSink) , window_handle) ;
+  gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(CameraSink   ) , window_handle) ;
+  gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(OutputSink   ) , window_handle) ;
+  if (!gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(ScreencapSink)           ,
+                                              GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y ,
+                                              GUI::MONITORS_W          , GUI::MONITORS_H ) ||
+      !gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(CameraSink   )           ,
+                                              GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y ,
+                                              GUI::MONITORS_W          , GUI::MONITORS_H ) ||
+      !gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(OutputSink   )           ,
+                                              GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y ,
+                                              GUI::MONITORS_W          , GUI::MONITORS_H )  )
+  { AvCaster::Error(GUI::GST_INIT_ERROR_MSG) ; return false ; }
 
   // set rolling
-  return TogglePreview() ;
+  if (!SetGstreamerState(Pipeline , GST_STATE_PLAYING)) return false ;
+
+  TogglePreview() ; return true ;
 }
 
 void AvCaster::Shutdown()
@@ -142,7 +163,7 @@ void AvCaster::Shutdown()
 
   // cleanup gStreamer
   gst_element_set_state(Pipeline , GST_STATE_NULL) ;
-  gst_object_unref(     Pipeline) ;
+  gst_object_unref     (Pipeline) ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
@@ -207,12 +228,12 @@ bool AvCaster::TogglePreview()
 {
   bool     is_preview_on = bool(Config->configStore[CONFIG::IS_PREVIEW_ON_ID]) ;
   GstState next_state    = (is_preview_on) ? GST_STATE_PLAYING : GST_STATE_PAUSED ;
-/*
-  Gui->screencapMonitor->setState(ScreencapSink, is_preview_on) ;
-  Gui->cameraMonitor   ->setState(CameraSink   , is_preview_on) ;
-  Gui->outputMonitor   ->setState(OutputSink   , is_preview_on) ;
-*/
-  return SetGstreamerState(Pipeline , next_state) ;
+
+  SetGstreamerState(ScreencapBin , next_state) ;
+  SetGstreamerState(CameraBin    , next_state) ;
+  SetGstreamerState(OutputBin    , next_state) ;
+
+  return is_preview_on ;
 }
 
 bool AvCaster::SetGstreamerState(GstElement* a_gst_element , GstState next_state)

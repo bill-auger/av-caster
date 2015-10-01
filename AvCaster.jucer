@@ -16,8 +16,6 @@
       <FILE id="y9Co3C" name="AvCasterConfig.h" compile="0" resource="0"
             file="Source/AvCasterConfig.h"/>
       <FILE id="zCkODj" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
-      <FILE id="WCDvxk" name="GstreamerVideo.h" compile="0" resource="0"
-            file="Source/GstreamerVideo.h"/>
       <FILE id="U6Fm4Z" name="MainContent.h" compile="0" resource="0" file="Source/MainContent.h"/>
       <FILE id="uoYh4l" name="Config.h" compile="0" resource="0" file="Source/Config.h"/>
       <FILE id="X0O50Z" name="Statusbar.h" compile="0" resource="0" file="Source/Statusbar.h"/>
@@ -26,8 +24,6 @@
       <FILE id="zm6wrJ" name="AvCaster.cpp" compile="1" resource="0" file="Source/AvCaster.cpp"/>
       <FILE id="zF9KTX" name="AvCasterConfig.cpp" compile="1" resource="0"
             file="Source/AvCasterConfig.cpp"/>
-      <FILE id="Ohfo1z" name="GstreamerVideo.cpp" compile="1" resource="0"
-            file="Source/GstreamerVideo.cpp"/>
       <FILE id="CQoHWx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="eLauah" name="MainContent.cpp" compile="1" resource="0" file="Source/MainContent.cpp"/>
       <FILE id="nRcwV3" name="Config.cpp" compile="1" resource="0" file="Source/Config.cpp"/>

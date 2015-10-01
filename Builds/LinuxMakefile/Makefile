@@ -51,7 +51,6 @@ endif
 OBJECTS := \
   $(OBJDIR)/AvCaster_86a5e2ca.o \
   $(OBJDIR)/AvCasterConfig_a48ad6c.o \
-  $(OBJDIR)/GstreamerVideo_5f816b50.o \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainContent_6313eee1.o \
   $(OBJDIR)/Config_5aed31cb.o \
@@ -88,11 +87,6 @@ $(OBJDIR)/AvCaster_86a5e2ca.o: ../../Source/AvCaster.cpp
 $(OBJDIR)/AvCasterConfig_a48ad6c.o: ../../Source/AvCasterConfig.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling AvCasterConfig.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/GstreamerVideo_5f816b50.o: ../../Source/GstreamerVideo.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling GstreamerVideo.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp

@@ -73,7 +73,7 @@ namespace GUI
   static const String OUTPUT_GUI_ID       = "output-config-gui" ;
   static const int    MONITORS_W          = 160 ;
   static const int    MONITORS_H          = 120 ;
-  static const int    MONITORS_Y          = 504 ;
+  static const int    MONITORS_Y          = 504 + TITLEBAR_H ;
   static const int    SCREENCAP_MONITOR_X = 40 ;
   static const int    CAMERA_MONITOR_X    = 224 ;
   static const int    OUTPUT_MONITOR_X    = 408 ;
@@ -160,11 +160,11 @@ namespace CONFIG
   static const int    DEFAULT_OFFSET_X          = 0 ;
   static const int    DEFAULT_OFFSET_Y          = 0 ;
   // camera defulats
-  static const int    DEFAULT_CAMERA_DEV_IDX    = -1 ;
+  static const int    DEFAULT_CAMERA_DEV_IDX    = 0 ;
   static const int    DEFAULT_CAMERA_RES_IDX    = 0 ;
   // audio defulats
   static const int    DEFAULT_AUDIO_API_IDX     = 0 ;
-  static const int    DEFAULT_AUDIO_DEVICE_IDX  = -1 ;
+  static const int    DEFAULT_AUDIO_DEVICE_IDX  = 0 ;
   static const int    DEFAULT_AUDIO_CODEC_IDX   = 0 ;
   static const int    DEFAULT_N_CHANNELS        = 2 ;
   static const int    DEFAULT_SAMPLERATE_IDX    = 0 ;
