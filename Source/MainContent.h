@@ -35,7 +35,7 @@ private:
   ScopedPointer<Config   > config ;
   ScopedPointer<Statusbar> statusbar ;
 
-  void instantiate(ValueTree config_store) ;
+  void instantiate(ValueTree config_store , ValueTree camera_store , ValueTree audio_store) ;
   void setTitle(   String title_text) ;
   void warning(    String message_text) ;
   void error(      String message_text) ;

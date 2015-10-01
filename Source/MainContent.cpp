@@ -54,10 +54,11 @@ void MainContent::resized()
   this->statusbar->setBounds(status_x , status_y , status_w , status_h) ;
 }
 
-void MainContent::instantiate(ValueTree config_store)
+void MainContent::instantiate(ValueTree config_store , ValueTree camera_store ,
+                              ValueTree audio_store                           )
 {
   // configuration
-  this->config = new Config(this->mainWindow , config_store) ;
+  this->config = new Config(this->mainWindow , config_store , camera_store , audio_store) ;
   this->addChildAndSetID(this->config , GUI::OUTPUT_GUI_ID) ;
 
   // statusbar

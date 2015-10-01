@@ -14,6 +14,12 @@
 #ifdef DEBUG
 #  define DEBUG_ANSI_COLORS
 // #  define QUIT_IMMEDIATELY
+#  define CONFIGURE_SCREENCAP_CHAIN
+#  define CONFIGURE_CAMERA_CHAIN
+#  define CONFIGURE_AUDIO_CHAIN
+#  define CONFIGURE_TEXT_CHAIN
+// #  define CONFIGURE_MUX_CHAIN
+// #  define CONFIGURE_OUTPUT_CHAIN
 #endif // DEBUG
 
 // tracing
@@ -90,10 +96,14 @@ namespace GUI
 
   // user error messages
   static const String GST_INIT_ERROR_MSG      = "Not all elements could be created." ;
-  static const String GST_STATE_ERROR_MSG     = "Unable to set the pipeline to the playing state." ;
+  static const String GST_ADD_ERROR_MSG       = "Not all elements could be added to the pipeline." ;
+  static const String GST_CONFIG_ERROR_MSG    = "Not all elements could be configured." ;
+  static const String GST_XWIN_ERROR_MSG      = "Error attaching to native x-window." ;
+  static const String AUDIO_API_ERROR_MSG     = "Error initializing audio device using " ;
+  static const String GST_STATE_ERROR_MSG     = "Unable to change state of GstElement " ;
   static const String NO_CAMERAS_ERROR_MSG    = "No video capture devices were found on you system.  If you indeed have one mounted , you will need to enter its mountpoint manually." ;
   static const String CAM_BUSY_ERROR_MSG      = "The selected capture device is already in use." ;
-  static const String STORAGE_WRITE_ERROR_MSG = "I/O error storing configuration" ;
+  static const String STORAGE_WRITE_ERROR_MSG = "I/O error storing configuration." ;
 }
 
 namespace CONFIG

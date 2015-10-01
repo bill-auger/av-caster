@@ -31,8 +31,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-Config::Config (Component* main_window, ValueTree config_store)
-    : configStore(config_store)
+Config::Config (Component* main_window, ValueTree config_store, ValueTree camera_store, ValueTree audio_store)
+    : configStore(config_store), cameraDevices(camera_store), audioDevices(audio_store)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -487,9 +487,6 @@ Config::Config (Component* main_window, ValueTree config_store)
 
     //[Constructor] You can add your own custom stuff here..
 
-  this->cameraDevices = this->configStore.getChildWithName(CONFIG::CAMERA_DEVICES_ID) ;
-  this->audioDevices  = this->configStore.getChildWithName(CONFIG::AUDIO_DEVICES_ID ) ;
-
   populateComboBoxes() ; loadConfig() ;
   this->screenWidthText ->addListener(this) ;
   this->screenHeightText->addListener(this) ;
@@ -909,7 +906,7 @@ void Config::loadConfig()
   String      output_dest_text  = STRING(this->configStore[CONFIG::OUTPUT_DEST_ID  ]) ;
 
   this->displaySlider    ->setValue            (display_n) ;
-  this->screenSlider     ->setValue            (42) ;
+  this->screenSlider     ->setValue            (screen_n) ;
   this->screenWidthText  ->setText             (screencap_w) ;
   this->screenHeightText ->setText             (screencap_h) ;
   this->xOffsetText      ->setText             (offset_x) ;
@@ -969,10 +966,10 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Config" componentName=""
                  parentClasses="public Component, public TextEditor::Listener"
-                 constructorParams="Component* main_window, ValueTree config_store"
-                 variableInitialisers="configStore(config_store)" snapPixels="8"
-                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="0"
-                 initialWidth="600" initialHeight="400">
+                 constructorParams="Component* main_window, ValueTree config_store, ValueTree camera_store, ValueTree audio_store"
+                 variableInitialisers="configStore(config_store), cameraDevices(camera_store), audioDevices(audio_store)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="ff101010">
     <ROUNDRECT pos="8 8 16M 16M" cornerSize="10" fill="solid: ff202020" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffffffff"/>

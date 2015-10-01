@@ -29,8 +29,8 @@ AvCasterConfig::AvCasterConfig()
 
   // create shared config ValueTree from persistent storage or defaults
   this->configStore   = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
-  this->cameraDevices = this->configStore.getChildWithName(CONFIG::CAMERA_DEVICES_ID) ;
-  this->audioDevices  = this->configStore.getChildWithName(CONFIG::AUDIO_DEVICES_ID ) ;
+  this->cameraDevices = ValueTree(CONFIG::CAMERA_DEVICES_ID) ;
+  this->audioDevices  = ValueTree(CONFIG::AUDIO_DEVICES_ID ) ;
   validateConfig() ; sanitizeConfig() ; storeConfig() ;
 
   // subscribe to model changes
@@ -59,12 +59,6 @@ ValueTree AvCasterConfig::verifyConfig(ValueTree stored_config , Identifier root
   if (!do_versions_match) { ; } // TODO: convert (if ever necessary)
 
 DEBUG_TRACE_VALIDATE_CONFIG
-
-  // create missing nodes
-  if (!config_store.getChildWithName(CONFIG::CAMERA_DEVICES_ID).isValid())
-    config_store.addChild(ValueTree (CONFIG::CAMERA_DEVICES_ID) , -1 , nullptr) ;
-  if (!config_store.getChildWithName(CONFIG::AUDIO_DEVICES_ID ).isValid())
-    config_store.addChild(ValueTree (CONFIG::AUDIO_DEVICES_ID ) , -1 , nullptr) ;
 
   return config_store ;
 }
@@ -183,7 +177,7 @@ static CameraDevice* CameraDevice::openDevice   (
     while (device_info_dir != device_info_dirs.end())
     {
       String device_name   = device_info_dir->getFileName() ;
-      String friendly_name = device_info_dir->getChildFile("name").loadFileAsString() ;
+      String friendly_name = device_info_dir->getChildFile("name").loadFileAsString().trim() ;
       this->cameraDevices.setProperty(Identifier(device_name) , var(friendly_name) , nullptr) ;
       ++device_info_dir ;
     }

@@ -67,7 +67,13 @@ private:
   static void HandleConfigChanged(const Identifier& a_key) ;
 
   // stream state
-  static void ConfigureStream() ;
+  static bool ConfigureScreencap() ;
+  static bool ConfigureCamera() ;
+  static bool ConfigureAudio() ;
+  static bool ConfigureText() ;
+  static bool ConfigureCompositing() ;
+  static bool ConfigureMux() ;
+  static bool ConfigureOutput() ;
   static bool TogglePreview() ;
   static bool SetGstreamerState(GstElement* a_gst_element , GstState next_state) ;
 
@@ -85,7 +91,11 @@ private:
   static GstElement* CameraBin ;
   static GstElement* CameraSource ;
   static GstElement* CameraSink ;
-//   static GstElement* TextSource ;
+  static GstElement* AudioBin ;
+  static GstElement* AudioSource ;
+  static GstElement* TextBin ;
+  static GstElement* TextSource ;
+  static GstElement* MuxBin ;
   static GstElement* OutputBin ;
   static GstElement* OutputSink ;
 } ;

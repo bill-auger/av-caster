@@ -30,14 +30,12 @@ public:
   void componentMovedOrResized(Component& a_component , bool wasMoved  , bool wasResized) ;
 
 
-  enum AudioApi      { ALSA_AUDIO , PULSE_AUDIO , JACK_AUDIO } ;
-/* TODO: GUI nyi
-  enum MainInput     { SCREENCAP_INPUT , INTERSTITIAL_INPUT } ;
-  enum OverlayInput  { CAMERA_INPUT , LOGO_INPUT } ;
-  enum AudioCodec    { AAC_AUDIO , MP3_AUDIO } ;
-  enum VideoCodec    { X264_VIDEO } ;
-  enum OutputStream  { FILE_OUTPUT , RTMP_OUTPUT } ;
-*/
+  enum AudioApi     { ALSA_AUDIO , PULSE_AUDIO , JACK_AUDIO } ;
+//   enum MainInput    { SCREENCAP_INPUT , INTERSTITIAL_INPUT } ; // TODO: GUI nyi
+//   enum OverlayInput { CAMERA_INPUT , LOGO_INPUT } ;            // TODO: GUI nyi
+  enum AudioCodec   { AAC_AUDIO , MP3_AUDIO } ;
+//   enum VideoCodec   { X264_VIDEO } ;                           // TODO: GUI nyi
+  enum OutputStream { FILE_OUTPUT , RTMP_OUTPUT } ;
 
   // configuration/persistence
   ValueTree configStore ;   // config root (STORAGE_ID node)

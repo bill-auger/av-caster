@@ -1,24 +1,14 @@
 /*
   ==============================================================================
 
-  This is an automatically generated GUI class created by the Introjucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Introjucer version: 3.1.1
-
-  ------------------------------------------------------------------------------
-
-  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+    Config.h
+    Author: bill-auger
 
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_21AE3B746DB36E0C__
-#define __JUCE_HEADER_21AE3B746DB36E0C__
+#ifndef _CONFIG_H_INCLUDED_
+#define _CONFIG_H_INCLUDED_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -44,7 +34,7 @@ class Config  : public Component,
 {
 public:
     //==============================================================================
-    Config (Component* main_window, ValueTree config_store);
+    Config (Component* main_window, ValueTree config_store, ValueTree camera_store, ValueTree audio_store);
     ~Config();
 
     //==============================================================================
@@ -142,4 +132,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_21AE3B746DB36E0C__
+#endif // _CONFIG_H_INCLUDED_

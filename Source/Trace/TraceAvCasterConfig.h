@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    Constants.h
-    Author:  bill-auger
+    TraceAvCasterConfig.h
+    Author: bill-auger
 
   ==============================================================================
 */
@@ -23,9 +23,7 @@
   String invlaid_msg    = "stored config not invalid - restoring defaults" ;               \
   Trace::TraceConfig(((!stored_config.isValid())             ? not_found_msg   :           \
                      ((!stored_config.hasType(root_node_id)) ? invlaid_msg   :             \
-                                                              success_msg   ) )) ;         \
-  Trace::TraceMissingNode(config_store , CONFIG::CAMERA_DEVICES_ID) ;                      \
-  Trace::TraceMissingNode(config_store , CONFIG::AUDIO_DEVICES_ID ) ;
+                                                              success_msg   ) )) ;
 
 #  define DEBUG_TRACE_SANITIZE_CONFIG                                                      \
   if (!do_versions_match)                                                                  \
