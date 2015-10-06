@@ -14,11 +14,11 @@
 #ifdef DEBUG
 #  define DEBUG_ANSI_COLORS
 // #  define QUIT_IMMEDIATELY
-#  define CONFIGURE_SCREENCAP_CHAIN
-#  define CONFIGURE_CAMERA_CHAIN
-#  define CONFIGURE_AUDIO_CHAIN
-#  define CONFIGURE_TEXT_CHAIN
-// #  define CONFIGURE_MUX_CHAIN
+// #  define CONFIGURE_SCREENCAP_CHAIN
+// #  define CONFIGURE_CAMERA_CHAIN
+// #  define CONFIGURE_AUDIO_CHAIN
+// #  define CONFIGURE_TEXT_CHAIN
+#  define CONFIGURE_MUX_CHAIN
 // #  define CONFIGURE_OUTPUT_CHAIN
 #endif // DEBUG
 
@@ -51,9 +51,6 @@ namespace APP
 
   static const uint8 PROC_BUFFER_SIZE = 255 ;
   static const uint8 MUX_THREAD_SLEEP = 125 ;
-
-  // default ffmpeg params
-  static const String DEFAULT_CAMERA_DEVICE = "/dev/video0" ;
 
   // get device info
   static const String CAMERA_DEVICES_DIR      = "/sys/class/video4linux" ;
@@ -217,6 +214,8 @@ namespace CONFIG
                                                                        "30"                   ) ;
   static const StringArray OUTPUT_BITRATES    = StringArray::fromLines("800k"       + newLine +
                                                                        "1200k"                ) ;
+
+  static const String LCTV_RTMP_URL = "rtmp://usmedia3.livecoding.tv:1935/livecodingtv/" ;
 }
 
 #endif // CONSTANTS_H_INCLUDED

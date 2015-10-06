@@ -86,7 +86,6 @@ private:
   static GstElement* Pipeline ;
   static GstElement* ScreencapBin ;
   static GstElement* ScreencapSource ;
-  static GstElement* Videoconvert ;
   static GstElement* ScreencapSink ;
   static GstElement* CameraBin ;
   static GstElement* CameraSource ;
