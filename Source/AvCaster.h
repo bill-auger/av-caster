@@ -49,6 +49,9 @@ public:
   static ModalComponentManager::Callback* GetModalCb() ;
   static void                             OnModalDismissed(int result , int unused) ;
 
+  // helpers
+  static StringArray DevicesNames(ValueTree a_devices_node) ;
+
 
   // persistence
   static ScopedPointer<AvCasterConfig> Config ;
@@ -77,6 +80,10 @@ private:
   static bool TogglePreview() ;
   static bool SetGstreamerState(GstElement* a_gst_element , GstState next_state) ;
 
+  // helpers
+  static void    DisplayAlert() ;
+  static GstPad* CreateGhostPad(GstElement* an_element , String private_pad_name ,
+                                                         String public_pad_name  ) ;
 
   static MainContent*  Gui ;
   static Array<Alert*> Alerts ;
@@ -85,15 +92,12 @@ private:
   // gStreamer
   static GstElement* Pipeline ;
   static GstElement* ScreencapBin ;
-  static GstElement* ScreencapSource ;
   static GstElement* ScreencapSink ;
   static GstElement* CameraBin ;
-  static GstElement* CameraSource ;
   static GstElement* CameraSink ;
   static GstElement* AudioBin ;
-  static GstElement* AudioSource ;
   static GstElement* TextBin ;
-  static GstElement* TextSource ;
+  static GstElement* MixerBin ;
   static GstElement* MuxBin ;
   static GstElement* OutputBin ;
   static GstElement* OutputSink ;

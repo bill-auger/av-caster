@@ -78,6 +78,8 @@ void MainContent::setTitle(String title_text)
 void MainContent::warning(String message_text)
 {
   Trace::TraceWarning(message_text) ;
+  if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
+
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon , GUI::MODAL_WARNING_TITLE ,
                                    message_text          , String::empty            ,
                                    nullptr               , AvCaster::GetModalCb()   ) ;
@@ -86,6 +88,8 @@ void MainContent::warning(String message_text)
 void MainContent::error(String message_text)
 {
   Trace::TraceError(message_text) ;
+  if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
+
   AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon , GUI::MODAL_ERROR_TITLE ,
                                    message_text             , String::empty          ,
                                    nullptr                  , AvCaster::GetModalCb() ) ;

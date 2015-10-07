@@ -31,6 +31,9 @@ AvCasterConfig::AvCasterConfig()
   this->configStore   = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
   this->cameraDevices = ValueTree(CONFIG::CAMERA_DEVICES_ID) ;
   this->audioDevices  = ValueTree(CONFIG::AUDIO_DEVICES_ID ) ;
+
+  // detect hardware and sanitize config
+  detectDisplayDimensions() ; detectCaptureDevices() ;
   validateConfig() ; sanitizeConfig() ; storeConfig() ;
 
   // subscribe to model changes
@@ -41,7 +44,6 @@ AvCasterConfig::AvCasterConfig()
   this->currentQ     = 0.0 ; this->currentSize    = String::empty ;
   this->currentTime  = 0.0 ; this->currentBitrate = String::empty ;
 
-  detectDisplayDimensions() ; detectCaptureDevices() ;
 }
 
 AvCasterConfig::~AvCasterConfig() { storeConfig() ; }
@@ -65,35 +67,58 @@ DEBUG_TRACE_VALIDATE_CONFIG
 
 void AvCasterConfig::validateConfig()
 {
+  if (!this->configStore.isValid()) return ;
+
   // transfer missing properties
-  validateConfigProperty(CONFIG::CONFIG_VERSION_ID , var(CONFIG::CONFIG_VERSION           )) ;
-  validateConfigProperty(CONFIG::DISPLAY_N_ID      , var(CONFIG::DEFAULT_DISPLAY_N        )) ;
-  validateConfigProperty(CONFIG::SCREEN_N_ID       , var(CONFIG::DEFAULT_SCREEN_N         )) ;
-  validateConfigProperty(CONFIG::SCREENCAP_W_ID    , var(CONFIG::DEFAULT_SCREENCAP_W      )) ;
-  validateConfigProperty(CONFIG::SCREENCAP_H_ID    , var(CONFIG::DEFAULT_SCREENCAP_H      )) ;
-  validateConfigProperty(CONFIG::OFFSET_X_ID       , var(CONFIG::DEFAULT_OFFSET_X         )) ;
-  validateConfigProperty(CONFIG::OFFSET_Y_ID       , var(CONFIG::DEFAULT_OFFSET_Y         )) ;
-  validateConfigProperty(CONFIG::CAMERA_DEV_ID     , var(CONFIG::DEFAULT_CAMERA_DEV_IDX   )) ;
-  validateConfigProperty(CONFIG::CAMERA_RES_ID     , var(CONFIG::DEFAULT_CAMERA_RES_IDX   )) ;
-  validateConfigProperty(CONFIG::AUDIO_API_ID      , var(CONFIG::DEFAULT_AUDIO_API_IDX    )) ;
-  validateConfigProperty(CONFIG::AUDIO_DEVICE_ID   , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX )) ;
-  validateConfigProperty(CONFIG::AUDIO_CODEC_ID    , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX  )) ;
-  validateConfigProperty(CONFIG::N_CHANNELS_ID     , var(CONFIG::DEFAULT_N_CHANNELS       )) ;
-  validateConfigProperty(CONFIG::SAMPLERATE_ID     , var(CONFIG::DEFAULT_SAMPLERATE_IDX   )) ;
-  validateConfigProperty(CONFIG::AUDIO_BITRATE_ID  , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX)) ;
-  validateConfigProperty(CONFIG::OVERLAY_TEXT_ID   , var(CONFIG::DEFAULT_OVERLAY_TEXT     )) ;
-  validateConfigProperty(CONFIG::TEXT_STYLE_ID     , var(CONFIG::DEFAULT_TEXT_STYLE_IDX   )) ;
-  validateConfigProperty(CONFIG::TEXT_POS_ID       , var(CONFIG::DEFAULT_TEXT_POS_IDX     )) ;
-  validateConfigProperty(CONFIG::OUTPUT_STREAM_ID  , var(CONFIG::DEFAULT_OUTPUT_STREAM_IDX)) ;
-  validateConfigProperty(CONFIG::OUTPUT_W_ID       , var(CONFIG::DEFAULT_OUTPUT_W         )) ;
-  validateConfigProperty(CONFIG::OUTPUT_H_ID       , var(CONFIG::DEFAULT_OUTPUT_H         )) ;
-  validateConfigProperty(CONFIG::FRAMERATE_ID      , var(CONFIG::DEFAULT_FRAMERATE_IDX    )) ;
-  validateConfigProperty(CONFIG::BITRATE_ID        , var(CONFIG::DEFAULT_BITRATE_IDX      )) ;
-  validateConfigProperty(CONFIG::OUTPUT_DEST_ID    , var(CONFIG::DEFAULT_OUTPUT_DEST      )) ;
-  validateConfigProperty(CONFIG::IS_PREVIEW_ON_ID  , var(CONFIG::DEFAULT_IS_PREVIEW_ON    )) ;
+  validateProperty(CONFIG::CONFIG_VERSION_ID   , var(CONFIG::CONFIG_VERSION              )) ;
+  validateProperty(CONFIG::DISPLAY_N_ID        , var(CONFIG::DEFAULT_DISPLAY_N           )) ;
+  validateProperty(CONFIG::SCREEN_N_ID         , var(CONFIG::DEFAULT_SCREEN_N            )) ;
+  validateProperty(CONFIG::SCREENCAP_W_ID      , var(CONFIG::DEFAULT_SCREENCAP_W         )) ;
+  validateProperty(CONFIG::SCREENCAP_H_ID      , var(CONFIG::DEFAULT_SCREENCAP_H         )) ;
+  validateProperty(CONFIG::OFFSET_X_ID         , var(CONFIG::DEFAULT_OFFSET_X            )) ;
+  validateProperty(CONFIG::OFFSET_Y_ID         , var(CONFIG::DEFAULT_OFFSET_Y            )) ;
+  validateProperty(CONFIG::CAMERA_DEV_ID       , var(CONFIG::DEFAULT_CAMERA_DEV_IDX      )) ;
+  validateProperty(CONFIG::CAMERA_RES_ID       , var(CONFIG::DEFAULT_CAMERA_RES_IDX      )) ;
+  validateProperty(CONFIG::AUDIO_API_ID        , var(CONFIG::DEFAULT_AUDIO_API_IDX       )) ;
+  validateProperty(CONFIG::AUDIO_DEVICE_ID     , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX    )) ;
+  validateProperty(CONFIG::AUDIO_CODEC_ID      , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX     )) ;
+  validateProperty(CONFIG::N_CHANNELS_ID       , var(CONFIG::DEFAULT_N_CHANNELS          )) ;
+  validateProperty(CONFIG::SAMPLERATE_ID       , var(CONFIG::DEFAULT_SAMPLERATE_IDX      )) ;
+  validateProperty(CONFIG::AUDIO_BITRATE_ID    , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX   )) ;
+  validateProperty(CONFIG::OVERLAY_TEXT_ID     , var(CONFIG::DEFAULT_OVERLAY_TEXT        )) ;
+  validateProperty(CONFIG::TEXT_STYLE_ID       , var(CONFIG::DEFAULT_TEXT_STYLE_IDX      )) ;
+  validateProperty(CONFIG::TEXT_POSITION_ID    , var(CONFIG::DEFAULT_TEXT_POSITION_IDX   )) ;
+  validateProperty(CONFIG::OUTPUT_STREAM_ID    , var(CONFIG::DEFAULT_OUTPUT_STREAM_IDX   )) ;
+  validateProperty(CONFIG::OUTPUT_CONTAINER_ID , var(CONFIG::DEFAULT_OUTPUT_CONTAINER_IDX)) ;
+  validateProperty(CONFIG::OUTPUT_W_ID         , var(CONFIG::DEFAULT_OUTPUT_W            )) ;
+  validateProperty(CONFIG::OUTPUT_H_ID         , var(CONFIG::DEFAULT_OUTPUT_H            )) ;
+  validateProperty(CONFIG::OUTPUT_FRAMERATE_ID , var(CONFIG::DEFAULT_OUTPUT_FRAMERATE_IDX)) ;
+  validateProperty(CONFIG::VIDEO_BITRATE_ID    , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX   )) ;
+  validateProperty(CONFIG::OUTPUT_DEST_ID      , var(CONFIG::DEFAULT_OUTPUT_DEST         )) ;
+  validateProperty(CONFIG::IS_PREVIEW_ON_ID    , var(CONFIG::DEFAULT_IS_PREVIEW_ON       )) ;
 }
 
-void AvCasterConfig::sanitizeConfig() { } // TODO: ?
+void AvCasterConfig::sanitizeConfig() // TODO: ?
+{
+  if (!this->configStore .isValid() || !this->cameraDevices.isValid() ||
+      !this->audioDevices.isValid()                                    ) return ;
+
+  sanitizeComboProperty(CONFIG::CAMERA_DEV_ID       , CONFIG::CAMERA_RESOLUTIONS     ) ;
+  sanitizeComboProperty(CONFIG::CAMERA_DEV_ID       , nodeValues(this->cameraDevices)) ;
+  sanitizeComboProperty(CONFIG::AUDIO_API_ID        , CONFIG::AUDIO_APIS             ) ;
+  sanitizeComboProperty(CONFIG::AUDIO_DEVICE_ID     , nodeValues(this->audioDevices) ) ;
+  sanitizeComboProperty(CONFIG::AUDIO_CODEC_ID      , CONFIG::AUDIO_CODECS           ) ;
+  sanitizeComboProperty(CONFIG::SAMPLERATE_ID       , CONFIG::AUDIO_CODECS           ) ;
+  sanitizeComboProperty(CONFIG::AUDIO_BITRATE_ID    , CONFIG::AUDIO_BITRATES         ) ;
+  sanitizeComboProperty(CONFIG::TEXT_STYLE_ID       , CONFIG::TEXT_STYLES            ) ;
+  sanitizeComboProperty(CONFIG::TEXT_POSITION_ID    , CONFIG::TEXT_POSITIONS         ) ;
+  sanitizeComboProperty(CONFIG::OUTPUT_STREAM_ID    , CONFIG::OUTPUT_STREAMS         ) ;
+  sanitizeComboProperty(CONFIG::OUTPUT_CONTAINER_ID , CONFIG::OUTPUT_CONTAINERS      ) ;
+  sanitizeComboProperty(CONFIG::OUTPUT_FRAMERATE_ID , CONFIG::OUTPUT_FRAMERATES      ) ;
+  sanitizeComboProperty(CONFIG::VIDEO_BITRATE_ID    , CONFIG::VIDEO_BITRATES         ) ;
+
+  validateConfig() ;
+}
 
 void AvCasterConfig::storeConfig()
 {
@@ -143,7 +168,7 @@ void AvCasterConfig::detectDisplayDimensions()
 
 void AvCasterConfig::detectCaptureDevices()
 {
-#if defined(_WIN32) || defined(_MAC)
+#if JUCE_WINDOWS || JUCE_MAC
 /* mac and windows only (issue #6 issue #8)
 // Returns a list of the available cameras on this machine.
   StringArray video_devs = juce::CameraDevice::getAvailableDevices() ;
@@ -165,7 +190,8 @@ static CameraDevice* CameraDevice::openDevice   (
     int   maxHeight = 768
   )
 */
-#else // defined(_WIN32) || defined(_MAC)
+#endif // JUCE_WINDOWS || JUCE_MAC
+#if JUCE_LINUX
 
   File*       camera_devices_dir = new File(APP::CAMERA_DEVICES_DIR) ;
   Array<File> device_info_dirs ;
@@ -184,7 +210,7 @@ static CameraDevice* CameraDevice::openDevice   (
   }
   else AvCaster::Warning(GUI::NO_CAMERAS_ERROR_MSG) ;
 
-#endif // defined(_WIN32) || defined(_MAC)
+#endif // JUCE_LINUX
 
   Trace::TraceState("detected " + String(this->cameraDevices.getNumProperties()) + " capture devices") ;
 }
@@ -218,12 +244,28 @@ void AvCasterConfig::sanitizeParams()
 }
 
 
-/* getters/setter and listeners */
+/* event handlers */
 
-void AvCasterConfig::validateConfigProperty(Identifier a_key , var a_default_value)
+void AvCasterConfig::validateProperty(Identifier a_key , var a_default_value)
 {
   if (!this->configStore.hasProperty(a_key))
     this->configStore.setProperty(a_key , a_default_value , nullptr) ;
+}
+
+
+/* helpers */
+
+void AvCasterConfig::sanitizeIntProperty(Identifier a_key , int min_value , int max_value)
+{
+  int a_value = int(this->configStore[a_key]) ;
+
+  if (a_value < min_value || a_value > max_value)
+    this->configStore.removeProperty(a_key , nullptr) ;
+}
+
+void AvCasterConfig::sanitizeComboProperty(Identifier a_key , StringArray options)
+{
+  sanitizeIntProperty(a_key , -1 , options.size() - 1) ;
 }
 
 void AvCasterConfig::valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key)
@@ -231,4 +273,18 @@ void AvCasterConfig::valueTreePropertyChanged(ValueTree& a_node , const Identifi
 DEBUG_TRACE_CONFIG_TREE_CHANGED
 
   AvCaster::HandleConfigChanged(a_key) ;
+}
+
+StringArray AvCasterConfig::nodeValues(ValueTree a_node)
+{
+  int n_values = a_node.getNumProperties() ; StringArray values ;
+  for (int value_n = 0 ; value_n < n_values ; ++value_n)
+  {
+    Identifier a_key   = a_node.getPropertyName(value_n) ;
+    var        a_value = a_node.getProperty(a_key , "n/a") ;
+
+    values.add(a_value) ;
+  }
+
+  return values ;
 }

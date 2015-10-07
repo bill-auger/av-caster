@@ -19,7 +19,7 @@
 
 //[Headers] You can add your own extra header files here...
 
-#include "Constants.h"
+#include "AvCaster.h"
 #include "Trace/TraceConfig.h"
 
 //[/Headers]
@@ -774,8 +774,8 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_textPosCombo] -- add your combo box handling code here..
 
-      key         = CONFIG::TEXT_POS_ID ;
-      default_idx = CONFIG::DEFAULT_TEXT_POS_IDX ;
+      key         = CONFIG::TEXT_POSITION_ID ;
+      default_idx = CONFIG::DEFAULT_TEXT_POSITION_IDX ;
 
         //[/UserComboBoxCode_textPosCombo]
     }
@@ -792,8 +792,8 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_framerateCombo] -- add your combo box handling code here..
 
-      key         = CONFIG::FRAMERATE_ID ;
-      default_idx = CONFIG::DEFAULT_FRAMERATE_IDX ;
+      key         = CONFIG::OUTPUT_FRAMERATE_ID ;
+      default_idx = CONFIG::DEFAULT_OUTPUT_FRAMERATE_IDX ;
 
         //[/UserComboBoxCode_framerateCombo]
     }
@@ -801,8 +801,8 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_bitrateCombo] -- add your combo box handling code here..
 
-      key         = CONFIG::BITRATE_ID ;
-      default_idx = CONFIG::DEFAULT_BITRATE_IDX ;
+      key         = CONFIG::VIDEO_BITRATE_ID ;
+      default_idx = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
 
         //[/UserComboBoxCode_bitrateCombo]
     }
@@ -872,38 +872,38 @@ void Config::populateComboBoxes()
   this->textPosCombo     ->addItemList(CONFIG::TEXT_POSITIONS     , 1) ;
   this->outputStreamCombo->addItemList(CONFIG::OUTPUT_STREAMS     , 1) ;
   this->framerateCombo   ->addItemList(CONFIG::OUTPUT_FRAMERATES  , 1) ;
-  this->bitrateCombo     ->addItemList(CONFIG::OUTPUT_BITRATES    , 1) ;
+  this->bitrateCombo     ->addItemList(CONFIG::VIDEO_BITRATES     , 1) ;
 }
 
 void Config::loadConfig()
 {
 //DEBUG_TRACE_DUMP_CONFIG
 
-  double      display_n         = double(this->configStore[CONFIG::DISPLAY_N_ID    ]) ;
-  double      screen_n          = double(this->configStore[CONFIG::SCREEN_N_ID     ]) ;
-  String      screencap_w       = STRING(this->configStore[CONFIG::SCREENCAP_W_ID  ]) ;
-  String      screencap_h       = STRING(this->configStore[CONFIG::SCREENCAP_H_ID  ]) ;
-  String      offset_x          = STRING(this->configStore[CONFIG::OFFSET_X_ID     ]) ;
-  String      offset_y          = STRING(this->configStore[CONFIG::OFFSET_Y_ID     ]) ;
-  StringArray camera_devices    = node2Array(this->cameraDevices) ;
-  int         camera_dev_idx    = int   (this->configStore[CONFIG::CAMERA_DEV_ID   ]) ;
-  int         camera_res_idx    = int   (this->configStore[CONFIG::CAMERA_RES_ID   ]) ;
-  int         audio_api_idx     = int   (this->configStore[CONFIG::AUDIO_API_ID    ]) ;
-  StringArray audio_devices     = node2Array(this->audioDevices) ;
-  int         audio_dev_idx     = int   (this->configStore[CONFIG::AUDIO_DEVICE_ID ]) ;
-  int         audio_codec_idx   = int   (this->configStore[CONFIG::AUDIO_CODEC_ID  ]) ;
-  double      n_channels        = double(this->configStore[CONFIG::N_CHANNELS_ID   ]) ;
-  int         samplerate_idx    = int   (this->configStore[CONFIG::SAMPLERATE_ID   ]) ;
-  int         audio_bitrate_idx = int   (this->configStore[CONFIG::AUDIO_BITRATE_ID]) ;
-  int         text_style_idx    = int   (this->configStore[CONFIG::TEXT_STYLE_ID   ]) ;
-  int         text_pos_idx      = int   (this->configStore[CONFIG::TEXT_POS_ID     ]) ;
-  String      overlay_text      = STRING(this->configStore[CONFIG::OVERLAY_TEXT_ID ]) ;
-  int         output_stream_idx = int   (this->configStore[CONFIG::OUTPUT_STREAM_ID]) ;
-  String      output_w_text     = STRING(this->configStore[CONFIG::OUTPUT_W_ID     ]) ;
-  String      output_h_text     = STRING(this->configStore[CONFIG::OUTPUT_H_ID     ]) ;
-  int         framerate_idx     = int   (this->configStore[CONFIG::FRAMERATE_ID    ]) ;
-  int         bitrate_idx       = int   (this->configStore[CONFIG::BITRATE_ID      ]) ;
-  String      output_dest_text  = STRING(this->configStore[CONFIG::OUTPUT_DEST_ID  ]) ;
+  double      display_n         = double(this->configStore[CONFIG::DISPLAY_N_ID       ]) ;
+  double      screen_n          = double(this->configStore[CONFIG::SCREEN_N_ID        ]) ;
+  String      screencap_w       = STRING(this->configStore[CONFIG::SCREENCAP_W_ID     ]) ;
+  String      screencap_h       = STRING(this->configStore[CONFIG::SCREENCAP_H_ID     ]) ;
+  String      offset_x          = STRING(this->configStore[CONFIG::OFFSET_X_ID        ]) ;
+  String      offset_y          = STRING(this->configStore[CONFIG::OFFSET_Y_ID        ]) ;
+  StringArray camera_devices    = AvCaster::DevicesNames(this->cameraDevices) ;
+  int         camera_dev_idx    = int   (this->configStore[CONFIG::CAMERA_DEV_ID      ]) ;
+  int         camera_res_idx    = int   (this->configStore[CONFIG::CAMERA_RES_ID      ]) ;
+  int         audio_api_idx     = int   (this->configStore[CONFIG::AUDIO_API_ID       ]) ;
+  StringArray audio_devices     = AvCaster::DevicesNames(this->audioDevices) ;
+  int         audio_dev_idx     = int   (this->configStore[CONFIG::AUDIO_DEVICE_ID    ]) ;
+  int         audio_codec_idx   = int   (this->configStore[CONFIG::AUDIO_CODEC_ID     ]) ;
+  double      n_channels        = double(this->configStore[CONFIG::N_CHANNELS_ID      ]) ;
+  int         samplerate_idx    = int   (this->configStore[CONFIG::SAMPLERATE_ID      ]) ;
+  int         audio_bitrate_idx = int   (this->configStore[CONFIG::AUDIO_BITRATE_ID   ]) ;
+  int         text_style_idx    = int   (this->configStore[CONFIG::TEXT_STYLE_ID      ]) ;
+  int         text_pos_idx      = int   (this->configStore[CONFIG::TEXT_POSITION_ID   ]) ;
+  String      overlay_text      = STRING(this->configStore[CONFIG::OVERLAY_TEXT_ID    ]) ;
+  int         output_stream_idx = int   (this->configStore[CONFIG::OUTPUT_STREAM_ID   ]) ;
+  String      output_w_text     = STRING(this->configStore[CONFIG::OUTPUT_W_ID        ]) ;
+  String      output_h_text     = STRING(this->configStore[CONFIG::OUTPUT_H_ID        ]) ;
+  int         framerate_idx     = int   (this->configStore[CONFIG::OUTPUT_FRAMERATE_ID]) ;
+  int         video_bitrate_idx = int   (this->configStore[CONFIG::VIDEO_BITRATE_ID   ]) ;
+  String      output_dest_text  = STRING(this->configStore[CONFIG::OUTPUT_DEST_ID     ]) ;
 
   this->displaySlider    ->setValue            (display_n) ;
   this->screenSlider     ->setValue            (screen_n) ;
@@ -928,21 +928,8 @@ void Config::loadConfig()
   this->outputWidthText  ->setText             (output_w_text) ;
   this->outputHeightText ->setText             (output_h_text) ;
   this->framerateCombo   ->setSelectedItemIndex(framerate_idx     , juce::dontSendNotification) ;
-  this->bitrateCombo     ->setSelectedItemIndex(bitrate_idx       , juce::dontSendNotification) ;
+  this->bitrateCombo     ->setSelectedItemIndex(video_bitrate_idx , juce::dontSendNotification) ;
   this->outputDestText   ->setText             (output_dest_text) ;
-}
-
-StringArray Config::node2Array(ValueTree a_node)
-{
-  StringArray devices ; int n_devices = a_node.getNumProperties() ;
-  for (int device_n = 0 ; device_n < n_devices ; ++device_n)
-  {
-    Identifier device_name   = a_node.getPropertyName(device_n) ;
-    var        friendly_name = a_node.getProperty(device_name , "n/a") ;
-    devices.add(friendly_name) ;
-  }
-
-  return devices ;
 }
 
 void Config::setConfig(Identifier a_key , var a_value)

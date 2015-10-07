@@ -57,8 +57,15 @@ private:
   void detectDisplayDimensions() ;
   void detectCaptureDevices() ;
   void sanitizeParams() ; // unused
-  void validateConfigProperty(  Identifier a_key , var a_default_value) ;
+  void validateProperty(     Identifier a_key , var a_default_value) ;
+  void sanitizeIntProperty(  Identifier a_key , int min_value , int max_value) ;
+  void sanitizeComboProperty(Identifier a_key , StringArray options) ;
+
+  // event handlers
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
+
+  // helpers
+  StringArray nodeValues(ValueTree a_devices_node) ;
 
   // unused ValueTree::Listener interface implementations
   void valueTreeChildAdded(       ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;

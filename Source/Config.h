@@ -55,12 +55,11 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  void        textEditorFocusLost(TextEditor& a_text_editor) ;
+  void textEditorFocusLost(TextEditor& a_text_editor) ;
 
-  void        populateComboBoxes() ;
-  void        loadConfig() ;
-  StringArray node2Array(        ValueTree a_node) ;
-  void        setConfig(         Identifier a_key , var a_value) ;
+  void populateComboBoxes() ;
+  void loadConfig() ;
+  void setConfig(Identifier a_key , var a_value) ;
 
 
   ValueTree configStore ;
