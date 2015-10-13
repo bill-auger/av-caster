@@ -13,7 +13,7 @@
 // enable debug features
 #ifdef DEBUG
 #  define DEBUG_ANSI_COLORS
-// #  define QUIT_IMMEDIATELY
+// #  define DEBUG_QUIT_IMMEDIATELY
 // #  define CONFIGURE_SCREENCAP_CHAIN
 #  define CONFIGURE_CAMERA_CHAIN
 #  define CONFIGURE_AUDIO_CHAIN

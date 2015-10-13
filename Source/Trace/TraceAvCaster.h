@@ -15,7 +15,6 @@
 #  include "Trace.h"
 
 
-
 /* state */
 
 #  define DEBUG_TRACE_INIT_PHASE1             \
@@ -33,13 +32,13 @@
 #  define DEBUG_TRACE_INIT_PHASE5        \
   Trace::TraceState("starting pipeline") ;
 
-#  define DEBUG_TRACE_SET_GST_STATE                                                               \
-  String state =(next_state == GST_STATE_VOID_PENDING) ? "GST_STATE_VOID_PENDING" :             \
-                (next_state == GST_STATE_NULL)         ? "GST_STATE_NULL"         :             \
-                (next_state == GST_STATE_READY)        ? "GST_STATE_READY"        :             \
-                (next_state == GST_STATE_PAUSED)       ? "GST_STATE_PAUSED"       :             \
-                (next_state == GST_STATE_PLAYING)      ? "GST_STATE_PLAYING"      : "unknown" ; \
-  Trace::TraceState("setting " + state + " for " + String(gst_element_get_name(a_gst_element))) ;
+#  define DEBUG_TRACE_SET_GST_STATE                                                              \
+  String state = (next_state == GST_STATE_VOID_PENDING) ? "GST_STATE_VOID_PENDING" :             \
+                 (next_state == GST_STATE_NULL        ) ? "GST_STATE_NULL"         :             \
+                 (next_state == GST_STATE_READY       ) ? "GST_STATE_READY"        :             \
+                 (next_state == GST_STATE_PAUSED      ) ? "GST_STATE_PAUSED"       :             \
+                 (next_state == GST_STATE_PLAYING     ) ? "GST_STATE_PLAYING"      : "unknown" ; \
+  Trace::TraceState("setting " + state + " for " + String(gst_element_get_name(a_gst_element)))  ;
 
 
 /* configuration */
@@ -81,6 +80,41 @@
 #  define DEBUG_TRACE_CONFIG_OUTPUT                                             \
   Trace::TraceConfig("configuring " + stream + " output stream to " + file_url) ;
 
+#  define DEBUG_GRAPHVIZ                                                                              \
+  GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(Pipeline) , GST_DEBUG_GRAPH_SHOW_ALL , std::getenv("GRAPH_NAME")) ;
+
+# define DEBUG_TRACE_MAKE_ELEMENT                                              \
+  bool   is_err = new_element == nullptr ;                                     \
+  String dbg    = "creating " + plugin_id + " GstElement " + element_id ;      \
+  if (is_err) Trace::TraceError("error " + dbg) ; else Trace::TraceConfig(dbg) ;
+
+# define DEBUG_TRACE_MAKE_CAPS                                                 \
+  bool   is_err = new_caps == nullptr ;                                        \
+  String dbg    = "creating caps" ;                                            \
+  if (is_err) Trace::TraceError("error " + dbg) ; else Trace::TraceConfig(dbg) ;
+
+#  define DEBUG_TRACE_ADD_ELEMENT                                                               \
+  gchar* id  = gst_element_get_name(a_bin     ) ; String bin_id     = String(id) ; g_free(id) ; \
+  id         = gst_element_get_name(an_element) ; String element_id = String(id) ; g_free(id) ; \
+  String dbg = "adding " + element_id + " to " + bin_id ;                                       \
+  if (is_err) Trace::TraceError("error " + dbg) ; else Trace::TraceConfig(dbg) ;
+
+#  define DEBUG_TRACE_LINK_ELEMENTS                                                        \
+  gchar* id  = gst_element_get_name(source) ; String source_id = String(id) ; g_free(id) ; \
+  id         = gst_element_get_name(sink  ) ; String sink_id   = String(id) ; g_free(id) ; \
+  String dbg = "linking " + String(source_id) + " and " + String(sink_id) ;                \
+  if (is_err) Trace::TraceError("error " + dbg) ; else Trace::TraceConfig(dbg) ;
+
+# define DEBUG_TRACE_MAKE_GHOST_PAD                                                             \
+  gchar* id  = gst_element_get_name(a_bin     ) ; String bin_id     = String(id) ; g_free(id) ; \
+  id         = gst_element_get_name(an_element) ; String element_id = String(id) ; g_free(id) ; \
+  String dbg = "creating ghost pad " + element_id  ;                                            \
+  if (is_err) Trace::TraceError("error " + dbg) ; else Trace::TraceConfig(dbg) ;
+
+# define DEBUG_TRACE_ADD_GHOST_PAD                                             \
+  dbg = "adding ghost pad " + element_id + " to " + bin_id ;                   \
+  if (is_err) Trace::TraceError("error " + dbg) ; else Trace::TraceConfig(dbg) ;
+
 #else // DEBUG
 
 #  define DEBUG_TRACE_INIT_PHASE1      ;
@@ -96,6 +130,11 @@
 #  define DEBUG_TRACE_CONFIG_MIXER     ;
 #  define DEBUG_TRACE_CONFIG_MUX       ;
 #  define DEBUG_TRACE_CONFIG_OUTPUT    ;
+#  define DEBUG_TRACE_MAKE_ELEMENT     ;
+#  define DEBUG_TRACE_ADD_ELEMENTS     ;
+#  define DEBUG_TRACE_LINK_ELEMENT     ;
+#  define DEBUG_TRACE_MAKE_GHOST_PAD   ;
+#  define DEBUG_TRACE_ADD_GHOST_PAD    ;
 
 #endif // DEBUG
 #endif  // TRACEAVCASTER_H_INCLUDED

@@ -1,6 +1,7 @@
 # nix
 Builds/LinuxMakefile/build
 Builds/LinuxMakefile/.gdbinit
+Builds/LinuxMakefile/debug.log
 *~
 *.kate-swp
 .kateproject*

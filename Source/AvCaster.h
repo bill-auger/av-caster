@@ -81,9 +81,15 @@ private:
   static bool SetGstreamerState(GstElement* a_gst_element , GstState next_state) ;
 
   // helpers
-  static void    DisplayAlert() ;
-  static GstPad* CreateGhostPad(GstElement* an_element , String private_pad_name ,
+  static void        DisplayAlert() ;
+  static GstPad*     CreateGhostPad(GstElement* an_element , String private_pad_name ,
                                                          String public_pad_name  ) ;
+  static GstElement* MakeElement(   String plugin_id , String element_id) ;
+  static GstCaps*    MakeCaps(      String caps_str) ;
+  static bool        AddElement(    GstElement* a_bin , GstElement* an_element) ;
+  static bool        LinkElements(  GstElement* source , GstElement* sink) ;
+  static bool        AddGhostPad(   GstElement* a_bin          , GstElement* an_element   ,
+                                    String      private_pad_id , String      public_pad_id) ;
 
   static MainContent*  Gui ;
   static Array<Alert*> Alerts ;
@@ -98,9 +104,9 @@ private:
   static GstElement* AudioBin ;
   static GstElement* TextBin ;
   static GstElement* MixerBin ;
+  static GstElement* MixerSink ;
   static GstElement* MuxBin ;
   static GstElement* OutputBin ;
-  static GstElement* OutputSink ;
 } ;
 
 #endif  // AVCASTER_H_INCLUDED
