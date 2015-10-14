@@ -65,7 +65,7 @@ private:
   static void Shutdown() ;
 
   // callbacks and event handlers
-  static void HandleTimer(        int timer_id) ;
+  static void HandleTimer        (int timer_id) ;
   static void UpdateStatusGUI() ;
   static void HandleConfigChanged(const Identifier& a_key) ;
 
@@ -82,14 +82,18 @@ private:
 
   // helpers
   static void        DisplayAlert() ;
-  static GstPad*     CreateGhostPad(GstElement* an_element , String private_pad_name ,
-                                                         String public_pad_name  ) ;
-  static GstElement* MakeElement(   String plugin_id , String element_id) ;
-  static GstCaps*    MakeCaps(      String caps_str) ;
-  static bool        AddElement(    GstElement* a_bin , GstElement* an_element) ;
-  static bool        LinkElements(  GstElement* source , GstElement* sink) ;
-  static bool        AddGhostPad(   GstElement* a_bin          , GstElement* an_element   ,
-                                    String      private_pad_id , String      public_pad_id) ;
+  static GstPad*     CreateGhostPad      (GstElement* an_element , String private_pad_name ,
+                                                                   String public_pad_name  ) ;
+  static GstElement* MakeElement         (String plugin_id , String element_id) ;
+  static GstCaps*    MakeCaps            (String caps_str) ;
+  static bool        AddElement          (GstElement* a_bin , GstElement* an_element) ;
+  static bool        LinkElements        (GstElement* source , GstElement* sink) ;
+  static bool        AddGhostPad         (GstElement* a_bin          , GstElement* an_element   ,
+                                         String      private_pad_id , String      public_pad_id) ;
+  static bool        MakeStaticGhostPad (GstElement* a_bin          , GstElement* an_element   ,
+                                         String      private_pad_id , String      public_pad_id) ;
+  static GstPad*     MakeRequestGhostPad(GstElement* a_bin          , GstElement* an_element   ,
+                                         String      private_pad_id , String      public_pad_id) ;
 
   static MainContent*  Gui ;
   static Array<Alert*> Alerts ;
@@ -103,8 +107,8 @@ private:
   static GstElement* CameraSink ;
   static GstElement* AudioBin ;
   static GstElement* TextBin ;
-  static GstElement* MixerBin ;
-  static GstElement* MixerSink ;
+  static GstElement* CompositorBin ;
+  static GstElement* CompositorSink ;
   static GstElement* MuxBin ;
   static GstElement* OutputBin ;
 } ;

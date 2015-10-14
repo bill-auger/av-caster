@@ -48,18 +48,18 @@ private:
   AvCasterConfig() ;
 
   // persistence
-  ValueTree verifyConfig(  ValueTree config_store , Identifier root_node_id) ;
+  ValueTree verifyConfig  (ValueTree config_store , Identifier root_node_id) ;
   void      validateConfig() ;
   void      sanitizeConfig() ;
-  void      storeConfig() ;
+  void      storeConfig   () ;
 
   // runtime params
   void detectDisplayDimensions() ;
-  void detectCaptureDevices() ;
-  void sanitizeParams() ; // unused
-  void validateProperty(     Identifier a_key , var a_default_value) ;
-  void sanitizeIntProperty(  Identifier a_key , int min_value , int max_value) ;
-  void sanitizeComboProperty(Identifier a_key , StringArray options) ;
+  void detectCaptureDevices   () ;
+  void sanitizeParams         () ; // unused
+  void validateProperty       (Identifier a_key , var a_default_value) ;
+  void sanitizeIntProperty    (Identifier a_key , int min_value , int max_value) ;
+  void sanitizeComboProperty  (Identifier a_key , StringArray options) ;
 
   // event handlers
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
@@ -68,11 +68,11 @@ private:
   StringArray nodeValues(ValueTree a_devices_node) ;
 
   // unused ValueTree::Listener interface implementations
-  void valueTreeChildAdded(       ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;
-  void valueTreeChildRemoved(     ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;
+  void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;
+  void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;
   void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ; } ;
-  void valueTreeParentChanged(    ValueTree& a_node)                            override { UNUSED(a_node) ;        } ;
-  void valueTreeRedirected(       ValueTree& a_node)                            override { UNUSED(a_node) ;        } ;
+  void valueTreeParentChanged    (ValueTree& a_node)                            override { UNUSED(a_node) ;        } ;
+  void valueTreeRedirected       (ValueTree& a_node)                            override { UNUSED(a_node) ;        } ;
 
 
   File configFile ;

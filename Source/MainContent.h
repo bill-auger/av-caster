@@ -36,9 +36,9 @@ private:
   ScopedPointer<Statusbar> statusbar ;
 
   void instantiate(ValueTree config_store , ValueTree camera_store , ValueTree audio_store) ;
-  void setTitle(   String title_text) ;
-  void warning(    String message_text) ;
-  void error(      String message_text) ;
+  void setTitle   (String title_text) ;
+  void warning    (String message_text) ;
+  void error      (String message_text) ;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContent)
 } ;
