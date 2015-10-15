@@ -107,6 +107,7 @@ namespace GUI
   static const String AUDIO_INIT_ERROR_MSG     = "Error creating AudioBin GstElements." ;
   static const String TEXT_INIT_ERROR_MSG      = "Error creating TextBin GstElements." ;
   static const String MIXER_INIT_ERROR_MSG     = "Error creating CompositorBin GstElements." ;
+  static const String MIXER_PAD_INIT_ERROR_MSG = "Error creating CompositorBin GstPads." ;
   static const String MUX_INIT_ERROR_MSG       = "Error creating MuxBin GstElements." ;
   static const String OUTPUT_INIT_ERROR_MSG    = "Error creating OutputBin GstElements." ;
   static const String SCREENCAP_LINK_ERROR_MSG = "Error linking ScreencapBin GstElements." ;
@@ -114,6 +115,7 @@ namespace GUI
   static const String AUDIO_LINK_ERROR_MSG     = "Error linking AudioBin GstElements." ;
   static const String TEXT_LINK_ERROR_MSG      = "Error linking TextBin GstElements." ;
   static const String MIXER_LINK_ERROR_MSG     = "Error linking CompositorBin GstElements." ;
+  static const String MIXER_PAD_LINK_ERROR_MSG = "Error linking CompositorBin GstPads." ;
   static const String MUX_LINK_ERROR_MSG       = "Error linking MuxBin GstElements." ;
   static const String OUTPUT_LINK_ERROR_MSG    = "Error linking OutputBin GstElements." ;
   static const String GST_STATE_ERROR_MSG      = "Unable to change state of GstElement '" ;

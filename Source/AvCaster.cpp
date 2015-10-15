@@ -8,28 +8,6 @@
   ==============================================================================
 */
 
-#  define RAW_VIDEO_CAPS_STR "video/x-raw, width=(int)1280,"                   \
-                             "height=(int)800, framerate=(fraction)12/1, "     \
-                             "format=I420, pixel-aspect-ratio=(fraction)1/1, " \
-                             "interlace-mode=(string)progressive"
-#  define TESTVIDEO_MAIN_CAPS "video/x-raw, width=(int)1280, height=(int)800, " \
-                              "framerate=(fraction)12/1, "                      \
-                              "format=I420, pixel-aspect-ratio=(fraction)1/1, " \
-                              "interlace-mode=(string)progressive"
-#  define TESTVIDEO_OVERLAY_CAPS "video/x-raw, width=(int)160, height=(int)120, "  \
-                                 "framerate=(fraction)12/1, "                      \
-                                 "format=I420, pixel-aspect-ratio=(fraction)1/1, " \
-                                 "interlace-mode=(string)progressive"
-#  define SCREENCAP_CAPS "video/x-raw, width=(int)1280, height=(int)800, framerate=(fraction)12/1, pixel-aspect-ratio=(fraction)1/1"
-#  define CAMERA_CAPS    "video/x-raw, width=640, height=480 , framerate=30/1, format=I420"
-#  define AUDIO16_CAPS   "audio/x-raw, format=(string)S16LE, layout=(string)interleaved, rate=(int)44100, channels=(int)2"
-#  define AUDIO32_CAPS   "audio/x-raw, format=(string)F32LE, layout=(string)interleaved, rate=(int)44100, channels=(int)2"
-#  define TESTAUDIO_CAPS "audio/x-raw, format=(string)S16LE, endianness=(int)1234, " \
-                         "signed=(boolean)true, width=(int)16, depth=(int)16, "      \
-                         "rate=(int)44100, channels=(int)2"
-#  define VIDEO_ENC_CAPS "video/x-h264, level=(string)4.1, profile=main"
-#  define AUDIO_ENC_CAPS "audio/mpeg, mpegversion=1, layer=3, mpegaudioversion=3, rate=48000, channels=2, parsed=true"
-
 
 #include <cstdlib>
 #include <gst/video/videooverlay.h>
@@ -179,9 +157,9 @@ DEBUG_TRACE_INIT_PHASE2
 DEBUG_TRACE_INIT_PHASE3
 
   // configure elements
-  if (!ConfigureScreencap() || !ConfigureCamera()      || !ConfigureAudio()  ||
-      !ConfigureText()      || !ConfigureCompositing() || !ConfigureMux()    ||
-      !ConfigureOutput()                                                      )
+  if (!ConfigureScreencap() || !ConfigureCamera()     || !ConfigureAudio()  ||
+      !ConfigureText()      || !ConfigureCompositor() || !ConfigureMux()    ||
+      !ConfigureOutput()                                                     )
   { Error(GUI::GST_CONFIG_ERROR_MSG) ; return false ; }
 
 DEBUG_TRACE_INIT_PHASE4
@@ -272,40 +250,47 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 bool AvCaster::ConfigureScreencap()
 {
 #ifdef CONFIGURE_SCREENCAP_CHAIN
-
   GstElement *source , *capsfilter , *queue ;
   GstCaps    *caps ;
-  String      plugin_id ;
-  String      caps_str ;
 
-  int screencap_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID]) ;
-  int screencap_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID]) ;
-
-DEBUG_TRACE_CONFIG_SCREENCAP
-
+  int    screencap_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID     ]) ;
+  int    screencap_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID     ]) ;
+  int    framerate_n = int(Config->configStore[CONFIG::OUTPUT_FRAMERATE_ID]) ;
+  String framerate   = CONFIG::OUTPUT_FRAMERATES[framerate_n] ;
 #if JUCE_LINUX
-  plugin_id = "v4l2src" ; caps_str = CAMERA_CAPS ;
+  String plugin_id = "ximagesrc" ;
+  String caps_str  = String("video/x-raw, ")                                       +
+                     "width=(int)"          + String(screencap_w) + String(", "  ) +
+                     "height=(int)"         + String(screencap_h) + String(", "  ) +
+                     "framerate=(fraction)" + String(framerate  ) + String("/1, ") +
+                     "pixel-aspect-ratio=(fraction)1/1"                            ;
 #endif // JUCE_LINUX
 
-#define FAUX_VIDEO_SRC
-#ifdef FAUX_VIDEO_SRC
-plugin_id = "videotestsrc" ; caps_str = TESTVIDEO_OVERLAY_CAPS ;
-#endif // FAUX_VIDEO_SRC
+// #define FAUX_SCREEN_SRC
+#ifdef FAUX_SCREEN_SRC
+  plugin_id = "videotestsrc" ;
+  caps_str  = "video/x-raw, width=(int)1280, height=(int)800, " +
+              "framerate=(fraction)12/1, "                      +
+              "format=I420, pixel-aspect-ratio=(fraction)1/1, " +
+              "interlace-mode=(string)progressive"
+#endif // FAUX_SCREEN_SRC
+
+DEBUG_TRACE_CONFIG_SCREENCAP
 
   if (!(source     = MakeElement(plugin_id    , "screen-real-source")) ||
       !(capsfilter = MakeElement("capsfilter" , "screen-capsfilter" )) ||
       !(queue      = MakeElement("queue"      , "screen-queue"      )) ||
-      !(caps       = gst_caps_from_string(TESTVIDEO_MAIN_CAPS)       )  )
+      !(caps       = MakeCaps(caps_str)                              )  )
   { Error(GUI::SCREENCAP_INIT_ERROR_MSG) ; return false ; }
 
-#ifdef FAUX_VIDEO_SRC
-g_object_set(source , "is_live" , true , NULL) ; g_object_set(source , "pattern" , 1 , NULL) ;
-#else // FAUX_VIDEO_SRC
+#ifdef FAUX_SCREEN_SRC
+  g_object_set(source , "is_live" , true , NULL) ; g_object_set(source , "pattern" , 1 , NULL) ;
+#else // FAUX_SCREEN_SRC
   g_object_set(G_OBJECT(source    ) , "endx"         , screencap_w - 1 , NULL) ;
   g_object_set(G_OBJECT(source    ) , "endy"         , screencap_h - 1 , NULL) ;
   g_object_set(G_OBJECT(source    ) , "use-damage"   , false           , NULL) ;
   g_object_set(G_OBJECT(source    ) , "show-pointer" , true            , NULL) ;
-#endif // FAUX_VIDEO_SRC
+#endif // FAUX_SCREEN_SRC
   g_object_set(G_OBJECT(capsfilter) , "caps"         , caps            , NULL) ;
   gst_caps_unref(caps) ;
 
@@ -330,26 +315,41 @@ bool AvCaster::ConfigureCamera()
 
   GstElement *source , *capsfilter , *queue ;
   GstCaps*    caps ;
-  String      plugin_id ;
-  String      caps_str ;
 
-  int          dev_n  = int(Config->configStore[CONFIG::CAMERA_DEV_ID]) ;
-  int          res_n  = int(Config->configStore[CONFIG::CAMERA_RES_ID]) ;
-  const gchar* device = CHARSTAR(String("/dev/" +
-                        String(Config->cameraDevices.getPropertyName(dev_n)))) ;
-
-DEBUG_TRACE_CONFIG_CAMERA
+  int          dev_n      = int(Config->configStore[CONFIG::CAMERA_DEV_ID]) ;
+  int          res_n      = int(Config->configStore[CONFIG::CAMERA_RES_ID]) ;
+  const gchar* device     = CHARSTAR(String("/dev/" +
+                            String(Config->cameraDevices.getPropertyName(dev_n)))) ;
+  String       resolution = CONFIG::CAMERA_RESOLUTIONS[res_n] ;
+  int          framerate  = 30 ; // TODO: query device
+  StringArray  res_tokens = StringArray::fromTokens(resolution , "x" , "") ;
+  int          camera_w   = res_tokens[0].getIntValue() ;
+  int          camera_h   = res_tokens[1].getIntValue() ;
 
 #if JUCE_LINUX
-  plugin_id = "v4l2src" ; caps_str = CAMERA_CAPS ;
+  String       plugin_id  = "v4l2src" ;
+  String       caps_str   = String("video/x-raw, ")                                     +
+                            "width=(int)"          + String(camera_w ) + String(", "  ) +
+                            "height=(int)"         + String(camera_h ) + String(", "  ) +
+                            "framerate=(fraction)" + String(framerate) + String("/1, ") +
+                            "format=I420, "                                             +
+                            "pixel-aspect-ratio=(fraction)1/1"                          ;
 #endif // JUCE_LINUX
-
-#define FAUX_VIDEO_SRC
-#ifdef FAUX_VIDEO_SRC
-plugin_id = "videotestsrc" ; caps_str = TESTVIDEO_OVERLAY_CAPS ;
-#else // FAUX_VIDEO_SRC
+// #define FAUX_CAMERA_SRC
+#ifdef FAUX_CAMERA_SRC
+  plugin_id  = "videotestsrc" ;
+  caps_str   = String("video/x-raw, ")                                     +
+               "width=(int)"          + String(camera_w ) + String(", "  ) +
+               "height=(int)"         + String(camera_h ) + String(", "  ) +
+               "framerate=(fraction)" + String(framerate) + String("/1, ") +
+               "format=I420, "                                             +
+               "pixel-aspect-ratio=(fraction)1/1, "                        +
+               "interlace-mode=(string)progressive"                        ;
+#else // FAUX_CAMERA_SRC
   if (Config->cameraDevices.getNumProperties() == 0) return true ;
-#endif // FAUX_VIDEO_SRC
+#endif // FAUX_CAMERA_SRC
+
+DEBUG_TRACE_CONFIG_CAMERA
 
   if (!(source     = MakeElement(plugin_id    , "camera-real-source")) ||
       !(capsfilter = MakeElement("capsfilter" , "camera-capsfilter" )) ||
@@ -357,11 +357,11 @@ plugin_id = "videotestsrc" ; caps_str = TESTVIDEO_OVERLAY_CAPS ;
       !(caps       = MakeCaps(caps_str)                              )  )
   { Error(GUI::CAMERA_INIT_ERROR_MSG) ; return false ; }
 
-#ifdef FAUX_VIDEO_SRC
+#ifdef FAUX_CAMERA_SRC
 g_object_set(source , "is_live" , true , NULL) ; g_object_set(source , "pattern" , 0 , NULL) ;
-#else// FAUX_VIDEO_SRC
+#else// FAUX_CAMERA_SRC
   g_object_set(G_OBJECT(source    ) , "device" , device , NULL) ;
-#endif // FAUX_VIDEO_SRC
+#endif // FAUX_CAMERA_SRC
   g_object_set(G_OBJECT(capsfilter) , "caps"   , caps   , NULL) ; gst_caps_unref(caps) ;
 
   if (!AddElement        (CameraBin , source    )                    ||
@@ -383,35 +383,47 @@ bool AvCaster::ConfigureAudio()
 {
 #ifdef CONFIGURE_AUDIO_CHAIN
 
-//   GstElement *source , *capsfilter , *queue ;
-GstElement *source = nullptr;  GstElement *capsfilter = nullptr ; GstElement *queue = nullptr ;
+  GstElement *source , *capsfilter , *queue ;
   GstCaps*    caps ;
 
-  int          audio_api = int(Config->configStore[CONFIG::AUDIO_API_ID]) ;
-  const gchar* plugin_id ;
-  const gchar* caps_str ;
+  int    audio_api        = int(Config->configStore[CONFIG::AUDIO_API_ID ]) ;
+  int    n_channels       = int(Config->configStore[CONFIG::N_CHANNELS_ID]) ;
+  int    samplerate_n     = int(Config->configStore[CONFIG::SAMPLERATE_ID]) ;
+  int    samplerate       = CONFIG::AUDIO_SAMPLERATES[samplerate_n].getIntValue() ;
+  String test_caps_str    = "audio/x-raw, format=(string)S16LE, endianness=(int)1234, signed=(boolean)true, width=(int)16, depth=(int)16, rate=(int)44100, channels=(int)2" ;
+  String audio16_caps_str = String("audio/x-raw, "               )               +
+                            String("format=(string)S16LE, "      )               +
+                            String("layout=(string)interleaved, ")               +
+                            String("rate=(int)"    ) + String(samplerate) + ", " +
+                            String("channels=(int)") + String(n_channels)        ;
+  String audio32_caps_str = String("audio/x-raw, "               )               +
+                            String("format=(string)F32LE, "      )               +
+                            String("layout=(string)interleaved, ")               +
+                            String("rate=(int)"    ) + String(samplerate) + ", " +
+                            String("channels=(int)") + String(n_channels)        ;
+  String plugin_id , caps_str ;
 
   switch ((AvCasterConfig::AudioApi)audio_api)
   {
-    case AvCasterConfig::ALSA_AUDIO:  plugin_id = CHARSTAR(GST::ALSA_PLUGIN_ID ) ;
-                                      caps_str  = AUDIO16_CAPS ;                       break ;
-    case AvCasterConfig::PULSE_AUDIO: plugin_id = CHARSTAR(GST::PULSE_PLUGIN_ID) ;
-                                      caps_str  = AUDIO16_CAPS ;                       break ;
-    case AvCasterConfig::JACK_AUDIO:  plugin_id = CHARSTAR(GST::JACK_PLUGIN_ID ) ;
-                                      caps_str  = AUDIO32_CAPS ;                       break ;
+    case AvCasterConfig::ALSA_AUDIO:  plugin_id = GST::ALSA_PLUGIN_ID ;
+                                      caps_str  = audio16_caps_str ;                   break ;
+    case AvCasterConfig::PULSE_AUDIO: plugin_id = GST::PULSE_PLUGIN_ID ;
+                                      caps_str  = audio16_caps_str ;                   break ;
+    case AvCasterConfig::JACK_AUDIO:  plugin_id = GST::JACK_PLUGIN_ID ;
+                                      caps_str  = audio32_caps_str ;                   break ;
     default:                          Error(GUI::AUDIO_CFG_ERROR_MSG) ; return false ; break ;
   }
 
 #ifdef FAUX_AUDIO_SRC
-plugin_id = "audiotestsrc" ; caps_str = TESTAUDIO_CAPS ;
+  plugin_id = "audiotestsrc" ; caps_str = test_caps_str ;
 #endif // FAUX_AUDIO_SRC
 
 DEBUG_TRACE_CONFIG_AUDIO
-
+DBG("caps_str=" + caps_str) ;
   if (!(source     = MakeElement(plugin_id    , "audio-real-source")) ||
       !(capsfilter = MakeElement("capsfilter" , "audio-in-caps"    )) ||
       !(queue      = MakeElement("queue"      , "audio-in-queue"   )) ||
-      !(caps       = gst_caps_from_string(caps_str)                 )  )
+      !(caps       = MakeCaps(caps_str)                             )  )
   { Error(GUI::AUDIO_INIT_ERROR_MSG) ; return false ; }
 
   g_object_set(G_OBJECT(capsfilter) , "caps" , caps , NULL) ; gst_caps_unref(caps) ;
@@ -483,7 +495,7 @@ Trace::TraceState("bypassing text configuration") ;
   return true ;
 }
 
-bool AvCaster::ConfigureCompositing()
+bool AvCaster::ConfigureCompositor()
 {
 #ifdef CONFIGURE_COMPOSITING_CHAIN
 
@@ -492,7 +504,10 @@ DEBUG_TRACE_CONFIG_COMPOSITOR
   GstElement *compositor , *capsfilter , *converter , *queue ;
   GstCaps*    caps ;
   GstPad     *main_sinkpad , *overlay_sinkpad ;
-
+#  define RAW_VIDEO_CAPS_STR "video/x-raw, width=(int)1280,"                   \
+                             "height=(int)800, framerate=(fraction)12/1, "     \
+                             "format=I420, pixel-aspect-ratio=(fraction)1/1, " \
+                             "interlace-mode=(string)progressive"
   if (!(compositor = MakeElement("compositor"   , "compositor"          )) ||
       !(capsfilter = MakeElement("capsfilter"   , "compositor-caps"     )) ||
       !(converter  = MakeElement("videoconvert" , "compositor-converter")) ||
@@ -513,8 +528,8 @@ DEBUG_TRACE_CONFIG_COMPOSITOR
 //       !LinkElements(queue      , CompositorSink)  )
     { Error(GUI::MIXER_LINK_ERROR_MSG) ; return false ; }
 
-  main_sinkpad    = MakeRequestGhostPad(CompositorBin , compositor , "main-sink"    , "compositor-main-sink"   ) ;
-  overlay_sinkpad = MakeRequestGhostPad(CompositorBin , compositor , "overlay-sink" , "compositor-overlay-sink") ;
+  main_sinkpad    = MakeRequestGhostPad(CompositorBin , compositor , "sink_0" , "compositor-main-sink"   ) ;
+  overlay_sinkpad = MakeRequestGhostPad(CompositorBin , compositor , "sink_1" , "compositor-overlay-sink") ;
 
   g_object_set(main_sinkpad    , "width" , 1280 , "height", 800 , "xpos" , 0    , "ypos" , 0   , NULL) ;
   g_object_set(overlay_sinkpad , "width" , 160  , "height", 120 , "xpos" , 1120 , "ypos" , 680 , NULL) ;
@@ -535,8 +550,8 @@ bool AvCaster::ConfigureMux()
 {
 #ifdef CONFIGURE_MUX_CHAIN
 
-  GstElement *video_in_queue  , *video_converter , *video_encoder , *video_parser ,
-             *video_enc_caps  , *video_enc_queue                                  ;
+  GstElement *video_in_queue , *video_converter , *video_encoder , *video_parser ,
+             *video_enc_caps , *video_enc_queue                                  ;
   GstElement *audio_in_queue , *audio_encoder , *audio_parser , *audio_enc_queue ;
   GstElement *mux ;
   GstCaps    *video_caps ;
@@ -547,25 +562,31 @@ bool AvCaster::ConfigureMux()
   int   audio_bitrate_n = int(Config->configStore[CONFIG::AUDIO_BITRATE_ID]) ;
   guint video_bitrate   = CONFIG::VIDEO_BITRATES[video_bitrate_n].getIntValue() ;
   guint audio_bitrate   = CONFIG::AUDIO_BITRATES[audio_bitrate_n].getIntValue() ;
+  String h264_caps_str  = "video/x-h264, level=(string)4.1, profile=main" ;
+  String mp3_caps_str   = String("audio/mpeg, mpegversion=1, layer=3, mpegaudioversion=3, ") +
+                          String("rate=48000, channels=2, parsed=true")                      ;
+  String video_caps_str = h264_caps_str ;
+  String audio_caps_str = mp3_caps_str ;
 
 DEBUG_TRACE_CONFIG_MUX
 
 // TODO: some or all of these may not be necessary
 // audio_enc_caps is either mis-configured or unfit for this speccified insertion
-GstElement *audio_converter , *audio_enc_caps , *audio_enc_queue2 , *audio_enc_queue3 , *audio_enc_queue4 ; GstCaps *audio_caps ;
+GstElement *audio_converter , *audio_enc_queue2 , *audio_enc_queue3 , *audio_enc_queue4 ;
+//GstCaps *audio_caps ; //GstElement* audio_enc_caps ;
 
   if (!(video_in_queue  = MakeElement("queue"          , "mux-video-queue")) ||
       !(video_converter = MakeElement("videoconvert"   , "video-cvt"      )) ||
       !(video_encoder   = MakeElement("x264enc"        , "video-encoder"  )) ||
       !(video_parser    = MakeElement("h264parse"      , "video-parser"   )) ||
-      !(video_caps      = MakeCaps(VIDEO_ENC_CAPS)                         ) ||
+      !(video_caps      = MakeCaps(video_caps_str)                         ) ||
       !(video_enc_caps  = MakeElement("capsfilter"     , "video-enc-caps" )) ||
       !(video_enc_queue = MakeElement("queue"          , "video-enc-queue")) ||
       !(audio_in_queue  = MakeElement("queue"          , "mux-audio-queue")) ||
 !(audio_converter = MakeElement("audioconvert" , "audio-cvt")) ||
       !(audio_encoder   = MakeElement("lamemp3enc"     , "audio-encoder"  )) ||
       !(audio_parser    = MakeElement("mpegaudioparse" , "audio-parser"   )) ||
-// !(audio_caps      = MakeCaps(AUDIO_ENC_CAPS)                          ) ||
+// !(audio_caps      = MakeCaps(audio_caps_str)                          ) ||
 // !(audio_enc_caps  = MakeElement("capsfilter"     , "audio-enc-caps" )) ||
       !(audio_enc_queue = MakeElement("queue"          , "audio-enc-queue")) ||
 !(audio_enc_queue2 = MakeElement("queue"          , "audio-enc-queue2")) ||
@@ -579,9 +600,9 @@ GstElement *audio_converter , *audio_enc_caps , *audio_enc_queue2 , *audio_enc_q
   g_object_set(video_enc_caps , "caps"       , video_caps     , NULL) ;
 //   g_object_set(audio_encoder  , "bitrate"    , audio_bitrate  , NULL) ; // TODO: CBR
 // g_object_set(audio_encoder , "quality" , 2 , NULL) ; // VBR (default is 4)
-// g_object_set(audio_enc_caps , "caps"       , audio_caps     , NULL) ;
+//   g_object_set(audio_enc_caps , "caps"       , audio_enc_caps , NULL) ;
   g_object_set(mux            , "streamable" , true           , NULL) ;
-  gst_caps_unref(video_caps) ; //gst_caps_unref(audio_caps) ;
+  gst_caps_unref(video_caps) ; //gst_caps_unref(audio_enc_caps) ;
 
   if (!AddElement        (MuxBin , video_in_queue )                         ||
       !AddElement        (MuxBin , video_converter)                         ||
@@ -807,7 +828,6 @@ bool AvCaster::MakeStaticGhostPad(GstElement* a_bin          , GstElement* an_el
   bool is_err = !(private_pad = gst_element_get_static_pad(an_element , private_id )) ||
                 !(public_pad  = gst_ghost_pad_new         (public_id  , private_pad)) ||
                 !gst_pad_set_active(public_pad , TRUE)                                 ;
-
   gst_object_unref(private_pad) ;
 
 DEBUG_TRACE_MAKE_GHOST_PAD
@@ -831,7 +851,6 @@ GstPad* AvCaster::MakeRequestGhostPad(GstElement* a_bin          , GstElement* a
   bool is_err = !(private_pad = gst_element_get_request_pad(an_element , private_id )) ||
                 !(public_pad  = gst_ghost_pad_new          (public_id  , private_pad)) ||
                 !gst_pad_set_active(public_pad , TRUE)                                  ;
-
   gst_object_unref(private_pad) ;
 
 DEBUG_TRACE_MAKE_GHOST_PAD

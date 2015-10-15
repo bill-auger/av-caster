@@ -74,7 +74,7 @@ private:
   static bool ConfigureCamera() ;
   static bool ConfigureAudio() ;
   static bool ConfigureText() ;
-  static bool ConfigureCompositing() ;
+  static bool ConfigureCompositor() ;
   static bool ConfigureMux() ;
   static bool ConfigureOutput() ;
   static bool TogglePreview() ;

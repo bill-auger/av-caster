@@ -43,14 +43,16 @@
 
 /* configuration */
 
-#  define DEBUG_TRACE_CONFIG_SCREENCAP                                       \
-  Trace::TraceState("configuring screencap @ " + String(screencap_w) + "x" + \
-                                                 String(screencap_h)       ) ;
+#  define DEBUG_TRACE_CONFIG_SCREENCAP                                 \
+  Trace::TraceState("configuring screencap @ "                       + \
+                    String(screencap_w) + "x"  + String(screencap_h) + \
+                    " using "           + plugin_id                  ) ;
 
-#  define DEBUG_TRACE_CONFIG_CAMERA                                                    \
-  Identifier camera_id = Config->cameraDevices.getPropertyName(dev_n) ;                \
-  Trace::TraceState("configuring camera " + STRING(Config->cameraDevices[camera_id]) + \
-                    " @ "                 + CONFIG::CAMERA_RESOLUTIONS  [res_n]      ) ;
+#  define DEBUG_TRACE_CONFIG_CAMERA                                                     \
+  Identifier camera_id = Config->cameraDevices.getPropertyName(dev_n) ;                 \
+  Trace::TraceState("configuring camera "  + STRING(Config->cameraDevices[camera_id]) + \
+                    " (" + device + ") @ " + CONFIG::CAMERA_RESOLUTIONS  [res_n]      + \
+                    " using "              + plugin_id                                ) ;
 
 #  define DEBUG_TRACE_CONFIG_AUDIO                                                    \
   String api_name  = CONFIG::AUDIO_APIS[audio_api] ;                                  \
