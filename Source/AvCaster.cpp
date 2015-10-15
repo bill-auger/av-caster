@@ -7,12 +7,11 @@
 
   ==============================================================================
 */
-#define STR_HELPER(x) #x
-#define STR(x) STR_HELPER(x)
-#define RAW_VIDEO_CAPS_STR "video/x-raw, width=(int)" STR(1280)                     \
-                           ", height=(int)" STR(800) ", framerate=(fraction)12/1, " \
-                           "format=I420, pixel-aspect-ratio=(fraction)1/1, "        \
-                           "interlace-mode=(string)progressive"
+
+#  define RAW_VIDEO_CAPS_STR "video/x-raw, width=(int)1280,"                   \
+                             "height=(int)800, framerate=(fraction)12/1, "     \
+                             "format=I420, pixel-aspect-ratio=(fraction)1/1, " \
+                             "interlace-mode=(string)progressive"
 #  define TESTVIDEO_MAIN_CAPS "video/x-raw, width=(int)1280, height=(int)800, " \
                               "framerate=(fraction)12/1, "                      \
                               "format=I420, pixel-aspect-ratio=(fraction)1/1, " \
@@ -105,8 +104,6 @@ bool AvCaster::Initialize(MainContent* main_content , const String& args)
   // initialize gStreamer
   if (!InitGstreamer()) return false ;
 
-DEBUG_GRAPHVIZ
-
 #ifdef DEBUG_QUIT_IMMEDIATELY
 Trace::TraceEvent("DEBUG_QUIT_IMMEDIATELY") ; return false ;
 #endif // DEBUG_QUIT_IMMEDIATELY
@@ -128,11 +125,11 @@ static GstBusSyncReply cb(GstBus * bus, GstMessage * message, GstPipeline * pipe
   if (!(Pipeline        = gst_pipeline_new        ("pipeline"                        )) ||
 #ifdef CONFIGURE_SCREENCAP_CHAIN
       !(ScreencapBin    = gst_bin_new             ("screen-bin"                      )) ||
-      !(ScreencapSink   = gst_element_factory_make("xvimagesink"  , "screen-sink"    )) ||
+//       !(ScreencapSink   = gst_element_factory_make("xvimagesink"  , "screen-sink"    )) ||
 #endif // CONFIGURE_SCREENCAP_CHAIN
 #ifdef CONFIGURE_CAMERA_CHAIN
       !(CameraBin       = gst_bin_new             ("camera-bin"                      )) ||
-      !(CameraSink      = gst_element_factory_make("xvimagesink"  , "camera-sink"    )) ||
+//       !(CameraSink      = gst_element_factory_make("xvimagesink"  , "camera-sink"    )) ||
 #endif // CONFIGURE_CAMERA_CHAIN
 #ifdef CONFIGURE_AUDIO_CHAIN
       !(AudioBin        = gst_bin_new             ("audio-bin"                       )) ||
@@ -142,7 +139,7 @@ static GstBusSyncReply cb(GstBus * bus, GstMessage * message, GstPipeline * pipe
 #endif // CONFIGURE_TEXT_CHAIN
 #ifdef CONFIGURE_COMPOSITING_CHAIN
       !(CompositorBin   = gst_bin_new             ("compositor-bin"                  )) ||
-      !(CompositorSink  = gst_element_factory_make("xvimagesink"  , "compositor-sink")) ||
+//       !(CompositorSink  = gst_element_factory_make("xvimagesink"  , "compositor-sink")) ||
 #endif // CONFIGURE_COMPOSITING_CHAIN
 #ifdef CONFIGURE_MUX_CHAIN
       !(MuxBin          = gst_bin_new             ("mux-bin"                         )) ||
@@ -171,7 +168,7 @@ DEBUG_TRACE_INIT_PHASE2
 #endif // CONFIGURE_TEXT_CHAIN
 #ifdef CONFIGURE_COMPOSITING_CHAIN
       !gst_bin_add(GST_BIN(Pipeline     ) , CompositorBin ) ||
-      !gst_bin_add(GST_BIN(CompositorBin) , CompositorSink) ||
+//       !gst_bin_add(GST_BIN(CompositorBin) , CompositorSink) ||
 #endif // CONFIGURE_COMPOSITING_CHAIN
 #ifdef CONFIGURE_MUX_CHAIN
       !gst_bin_add(GST_BIN(Pipeline     ) , MuxBin        ) ||
@@ -191,34 +188,34 @@ DEBUG_TRACE_INIT_PHASE4
 
   // attach native xwindow to gStreamer overlay sinks
   guintptr window_handle = (guintptr)(Gui->getWindowHandle()) ;
-#ifdef CONFIGURE_SCREENCAP_CHAIN
+#ifdef CONFIGURE_SCREENCAP_DISPLAY
   gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(ScreencapSink ) , window_handle) ;
-#endif // CONFIGURE_SCREENCAP_CHAIN
-#ifdef CONFIGURE_CAMERA_CHAIN
+#endif // CONFIGURE_SCREENCAP_DISPLAY
+#ifdef CONFIGURE_CAMERA_DISPLAY
   gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(CameraSink    ) , window_handle) ;
-#endif // CONFIGURE_CAMERA_CHAIN
-#ifdef CONFIGURE_COMPOSITING_CHAIN
+#endif // CONFIGURE_CAMERA_DISPLAY
+#ifdef CONFIGURE_COMPOSITING_DISPLAY
   gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(CompositorSink) , window_handle) ;
-#endif // CONFIGURE_COMPOSITING_CHAIN
-#ifdef CONFIGURE_SCREENCAP_CHAIN
+#endif // CONFIGURE_COMPOSITING_DISPLAY
+#ifdef CONFIGURE_SCREENCAP_DISPLAY
   if (!gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(ScreencapSink )          ,
                                               GUI::SCREENCAP_MONITOR_X , GUI::MONITORS_Y ,
                                               GUI::MONITORS_W          , GUI::MONITORS_H ) ||
-#else // CONFIGURE_SCREENCAP_CHAIN
+#else // CONFIGURE_SCREENCAP_DISPLAY
   if (false ||
-#endif // CONFIGURE_SCREENCAP_CHAIN
-#ifdef CONFIGURE_CAMERA_CHAIN
+#endif // CONFIGURE_SCREENCAP_DISPLAY
+#ifdef CONFIGURE_CAMERA_DISPLAY
       !gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(CameraSink    )          ,
                                               GUI::CAMERA_MONITOR_X    , GUI::MONITORS_Y ,
                                               GUI::MONITORS_W          , GUI::MONITORS_H ) ||
-#endif // CONFIGURE_CAMERA_CHAIN
-#ifdef CONFIGURE_COMPOSITING_CHAIN
+#endif // CONFIGURE_CAMERA_DISPLAY
+#ifdef CONFIGURE_COMPOSITING_DISPLAY
       !gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(CompositorSink)          ,
                                               GUI::OUTPUT_MONITOR_X    , GUI::MONITORS_Y ,
                                               GUI::MONITORS_W          , GUI::MONITORS_H )  )
-#else // CONFIGURE_COMPOSITING_CHAIN
+#else // CONFIGURE_COMPOSITING_DISPLAY
       false)
-#endif // CONFIGURE_COMPOSITING_CHAIN
+#endif // CONFIGURE_COMPOSITING_DISPLAY
   { Error(GUI::GST_XWIN_ERROR_MSG) ; return false ; }
 
 DEBUG_TRACE_INIT_PHASE5
@@ -226,7 +223,9 @@ DEBUG_TRACE_INIT_PHASE5
   // set rolling
   if (!SetGstreamerState(Pipeline , GST_STATE_PLAYING)) return false ;
 
-  TogglePreview() ; return true ;
+DEBUG_MAKE_GRAPHVIZ
+
+  return true ;
 }
 
 void AvCaster::Shutdown()
@@ -293,10 +292,10 @@ DEBUG_TRACE_CONFIG_SCREENCAP
 plugin_id = "videotestsrc" ; caps_str = TESTVIDEO_OVERLAY_CAPS ;
 #endif // FAUX_VIDEO_SRC
 
-  if (!(source     = MakeElement(plugin_id    , "screen-input"     )) ||
-      !(capsfilter = MakeElement("capsfilter" , "screen-capsfilter")) ||
-      !(queue      = MakeElement("queue"      , "screen-queue"     )) ||
-      !(caps       = gst_caps_from_string(TESTVIDEO_MAIN_CAPS)      )  )
+  if (!(source     = MakeElement(plugin_id    , "screen-real-source")) ||
+      !(capsfilter = MakeElement("capsfilter" , "screen-capsfilter" )) ||
+      !(queue      = MakeElement("queue"      , "screen-queue"      )) ||
+      !(caps       = gst_caps_from_string(TESTVIDEO_MAIN_CAPS)       )  )
   { Error(GUI::SCREENCAP_INIT_ERROR_MSG) ; return false ; }
 
 #ifdef FAUX_VIDEO_SRC
@@ -309,7 +308,6 @@ g_object_set(source , "is_live" , true , NULL) ; g_object_set(source , "pattern"
 #endif // FAUX_VIDEO_SRC
   g_object_set(G_OBJECT(capsfilter) , "caps"         , caps            , NULL) ;
   gst_caps_unref(caps) ;
-
 
   if (!AddElement        (ScreencapBin , source    )                    ||
       !AddElement        (ScreencapBin , capsfilter)                    ||
@@ -354,7 +352,7 @@ plugin_id = "videotestsrc" ; caps_str = TESTVIDEO_OVERLAY_CAPS ;
 #endif // FAUX_VIDEO_SRC
 
   if (!(source     = MakeElement(plugin_id    , "camera-real-source")) ||
-      !(capsfilter = MakeElement("capsfilter" , "camera-caps"       )) ||
+      !(capsfilter = MakeElement("capsfilter" , "camera-capsfilter" )) ||
       !(queue      = MakeElement("queue"      , "camera-queue"      )) ||
       !(caps       = MakeCaps(caps_str)                              )  )
   { Error(GUI::CAMERA_INIT_ERROR_MSG) ; return false ; }
@@ -426,7 +424,7 @@ g_object_set(source , "is_live" , true , NULL) ;
       !AddElement        (AudioBin , capsfilter)                     ||
       !AddElement        (AudioBin , queue     )                     ||
       !LinkElements      (source     , capsfilter)                   ||
-      !LinkElements      (capsfilter , queue )                       ||
+      !LinkElements      (capsfilter , queue     )                   ||
       !MakeStaticGhostPad(AudioBin   , queue , "src" , "audio-source"))
   { Error(GUI::AUDIO_LINK_ERROR_MSG) ; return false ; }
 
@@ -466,16 +464,16 @@ FcBool fontAddStatus = FcConfigAppFOntAddFile(FcConfigGetCurrent(),file);
   g_object_set(source  , "font-desc" , "Purisa Normal 40"             , NULL) ;
   g_object_set(filesrc , "location"  , "/code/av-caster/deleteme.srt" , NULL) ;
 
-  if (!AddElement        (TextBin , filesrc  )                     ||
-      !AddElement        (TextBin , subparser)                     ||
-      !AddElement        (TextBin , source   )                     ||
-      !AddElement        (TextBin , converter)                     ||
-      !AddElement        (TextBin , queue    )                     ||
-      !MakeStaticGhostPad(TextBin , queue , "src" , "text-source") ||
-      !LinkElements      (filesrc   , subparser)                   ||
-      !LinkElements      (subparser , source   )                   ||
-      !LinkElements      (source    , converter)                   ||
-      !LinkElements      (converter , queue    )                    )
+  if (!AddElement        (TextBin , filesrc  )                   ||
+      !AddElement        (TextBin , subparser)                   ||
+      !AddElement        (TextBin , source   )                   ||
+      !AddElement        (TextBin , converter)                   ||
+      !AddElement        (TextBin , queue    )                   ||
+      !LinkElements      (filesrc   , subparser)                 ||
+      !LinkElements      (subparser , source   )                 ||
+      !LinkElements      (source    , converter)                 ||
+      !LinkElements      (converter , queue    )                 ||
+      !MakeStaticGhostPad(TextBin , queue , "src" , "text-source"))
   { Error(GUI::TEXT_LINK_ERROR_MSG) ; return false ; }
 
 #else // CONFIGURE_TEXT_CHAIN
@@ -505,24 +503,25 @@ DEBUG_TRACE_CONFIG_COMPOSITOR
   g_object_set(compositor , "background" , 1    , NULL) ;
   g_object_set(capsfilter , "caps"       , caps , NULL) ; gst_caps_unref(caps) ;
 
-  if (!AddElement  (CompositorBin , compositor)  ||
-      !AddElement  (CompositorBin , capsfilter)  ||
-      !AddElement  (CompositorBin , converter )  ||
-      !AddElement  (CompositorBin , queue     )  ||
-      !LinkElements(compositor , capsfilter    ) ||
-      !LinkElements(capsfilter , converter     ) ||
-      !LinkElements(converter  , queue         ) ||
-      !LinkElements(queue      , CompositorSink)  )
+  if (!AddElement  (CompositorBin , compositor) ||
+      !AddElement  (CompositorBin , capsfilter) ||
+      !AddElement  (CompositorBin , converter ) ||
+      !AddElement  (CompositorBin , queue     ) ||
+      !LinkElements(compositor , capsfilter)    ||
+      !LinkElements(capsfilter , converter )    ||
+      !LinkElements(converter  , queue     )     )
+//       !LinkElements(queue      , CompositorSink)  )
     { Error(GUI::MIXER_LINK_ERROR_MSG) ; return false ; }
 
-  main_sinkpad    = MakeRequestGhostPad(CompositorBin , compositor , "sink_0" , "compositor-main-sink"   ) ;
-  overlay_sinkpad = MakeRequestGhostPad(CompositorBin , compositor , "sink_1" , "compositor-overlay-sink") ;
+  main_sinkpad    = MakeRequestGhostPad(CompositorBin , compositor , "main-sink"    , "compositor-main-sink"   ) ;
+  overlay_sinkpad = MakeRequestGhostPad(CompositorBin , compositor , "overlay-sink" , "compositor-overlay-sink") ;
 
   g_object_set(main_sinkpad    , "width" , 1280 , "height", 800 , "xpos" , 0    , "ypos" , 0   , NULL) ;
   g_object_set(overlay_sinkpad , "width" , 160  , "height", 120 , "xpos" , 1120 , "ypos" , 680 , NULL) ;
 
-  if (!LinkElements(ScreencapBin , CompositorBin) ||
-      !LinkElements(CameraBin    , CompositorBin)  )
+  if (!LinkElements      (ScreencapBin , CompositorBin)                      ||
+      !LinkElements      (CameraBin    , CompositorBin)                      ||
+      !MakeStaticGhostPad(CompositorBin , queue , "src" , "compositor-source"))
   { Error(GUI::MIXER_LINK_ERROR_MSG) ; return false ; }
 
 #else // CONFIGURE_COMPOSITING_CHAIN
@@ -801,8 +800,8 @@ DEBUG_TRACE_LINK_ELEMENTS
 bool AvCaster::MakeStaticGhostPad(GstElement* a_bin          , GstElement* an_element   ,
                                   String      private_pad_id , String      public_pad_id)
 {
-  const gchar*  private_id = CHARSTAR(private_pad_id) ;
-  const gchar*  public_id  = CHARSTAR(public_pad_id ) ;
+  const gchar*  private_id = UTF8(private_pad_id) ;
+  const gchar*  public_id  = UTF8(public_pad_id ) ;
   GstPad       *private_pad , *public_pad ;
 
   bool is_err = !(private_pad = gst_element_get_static_pad(an_element , private_id )) ||
@@ -825,11 +824,11 @@ DEBUG_TRACE_ADD_GHOST_PAD
 GstPad* AvCaster::MakeRequestGhostPad(GstElement* a_bin          , GstElement* an_element   ,
                                       String      private_pad_id , String      public_pad_id)
 {
-  const gchar*  private_id = CHARSTAR(private_pad_id) ;
-  const gchar*  public_id  = CHARSTAR(public_pad_id ) ;
+  const gchar*  private_id = UTF8(private_pad_id) ;
+  const gchar*  public_id  = UTF8(public_pad_id ) ;
   GstPad       *private_pad , *public_pad ;
 
-  bool is_err = !(private_pad = gst_element_get_request_pad(an_element , private_id))  ||
+  bool is_err = !(private_pad = gst_element_get_request_pad(an_element , private_id )) ||
                 !(public_pad  = gst_ghost_pad_new          (public_id  , private_pad)) ||
                 !gst_pad_set_active(public_pad , TRUE)                                  ;
 

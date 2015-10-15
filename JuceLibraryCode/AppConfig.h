@@ -17,9 +17,10 @@
 //==============================================================================
 // [BEGIN_USER_CODE_SECTION]
 
-#define UNUSED(x) (void)(x)
-#define STRING(a_var) a_var.toString()
-#define CHARSTAR(str) str.toStdString().c_str()
+#define UNUSED(x)          (void)(x)
+#define STRING(a_var)      a_var.toString()
+#define CHARSTAR(a_string) a_string.toStdString().c_str()
+#define UTF8(a_string)     a_string.toUTF8()
 
 // [END_USER_CODE_SECTION]
 
