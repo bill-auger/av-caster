@@ -108,7 +108,7 @@ void AvCasterConfig::sanitizeConfig() // TODO: ?
   sanitizeComboProperty(CONFIG::AUDIO_API_ID        , CONFIG::AUDIO_APIS             ) ;
   sanitizeComboProperty(CONFIG::AUDIO_DEVICE_ID     , nodeValues(this->audioDevices) ) ;
   sanitizeComboProperty(CONFIG::AUDIO_CODEC_ID      , CONFIG::AUDIO_CODECS           ) ;
-  sanitizeComboProperty(CONFIG::SAMPLERATE_ID       , CONFIG::AUDIO_CODECS           ) ;
+  sanitizeComboProperty(CONFIG::SAMPLERATE_ID       , CONFIG::AUDIO_SAMPLERATES      ) ;
   sanitizeComboProperty(CONFIG::AUDIO_BITRATE_ID    , CONFIG::AUDIO_BITRATES         ) ;
   sanitizeComboProperty(CONFIG::TEXT_STYLE_ID       , CONFIG::TEXT_STYLES            ) ;
   sanitizeComboProperty(CONFIG::TEXT_POSITION_ID    , CONFIG::TEXT_POSITIONS         ) ;
@@ -265,7 +265,7 @@ void AvCasterConfig::sanitizeIntProperty(Identifier a_key , int min_value , int 
 
 void AvCasterConfig::sanitizeComboProperty(Identifier a_key , StringArray options)
 {
-  sanitizeIntProperty(a_key , -1 , options.size() - 1) ;
+  sanitizeIntProperty(a_key , 0 , options.size() - 1) ;
 }
 
 void AvCasterConfig::valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key)

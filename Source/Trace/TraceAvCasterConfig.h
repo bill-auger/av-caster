@@ -17,12 +17,12 @@
 
 /* persistence */
 
-#  define DEBUG_TRACE_VALIDATE_CONFIG                                                      \
-  String success_msg    = "stored config parsed successfully v" + String(stored_version) ; \
-  String not_found_msg  = "stored config not found - restoring defaults" ;                 \
-  String invlaid_msg    = "stored config not invalid - restoring defaults" ;               \
-  Trace::TraceConfig(((!stored_config.isValid())             ? not_found_msg   :           \
-                     ((!stored_config.hasType(root_node_id)) ? invlaid_msg   :             \
+#  define DEBUG_TRACE_VALIDATE_CONFIG                                                     \
+  String success_msg   = "stored config parsed successfully v" + String(stored_version) ; \
+  String not_found_msg = "stored config not found - restoring defaults" ;                 \
+  String invlaid_msg   = "stored config not invalid - restoring defaults" ;               \
+  Trace::TraceConfig(((!stored_config.isValid())             ? not_found_msg   :          \
+                     ((!stored_config.hasType(root_node_id)) ? invlaid_msg   :            \
                                                                success_msg   ) )) ;
 
 #  define DEBUG_TRACE_SANITIZE_CONFIG                                                      \

@@ -82,18 +82,32 @@ private:
 
   // helpers
   static void        DisplayAlert() ;
-  static GstPad*     CreateGhostPad      (GstElement* an_element , String private_pad_name ,
-                                                                   String public_pad_name  ) ;
-  static GstElement* MakeElement         (String plugin_id , String element_id) ;
-  static GstCaps*    MakeCaps            (String caps_str) ;
-  static bool        AddElement          (GstElement* a_bin , GstElement* an_element) ;
-  static bool        LinkElements        (GstElement* source , GstElement* sink) ;
-  static bool        AddGhostPad         (GstElement* a_bin          , GstElement* an_element   ,
-                                         String      private_pad_id , String      public_pad_id) ;
-  static bool        MakeStaticGhostPad (GstElement* a_bin          , GstElement* an_element   ,
-                                         String      private_pad_id , String      public_pad_id) ;
+  static GstElement* MakeElement      (String plugin_id , String element_id) ;
+  static GstCaps*    MakeCaps         (String caps_str) ;
+  static bool        AddElement       (GstElement* a_bin , GstElement* an_element) ;
+  static bool        LinkElements     (GstElement* source , GstElement* sink) ;
+  static bool        LinkPads         (GstPad* srcpad , GstPad* sinkpad) ;
+  static bool        AddGhostPad      (GstElement* a_bin , GstPad* public_pad) ;
+  static GstPad*     AddGhostSrcPad   (GstElement* a_bin         , GstElement* an_element ,
+                                       String      public_pad_id                          ) ;
+  static GstPad*     AddGhostSinkPad  (GstElement* a_bin         , GstElement* an_element ,
+                                       String      public_pad_id                          ) ;
+  static GstPad*     AddGhostPad      (GstElement* a_bin          , GstElement* an_element   ,
+                                       String      private_pad_id , String      public_pad_id) ;
+#if ! CONFIGURE_TEES
+  static GstPad*     MakeRequestSrcPad  (GstElement* a_bin         , GstElement* an_element ,
+                                         String      public_pad_id                          ) ;
+  static GstPad*     MakeRequestSinkPad (GstElement* a_bin         , GstElement* an_element ,
+                                         String      public_pad_id                          ) ;
   static GstPad*     MakeRequestGhostPad(GstElement* a_bin          , GstElement* an_element   ,
                                          String      private_pad_id , String      public_pad_id) ;
+#endif // CONFIGURE_TEES
+  static GstPad*     NewStaticSinkPad (GstElement* an_element) ;
+  static GstPad*     NewStaticSrcPad  (GstElement* an_element) ;
+  static GstPad*     NewStaticPad     (GstElement* an_element , String template_id) ;
+  static GstPad*     NewRequestSinkPad(GstElement* an_element) ;
+  static GstPad*     NewRequestSrcPad (GstElement* an_element) ;
+  static GstPad*     NewRequestPad    (GstElement* an_element , String template_id) ;
 
   static MainContent*  Gui ;
   static Array<Alert*> Alerts ;
@@ -102,15 +116,42 @@ private:
   // gStreamer
   static GstElement* Pipeline ;
   static GstElement* ScreencapBin ;
-  static GstElement* ScreencapSink ;
   static GstElement* CameraBin ;
-  static GstElement* CameraSink ;
   static GstElement* AudioBin ;
   static GstElement* TextBin ;
   static GstElement* CompositorBin ;
-  static GstElement* CompositorSink ;
+  static GstElement* FullscreenSink ;
+  static GstElement* OverlaySink ;
+  static GstElement* CompositeSink ;
   static GstElement* MuxBin ;
   static GstElement* OutputBin ;
 } ;
 
 #endif  // AVCASTER_H_INCLUDED
+
+
+/* CompositorBin topology
+=> static sink
+-> static src
+<? ghost sink
+?> ghost src
+{? request src
+?} request sink
+<=> ghost pad link   - (corresponds to number of calls to AddGhostSinkPad() or AddGhostSrcPad())
+<-> request pad link - (corresponds to number of calls to LinkPads())
+                                     ? <-> =>fullscreen_sink_queue-> =>FullscreenSink
+CompositorBin<? <=> =>fullscreen-tee{
+                                     ? <-> =>fullscreen_thru_queue-> <-> ?
+                                                                          }compositor->
+                                     ? <-> =>overlay_thru_queue   -> <-> ?
+CompositorBin<? <=> =>overlay-tee   {
+                                     ? <-> =>overlay_sink_queue   -> =>OverlaySink
+
+?                                                           ?
+ }compositor-> =>capsfilter-> =>converter-> =>composite-tee{
+?                                                           ?
+
+                                     ? <-> =>composite_sink_queue ->     =>CompositeSink
+                    =>composite-tee {
+                                     ? <-> =>composite_thru_queue -> <=> ?>CompositorBin
+*/

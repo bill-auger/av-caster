@@ -14,17 +14,30 @@
 #ifdef DEBUG
 #  define DEBUG_ANSI_COLORS
 // #  define DEBUG_QUIT_IMMEDIATELY
-#  define CONFIGURE_SCREENCAP_CHAIN
-// #  define CONFIGURE_SCREENCAP_DISPLAY
-#  define CONFIGURE_CAMERA_CHAIN
-// #  define CONFIGURE_CAMERA_DISPLAY
-#  define CONFIGURE_AUDIO_CHAIN
-// #  define CONFIGURE_TEXT_CHAIN
-#  define CONFIGURE_COMPOSITING_CHAIN
-// #  define CONFIGURE_COMPOSITING_DISPLAY
-#  define CONFIGURE_MUX_CHAIN
-#  define CONFIGURE_OUTPUT_CHAIN
+#  define CONFIGURE_SCREENCAP_CHAIN   1
+#  define CONFIGURE_CAMERA_CHAIN      1
+#  define CONFIGURE_AUDIO_CHAIN       1
+#  define CONFIGURE_TEXT_CHAIN        0
+#  define CONFIGURE_COMPOSITING_CHAIN (CONFIGURE_SCREENCAP_CHAIN && CONFIGURE_CAMERA_CHAIN && 1)
+#  define CONFIGURE_MUX_CHAIN         (CONFIGURE_AUDIO_CHAIN && (CONFIGURE_SCREENCAP_CHAIN || CONFIGURE_CAMERA_CHAIN || CONFIGURE_COMPOSITING_CHAIN))
+#  define CONFIGURE_OUTPUT_CHAIN      (CONFIGURE_MUX_CHAIN && 1)
+#  define CONFIGURE_TEES              (CONFIGURE_COMPOSITING_CHAIN && 1)
+// #  define FAUX_SCREEN_SRC
+// #  define FAUX_CAMERA_SRC
+// #  define FAUX_AUDIO_SRC
+// #  define FAKE_MUX_ENCODER_SRC_AND_SINK          // isolate compositor from encoder and muxer from output
+// #define FAUX_FULLSCREEN_SINK                     // instatiate FullscreenSink as fakesink
+// #define FAUX_OVERLAY_SINK                        // instatiate OverlaySink    as fakesink
+// #define FAUX_COMPOSITE_SINK                      // instatiate CompositeSink  as fakesink
+// #define FAUX_COMPOSITOR_COMPOSITE_FULLSCREEN_SRC // replace static  srcpad  on fullscreen_thru_queue (nyi)
+// #define FAUX_COMPOSITOR_COMPOSITE_OVERLAY_SRC    // replace static  srcpad  on overlay_thru_queue (nyi)
+// #define FAUX_COMPOSITOR_FULLSCREEN_THRU_SINK     // replace request snkpad  on compositor (nyi)
+// #define FAUX_COMPOSITOR_OVERLAY_THRU_SINK        // replace request snkpad  on compositor (nyi)
+// #ifndef CONFIGURE_SCREENCAP_CHAIN                // replace ghost   sinkpad on fullscreen-tee
+// #ifndef CONFIGURE_CAMERA_CHAIN                   // replace ghost   sinkpad on overlay-tee
+// #ifndef CONFIGURE_MUX_CHAIN                      // replace ghost   srcpad  on composite_thru_queue
 #endif // DEBUG
+
 
 // tracing
 #ifdef DEBUG
@@ -77,13 +90,13 @@ namespace GUI
   static const int    CONTENT_H      = 720 - BORDERS_W - TITLEBAR_H ;
 
   // Config
-  static const String OUTPUT_GUI_ID       = "output-config-gui" ;
-  static const int    MONITORS_W          = 160 ;
-  static const int    MONITORS_H          = 120 ;
-  static const int    MONITORS_Y          = 504 + TITLEBAR_H ;
-  static const int    SCREENCAP_MONITOR_X = 40 ;
-  static const int    CAMERA_MONITOR_X    = 224 ;
-  static const int    OUTPUT_MONITOR_X    = 408 ;
+  static const String OUTPUT_GUI_ID        = "output-config-gui" ;
+  static const int    MONITORS_W           = 160 ;
+  static const int    MONITORS_H           = 120 ;
+  static const int    MONITORS_Y           = 504 + TITLEBAR_H ;
+  static const int    FULLSCREEN_MONITOR_X = 40 ;
+  static const int    OVERLAY_MONITOR_X    = 224 ;
+  static const int    COMPOSITE_MONITOR_X  = 408 ;
 
   // StatusBar
   static const String STATUS_GUI_ID    = "statusbar-gui" ;
@@ -215,32 +228,34 @@ namespace CONFIG
   static const String FILE_OUTPUT   = "File" ;
   static const String RTMP_OUTPUT   = "RTMP" ;
   static const String FLV_CONTAINER = ".flv" ;
-  static const StringArray CAMERA_RESOLUTIONS = StringArray::fromLines("160x120"     + newLine +
-                                                                       "320x240"     + newLine +
-                                                                       "640x480"               ) ;
-  static const StringArray AUDIO_APIS         = StringArray::fromLines("ALSA"        + newLine +
-                                                                       "PulseAudio"  + newLine +
-                                                                       "JACK"                  ) ;
-  static const StringArray AUDIO_CODECS       = StringArray::fromLines("AAC"         + newLine +
-                                                                       "MP3"                   ) ;
-  static const StringArray AUDIO_SAMPLERATES  = StringArray::fromLines("22050"       + newLine +
-                                                                       "44100"       + newLine +
-                                                                       "48000"                 ) ;
-  static const StringArray AUDIO_BITRATES     = StringArray::fromLines("96k"         + newLine +
-                                                                       "128k"        + newLine +
-                                                                       "192k"                  ) ;
-  static const StringArray TEXT_STYLES        = StringArray::fromLines("Static"      + newLine +
-                                                                       "Marquee"               ) ;
-  static const StringArray TEXT_POSITIONS     = StringArray::fromLines("Top"         + newLine +
-                                                                       "Bottom"                ) ;
-  static const StringArray OUTPUT_STREAMS     = StringArray::fromLines(FILE_OUTPUT   + newLine +
-                                                                       RTMP_OUTPUT             ) ;
-  static const StringArray OUTPUT_CONTAINERS  = StringArray::fromLines(FLV_CONTAINER           ) ;
-  static const StringArray OUTPUT_FRAMERATES  = StringArray::fromLines("12"          + newLine +
-                                                                       "20"          + newLine +
-                                                                       "30"                    ) ;
-  static const StringArray VIDEO_BITRATES     = StringArray::fromLines("800k"        + newLine +
-                                                                       "1200k"                 ) ;
+  static const StringArray CAMERA_RESOLUTIONS = StringArray::fromLines("160x120"   + newLine +
+                                                                       "320x240"   + newLine +
+                                                                       "640x480"             ) ;
+  static const StringArray AUDIO_APIS         = StringArray::fromLines("ALSA"      + newLine +
+                                                                       "Pulse"     + newLine +
+                                                                       "JACK"                ) ;
+  static const StringArray AUDIO_CODECS       = StringArray::fromLines("AAC"       + newLine +
+                                                                       "MP3"                 ) ;
+  static const StringArray AUDIO_SAMPLERATES  = StringArray::fromLines("11025"     + newLine +
+                                                                       "22050"     + newLine +
+                                                                       "44100"               ) ;
+  static const StringArray AUDIO_BITRATES     = StringArray::fromLines("64k"       + newLine +
+                                                                       "96k"       + newLine +
+                                                                       "128k"      + newLine +
+                                                                       "192k"                ) ;
+  static const StringArray TEXT_STYLES        = StringArray::fromLines("Static"    + newLine +
+                                                                       "Marquee"             ) ;
+  static const StringArray TEXT_POSITIONS     = StringArray::fromLines("Top"       + newLine +
+                                                                       "Bottom"              ) ;
+  static const StringArray OUTPUT_STREAMS     = StringArray::fromLines(FILE_OUTPUT + newLine +
+                                                                       RTMP_OUTPUT           ) ;
+  static const StringArray OUTPUT_CONTAINERS  = StringArray::fromLines(FLV_CONTAINER         ) ;
+  static const StringArray OUTPUT_FRAMERATES  = StringArray::fromLines("8"         + newLine +
+                                                                       "12"        + newLine +
+                                                                       "20"        + newLine +
+                                                                       "30"                  ) ;
+  static const StringArray VIDEO_BITRATES     = StringArray::fromLines("800k"      + newLine +
+                                                                       "1200k"               ) ;
 }
 
 namespace GST
