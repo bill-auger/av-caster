@@ -10,10 +10,7 @@
 #ifndef CONSTANTS_H_INCLUDED
 #define CONSTANTS_H_INCLUDED
 
-// enable debug features
-#ifdef DEBUG
-#  define DEBUG_ANSI_COLORS
-// #  define DEBUG_QUIT_IMMEDIATELY
+// enable standard features
 #  define CONFIGURE_SCREENCAP_CHAIN   1
 #  define CONFIGURE_CAMERA_CHAIN      1
 #  define CONFIGURE_AUDIO_CHAIN       1
@@ -36,6 +33,12 @@
 // #ifndef CONFIGURE_SCREENCAP_CHAIN                // replace ghost   sinkpad on fullscreen-tee
 // #ifndef CONFIGURE_CAMERA_CHAIN                   // replace ghost   sinkpad on overlay-tee
 // #ifndef CONFIGURE_MUX_CHAIN                      // replace ghost   srcpad  on composite_thru_queue
+
+
+// enable debug features
+#ifdef DEBUG
+#  define DEBUG_ANSI_COLORS
+// #  define DEBUG_QUIT_IMMEDIATELY
 #endif // DEBUG
 
 

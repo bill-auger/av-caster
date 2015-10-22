@@ -1,0 +1,60 @@
+language:       cpp
+compiler:       clang
+sudo:           required
+dist:           trusty
+before_install:
+  - # per app config
+  - VERSION=0.12.000
+  - DEV_REPO_NAME='bill-auger'
+  - DEB_REPO_NAME='ninjam'
+  - PROJECT_NAME='av-caster' # ASSERT: matches dev repo name, binary filename, deb repo name, etc.
+  - LICENSE='LGPLv3'
+  - MAINTAINER='bill-auger@programmer.net'
+  - VENDOR="https://github.com/$DEV_REPO_NAME/$PROJECT_NAME"
+  - VENDOR_URL="https://github.com/$DEV_REPO_NAME/$PROJECT_NAME"
+  - DEB_DESC="a simple native gStreamer GUI front-end for screencast and webcam streaming"
+  - # general JUCE/packagecloud config
+  - BUILD_DIR=/home/travis/build/$DEV_REPO_NAME/$PROJECT_NAME/Builds/LinuxMakefile
+  - DEB_DIR=$BUILD_DIR/debian
+  - BIN_DIR=$DEB_DIR/usr/bin
+  - DEB_PKG="$PROJECT_NAME"_"$VERSION"_amd64.deb
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libfreetype6-dev libx11-dev libxinerama-dev
+                            libxcursor-dev mesa-common-dev libasound2-dev
+                            freeglut3-dev libxcomposite-dev libxrender-dev
+                            libjack-jackd2-dev libgstreamer-plugins-base1.0-dev
+  - gem install --no-rdoc --no-ri fpm package_cloud
+script:         >
+  cd $BUILD_DIR                                                                &&
+  echo "building $PROJECT_NAME"                                                &&
+  make CONFIG=Debug && mkdir -p $BIN_DIR && mv build/av-caster-dbg $BIN_DIR/ &&
+  echo "building deb package $DEB_PKG"                                         &&
+  fpm -s dir -t deb --name $PROJECT_NAME --version $VERSION                     \
+    -C              $DEB_DIR                                                    \
+    --package       $DEB_DIR/"$PROJECT_NAME"_VERSION_ARCH.deb                   \
+    --license       "$LICENSE"                                                  \
+    --maintainer    "$MAINTAINER"                                               \
+    --vendor        "$VENDOR"                                                   \
+    --url           "$VENDOR_URL"                                               \
+    --depends       'freeglut3'                                                 \
+    --depends       'libfreetype6'                                              \
+    --depends       'libgl1-mesa-glx | libgl1'                                  \
+    --depends       'libx11-6'                                                  \
+    --depends       'libxcomposite1'                                            \
+    --depends       'libxcursor1'                                               \
+    --depends       'libxext6'                                                  \
+    --depends       'libxinerama1'                                              \
+    --depends       'libxrender1'                                               \
+    --depends       'gstreamer1.0-plugins-good'                                 \
+    --depends       'gstreamer1.0-plugins-bad'                                  \
+    --depends       'gstreamer1.0-plugins-ugly'                                 \
+    --description   "$DEB_DESC"                                                 \
+    --deb-changelog $DEB_DIR/changelog                                          \
+    --deb-priority  'optional'                                                  \
+    --category      'network'                                                   \
+    usr/
+after_success:
+  - echo "deb package $DEB_PKG built successfully"
+  - package_cloud yank $DEB_REPO_NAME/$PROJECT_NAME/ubuntu/trusty          $DEB_PKG
+  - package_cloud push $DEB_REPO_NAME/$PROJECT_NAME/ubuntu/trusty $DEB_DIR/$DEB_PKG
+  - echo "uploaded deb package to $DEB_REPO_NAME/$PROJECT_NAME repo"

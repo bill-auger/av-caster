@@ -212,7 +212,7 @@ static CameraDevice* CameraDevice::openDevice   (
 
 #endif // JUCE_LINUX
 
-  Trace::TraceState("detected " + String(this->cameraDevices.getNumProperties()) + " capture devices") ;
+DEBUG_TRACE_DETECT_CAPTURE_DEVICES
 }
 
 void AvCasterConfig::sanitizeParams()

@@ -77,7 +77,10 @@ void MainContent::setTitle(String title_text)
 
 void MainContent::warning(String message_text)
 {
+#ifdef DEBUG
   Trace::TraceWarning(message_text) ;
+#endif // DEBUG
+
   if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
 
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon , GUI::MODAL_WARNING_TITLE ,
@@ -87,7 +90,10 @@ void MainContent::warning(String message_text)
 
 void MainContent::error(String message_text)
 {
+#ifdef DEBUG
   Trace::TraceError(message_text) ;
+#endif // DEBUG
+
   if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
 
   AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon , GUI::MODAL_ERROR_TITLE ,

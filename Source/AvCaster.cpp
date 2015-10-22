@@ -340,7 +340,9 @@ DEBUG_TRACE_CONFIG_SCREENCAP
   { Error(GUI::SCREENCAP_LINK_ERROR_MSG) ; return false ; }
 
 #else // CONFIGURE_SCREENCAP_CHAIN
+#  ifdef DEBUG
 Trace::TraceState("bypassing screencap configuration") ;
+#  endif // DEBUG
 #endif // CONFIGURE_SCREENCAP_CHAIN
 
   return true ;
@@ -449,7 +451,9 @@ DEBUG_TRACE_CONFIG_CAMERA
   { Error(GUI::CAMERA_LINK_ERROR_MSG) ; return false ; }
 
 #else // CONFIGURE_CAMERA_CHAIN
+#  ifdef DEBUG
 Trace::TraceState("bypassing camera configuration") ;
+#  endif // DEBUG
 #endif // CONFIGURE_CAMERA_CHAIN
 
   return true ;
@@ -520,7 +524,9 @@ DEBUG_TRACE_CONFIG_AUDIO
   { Error(GUI::AUDIO_LINK_ERROR_MSG) ; return false ; }
 
 #else // CONFIGURE_AUDIO_CHAIN
+#  ifdef DEBUG
 Trace::TraceState("bypassing audio configuration") ;
+#  endif // DEBUG
 #endif // CONFIGURE_AUDIO_CHAIN
 
   return true ;
@@ -568,7 +574,9 @@ FcBool fontAddStatus = FcConfigAppFOntAddFile(FcConfigGetCurrent(),file);
   { Error(GUI::TEXT_LINK_ERROR_MSG) ; return false ; }
 
 #else // CONFIGURE_TEXT_CHAIN
+#  ifdef DEBUG
 Trace::TraceState("bypassing text configuration") ;
+#  endif // DEBUG
 #endif // CONFIGURE_TEXT_CHAIN
 
   return true ;
@@ -692,17 +700,17 @@ if (!gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(fake_composite_thr
   { Error(GUI::MIXER_INIT_ERROR_MSG) ; return false ; }
 
   // configure elements
-  g_object_set(fullscreen_sink_queue , "max-size-bytes"   , 0    , NULL) ;
-  g_object_set(fullscreen_sink_queue , "max-size-time"    , 0    , NULL) ;
-  g_object_set(fullscreen_sink_queue , "max-size-buffers" , 0    , NULL) ;
-  g_object_set(overlay_sink_queue    , "max-size-bytes"   , 0    , NULL) ;
-  g_object_set(overlay_sink_queue    , "max-size-time"    , 0    , NULL) ;
-  g_object_set(overlay_sink_queue    , "max-size-buffers" , 0    , NULL) ;
-  g_object_set(composite_sink_queue  , "max-size-bytes"   , 0    , NULL) ;
-  g_object_set(composite_sink_queue  , "max-size-time"    , 0    , NULL) ;
-  g_object_set(composite_sink_queue  , "max-size-buffers" , 0    , NULL) ;
-  g_object_set(compositor            , "background"       , 1    , NULL) ;
-  g_object_set(capsfilter            , "caps"             , caps , NULL) ;
+  g_object_set(fullscreen_sink_queue , "max-size-bytes"   , (guint  )0 , NULL) ;
+  g_object_set(fullscreen_sink_queue , "max-size-time"    , (guint64)0 , NULL) ;
+  g_object_set(fullscreen_sink_queue , "max-size-buffers" , (guint  )0 , NULL) ;
+  g_object_set(overlay_sink_queue    , "max-size-bytes"   , (guint  )0 , NULL) ;
+  g_object_set(overlay_sink_queue    , "max-size-time"    , (guint64)0 , NULL) ;
+  g_object_set(overlay_sink_queue    , "max-size-buffers" , (guint  )0 , NULL) ;
+  g_object_set(composite_sink_queue  , "max-size-bytes"   , (guint  )0 , NULL) ;
+  g_object_set(composite_sink_queue  , "max-size-time"    , (guint64)0 , NULL) ;
+  g_object_set(composite_sink_queue  , "max-size-buffers" , (guint  )0 , NULL) ;
+  g_object_set(compositor            , "background"       , 1          , NULL) ;
+  g_object_set(capsfilter            , "caps"             , caps       , NULL) ;
   gst_caps_unref(caps) ;
 
   // link elements
@@ -764,14 +772,14 @@ if (!gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(fake_composite_thr
 #  endif // CONFIGURE_TEES
 
   // configure request pads
-  g_object_set(compositor_fullscreen_sinkpad , "width" , fullscreen_w) ;
-  g_object_set(compositor_fullscreen_sinkpad , "height", fullscreen_h) ;
-  g_object_set(compositor_fullscreen_sinkpad , "xpos"  , 0           ) ;
-  g_object_set(compositor_fullscreen_sinkpad , "ypos"  , 0           ) ;
-  g_object_set(compositor_overlay_sinkpad    , "width" , overlay_w   ) ;
-  g_object_set(compositor_overlay_sinkpad    , "height", overlay_h   ) ;
-  g_object_set(compositor_overlay_sinkpad    , "xpos"  , overlay_x   ) ;
-  g_object_set(compositor_overlay_sinkpad    , "ypos"  , overlay_y   ) ;
+  g_object_set(compositor_fullscreen_sinkpad , "width"  , fullscreen_w , NULL) ;
+  g_object_set(compositor_fullscreen_sinkpad , "height" , fullscreen_h , NULL) ;
+  g_object_set(compositor_fullscreen_sinkpad , "xpos"   , 0            , NULL) ;
+  g_object_set(compositor_fullscreen_sinkpad , "ypos"   , 0            , NULL) ;
+  g_object_set(compositor_overlay_sinkpad    , "width"  , overlay_w    , NULL) ;
+  g_object_set(compositor_overlay_sinkpad    , "height" , overlay_h    , NULL) ;
+  g_object_set(compositor_overlay_sinkpad    , "xpos"   , overlay_x    , NULL) ;
+  g_object_set(compositor_overlay_sinkpad    , "ypos"   , overlay_y    , NULL) ;
 
 #  if CONFIGURE_TEES
   // link ghost pads and request pads
@@ -822,7 +830,9 @@ if (!gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(fake_composite_thr
 #  endif // CONFIGURE_TEES
 
 #else // CONFIGURE_COMPOSITING_CHAIN
+#  ifdef DEBUG
 Trace::TraceState("bypassing compositor configuration") ;
+#  endif // DEBUG
 #endif // CONFIGURE_COMPOSITING_CHAIN
 
   return true ;
@@ -981,7 +991,9 @@ if (!AddElement(MuxBin , fake_thru_sink)) return false ;
   { Error(GUI::MUX_LINK_ERROR_MSG) ; return false ; }
 
 #else // CONFIGURE_MUX_CHAIN
+#  ifdef DEBUG
 Trace::TraceState("bypassing muxer configuration") ;
+#  endif // DEBUG
 #endif // CONFIGURE_MUX_CHAIN
 
   return true ;
@@ -1008,7 +1020,7 @@ bool AvCaster::ConfigureOutput()
 
 DEBUG_TRACE_CONFIG_OUTPUT
 #ifdef DEBUG
-if (stream == CONFIG::RTMP_OUTPUT) output_url = GST::LCTV_RTMP_URL + String(std::getenv("LIVECODING_STREAM_KEY")) + " live=1" ;
+//if (stream == CONFIG::RTMP_OUTPUT) output_url = GST::LCTV_RTMP_URL + String(std::getenv("LIVECODING_STREAM_KEY")) + " live=1" ;
 #endif // DEBUG
 
   if (!(queue = MakeElement("queue"   , "output-queue"    )) ||
@@ -1025,7 +1037,9 @@ if (stream == CONFIG::RTMP_OUTPUT) output_url = GST::LCTV_RTMP_URL + String(std:
   { Error(GUI::OUTPUT_LINK_ERROR_MSG) ; return false ; }
 
 #else // CONFIGURE_OUTPUT_CHAIN
+#  ifdef DEBUG
 Trace::TraceState("bypassing output configuration") ;
+#  endif // DEBUG
 #endif // CONFIGURE_OUTPUT_CHAIN
 
   return true ;

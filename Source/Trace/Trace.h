@@ -15,17 +15,6 @@
 
 
 #ifdef DEBUG
-
-#  define DEBUG_TRACE_DUMP_CONFIG if (DEBUG_TRACE_VB) Trace::DumpConfig(this->configStore) ;
-
-#else // DEBUG
-
-#  define DEBUG_TRACE_DUMP_CONFIG         ;
-
-#endif // DEBUG
-
-
-#ifdef DEBUG
 class Trace
 {
 public:

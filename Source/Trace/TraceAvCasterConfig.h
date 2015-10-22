@@ -63,11 +63,18 @@
   String val = a_node[a_key].toString() ;                     \
   Trace::TraceEvent("value changed => " + key + " => " + val) ;
 
+#define DEBUG_TRACE_DETECT_CAPTURE_DEVICES                                                             \
+  Trace::TraceState("detected " + String(this->cameraDevices.getNumProperties()) + " capture devices") ;
+
+#  define DEBUG_TRACE_DUMP_CONFIG if (DEBUG_TRACE_VB) Trace::DumpConfig(this->configStore) ;
+
 #else // DEBUG
 
-#  define DEBUG_TRACE_VALIDATE_CONFIG     ;
-#  define DEBUG_TRACE_SANITIZE_CONFIG     ;
-#  define DEBUG_TRACE_CONFIG_TREE_CHANGED ;
+#  define DEBUG_TRACE_VALIDATE_CONFIG        ;
+#  define DEBUG_TRACE_SANITIZE_CONFIG        ;
+#  define DEBUG_TRACE_CONFIG_TREE_CHANGED    ;
+#  define DEBUG_TRACE_DETECT_CAPTURE_DEVICES ;
+#  define DEBUG_TRACE_DUMP_CONFIG            ;
 
 #endif // DEBUG
 #endif  // TRACEAVCASTERCONFIG_H_INCLUDED

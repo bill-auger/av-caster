@@ -72,7 +72,7 @@
 #  define DEBUG_TRACE_CONFIG_COMPOSITOR                                 \
   Trace::TraceState("configuring compositor @ "                       + \
                     String(output_w) + "x" + String(output_h)         + \
-                    " @ "                  + String(framerate + "fps")) ;
+                    " @ "                  + String(framerate) + "fps") ;
 
 #  define DEBUG_TRACE_CONFIG_MUX                                                        \
   Trace::TraceState(String("configuring mux ")                                        + \
@@ -84,13 +84,13 @@
 #  define DEBUG_TRACE_CONFIG_OUTPUT                                            \
   Trace::TraceState("configuring " + stream + " output stream to " + output_url) ;
 
-# define DEBUG_TRACE_MAKE_ELEMENT                                                  \
+#  define DEBUG_TRACE_MAKE_ELEMENT                                                  \
   bool   is_err = new_element == nullptr ;                                         \
   String dbg    = " element '" + plugin_id + "' GstElement '" + element_id + "'" ; \
   if (is_err) Trace::TraceError("error creating" + dbg) ;                          \
   else        Trace::TraceConfig("created" + dbg) ;
 
-# define DEBUG_TRACE_MAKE_CAPS                           \
+#  define DEBUG_TRACE_MAKE_CAPS                           \
   bool   is_err = new_caps == nullptr ;                  \
   if (is_err) Trace::TraceError("error creating caps") ; \
   else        Trace::TraceConfig("created caps") ;
@@ -122,7 +122,7 @@
   if (is_err) Trace::TraceError("error linking" + dbg) ;                                   \
   else        Trace::TraceConfig("linked" + dbg) ;
 
-# define DEBUG_TRACE_MAKE_GHOST_PAD                                                                  \
+#  define DEBUG_TRACE_MAKE_GHOST_PAD                                                                  \
   gchar* id  = gst_element_get_name(a_bin     ) ; String bin_id     = id ; g_free(id) ; \
   id         = gst_element_get_name(an_element) ; String element_id = id ; g_free(id) ; \
   String dbg = " ghost pad '" + public_pad_id                               +           \
@@ -130,7 +130,7 @@
   if (is_err) Trace::TraceError("error creating" + dbg) ;                                            \
   else        Trace::TraceConfig("created" + dbg) ;
 
-# define DEBUG_TRACE_ADD_GHOST_PAD                                                  \
+#  define DEBUG_TRACE_ADD_GHOST_PAD                                                  \
   gchar* id  = gst_element_get_name(a_bin     ) ; String bin_id = id ; g_free(id) ; \
          id  = gst_pad_get_name    (public_pad) ; String pad_id = id ; g_free(id) ; \
   String dbg = " ghost pad '" + pad_id + "' to '" + bin_id + "'" ;                  \
@@ -167,9 +167,13 @@
 #  define DEBUG_TRACE_MAKE_ELEMENT      ;
 #  define DEBUG_TRACE_MAKE_CAPS         ;
 #  define DEBUG_TRACE_ADD_ELEMENT       ;
-#  define DEBUG_TRACE_LINK_ELEMENT      ;
+#  define DEBUG_TRACE_LINK_ELEMENTS     ;
+#  define DEBUG_TRACE_LINK_PADS         ;
 #  define DEBUG_TRACE_MAKE_GHOST_PAD    ;
 #  define DEBUG_TRACE_ADD_GHOST_PAD     ;
+#  define DEBUG_TRACE_GET_PAD           ;
+#  define DEBUG_TRACE_GET_STATIC_PAD    ;
+#  define DEBUG_TRACE_GET_REQUEST_PAD   ;
 #  define DEBUG_MAKE_GRAPHVIZ           ;
 
 #endif // DEBUG
