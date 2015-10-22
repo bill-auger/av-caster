@@ -39,8 +39,8 @@ public:
 
   // configuration/persistence
   ValueTree configStore ;   // config root (STORAGE_ID node)
-  ValueTree cameraDevices ; // (CAMERA_DEVICES_ID node)
-  ValueTree audioDevices ;  // (AUDIO_DEVICES_ID node)
+  ValueTree cameraDevices ; // video devices info (CAMERA_DEVICES_ID node)
+  ValueTree audioDevices ;  // audio devices info (AUDIO_DEVICES_ID node)
 
 
 private:
@@ -65,7 +65,7 @@ private:
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
   // helpers
-  StringArray nodeValues(ValueTree a_devices_node) ;
+  StringArray devicesNames(ValueTree a_devices_node) ;
 
   // unused ValueTree::Listener interface implementations
   void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;

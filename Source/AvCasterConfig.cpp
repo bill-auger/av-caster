@@ -92,7 +92,7 @@ void AvCasterConfig::validateConfig()
   validateProperty(CONFIG::OUTPUT_CONTAINER_ID , var(CONFIG::DEFAULT_OUTPUT_CONTAINER_IDX)) ;
   validateProperty(CONFIG::OUTPUT_W_ID         , var(CONFIG::DEFAULT_OUTPUT_W            )) ;
   validateProperty(CONFIG::OUTPUT_H_ID         , var(CONFIG::DEFAULT_OUTPUT_H            )) ;
-  validateProperty(CONFIG::OUTPUT_FRAMERATE_ID , var(CONFIG::DEFAULT_OUTPUT_FRAMERATE_IDX)) ;
+  validateProperty(CONFIG::FRAMERATE_ID        , var(CONFIG::DEFAULT_FRAMERATE_IDX       )) ;
   validateProperty(CONFIG::VIDEO_BITRATE_ID    , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX   )) ;
   validateProperty(CONFIG::OUTPUT_DEST_ID      , var(CONFIG::DEFAULT_OUTPUT_DEST         )) ;
   validateProperty(CONFIG::IS_PREVIEW_ON_ID    , var(CONFIG::DEFAULT_IS_PREVIEW_ON       )) ;
@@ -103,19 +103,19 @@ void AvCasterConfig::sanitizeConfig() // TODO: ?
   if (!this->configStore .isValid() || !this->cameraDevices.isValid() ||
       !this->audioDevices.isValid()                                    ) return ;
 
-  sanitizeComboProperty(CONFIG::CAMERA_DEV_ID       , CONFIG::CAMERA_RESOLUTIONS     ) ;
-  sanitizeComboProperty(CONFIG::CAMERA_DEV_ID       , nodeValues(this->cameraDevices)) ;
-  sanitizeComboProperty(CONFIG::AUDIO_API_ID        , CONFIG::AUDIO_APIS             ) ;
-  sanitizeComboProperty(CONFIG::AUDIO_DEVICE_ID     , nodeValues(this->audioDevices) ) ;
-  sanitizeComboProperty(CONFIG::AUDIO_CODEC_ID      , CONFIG::AUDIO_CODECS           ) ;
-  sanitizeComboProperty(CONFIG::SAMPLERATE_ID       , CONFIG::AUDIO_SAMPLERATES      ) ;
-  sanitizeComboProperty(CONFIG::AUDIO_BITRATE_ID    , CONFIG::AUDIO_BITRATES         ) ;
-  sanitizeComboProperty(CONFIG::TEXT_STYLE_ID       , CONFIG::TEXT_STYLES            ) ;
-  sanitizeComboProperty(CONFIG::TEXT_POSITION_ID    , CONFIG::TEXT_POSITIONS         ) ;
-  sanitizeComboProperty(CONFIG::OUTPUT_STREAM_ID    , CONFIG::OUTPUT_STREAMS         ) ;
-  sanitizeComboProperty(CONFIG::OUTPUT_CONTAINER_ID , CONFIG::OUTPUT_CONTAINERS      ) ;
-  sanitizeComboProperty(CONFIG::OUTPUT_FRAMERATE_ID , CONFIG::OUTPUT_FRAMERATES      ) ;
-  sanitizeComboProperty(CONFIG::VIDEO_BITRATE_ID    , CONFIG::VIDEO_BITRATES         ) ;
+  sanitizeComboProperty(CONFIG::CAMERA_DEV_ID       , CONFIG::CAMERA_RESOLUTIONS       ) ;
+  sanitizeComboProperty(CONFIG::CAMERA_DEV_ID       , devicesNames(this->cameraDevices)) ;
+  sanitizeComboProperty(CONFIG::AUDIO_API_ID        , CONFIG::AUDIO_APIS               ) ;
+  sanitizeComboProperty(CONFIG::AUDIO_DEVICE_ID     , devicesNames(this->audioDevices )) ;
+  sanitizeComboProperty(CONFIG::AUDIO_CODEC_ID      , CONFIG::AUDIO_CODECS             ) ;
+  sanitizeComboProperty(CONFIG::SAMPLERATE_ID       , CONFIG::AUDIO_SAMPLERATES        ) ;
+  sanitizeComboProperty(CONFIG::AUDIO_BITRATE_ID    , CONFIG::AUDIO_BITRATES           ) ;
+  sanitizeComboProperty(CONFIG::TEXT_STYLE_ID       , CONFIG::TEXT_STYLES              ) ;
+  sanitizeComboProperty(CONFIG::TEXT_POSITION_ID    , CONFIG::TEXT_POSITIONS           ) ;
+  sanitizeComboProperty(CONFIG::OUTPUT_STREAM_ID    , CONFIG::OUTPUT_STREAMS           ) ;
+  sanitizeComboProperty(CONFIG::OUTPUT_CONTAINER_ID , CONFIG::OUTPUT_CONTAINERS        ) ;
+  sanitizeComboProperty(CONFIG::FRAMERATE_ID        , CONFIG::FRAMERATES               ) ;
+  sanitizeComboProperty(CONFIG::VIDEO_BITRATE_ID    , CONFIG::VIDEO_BITRATES           ) ;
 
   validateConfig() ;
 }
@@ -193,18 +193,25 @@ static CameraDevice* CameraDevice::openDevice   (
 #endif // JUCE_WINDOWS || JUCE_MAC
 #if JUCE_LINUX
 
+  // TODO: query device for framerates and resolutions
   File*       camera_devices_dir = new File(APP::CAMERA_DEVICES_DIR) ;
   Array<File> device_info_dirs ;
-  this->cameraDevices.removeAllProperties(nullptr) ;
+  this->cameraDevices.removeAllChildren(nullptr) ;
   if (camera_devices_dir->containsSubDirectories()                                       &&
     !!camera_devices_dir->findChildFiles(device_info_dirs , File::findDirectories , false))
   {
     File* device_info_dir = device_info_dirs.begin() ;
     while (device_info_dir != device_info_dirs.end())
     {
-      String device_name   = device_info_dir->getFileName() ;
-      String friendly_name = device_info_dir->getChildFile("name").loadFileAsString().trim() ;
-      this->cameraDevices.setProperty(Identifier(device_name) , var(friendly_name) , nullptr) ;
+      String    device_id     = device_info_dir->getFileName() ;
+      String    friendly_name = device_info_dir->getChildFile("name").loadFileAsString().trim() ;
+      String    device_path   = "/dev/" + device_id ;
+      ValueTree device_info   = ValueTree(Identifier(device_id)) ;
+
+      device_info.setProperty(CONFIG::CAMERA_PATH_ID , var(device_path  ) , nullptr) ;
+      device_info.setProperty(CONFIG::CAMERA_NAME_ID , var(friendly_name) , nullptr) ;
+      device_info.setProperty(CONFIG::FRAMERATE_ID   , var(30           ) , nullptr) ;
+      this->cameraDevices.addChild(device_info , -1 , nullptr) ;
       ++device_info_dir ;
     }
   }
@@ -275,16 +282,16 @@ DEBUG_TRACE_CONFIG_TREE_CHANGED
   AvCaster::HandleConfigChanged(a_key) ;
 }
 
-StringArray AvCasterConfig::nodeValues(ValueTree a_node)
+StringArray AvCasterConfig::devicesNames(ValueTree a_devices_node)
 {
-  int n_values = a_node.getNumProperties() ; StringArray values ;
-  for (int value_n = 0 ; value_n < n_values ; ++value_n)
+  int n_devices = a_devices_node.getNumChildren() ; StringArray device_names ;
+  for (int device_n = 0 ; device_n < n_devices ; ++device_n)
   {
-    Identifier a_key   = a_node.getPropertyName(value_n) ;
-    var        a_value = a_node.getProperty(a_key , "n/a") ;
+    ValueTree a_device    = a_devices_node.getChild(device_n) ;
+    String    device_name = STRING(a_device[CONFIG::CAMERA_NAME_ID]) ;
 
-    values.add(a_value) ;
+    device_names.add(device_name) ;
   }
 
-  return values ;
+  return device_names ;
 }

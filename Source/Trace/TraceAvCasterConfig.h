@@ -64,7 +64,7 @@
   Trace::TraceEvent("value changed => " + key + " => " + val) ;
 
 #define DEBUG_TRACE_DETECT_CAPTURE_DEVICES                                                             \
-  Trace::TraceState("detected " + String(this->cameraDevices.getNumProperties()) + " capture devices") ;
+  Trace::TraceState("detected (" + String(this->cameraDevices.getNumChildren()) + ") capture devices") ;
 
 #  define DEBUG_TRACE_DUMP_CONFIG if (DEBUG_TRACE_VB) Trace::DumpConfig(this->configStore) ;
 

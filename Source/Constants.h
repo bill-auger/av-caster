@@ -154,6 +154,8 @@ namespace CONFIG
   // nodes
   static const Identifier STORAGE_ID          = "av-caster-config" ;
   static const Identifier CAMERA_DEVICES_ID   = "camera-devices" ;
+  static const Identifier CAMERA_PATH_ID      = "device-path" ;
+  static const Identifier CAMERA_NAME_ID      = "device-name" ;
   static const Identifier AUDIO_DEVICES_ID    = "audio-devices" ;
   // config root
   static const Identifier CONFIG_VERSION_ID   = "config-version" ;
@@ -183,7 +185,7 @@ namespace CONFIG
   static const Identifier OUTPUT_CONTAINER_ID = "output-container-idx" ;
   static const Identifier OUTPUT_W_ID         = "output-w" ;
   static const Identifier OUTPUT_H_ID         = "output-h" ;
-  static const Identifier OUTPUT_FRAMERATE_ID = "framerate-idx" ;
+  static const Identifier FRAMERATE_ID        = "framerate-idx" ;
   static const Identifier VIDEO_BITRATE_ID    = "video-bitrate-idx" ;
   static const Identifier OUTPUT_DEST_ID      = "output-dest" ;
   static const Identifier IS_PREVIEW_ON_ID    = "is-preview-on" ;
@@ -222,7 +224,7 @@ namespace CONFIG
   static const int    DEFAULT_OUTPUT_CONTAINER_IDX = 0 ;
   static const int    DEFAULT_OUTPUT_W             = 640 ;
   static const int    DEFAULT_OUTPUT_H             = 480 ;
-  static const int    DEFAULT_OUTPUT_FRAMERATE_IDX = 0 ;
+  static const int    DEFAULT_FRAMERATE_IDX        = 0 ;
   static const int    DEFAULT_VIDEO_BITRATE_IDX    = 0 ;
   static const String DEFAULT_OUTPUT_DEST          = APP::APP_NAME + ".mp4" ;
   static const bool   DEFAULT_IS_PREVIEW_ON        = true ;
@@ -253,7 +255,7 @@ namespace CONFIG
   static const StringArray OUTPUT_STREAMS     = StringArray::fromLines(FILE_OUTPUT + newLine +
                                                                        RTMP_OUTPUT           ) ;
   static const StringArray OUTPUT_CONTAINERS  = StringArray::fromLines(FLV_CONTAINER         ) ;
-  static const StringArray OUTPUT_FRAMERATES  = StringArray::fromLines("8"         + newLine +
+  static const StringArray FRAMERATES         = StringArray::fromLines("8"         + newLine +
                                                                        "12"        + newLine +
                                                                        "20"        + newLine +
                                                                        "30"                  ) ;

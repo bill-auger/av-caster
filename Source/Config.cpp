@@ -792,8 +792,8 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_framerateCombo] -- add your combo box handling code here..
 
-      key         = CONFIG::OUTPUT_FRAMERATE_ID ;
-      default_idx = CONFIG::DEFAULT_OUTPUT_FRAMERATE_IDX ;
+      key         = CONFIG::FRAMERATE_ID ;
+      default_idx = CONFIG::DEFAULT_FRAMERATE_IDX ;
 
         //[/UserComboBoxCode_framerateCombo]
     }
@@ -871,7 +871,7 @@ void Config::populateComboBoxes()
   this->textStyleCombo   ->addItemList(CONFIG::TEXT_STYLES        , 1) ;
   this->textPosCombo     ->addItemList(CONFIG::TEXT_POSITIONS     , 1) ;
   this->outputStreamCombo->addItemList(CONFIG::OUTPUT_STREAMS     , 1) ;
-  this->framerateCombo   ->addItemList(CONFIG::OUTPUT_FRAMERATES  , 1) ;
+  this->framerateCombo   ->addItemList(CONFIG::FRAMERATES         , 1) ;
   this->bitrateCombo     ->addItemList(CONFIG::VIDEO_BITRATES     , 1) ;
 }
 
@@ -901,7 +901,7 @@ void Config::loadConfig()
   int         output_stream_idx = int   (this->configStore[CONFIG::OUTPUT_STREAM_ID   ]) ;
   String      output_w_text     = STRING(this->configStore[CONFIG::OUTPUT_W_ID        ]) ;
   String      output_h_text     = STRING(this->configStore[CONFIG::OUTPUT_H_ID        ]) ;
-  int         framerate_idx     = int   (this->configStore[CONFIG::OUTPUT_FRAMERATE_ID]) ;
+  int         framerate_idx     = int   (this->configStore[CONFIG::FRAMERATE_ID       ]) ;
   int         video_bitrate_idx = int   (this->configStore[CONFIG::VIDEO_BITRATE_ID   ]) ;
   String      output_dest_text  = STRING(this->configStore[CONFIG::OUTPUT_DEST_ID     ]) ;
 

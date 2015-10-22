@@ -8,7 +8,6 @@
   ==============================================================================
 */
 
-
 #include <cstdlib>
 #include <gst/video/videooverlay.h>
 #include <gst/video/gstvideosink.h>
@@ -63,7 +62,7 @@ void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false 
 
 StringArray AvCaster::DevicesNames(ValueTree a_devices_node)
 {
-  return Config->nodeValues(a_devices_node) ;
+  return Config->devicesNames(a_devices_node) ;
 }
 
 
@@ -286,10 +285,10 @@ bool AvCaster::ConfigureScreencap()
   GstElement *source , *capsfilter , *converter , *queue ;
   GstCaps    *caps ;
 
-  int    screencap_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID     ]) ;
-  int    screencap_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID     ]) ;
-  int    framerate_n = int(Config->configStore[CONFIG::OUTPUT_FRAMERATE_ID]) ;
-  String framerate   = CONFIG::OUTPUT_FRAMERATES[framerate_n] ;
+  int    screencap_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID]) ;
+  int    screencap_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID]) ;
+  int    framerate_n = int(Config->configStore[CONFIG::FRAMERATE_ID  ]) ;
+  String framerate   = CONFIG::FRAMERATES[framerate_n] ;
 #if JUCE_LINUX
   String plugin_id = "ximagesrc" ;
   String caps_str  = String("video/x-raw, ")                                +
@@ -355,28 +354,29 @@ bool AvCaster::ConfigureCamera()
   GstElement *source , *capsfilter , *converter , *queue ;
   GstCaps*    caps ;
 
-  int          dev_n      = int(Config->configStore[CONFIG::CAMERA_DEV_ID]) ;
-  int          res_n      = int(Config->configStore[CONFIG::CAMERA_RES_ID]) ;
-  int          n_devices  = Config->cameraDevices.getNumProperties() ;
-  String       device_id  = (n_devices == 0) ? ""                              :
-                            String(Config->cameraDevices.getPropertyName(dev_n)) ;
-  String       resolution = CONFIG::CAMERA_RESOLUTIONS[res_n] ;
-  int          framerate  = 30 ; // TODO: query device
-  StringArray  res_tokens = StringArray::fromTokens(resolution , "x" , "") ;
-  int          camera_w   = res_tokens[0].getIntValue() ;
-  int          camera_h   = res_tokens[1].getIntValue() ;
+  // TODO: query device for resolutions (eliminate CONFIG::CAMERA_RESOLUTIONS)
+  // TODO: more robust resolution selection
+  int          dev_n        = int(Config->configStore[CONFIG::CAMERA_DEV_ID]) ;
+  int          res_n        = int(Config->configStore[CONFIG::CAMERA_RES_ID]) ;
+  ValueTree    selected_dev = Config->cameraDevices.getChild(dev_n) ;
+  bool         is_valid_dev = selected_dev.isValid() ;
+  String       device_path  = STRING(selected_dev[CONFIG::CAMERA_PATH_ID]) ;
+  int          framerate    = int   (selected_dev[CONFIG::FRAMERATE_ID  ]) ;
+  String       resolution   = CONFIG::CAMERA_RESOLUTIONS[res_n] ;
+  StringArray  res_tokens   = StringArray::fromTokens(resolution , "x" , "") ;
+  int          camera_w     = res_tokens[0].getIntValue() ;
+  int          camera_h     = res_tokens[1].getIntValue() ;
 #if JUCE_LINUX
-  String       plugin_id  = "v4l2src" ;
-  String       caps_str   = String("video/x-raw, ")                             +
-                            "width=(int)"          + String(camera_w ) + ", "   +
-                            "height=(int)"         + String(camera_h ) + ", "   +
-                            "framerate=(fraction)" + String(framerate) + "/1, " +
-                            "format=I420, "                                     +
-                            "pixel-aspect-ratio=(fraction)1/1"                  ;
-  const gchar* device     = CHARSTAR(String("/dev/" + device_id)) ;
+  String       plugin_id    = "v4l2src" ;
+  String       caps_str     = String("video/x-raw, ")                             +
+//                               "width=(int)"          + String(camera_w ) + ", "   +
+//                               "height=(int)"         + String(camera_h ) + ", "   +
+//                               "framerate=(fraction)" + String(framerate) + "/1, " +
+//                               "format=I420, "                                     +
+                              "pixel-aspect-ratio=(fraction)1/1"                  ;
 #endif // JUCE_LINUX
 
-  if (n_devices == 0)
+  if (!is_valid_dev)
   {
     // TODO: allow continue with no camera
 
@@ -428,10 +428,11 @@ DEBUG_TRACE_CONFIG_CAMERA
       !(caps       = MakeCaps(caps_str)                                )  )
   { Error(GUI::CAMERA_INIT_ERROR_MSG) ; return false ; }
 
-  if (n_devices > 0)
+  if (is_valid_dev)
   {
-    g_object_set(G_OBJECT(source    ) , "device" , device , NULL) ;
-    g_object_set(G_OBJECT(capsfilter) , "caps"   , caps   , NULL) ; gst_caps_unref(caps) ;
+    g_object_set(G_OBJECT(source    ) , "device" , CHARSTAR(device_path) , NULL) ;
+    g_object_set(G_OBJECT(capsfilter) , "caps"   , caps                  , NULL) ;
+    gst_caps_unref(caps) ;
   }
   else
   {
@@ -590,14 +591,14 @@ bool AvCaster::ConfigureCompositor()
   GstCaps*    caps ;
   GstPad     *compositor_fullscreen_sinkpad , *compositor_overlay_sinkpad ;
 
-  int         fullscreen_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID     ]) ;
-  int         fullscreen_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID     ]) ;
-  int         res_n        = int(Config->configStore[CONFIG::CAMERA_RES_ID      ]) ;
-  int         output_w     = int(Config->configStore[CONFIG::OUTPUT_W_ID        ]) ;
-  int         output_h     = int(Config->configStore[CONFIG::OUTPUT_H_ID        ]) ;
-  int         framerate_n  = int(Config->configStore[CONFIG::OUTPUT_FRAMERATE_ID]) ;
+  int         fullscreen_w = int(Config->configStore[CONFIG::SCREENCAP_W_ID]) ;
+  int         fullscreen_h = int(Config->configStore[CONFIG::SCREENCAP_H_ID]) ;
+  int         res_n        = int(Config->configStore[CONFIG::CAMERA_RES_ID ]) ;
+  int         output_w     = int(Config->configStore[CONFIG::OUTPUT_W_ID   ]) ;
+  int         output_h     = int(Config->configStore[CONFIG::OUTPUT_H_ID   ]) ;
+  int         framerate_n  = int(Config->configStore[CONFIG::FRAMERATE_ID  ]) ;
   String      resolution   = CONFIG::CAMERA_RESOLUTIONS[res_n      ] ;
-  int         framerate    = CONFIG::OUTPUT_FRAMERATES [framerate_n].getIntValue() ;
+  int         framerate    = CONFIG::FRAMERATES        [framerate_n].getIntValue() ;
   StringArray res_tokens   = StringArray::fromTokens(resolution , "x" , "") ;
   int         overlay_w    = res_tokens[0].getIntValue() ;
   int         overlay_h    = res_tokens[1].getIntValue() ;
@@ -848,16 +849,16 @@ bool AvCaster::ConfigureMux()
   GstElement *mux ;
   GstCaps    *video_caps ;
 
-  int   output_w        = int(Config->configStore[CONFIG::OUTPUT_W_ID        ]) ;
-  int   output_h        = int(Config->configStore[CONFIG::OUTPUT_H_ID        ]) ;
-  int   video_bitrate_n = int(Config->configStore[CONFIG::VIDEO_BITRATE_ID   ]) ;
-  int   audio_bitrate_n = int(Config->configStore[CONFIG::AUDIO_BITRATE_ID   ]) ;
-  int   framerate_n     = int(Config->configStore[CONFIG::OUTPUT_FRAMERATE_ID]) ;
-  int   n_channels      = int(Config->configStore[CONFIG::N_CHANNELS_ID      ]) ;
-  int   samplerate_n    = int(Config->configStore[CONFIG::SAMPLERATE_ID      ]) ;
+  int   output_w        = int(Config->configStore[CONFIG::OUTPUT_W_ID     ]) ;
+  int   output_h        = int(Config->configStore[CONFIG::OUTPUT_H_ID     ]) ;
+  int   video_bitrate_n = int(Config->configStore[CONFIG::VIDEO_BITRATE_ID]) ;
+  int   audio_bitrate_n = int(Config->configStore[CONFIG::AUDIO_BITRATE_ID]) ;
+  int   framerate_n     = int(Config->configStore[CONFIG::FRAMERATE_ID    ]) ;
+  int   n_channels      = int(Config->configStore[CONFIG::N_CHANNELS_ID   ]) ;
+  int   samplerate_n    = int(Config->configStore[CONFIG::SAMPLERATE_ID   ]) ;
   guint video_bitrate   = CONFIG::VIDEO_BITRATES   [video_bitrate_n].getIntValue() ;
   guint audio_bitrate   = CONFIG::AUDIO_BITRATES   [audio_bitrate_n].getIntValue() ;
-  int   framerate       = CONFIG::OUTPUT_FRAMERATES[framerate_n    ].getIntValue() ;
+  int   framerate       = CONFIG::FRAMERATES       [framerate_n    ].getIntValue() ;
   int   samplerate      = CONFIG::AUDIO_SAMPLERATES[samplerate_n   ].getIntValue() ;
 //   String h264_caps_str  = "video/x-h264, level=(string)4.1, profile=main" ;
   String h264_caps_str  = String("video/x-h264, ")                            +
@@ -914,8 +915,8 @@ GstCaps *audio_caps ; GstElement* audio_enc_caps ;
 DBG("FAKE_MUX_ENCODER_SRC_AND_SINK") ;
 GstElement* fake_enc_sink = MakeElement("xvimagesink"  , "debug-muxer-enc-sink") ;
 GstElement* fake_enc_src  = MakeElement("videotestsrc" , "debug-muxer-enc-src" ) ;
-int      framerate_n = int(Config->configStore[CONFIG::OUTPUT_FRAMERATE_ID]) ;
-String   framerate   = CONFIG::OUTPUT_FRAMERATES[framerate_n] ;
+int      framerate_n = int(Config->configStore[CONFIG::FRAMERATE_ID]) ;
+String   framerate   = CONFIG::FRAMERATES[framerate_n] ;
 g_object_set(fake_enc_src , "is_live" , true , NULL) ;
 g_object_set(fake_enc_src , "pattern" , 0    , NULL) ;
 if (!AddElement(MuxBin , fake_enc_sink)) return false ;

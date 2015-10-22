@@ -48,12 +48,13 @@
                     String(screencap_w) + "x"  + String(screencap_h) + \
                     " using "           + plugin_id                  ) ;
 
-#  define DEBUG_TRACE_CONFIG_CAMERA                                                            \
-  Identifier camera_id = Config->cameraDevices.getPropertyName(dev_n) ;                        \
-  Trace::TraceState(String("configuring camera ") + STRING(Config->cameraDevices[camera_id]) + \
-                    " (" + device + ") @ "        + CONFIG::CAMERA_RESOLUTIONS[res_n]        + \
-                    " @ "                         + String(framerate) + "fps"                + \
-                    " using "                     + plugin_id                                ) ;
+#  define DEBUG_TRACE_CONFIG_CAMERA                                              \
+  String devname = STRING(selected_dev[CONFIG::CAMERA_NAME_ID]) ;                \
+  String devpath = (is_valid_dev) ? device_path : "invalid" ;                    \
+  Trace::TraceState(String("configuring camera '") + devname                   + \
+                    "' (" + devpath + ") @ "       + resolution                + \
+                    " @ "                          + String(framerate) + "fps" + \
+                    " using "                      + plugin_id                 ) ;
 
 #  define DEBUG_TRACE_CONFIG_AUDIO                                                      \
   String              api_name = CONFIG::AUDIO_APIS[audio_api] ;                        \
