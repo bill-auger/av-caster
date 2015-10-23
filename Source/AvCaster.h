@@ -60,7 +60,7 @@ public:
 private:
 
   // setup
-  static bool Initialize(MainContent* main_content , const String& args) ;
+  static bool Initialize(MainContent* main_content) ;
   static bool InitGstreamer() ;
   static void Shutdown() ;
 

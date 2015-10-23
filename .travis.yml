@@ -27,7 +27,7 @@ before_install:
 script:         >
   cd $BUILD_DIR                                                                &&
   echo "building $PROJECT_NAME"                                                &&
-  make CONFIG=Debug && mkdir -p $BIN_DIR && mv build/av-caster-dbg $BIN_DIR/ &&
+  make CONFIG=Release && mkdir -p $BIN_DIR && mv build/$PROJECT_NAME $BIN_DIR/ &&
   echo "building deb package $DEB_PKG"                                         &&
   fpm -s dir -t deb --name $PROJECT_NAME --version $VERSION                     \
     -C              $DEB_DIR                                                    \
@@ -46,7 +46,7 @@ script:         >
     --depends       'libxinerama1'                                              \
     --depends       'libxrender1'                                               \
     --depends       'gstreamer1.0-plugins-good'                                 \
-    --depends       'gstreamer1.0-plugins-bad'                                  \
+    --depends       'gstreamer1.0-plugins-bad >= 1.4'                           \
     --depends       'gstreamer1.0-plugins-ugly'                                 \
     --description   "$DEB_DESC"                                                 \
     --deb-changelog $DEB_DIR/changelog                                          \
@@ -55,6 +55,7 @@ script:         >
     usr/
 after_success:
   - echo "deb package $DEB_PKG built successfully"
+  - ls -l $BIN_DIR
   - package_cloud yank $DEB_REPO_NAME/$PROJECT_NAME/ubuntu/trusty          $DEB_PKG
   - package_cloud push $DEB_REPO_NAME/$PROJECT_NAME/ubuntu/trusty $DEB_DIR/$DEB_PKG
   - echo "uploaded deb package to $DEB_REPO_NAME/$PROJECT_NAME repo"

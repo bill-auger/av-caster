@@ -24,20 +24,20 @@ public:
     this->mainWindow          = new MainWindow(this) ;
     MainContent* main_content = (MainContent*)this->mainWindow->mainContent ;
 
-    if (AvCaster::Initialize(main_content , command_line))
+    if (AvCaster::Initialize(main_content))
     {
       // start GUI update timers
       startTimer(APP::GUI_TIMER_HI_ID  , APP::GUI_UPDATE_HI_IVL ) ;
       startTimer(APP::GUI_TIMER_MED_ID , APP::GUI_UPDATE_MED_IVL) ;
       startTimer(APP::GUI_TIMER_LO_ID  , APP::GUI_UPDATE_LO_IVL ) ;
     }
-    else { AvCaster::DisplayAlert() ; shutdown() ; quit() ; }
+    else { AvCaster::DisplayAlert() ; setApplicationReturnValue(255) ; quit() ; }
   }
 
-  void anotherInstanceStarted (const String& commandLine) override
+  void anotherInstanceStarted (const String& command_line) override
   {
     // When another instance of the app is launched while this one is running,
-    // this method is invoked, and the commandLine parameter tells you what
+    // this method is invoked, and the command_line parameter tells you what
     // the other instance's command-line arguments were.
   }
 
@@ -107,7 +107,15 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
 private:
 
+#ifndef DEBUG_QUIT_IMMEDIATELY
   void timerCallback(int timer_id) override { AvCaster::HandleTimer(timer_id) ; }
+#else // DEBUG_QUIT_IMMEDIATELY
+  void timerCallback(int timer_id) override
+  {
+    if (timer_id != APP::GUI_TIMER_LO_ID) AvCaster::HandleTimer(timer_id) ;
+    else                                  { Trace::TraceEvent("forced quit") ; quit() ; }
+  }
+#endif // DEBUG_QUIT_IMMEDIATELY
 
   ScopedPointer<MainWindow> mainWindow ;
 } ;

@@ -30,9 +30,12 @@ Feel free to to post any questions or comments to the [AvCaster issue tracker](h
 
 
 #### building from source
-##### AvCaster build dependencies  
-debian/ubuntu:
+##### AvCaster build dependencies
+    * Debian/Ubuntu:
 ```
+# NOTE: AvCaster builds against gStreamer1.0 and requires gStreamer version 1.4 or greater to run
+#       (Debian/Jessie , Ubuntu/Utopic, and newer should work OOTB)
+
   sudo apt-get install libfreetype6-dev libx11-dev libxinerama-dev
                        libxcursor-dev mesa-common-dev libasound2-dev
                        freeglut3-dev libxcomposite-dev libxrender-dev

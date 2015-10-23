@@ -68,7 +68,7 @@ StringArray AvCaster::DevicesNames(ValueTree a_devices_node)
 
 /* AvCaster private class methods */
 
-bool AvCaster::Initialize(MainContent* main_content , const String& args)
+bool AvCaster::Initialize(MainContent* main_content)
 {
   Gui = main_content ;
 
@@ -80,10 +80,6 @@ bool AvCaster::Initialize(MainContent* main_content , const String& args)
 
   // initialize gStreamer
   if (!InitGstreamer()) return false ;
-
-#ifdef DEBUG_QUIT_IMMEDIATELY
-Trace::TraceEvent("DEBUG_QUIT_IMMEDIATELY") ; return false ;
-#endif // DEBUG_QUIT_IMMEDIATELY
 
   return true ;
 }

@@ -15,10 +15,10 @@
 #  define CONFIGURE_CAMERA_CHAIN      1
 #  define CONFIGURE_AUDIO_CHAIN       1
 #  define CONFIGURE_TEXT_CHAIN        0
-#  define CONFIGURE_COMPOSITING_CHAIN (CONFIGURE_SCREENCAP_CHAIN && CONFIGURE_CAMERA_CHAIN && 1)
+#  define CONFIGURE_COMPOSITING_CHAIN (1 && CONFIGURE_SCREENCAP_CHAIN && CONFIGURE_CAMERA_CHAIN)
 #  define CONFIGURE_MUX_CHAIN         (CONFIGURE_AUDIO_CHAIN && (CONFIGURE_SCREENCAP_CHAIN || CONFIGURE_CAMERA_CHAIN || CONFIGURE_COMPOSITING_CHAIN))
-#  define CONFIGURE_OUTPUT_CHAIN      (CONFIGURE_MUX_CHAIN && 1)
-#  define CONFIGURE_TEES              (CONFIGURE_COMPOSITING_CHAIN && 1)
+#  define CONFIGURE_OUTPUT_CHAIN      (1 && CONFIGURE_MUX_CHAIN)
+#  define CONFIGURE_TEES              (1 && CONFIGURE_COMPOSITING_CHAIN)
 // #  define FAUX_SCREEN_SRC
 // #  define FAUX_CAMERA_SRC
 // #  define FAUX_AUDIO_SRC
@@ -68,9 +68,6 @@ namespace APP
   static const int GUI_TIMER_HI_ID  = 1 ; static const int GUI_UPDATE_HI_IVL  = 125 ;
   static const int GUI_TIMER_MED_ID = 2 ; static const int GUI_UPDATE_MED_IVL = 500 ;
   static const int GUI_TIMER_LO_ID  = 3 ; static const int GUI_UPDATE_LO_IVL  = 5000 ;
-
-  static const uint8 PROC_BUFFER_SIZE = 255 ;
-  static const uint8 MUX_THREAD_SLEEP = 125 ;
 
   // get device info
   static const String CAMERA_DEVICES_DIR      = "/sys/class/video4linux" ;
