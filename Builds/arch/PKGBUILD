@@ -1,0 +1,43 @@
+# Maintainer: bill-auger <bill-auger@programmer.net>
+pkgname=av-caster
+pkgver=0.12.000
+pkgrel=1
+epoch=
+pkgdesc="a simple native gStreamer GUI front-end for screencast and webcam streaming"
+arch=('i686' 'x86_64')
+url="https://github.com/bill-auger/av-caster"
+license=('LGPL3')
+groups=()
+depends=('gstreamer')
+makedepends=('freeglut' 'gcc' 'alsa-lib' 'curl' 'freetype2' 'jack' 'libx11' 'libxcomposite' 'libxcursor' 'libxinerama' 'libxrandr' 'mesa')
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=("https://github.com/bill-auger/av-caster/archive/master.zip")
+noextract=()
+md5sums=('6f117e3d28a3cfdb6632c10da86ea59a')
+validpgpkeys=()
+
+#prepare() {}
+
+build() {
+	ls
+	cd "$pkgname-master"
+        cd Builds/LinuxMakefile/
+	CONFIG=Release make
+}
+
+#check() { [ -f "$pkgname-$pkgver"/Builds/LinuxMakefile/build/av-caster ] }
+
+package() {
+	mkdir -p $pkgdir/usr/bin/
+	cd "$pkgname-master"
+        cp Builds/LinuxMakefile/build/av-caster $pkgdir/usr/bin/
+#        cp Builds/LinuxMakefile/build/av-caster /home/bill/pkg/av-caster/usr/bin/
+}

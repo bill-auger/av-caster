@@ -15,7 +15,7 @@ before_install:
   - DEB_DESC="a simple native gStreamer GUI front-end for screencast and webcam streaming"
   - # general JUCE/packagecloud config
   - BUILD_DIR=/home/travis/build/$DEV_REPO_NAME/$PROJECT_NAME/Builds/LinuxMakefile
-  - DEB_DIR=$BUILD_DIR/debian
+  - DEB_DIR=/home/travis/build/$DEV_REPO_NAME/$PROJECT_NAME/Builds/debian
   - BIN_DIR=$DEB_DIR/usr/bin
   - DEB_PKG="$PROJECT_NAME"_"$VERSION"_amd64.deb
   - sudo apt-get update -qq

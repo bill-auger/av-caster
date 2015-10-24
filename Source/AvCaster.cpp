@@ -1017,7 +1017,7 @@ bool AvCaster::ConfigureOutput()
 
 DEBUG_TRACE_CONFIG_OUTPUT
 #ifdef DEBUG
-//if (stream == CONFIG::RTMP_OUTPUT) output_url = GST::LCTV_RTMP_URL + String(std::getenv("LIVECODING_STREAM_KEY")) + " live=1" ;
+if (stream == CONFIG::RTMP_OUTPUT) output_url = GST::LCTV_RTMP_URL + String(std::getenv("LIVECODING_STREAM_KEY")) + " live=1" ;
 #endif // DEBUG
 
   if (!(queue = MakeElement("queue"   , "output-queue"    )) ||
