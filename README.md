@@ -1,21 +1,25 @@
-### AvCaster - *A simple GUI for live screencasting*
+### AvCaster - *A simple native gStreamer GUI for screencast, webcam, and audio streaming*
 
-| build | status |
-| ----  | ------ |
-| linux | [![Build Status](https://travis-ci.org/bill-auger/av-caster.svg?branch=master)](https://travis-ci.org/bill-auger/av-caster) |
-| dev   | [![Build Status](https://travis-ci.org/bill-auger/av-caster.svg)](https://travis-ci.org/bill-auger/av-caster) |
+| build       | status                                         |
+| ----------- | ---------------------------------------------- |
+| Release     | [![release build status][master-img]][travis]  |
+| Development | [![development build status][dev-img]][travis] |
+[master-img]: https://travis-ci.org/bill-auger/av-caster.svg?branch=master
+[dev-img]:    https://travis-ci.org/bill-auger/av-caster.svg
+[travis]:     https://travis-ci.org/bill-auger/av-caster
 
-AvCaster is a native linux appliction built with the [JUCE](http://juce.com/) framework and using [gStreamer](http://gstreamer.freedesktop.org/) as the media backend.  It is currently capable of recording to file and streaming to an RTMP server with screen capture, webcam, and stereo audio.  This initial implementation is specialized for full-screen screencast with webcam overlay and is hard-coded to stream only to [livecoding.tv](https://www.livecoding.tv/) but other servers may be added in the future  If one is handy with bits it could be easily customized for webcam-only, screencap-only, audio-only, or for any RTMP server as it is now.  All of these and more indeed may be upcoming standard features.
+AvCaster is a native GNU/linux appliction built with the [JUCE](http://juce.com/) framework and using [gStreamer](http://gstreamer.freedesktop.org/) as the media backend.  It is currently capable of recording to file and streaming to an RTMP server with screen capture, webcam, and stereo audio.  This initial implementation is specialized for full-screen screencast with webcam overlay and is hard-coded to stream only to [livecoding.tv](https://www.livecoding.tv/) but other servers may be added in the future.  If one is handy with bits it could be easily customized for webcam-only, screencap-only, audio-only, or for any RTMP server as it is now.  All of these and more indeed may be upcoming standard features.
 
 
 #### Motivation
-The motivation behind this project is that streaming with a feature-rich, bleeding-edge client such as OBS and FMLE is very CPU intensive even on reasonably modern machines.  In situations such as live code streaming where the broadcast is essentially a background task there is far more utility in reserving those extra cycles for development tasks.
+The motivation behind this project is that streaming with a feature-rich, bleeding-edge client such as OBS and FMLE is very CPU intensive even on reasonably capable machines.  In situations such as live code streaming where the broadcast is an auxiliary concern, there is more utility in reserving those extra cycles for primary development tasks.
 
-A command-line solution is the obvious choice for such scenarios but obviously lacks a real-time preview.  This project was initially a simple GUI ffmpeg command-line launcher; but in the process of implementing the real-time preview feature, it has since become a gStreamer native library implementation.
+A command-line solution is the obvious choice for such scenarios but obviously lacks real-time control and preview.  This project was created to mark a reasonable balance between headless performance and a graphical feature set.  Initially a simple ffmpeg command-line launcher GUI; it has since become a gStreamer native library implementation.
 
 
 #### Get AvCaster
 ###### AvCaster for Penguins
+    * Debian/Ubuntu:
 ```
   # subscribe to the repository
   $ curl -s https://packagecloud.io/install/repositories/ninjam/av-caster/script.deb.sh | sudo bash
@@ -29,17 +33,29 @@ A command-line solution is the obvious choice for such scenarios but obviously l
 Feel free to to post any questions or comments to the [AvCaster issue tracker](https://github.com/bill-auger/av-caster/issues) and you can visit the home page of the [AvCaster wiki](https://github.com/bill-auger/av-caster/wiki) for updates  Also, this project is open-source and pull requests are quite welcomed.
 
 
-#### building from source
-##### AvCaster build dependencies
+#### Building from source
+    * ArchLinux: a PKGBUILD file is included in Builds/Packaging
+##### build dependencies
     * Debian/Ubuntu:
 ```
 # NOTE: AvCaster builds against gStreamer1.0 and requires gStreamer version 1.4 or greater to run
 #       (Debian/Jessie , Ubuntu/Utopic, and newer should work OOTB)
 
-  sudo apt-get install libfreetype6-dev libx11-dev libxinerama-dev
-                       libxcursor-dev mesa-common-dev libasound2-dev
-                       freeglut3-dev libxcomposite-dev libxrender-dev
-                       libjack-jackd2-dev libgstreamer-plugins-base1.0-dev
+  sudo apt-get install libfreetype6-dev libgstreamer-plugins-base1.0-dev libx11-dev \
+                       libxcursor-dev libxinerama-dev
+```
+    * Other GNU/Linux: install the corresponding libraries for your system
+##### compile
+```
+  cd Builds/LinuxMakefile
+  make CONFIG=Release
+  ./build/av-caster
+```
+##### runtime dependencies
+```
+  sudo apt-get install freeglut3 gstreamer1.0-plugins-bad gstreamer1.0-plugins-good    \
+                       gstreamer1.0-plugins-ugly libfreetype6 libgl1-mesa-glx libx11-6 \
+                       libxcomposite1 libxcursor1 libxext6 libxinerama1 libxrender1
 ```
 
 
@@ -53,4 +69,4 @@ There were several similar projects considered for expansion before this project
   * [ffmpeggui](http://sourceforge.net/projects/ffmpeg-gui/) - Win32 basic ffmpeg launcher
 
 
-Also, the original ffmpeg bash script with all of the features that this project has since re-implemented is in [this gist](https://gist.github.com/bill-auger/9480205a38d9d00d2fa3) if anyone is interested in a command-line broadcasting tool.
+Also, the original ffmpeg bash script with all of the features that this project has since re-implemented is in [this gist](https://gist.github.com/bill-auger/9480205a38d9d00d2fa3) if anyone is interested in a command-line webcasting tool.

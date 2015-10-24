@@ -5,57 +5,62 @@ dist:           trusty
 before_install:
   - # per app config
   - VERSION=0.12.000
-  - DEV_REPO_NAME='bill-auger'
-  - DEB_REPO_NAME='ninjam'
+  - SOURCE_REPO_NAME='bill-auger'
+  - PACKAGE_REPO_NAME='ninjam'
   - PROJECT_NAME='av-caster' # ASSERT: matches dev repo name, binary filename, deb repo name, etc.
-  - LICENSE='LGPLv3'
-  - MAINTAINER='bill-auger@programmer.net'
-  - VENDOR="https://github.com/$DEV_REPO_NAME/$PROJECT_NAME"
-  - VENDOR_URL="https://github.com/$DEV_REPO_NAME/$PROJECT_NAME"
-  - DEB_DESC="a simple native gStreamer GUI front-end for screencast and webcam streaming"
+  - DEPS_64='libfreetype6-dev libgstreamer-plugins-base1.0-dev libx11-dev libxcursor-dev
+             libxinerama-dev'
+  - DEPS_32='gir1.2-glib-2.0:i386 gir1.2-gstreamer-1.0:i386 libfreetype6-dev:i386
+             libgirepository-1.0-1:i386 libgstreamer-plugins-base1.0-dev:i386
+             libx11-dev:i386 libxcursor-dev:i386 libxinerama-dev:i386'
   - # general JUCE/packagecloud config
-  - BUILD_DIR=/home/travis/build/$DEV_REPO_NAME/$PROJECT_NAME/Builds/LinuxMakefile
-  - DEB_DIR=/home/travis/build/$DEV_REPO_NAME/$PROJECT_NAME/Builds/debian
-  - BIN_DIR=$DEB_DIR/usr/bin
-  - DEB_PKG="$PROJECT_NAME"_"$VERSION"_amd64.deb
-  - sudo apt-get update -qq
-  - sudo apt-get install -y libfreetype6-dev libx11-dev libxinerama-dev
-                            libxcursor-dev mesa-common-dev libasound2-dev
-                            freeglut3-dev libxcomposite-dev libxrender-dev
-                            libjack-jackd2-dev libgstreamer-plugins-base1.0-dev
-  - gem install --no-rdoc --no-ri fpm package_cloud
-script:         >
-  cd $BUILD_DIR                                                                &&
-  echo "building $PROJECT_NAME"                                                &&
-  make CONFIG=Release && mkdir -p $BIN_DIR && mv build/$PROJECT_NAME $BIN_DIR/ &&
-  echo "building deb package $DEB_PKG"                                         &&
-  fpm -s dir -t deb --name $PROJECT_NAME --version $VERSION                     \
-    -C              $DEB_DIR                                                    \
-    --package       $DEB_DIR/"$PROJECT_NAME"_VERSION_ARCH.deb                   \
-    --license       "$LICENSE"                                                  \
-    --maintainer    "$MAINTAINER"                                               \
-    --vendor        "$VENDOR"                                                   \
-    --url           "$VENDOR_URL"                                               \
-    --depends       'freeglut3'                                                 \
-    --depends       'libfreetype6'                                              \
-    --depends       'libgl1-mesa-glx | libgl1'                                  \
-    --depends       'libx11-6'                                                  \
-    --depends       'libxcomposite1'                                            \
-    --depends       'libxcursor1'                                               \
-    --depends       'libxext6'                                                  \
-    --depends       'libxinerama1'                                              \
-    --depends       'libxrender1'                                               \
-    --depends       'gstreamer1.0-plugins-good'                                 \
-    --depends       'gstreamer1.0-plugins-bad >= 1.4'                           \
-    --depends       'gstreamer1.0-plugins-ugly'                                 \
-    --description   "$DEB_DESC"                                                 \
-    --deb-changelog $DEB_DIR/changelog                                          \
-    --deb-priority  'optional'                                                  \
-    --category      'network'                                                   \
-    usr/
+  - SOURCE_DIR=/home/travis/build/$SOURCE_REPO_NAME/$PROJECT_NAME
+  - BUILD_DIR=$SOURCE_DIR/Builds/LinuxMakefile
+  - PACKAGING_DIR=$SOURCE_DIR/Builds/Packaging
+  - ARTIFACTS_DIR=$SOURCE_DIR/Builds/Packaging/usr/bin
+  - GEMS='fpm package_cloud'
+  - DEBIAN_PACKAGE_64="$PROJECT_NAME"_"$VERSION"_amd64.deb
+  - DEBIAN_PACKAGE_32="$PROJECT_NAME"_"$VERSION"_i386.deb
+  - # setup
+  - ((  $DEBIAN_64)) || ((  $DEBIAN_32)) || echo "no build targets enabled"
+  - ((  $DEBIAN_64)) || ((  $DEBIAN_32))
+  - ((! $DEBIAN_64)) && ((! $DEBIAN_32)) || mkdir -p $ARTIFACTS_DIR
+  - ((! $DEBIAN_64)) && ((! $DEBIAN_32)) || gem install --no-rdoc --no-ri $GEMS
+script:
+  - # 64-bit build
+  - ((! $DEBIAN_64)) || echo "building 64-bit $PROJECT_NAME"
+  - ((! $DEBIAN_64)) || sudo apt-get update -qq
+  - ((! $DEBIAN_64)) || sudo apt-get install -y $DEPS_64
+  - ((! $DEBIAN_64)) || cd $BUILD_DIR
+  - ((! $DEBIAN_64)) || make CONFIG=Release
+  - # 64-bit debian packaging
+  - ((! $DEBIAN_64)) || echo "packaging for 64-bit debian $DEBIAN_PACKAGE_64"
+  - ((! $DEBIAN_64)) || mv build/$PROJECT_NAME $ARTIFACTS_DIR/
+  - ((! $DEBIAN_64)) || cd $PACKAGING_DIR
+  - ((! $DEBIAN_64)) || ./fpm-build.sh $VERSION amd64
+  - ((! $DEBIAN_64)) || mv $ARTIFACTS_DIR/$PROJECT_NAME $ARTIFACTS_DIR/$PROJECT_NAME-amd64
+  - # 32-bit build
+  - ((! $DEBIAN_32)) || echo "building 32-bit $PROJECT_NAME"
+  - ((! $DEBIAN_32)) || sudo dpkg --add-architecture i386
+  - ((! $DEBIAN_32)) || sudo apt-get update -qq
+  - ((! $DEBIAN_32)) || sudo apt-get install -y g++-multilib libc6-dev-i386
+  - ((! $DEBIAN_32)) || sudo apt-get install -y $DEPS_32
+  - ((! $DEBIAN_32)) || cd $BUILD_DIR
+  - ((! $DEBIAN_32)) || make CONFIG=Release32 PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
+  - # 32-bit debian packaging
+  - ((! $DEBIAN_32)) || echo "packaging for 32-bit debian $DEBIAN_PACKAGE_32"
+  - ((! $DEBIAN_32)) || mv build/$PROJECT_NAME $ARTIFACTS_DIR/
+  - ((! $DEBIAN_32)) || cd $PACKAGING_DIR
+  - ((! $DEBIAN_32)) || ./fpm-build.sh $VERSION i386
+  - ((! $DEBIAN_64)) || mv $ARTIFACTS_DIR/$PROJECT_NAME $ARTIFACTS_DIR/$PROJECT_NAME-i386
+after_script:
+  - echo "build stage ended"
+  - ls -l $ARTIFACTS_DIR
+  - ls -l $PACKAGING_DIR
 after_success:
-  - echo "deb package $DEB_PKG built successfully"
-  - ls -l $BIN_DIR
-  - package_cloud yank $DEB_REPO_NAME/$PROJECT_NAME/ubuntu/trusty          $DEB_PKG
-  - package_cloud push $DEB_REPO_NAME/$PROJECT_NAME/ubuntu/trusty $DEB_DIR/$DEB_PKG
-  - echo "uploaded deb package to $DEB_REPO_NAME/$PROJECT_NAME repo"
+  - # 64-bit debian deployment
+  - ((! $DEBIAN_64)) || echo "deploying 64-bit deb package $DEBIAN_PACKAGE_64 to $PACKAGE_REPO_NAME/$PROJECT_NAME repo"
+  - ((! $DEBIAN_64)) || ./push-package.sh $PACKAGE_REPO_NAME/$PROJECT_NAME $DEBIAN_PACKAGE_64
+  - # 32-bit debian deployment
+  - ((! $DEBIAN_32)) || echo "deploying 32-bit deb package $DEBIAN_PACKAGE_32 to $PACKAGE_REPO_NAME/$PROJECT_NAME repo"
+  - ((! $DEBIAN_32)) || ./push-package.sh $PACKAGE_REPO_NAME/$PROJECT_NAME $DEBIAN_PACKAGE_32

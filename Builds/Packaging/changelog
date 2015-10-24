@@ -1,4 +1,4 @@
-linjam (0.12.000) whatever; urgency=medium
+av-caster (0.12.000) whatever; urgency=medium
 
   * initial debian package
   * milestone 'first usable version'

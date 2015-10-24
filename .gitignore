@@ -4,6 +4,8 @@ Builds/*
 Builds/*/*
 !Builds/arch/PKGBUILD
 !Builds/debian/changelog
+!Builds/debian/fpm-build.sh
+!Builds/debian/push-package.sh
 !Builds/CodeBlocksLinux/AvCaster.cbp
 !Builds/CodeBlocksWindows/AvCaster.cbp
 !Builds/LinuxMakefile/Makefile
