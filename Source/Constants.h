@@ -11,14 +11,16 @@
 #define CONSTANTS_H_INCLUDED
 
 // enable standard features
-#  define CONFIGURE_SCREENCAP_CHAIN   1
-#  define CONFIGURE_CAMERA_CHAIN      1
-#  define CONFIGURE_AUDIO_CHAIN       1
-#  define CONFIGURE_TEXT_CHAIN        0
-#  define CONFIGURE_COMPOSITING_CHAIN (1 && CONFIGURE_SCREENCAP_CHAIN && CONFIGURE_CAMERA_CHAIN)
-#  define CONFIGURE_MUX_CHAIN         (CONFIGURE_AUDIO_CHAIN && (CONFIGURE_SCREENCAP_CHAIN || CONFIGURE_CAMERA_CHAIN || CONFIGURE_COMPOSITING_CHAIN))
-#  define CONFIGURE_OUTPUT_CHAIN      (1 && CONFIGURE_MUX_CHAIN)
-#  define CONFIGURE_TEES              (1 && CONFIGURE_COMPOSITING_CHAIN)
+#  define CONFIGURE_SCREENCAP_BIN   1
+#  define CONFIGURE_CAMERA_BIN      1
+#  define CONFIGURE_AUDIO_BIN       1
+#  define CONFIGURE_TEXT_BIN        0
+#  define CONFIGURE_COMPOSITING_BIN (1 && CONFIGURE_SCREENCAP_BIN && CONFIGURE_CAMERA_BIN)
+#  define CONFIGURE_MUX_BIN         (CONFIGURE_AUDIO_BIN && (CONFIGURE_SCREENCAP_BIN || CONFIGURE_CAMERA_BIN || CONFIGURE_COMPOSITING_BIN))
+#  define CONFIGURE_OUTPUT_BIN      (1 && CONFIGURE_MUX_BIN)
+#  define CONFIGURE_TEES            (1 && CONFIGURE_COMPOSITING_BIN)
+// #  define DISABLE_SCREENCAP
+// #  define DISABLE_CAMERA
 // #  define FAUX_SCREEN_SRC
 // #  define FAUX_CAMERA_SRC
 // #  define FAUX_AUDIO_SRC
@@ -30,9 +32,9 @@
 // #define FAUX_COMPOSITOR_COMPOSITE_OVERLAY_SRC    // replace static  srcpad  on overlay_thru_queue (nyi)
 // #define FAUX_COMPOSITOR_FULLSCREEN_THRU_SINK     // replace request snkpad  on compositor (nyi)
 // #define FAUX_COMPOSITOR_OVERLAY_THRU_SINK        // replace request snkpad  on compositor (nyi)
-// #ifndef CONFIGURE_SCREENCAP_CHAIN                // replace ghost   sinkpad on fullscreen-tee
-// #ifndef CONFIGURE_CAMERA_CHAIN                   // replace ghost   sinkpad on overlay-tee
-// #ifndef CONFIGURE_MUX_CHAIN                      // replace ghost   srcpad  on composite_thru_queue
+// #ifndef CONFIGURE_SCREENCAP_BIN                // replace ghost   sinkpad on fullscreen-tee
+// #ifndef CONFIGURE_CAMERA_BIN                   // replace ghost   sinkpad on overlay-tee
+// #ifndef CONFIGURE_MUX_BIN                      // replace ghost   srcpad  on composite_thru_queue
 
 
 // enable debug features
@@ -109,32 +111,34 @@ namespace GUI
   static const String     MODAL_ERROR_TITLE   = APP::APP_NAME + " Error" ;
 
   // user error messages
-  static const String GST_INIT_ERROR_MSG       = "Error creating static GstElements." ;
-  static const String GST_ADD_ERROR_MSG        = "Error adding static GstElements to the pipeline." ;
-  static const String GST_CONFIG_ERROR_MSG     = "Error configuring dynamic GstElements." ;
-  static const String GST_XWIN_ERROR_MSG       = "Error attaching gStreamer to native x-window." ;
-  static const String AUDIO_CFG_ERROR_MSG      = "Error reading AudioBin config." ;
-  static const String OUTPUT_CFG_ERROR_MSG     = "Error reading OutputBin config." ;
-  static const String SCREENCAP_INIT_ERROR_MSG = "Error creating ScreencapBin GstElements." ;
-  static const String CAMERA_INIT_ERROR_MSG    = "Error creating CameraBin GstElements." ;
-  static const String AUDIO_INIT_ERROR_MSG     = "Error creating AudioBin GstElements." ;
-  static const String TEXT_INIT_ERROR_MSG      = "Error creating TextBin GstElements." ;
-  static const String MIXER_INIT_ERROR_MSG     = "Error creating CompositorBin GstElements." ;
-  static const String MIXER_PAD_INIT_ERROR_MSG = "Error creating CompositorBin GstPads." ;
-  static const String MUX_INIT_ERROR_MSG       = "Error creating MuxBin GstElements." ;
-  static const String OUTPUT_INIT_ERROR_MSG    = "Error creating OutputBin GstElements." ;
-  static const String SCREENCAP_LINK_ERROR_MSG = "Error linking ScreencapBin GstElements." ;
-  static const String CAMERA_LINK_ERROR_MSG    = "Error linking CameraBin GstElements." ;
-  static const String AUDIO_LINK_ERROR_MSG     = "Error linking AudioBin GstElements." ;
-  static const String TEXT_LINK_ERROR_MSG      = "Error linking TextBin GstElements." ;
-  static const String MIXER_LINK_ERROR_MSG     = "Error linking CompositorBin GstElements." ;
-  static const String MIXER_PAD_LINK_ERROR_MSG = "Error linking CompositorBin GstPads." ;
-  static const String MUX_LINK_ERROR_MSG       = "Error linking MuxBin GstElements." ;
-  static const String OUTPUT_LINK_ERROR_MSG    = "Error linking OutputBin GstElements." ;
-  static const String GST_STATE_ERROR_MSG      = "Unable to change state of GstElement '" ;
-  static const String NO_CAMERAS_ERROR_MSG     = "No video capture devices were found on you system.  If you indeed have one mounted , you will need to enter its mountpoint manually." ;
-  static const String CAM_BUSY_ERROR_MSG       = "The selected capture device is already in use." ;
-  static const String STORAGE_WRITE_ERROR_MSG  = "I/O error storing configuration." ;
+  static const String GST_INIT_ERROR_MSG          = "Error creating static GstElements." ;
+  static const String GST_ADD_ERROR_MSG           = "Error adding static GstElements to the pipeline." ;
+  static const String GST_CONFIG_ERROR_MSG        = "Error configuring dynamic GstElements." ;
+  static const String GST_XWIN_ERROR_MSG          = "Error attaching gStreamer to native x-window." ;
+  static const String AUDIO_CFG_ERROR_MSG         = "Error reading AudioBin config." ;
+  static const String OUTPUT_CFG_ERROR_MSG        = "Error reading OutputBin config." ;
+  static const String SCREENCAP_INIT_ERROR_MSG    = "Error creating ScreencapBin GstElements." ;
+  static const String CAMERA_INIT_ERROR_MSG       = "Error creating CameraBin GstElements." ;
+  static const String TEXT_INIT_ERROR_MSG         = "Error creating TextBin GstElements." ;
+  static const String MIXER_INIT_ERROR_MSG        = "Error creating CompositorBin GstElements." ;
+  static const String MIXER_PAD_INIT_ERROR_MSG    = "Error creating CompositorBin GstPads." ;
+  static const String AUDIO_INIT_ERROR_MSG        = "Error creating AudioBin GstElements." ;
+  static const String INTERSTITIAL_INIT_ERROR_MSG = "Error creating InterstitialBin GstElements." ;
+  static const String MUX_INIT_ERROR_MSG          = "Error creating MuxBin GstElements." ;
+  static const String OUTPUT_INIT_ERROR_MSG       = "Error creating OutputBin GstElements." ;
+  static const String SCREENCAP_LINK_ERROR_MSG    = "Error linking ScreencapBin GstElements." ;
+  static const String CAMERA_LINK_ERROR_MSG       = "Error linking CameraBin GstElements." ;
+  static const String TEXT_LINK_ERROR_MSG         = "Error linking TextBin GstElements." ;
+  static const String MIXER_LINK_ERROR_MSG        = "Error linking CompositorBin GstElements." ;
+  static const String MIXER_PAD_LINK_ERROR_MSG    = "Error linking CompositorBin GstPads." ;
+  static const String AUDIO_LINK_ERROR_MSG        = "Error linking AudioBin GstElements." ;
+  static const String INTERSTITIAL_LINK_ERROR_MSG = "Error linking InterstitialBin GstElements." ;
+  static const String MUX_LINK_ERROR_MSG          = "Error linking MuxBin GstElements." ;
+  static const String OUTPUT_LINK_ERROR_MSG       = "Error linking OutputBin GstElements." ;
+  static const String GST_STATE_ERROR_MSG         = "Invalid configuration." ;
+  static const String NO_CAMERAS_ERROR_MSG        = "No video capture devices were found on you system.  If you indeed have one mounted , you will need to enter its mountpoint manually." ;
+  static const String CAM_BUSY_ERROR_MSG          = "The selected capture device is already in use." ;
+  static const String STORAGE_WRITE_ERROR_MSG     = "I/O error storing configuration." ;
 }
 
 namespace CONFIG

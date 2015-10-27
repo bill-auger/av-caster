@@ -71,9 +71,10 @@ endif
 OBJECTS := \
   $(OBJDIR)/AvCaster_86a5e2ca.o \
   $(OBJDIR)/AvCasterConfig_a48ad6c.o \
+  $(OBJDIR)/Config_5aed31cb.o \
+  $(OBJDIR)/Gstreamer_49eed0f5.o \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainContent_6313eee1.o \
-  $(OBJDIR)/Config_5aed31cb.o \
   $(OBJDIR)/Statusbar_a0c28bc2.o \
   $(OBJDIR)/Trace_fd3024bc.o \
   $(OBJDIR)/juce_core_aff681cc.o \
@@ -109,6 +110,16 @@ $(OBJDIR)/AvCasterConfig_a48ad6c.o: ../../Source/AvCasterConfig.cpp
 	@echo "Compiling AvCasterConfig.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/Config_5aed31cb.o: ../../Source/Config.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Config.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/Gstreamer_49eed0f5.o: ../../Source/Gstreamer.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Gstreamer.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Main.cpp"
@@ -117,11 +128,6 @@ $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 $(OBJDIR)/MainContent_6313eee1.o: ../../Source/MainContent.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling MainContent.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/Config_5aed31cb.o: ../../Source/Config.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Config.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Statusbar_a0c28bc2.o: ../../Source/Statusbar.cpp

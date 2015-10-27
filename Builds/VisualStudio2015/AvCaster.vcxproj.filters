@@ -196,13 +196,16 @@
     <ClCompile Include="..\..\Source\AvCasterConfig.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Config.cpp">
+      <Filter>AvCaster\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Gstreamer.cpp">
+      <Filter>AvCaster\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\MainContent.cpp">
-      <Filter>AvCaster\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Config.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Statusbar.cpp">
@@ -1044,6 +1047,9 @@
     <ClInclude Include="..\..\Source\Trace\TraceConfig.h">
       <Filter>AvCaster\Headers\Trace</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Trace\TraceGstreamer.h">
+      <Filter>AvCaster\Headers\Trace</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Trace\TraceMain.h">
       <Filter>AvCaster\Headers\Trace</Filter>
     </ClInclude>
@@ -1053,13 +1059,16 @@
     <ClInclude Include="..\..\Source\AvCasterConfig.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Config.h">
+      <Filter>AvCaster\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Constants.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\MainContent.h">
+    <ClInclude Include="..\..\Source\Gstreamer.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Config.h">
+    <ClInclude Include="..\..\Source\MainContent.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Statusbar.h">

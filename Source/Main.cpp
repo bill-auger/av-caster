@@ -31,7 +31,7 @@ public:
       startTimer(APP::GUI_TIMER_MED_ID , APP::GUI_UPDATE_MED_IVL) ;
       startTimer(APP::GUI_TIMER_LO_ID  , APP::GUI_UPDATE_LO_IVL ) ;
     }
-    else { AvCaster::DisplayAlert() ; setApplicationReturnValue(255) ; quit() ; }
+    else { setApplicationReturnValue(255) ; shutdown() ; quit() ; }
   }
 
   void anotherInstanceStarted (const String& command_line) override
