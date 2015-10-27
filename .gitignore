@@ -8,7 +8,7 @@ Builds/*/*
 !Builds/debian/push-package.sh
 !Builds/CodeBlocksLinux/AvCaster.cbp
 !Builds/CodeBlocksWindows/AvCaster.cbp
-!Builds/LinuxMakefile/Makefile
+!Builds/GnuMakefile/Makefile
 !Builds/MacOSX/AvCaster.xcodeproj
 !Builds/MacOSX/Info.plist
 !Builds/MacOSX/RecentFilesMenuTemplate.nib

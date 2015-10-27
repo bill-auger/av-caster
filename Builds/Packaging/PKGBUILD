@@ -29,15 +29,15 @@ validpgpkeys=()
 build() {
 	ls
 	cd "$pkgname-master"
-        cd Builds/LinuxMakefile/
+        cd Builds/GnuMakefile/
 	CONFIG=Release make
 }
 
-#check() { [ -f "$pkgname-$pkgver"/Builds/LinuxMakefile/build/av-caster ] }
+#check() { [ -f "$pkgname-$pkgver"/Builds/GnuMakefile/build/av-caster ] }
 
 package() {
 	mkdir -p $pkgdir/usr/bin/
 	cd "$pkgname-master"
-        cp Builds/LinuxMakefile/build/av-caster $pkgdir/usr/bin/
-#        cp Builds/LinuxMakefile/build/av-caster /home/bill/pkg/av-caster/usr/bin/
+        cp Builds/GnuMakefile/build/av-caster $pkgdir/usr/bin/
+#        cp Builds/GnuMakefile/build/av-caster /home/bill/pkg/av-caster/usr/bin/
 }

@@ -15,7 +15,7 @@ before_install:
              libx11-dev:i386 libxcursor-dev:i386 libxinerama-dev:i386'
   - # general JUCE/packagecloud config
   - SOURCE_DIR=/home/travis/build/$SOURCE_REPO_NAME/$PROJECT_NAME
-  - BUILD_DIR=$SOURCE_DIR/Builds/LinuxMakefile
+  - BUILD_DIR=$SOURCE_DIR/Builds/GnuMakefile
   - PACKAGING_DIR=$SOURCE_DIR/Builds/Packaging
   - ARTIFACTS_DIR=$SOURCE_DIR/Builds/Packaging/usr/bin
   - GEMS='fpm package_cloud'

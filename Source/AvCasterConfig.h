@@ -27,8 +27,6 @@ public:
 
   ~AvCasterConfig() ;
 
-  void componentMovedOrResized(Component& a_component , bool wasMoved  , bool wasResized) ;
-
 
   enum AudioApi     { ALSA_AUDIO , PULSE_AUDIO , JACK_AUDIO } ;
 //   enum MainInput    { SCREENCAP_INPUT , INTERSTITIAL_INPUT } ; // TODO: GUI nyi
@@ -68,11 +66,17 @@ private:
   StringArray devicesNames(ValueTree a_devices_node) ;
 
   // unused ValueTree::Listener interface implementations
-  void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;
-  void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; } ;
-  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ; } ;
-  void valueTreeParentChanged    (ValueTree& a_node)                            override { UNUSED(a_node) ;        } ;
-  void valueTreeRedirected       (ValueTree& a_node)                            override { UNUSED(a_node) ;        } ;
+  void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
+  void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
+  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ;                  }
+  void valueTreeParentChanged    (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
+  void valueTreeRedirected       (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
+//   after upgrade to v >= 3.2.0
+//   void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node)           override { UNUSED(a_parent_node) , UNUSED(a_node) ;                      }
+//   void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node , int idx) override { UNUSED(a_parent_node) , UNUSED(a_node) ; UNUSED(idx) ;        }
+//   void valueTreeChildOrderChanged(ValueTree& a_parent_node , int prev_idx , int curr_idx) override { UNUSED(a_parent_node) ; UNUSED(prev_idx) ; UNUSED(curr_idx) ; }
+//   void valueTreeParentChanged    (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
+//   void valueTreeRedirected       (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
 
 
   File configFile ;

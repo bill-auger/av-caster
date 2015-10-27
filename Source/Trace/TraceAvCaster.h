@@ -33,12 +33,13 @@
   Trace::TraceState("starting pipeline") ;
 
 #  define DEBUG_TRACE_SET_GST_STATE                                                              \
+  String element_name = (!!a_gst_element) ? String(gst_element_get_name(a_gst_element)) : "" ;   \
   String state = (next_state == GST_STATE_VOID_PENDING) ? "GST_STATE_VOID_PENDING" :             \
                  (next_state == GST_STATE_NULL        ) ? "GST_STATE_NULL"         :             \
                  (next_state == GST_STATE_READY       ) ? "GST_STATE_READY"        :             \
                  (next_state == GST_STATE_PAUSED      ) ? "GST_STATE_PAUSED"       :             \
                  (next_state == GST_STATE_PLAYING     ) ? "GST_STATE_PLAYING"      : "unknown" ; \
-  Trace::TraceState("setting " + state + " for " + String(gst_element_get_name(a_gst_element)))  ;
+  Trace::TraceState("setting " + state + " for " + element_name)  ;
 
 
 /* configuration */

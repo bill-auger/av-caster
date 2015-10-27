@@ -439,13 +439,13 @@ Config::Config (Component* main_window, ValueTree config_store, ValueTree camera
     bitrateLabel->setColour (TextEditor::textColourId, Colours::black);
     bitrateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (bitrateCombo = new ComboBox ("bitrateCombo"));
-    bitrateCombo->setExplicitFocusOrder (22);
-    bitrateCombo->setEditableText (false);
-    bitrateCombo->setJustificationType (Justification::centredLeft);
-    bitrateCombo->setTextWhenNothingSelected (String::empty);
-    bitrateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    bitrateCombo->addListener (this);
+    addAndMakeVisible (videoBitrateCombo = new ComboBox ("videoBitrateCombo"));
+    videoBitrateCombo->setExplicitFocusOrder (22);
+    videoBitrateCombo->setEditableText (false);
+    videoBitrateCombo->setJustificationType (Justification::centredLeft);
+    videoBitrateCombo->setTextWhenNothingSelected (String::empty);
+    videoBitrateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    videoBitrateCombo->addListener (this);
 
     addAndMakeVisible (outputDestLabel = new Label ("outputDestLabel",
                                                     TRANS("URI:")));
@@ -555,7 +555,7 @@ Config::~Config()
     framerateLabel = nullptr;
     framerateCombo = nullptr;
     bitrateLabel = nullptr;
-    bitrateCombo = nullptr;
+    videoBitrateCombo = nullptr;
     outputDestLabel = nullptr;
     outputDestText = nullptr;
     monitorsGroup = nullptr;
@@ -637,7 +637,7 @@ void Config::resized()
     framerateLabel->setBounds (460, 392, 40, 24);
     framerateCombo->setBounds (505, 392, 48, 24);
     bitrateLabel->setBounds (565, 392, 64, 24);
-    bitrateCombo->setBounds (632, 392, 80, 24);
+    videoBitrateCombo->setBounds (632, 392, 80, 24);
     outputDestLabel->setBounds (32, 428, 80, 24);
     outputDestText->setBounds (120, 428, 592, 24);
     monitorsGroup->setBounds (16, 476, getWidth() - 32, 164);
@@ -797,14 +797,10 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
         //[/UserComboBoxCode_framerateCombo]
     }
-    else if (comboBoxThatHasChanged == bitrateCombo)
+    else if (comboBoxThatHasChanged == videoBitrateCombo)
     {
-        //[UserComboBoxCode_bitrateCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::VIDEO_BITRATE_ID ;
-      default_idx = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
-
-        //[/UserComboBoxCode_bitrateCombo]
+        //[UserComboBoxCode_videoBitrateCombo] -- add your combo box handling code here..
+        //[/UserComboBoxCode_videoBitrateCombo]
     }
 
     //[UsercomboBoxChanged_Post]
@@ -872,7 +868,7 @@ void Config::populateComboBoxes()
   this->textPosCombo     ->addItemList(CONFIG::TEXT_POSITIONS     , 1) ;
   this->outputStreamCombo->addItemList(CONFIG::OUTPUT_STREAMS     , 1) ;
   this->framerateCombo   ->addItemList(CONFIG::FRAMERATES         , 1) ;
-  this->bitrateCombo     ->addItemList(CONFIG::VIDEO_BITRATES     , 1) ;
+  this->videoBitrateCombo     ->addItemList(CONFIG::VIDEO_BITRATES     , 1) ;
 }
 
 void Config::loadConfig()
@@ -928,7 +924,7 @@ void Config::loadConfig()
   this->outputWidthText  ->setText             (output_w_text) ;
   this->outputHeightText ->setText             (output_h_text) ;
   this->framerateCombo   ->setSelectedItemIndex(framerate_idx     , juce::dontSendNotification) ;
-  this->bitrateCombo     ->setSelectedItemIndex(video_bitrate_idx , juce::dontSendNotification) ;
+  this->videoBitrateCombo->setSelectedItemIndex(video_bitrate_idx , juce::dontSendNotification) ;
   this->outputDestText   ->setText             (output_dest_text) ;
 }
 
@@ -1159,7 +1155,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Bitrate:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="bitrateCombo" id="54c30dff37473763" memberName="bitrateCombo"
+  <COMBOBOX name="videoBitrateCombo" id="54c30dff37473763" memberName="videoBitrateCombo"
             virtualName="" explicitFocusOrder="22" pos="632 392 80 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="outputDestLabel" id="a1c19ea70cf15d1b" memberName="outputDestLabel"

@@ -237,8 +237,8 @@ void AvCaster::Shutdown()
   // TODO: to shut down correctly (flushing the buffers)
   //       gst_element_send_event(Pipeline , gst_event_eos()) ;
   //       then wait for EOS message on bus before setting pipeline state to NULL
-  gst_element_set_state(Pipeline , GST_STATE_NULL) ;
-  gst_object_unref     (Pipeline) ;
+  SetGstreamerState(Pipeline , GST_STATE_NULL) ;
+  if (Pipeline != nullptr) gst_object_unref(Pipeline) ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
@@ -1076,7 +1076,8 @@ bool AvCaster::SetGstreamerState(GstElement* a_gst_element , GstState next_state
 {
 DEBUG_TRACE_SET_GST_STATE
 
-  if (gst_element_set_state(a_gst_element , next_state) == GST_STATE_CHANGE_FAILURE)
+  if (a_gst_element != nullptr                                                    &&
+      gst_element_set_state(a_gst_element , next_state) == GST_STATE_CHANGE_FAILURE)
   {
     gchar* element_name = gst_element_get_name(a_gst_element) ;
     Error(GUI::GST_STATE_ERROR_MSG + String(element_name) + "'.") ;

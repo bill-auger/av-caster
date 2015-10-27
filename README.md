@@ -47,7 +47,7 @@ Feel free to to post any questions or comments to the [AvCaster issue tracker](h
     * Other GNU/Linux: install the corresponding libraries for your system
 ##### compile
 ```
-  cd Builds/LinuxMakefile
+  cd Builds/GnuMakefile
   make CONFIG=Release
   ./build/av-caster
 ```

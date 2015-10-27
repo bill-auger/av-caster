@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.0.3"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.12.0"
               bundleIdentifier="com.bill-auger.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
     <GROUP id="{12F99024-8A51-4F04-3891-07F59C6B6881}" name="Headers">
       <GROUP id="{E5A092F4-256B-C2BA-D268-F46AC54BD85A}" name="Trace">
         <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>
+        <FILE id="VpzAMB" name="TraceAvCaster.h" compile="0" resource="0" file="Source/Trace/TraceAvCaster.h"/>
         <FILE id="XY5wkX" name="TraceAvCasterConfig.h" compile="0" resource="0"
               file="Source/Trace/TraceAvCasterConfig.h"/>
         <FILE id="NyIKTu" name="TraceConfig.h" compile="0" resource="0" file="Source/Trace/TraceConfig.h"/>
@@ -77,13 +78,13 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </VS2008>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-1.0&#96;"
+    <LINUX_MAKE targetFolder="Builds/GnuMakefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-1.0&#96;"
                 extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="av-caster-dbg"/>
-        <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
-                       targetName="av-caster"/>
+        <CONFIGURATION name="Debug" libraryPath="" isDebug="1" optimisation="1" targetName="av-caster-dbg"/>
+        <CONFIGURATION name="Release" libraryPath="" isDebug="0" optimisation="3" targetName="av-caster"/>
+        <CONFIGURATION name="Release32" libraryPath="" isDebug="0" optimisation="3"
+                       targetName="av-caster" linuxArchitecture="-m32"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../juce/modules"/>

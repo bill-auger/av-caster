@@ -1,14 +1,24 @@
 /*
   ==============================================================================
 
-    Config.h
-    Author: bill-auger
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
 
   ==============================================================================
 */
 
-#ifndef _CONFIG_H_INCLUDED_
-#define _CONFIG_H_INCLUDED_
+#ifndef __JUCE_HEADER_21AE3B746DB36E0C__
+#define __JUCE_HEADER_21AE3B746DB36E0C__
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -117,7 +127,7 @@ private:
     ScopedPointer<Label> framerateLabel;
     ScopedPointer<ComboBox> framerateCombo;
     ScopedPointer<Label> bitrateLabel;
-    ScopedPointer<ComboBox> bitrateCombo;
+    ScopedPointer<ComboBox> videoBitrateCombo;
     ScopedPointer<Label> outputDestLabel;
     ScopedPointer<TextEditor> outputDestText;
     ScopedPointer<GroupComponent> monitorsGroup;
@@ -131,4 +141,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIG_H_INCLUDED_
+#endif   // __JUCE_HEADER_21AE3B746DB36E0C__
