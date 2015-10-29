@@ -70,8 +70,10 @@ endif
 
 OBJECTS := \
   $(OBJDIR)/AvCaster_86a5e2ca.o \
-  $(OBJDIR)/AvCasterConfig_a48ad6c.o \
+  $(OBJDIR)/AvCasterStore_6b7801.o \
+  $(OBJDIR)/Background_ba4a3b7.o \
   $(OBJDIR)/Config_5aed31cb.o \
+  $(OBJDIR)/Controls_28d2363f.o \
   $(OBJDIR)/Gstreamer_49eed0f5.o \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainContent_6313eee1.o \
@@ -105,14 +107,24 @@ $(OBJDIR)/AvCaster_86a5e2ca.o: ../../Source/AvCaster.cpp
 	@echo "Compiling AvCaster.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/AvCasterConfig_a48ad6c.o: ../../Source/AvCasterConfig.cpp
+$(OBJDIR)/AvCasterStore_6b7801.o: ../../Source/AvCasterStore.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling AvCasterConfig.cpp"
+	@echo "Compiling AvCasterStore.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/Background_ba4a3b7.o: ../../Source/Background.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Background.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Config_5aed31cb.o: ../../Source/Config.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Config.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/Controls_28d2363f.o: ../../Source/Controls.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Controls.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Gstreamer_49eed0f5.o: ../../Source/Gstreamer.cpp

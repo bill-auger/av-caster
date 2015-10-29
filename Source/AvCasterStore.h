@@ -7,25 +7,25 @@
   ==============================================================================
 */
 
-#ifndef AVCASTERCONFIG_H_INCLUDED
-#define AVCASTERCONFIG_H_INCLUDED
+#ifndef AVCASTERSTORE_H_INCLUDED
+#define AVCASTERSTORE_H_INCLUDED
 
 #include "Constants.h"
 
 
 /**
-  AvCasterConfig is the model class for the AvCaster application
+  AvCasterStore is the model class for the AvCaster application.
   It holds the runtime configuration via shared value holders
-      and handles persistence via JUCE binary storage
+      and handles persistence via JUCE binary storage.
 */
-class AvCasterConfig : ValueTree::Listener
+class AvCasterStore : ValueTree::Listener
 {
   friend class AvCaster ;
 
 
 public:
 
-  ~AvCasterConfig() ;
+  ~AvCasterStore() ;
 
 
   enum AudioApi     { ALSA_AUDIO , PULSE_AUDIO , JACK_AUDIO } ;
@@ -36,33 +36,44 @@ public:
   enum OutputStream { FILE_OUTPUT , RTMP_OUTPUT } ;
 
   // configuration/persistence
-  ValueTree configStore ;   // config root (STORAGE_ID node)
-  ValueTree cameraDevices ; // video devices info (CAMERA_DEVICES_ID node)
-  ValueTree audioDevices ;  // audio devices info (AUDIO_DEVICES_ID node)
+  ValueTree configRoot ;    // config root           (STORAGE_ID node)
+  ValueTree configPresets ; // persistent GUI config (PRESETS_ID node)
+  ValueTree configStore ;   // volatile GUI config   (VOLATILE_CONFIG_ID node)
+  ValueTree cameraDevices ; // video devices info    (CAMERA_DEVICES_ID node)
+  ValueTree audioDevices ;  // audio devices info    (AUDIO_DEVICES_ID node)
 
 
 private:
 
-  AvCasterConfig() ;
+  AvCasterStore() ;
 
   // persistence
   ValueTree verifyConfig  (ValueTree config_store , Identifier root_node_id) ;
   void      validateConfig() ;
+  void      validatePreset() ;
   void      sanitizeConfig() ;
   void      storeConfig   () ;
 
   // runtime params
-  void detectDisplayDimensions() ;
-  void detectCaptureDevices   () ;
-  void sanitizeParams         () ; // unused
-  void validateProperty       (Identifier a_key , var a_default_value) ;
-  void sanitizeIntProperty    (Identifier a_key , int min_value , int max_value) ;
-  void sanitizeComboProperty  (Identifier a_key , StringArray options) ;
+  void validateProperty           (ValueTree config_store    , Identifier a_key ,
+                                   var       a_default_value                    ) ;
+  void validateRootProperty       (Identifier a_key , var a_default_value) ;
+  void validatePresetProperty     (Identifier a_key , var a_default_value) ;
+  void sanitizeIntProperty        (ValueTree config_store , Identifier a_key ,
+                                   int       min_value    , int max_value    ) ;
+  void sanitizeRootComboProperty  (Identifier a_key , StringArray options) ;
+  void sanitizePresetComboProperty(Identifier a_key , StringArray options) ;
+  void detectDisplayDimensions    () ;
+  void detectCaptureDevices       () ;
+  void loadPreset                 () ;
+  void storePreset                (String preset_name) ;
+  void deletePreset               () ;
 
   // event handlers
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
   // helpers
+  StringArray presetsNames() ;
   StringArray devicesNames(ValueTree a_devices_node) ;
 
   // unused ValueTree::Listener interface implementations
@@ -80,15 +91,7 @@ private:
 
 
   File configFile ;
-
-  // status display
-  uint32 currentFrame ;
-  uint8  currentFps ;
-  float  currentQ ;
-  String currentSize ;
-  float  currentTime ;
-  String currentBitrate ;
 } ;
 
 
-#endif // AVCASTERCONFIG_H_INCLUDED
+#endif // AVCASTERSTORE_H_INCLUDED

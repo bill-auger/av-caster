@@ -15,14 +15,7 @@
 
 #if DEBUG
 
-#  define DEBUG_TRACE_SET_CONFIG                                           \
-  DBG("Config::setConfig() " + String(a_key)                    + " => " + \
-                               STRING(this->configStore[a_key]) + " => " + \
-                               STRING(a_value)                           ) ;
-
 #else // DEBUG
-
-#  define DEBUG_TRACE_SET_CONFIG ;
 
 #endif // DEBUG
 

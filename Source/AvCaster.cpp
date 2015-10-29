@@ -15,7 +15,7 @@
 
 /* AvCaster public class variables */
 
-ScopedPointer<AvCasterConfig> AvCaster::Config ; // Initialize()
+ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 
 /* AvCaster private class variables */
@@ -46,10 +46,27 @@ ModalComponentManager::Callback* AvCaster::GetModalCb()
 
 void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
+StringArray AvCaster::PresetsNames() { return Store->presetsNames() ; }
+
 StringArray AvCaster::DevicesNames(ValueTree a_devices_node)
 {
-  return Config->devicesNames(a_devices_node) ;
+  return Store->devicesNames(a_devices_node) ;
 }
+
+void AvCaster::SetConfig(Identifier a_key , var a_value)
+{
+  ValueTree storage_node = (a_key == CONFIG::PRESET_ID          ||
+                            a_key == CONFIG::IS_CONFIG_PENDING_ID) ? Store->configRoot  :
+                                                                     Store->configStore ;
+
+DEBUG_TRACE_SET_CONFIG
+
+  storage_node.setProperty(a_key , a_value , nullptr) ;
+}
+
+void AvCaster::StorePreset(String preset_name) { Store->storePreset(preset_name) ; }
+
+void AvCaster::DeletePreset() { Store->deletePreset() ; }
 
 
 /* AvCaster private class methods */
@@ -61,12 +78,14 @@ bool AvCaster::Initialize(MainContent* main_content)
 DEBUG_TRACE_INIT_PHASE_1
 
   // load persistent configuration
-  if ((Config = new AvCasterConfig()) == nullptr) return false ;
+  if ((Store = new AvCasterStore()) == nullptr) return false ;
 
 DEBUG_TRACE_INIT_PHASE_2
 
   // instantiate GUI
-  Gui->instantiate(Config->configStore , Config->cameraDevices , Config->audioDevices) ;
+  Gui->instantiate(Store->configRoot    , Store->configStore ,
+                   Store->cameraDevices , Store->audioDevices) ;
+  ToggleConfig() ;
 
 DEBUG_TRACE_INIT_PHASE_3
 
@@ -84,17 +103,17 @@ void AvCaster::Shutdown()
 
   Gstreamer::Shutdown() ;
 
-  Config = nullptr ;
+  Store->storeConfig() ; Store = nullptr ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
 {
   switch (timer_id)
   {
-    case APP::GUI_TIMER_HI_ID:  UpdateStatusGUI() ; break ;
-    case APP::GUI_TIMER_MED_ID: DisplayAlert() ;    break ;
-    case APP::GUI_TIMER_LO_ID:                      break ;
-    default:                                        break ;
+    case APP::GUI_TIMER_HI_ID:                                       break ;
+    case APP::GUI_TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ; break ;
+    case APP::GUI_TIMER_LO_ID:                                       break ;
+    default:                                                         break ;
   }
 }
 
@@ -110,15 +129,31 @@ void AvCaster::UpdateStatusGUI()
 */
 }
 
-/* TODO: we may want to reconfigure the stream here (e.g. text position)
- *         => ConfigureStream() ;
- *       or perform validations (e.g. screen resolution/orientation has changed)
- *         => Gui->config->loadConfig() ;                                    */
 void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
-#if fully_working_version
-  if (a_key == CONFIG::IS_PREVIEW_ON_ID) TogglePreview() ;
-#endif // fully_working_version
+  if (a_key == CONFIG::IS_OUTPUT_ON_ID      ) { ToggleOutput() ;    Gstreamer::Configure() ; }
+  if (a_key == CONFIG::IS_INTERSTITIAL_ON_ID) { TogglePreview() ;   Gstreamer::Configure() ; }
+  if (a_key == CONFIG::IS_SCREENCAP_ON_ID   ) { ToggleScreencap() ; Gstreamer::Configure() ; }
+  if (a_key == CONFIG::IS_CAMERA_ON_ID      ) { ToggleCamera() ;    Gstreamer::Configure() ; }
+  if (a_key == CONFIG::IS_TEXT_ON_ID        ) { ToggleText() ;      Gstreamer::Configure() ; }
+  if (a_key == CONFIG::IS_PREVIEW_ON_ID     ) { TogglePreview() ;   Gstreamer::Configure() ; }
+  if (a_key == CONFIG::IS_CONFIG_PENDING_ID ) { ToggleConfig() ;    Gstreamer::Configure() ; }
+  if (a_key == CONFIG::PRESET_ID            ) { Gui->config ->toBack() ; ToggleConfig() ; }
+}
+
+void AvCaster::ToggleOutput() { /* TODO: */ }
+void AvCaster::ToggleInterstitial() { /* TODO: */ }
+void AvCaster::ToggleScreencap() { /* TODO: */ }
+void AvCaster::ToggleCamera() { /* TODO: */ }
+void AvCaster::ToggleText() { /* TODO: */ }
+void AvCaster::TogglePreview() { /* TODO: */ }
+void AvCaster::ToggleConfig()
+{
+  bool is_config_pending = bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ;
+
+  Gui->background->toFront(true) ;
+  if (is_config_pending) { Gui->controls->toFront(true) ; Gui->config  ->toFront(true) ; }
+  else                   { Gui->config  ->toFront(true) ; Gui->controls->toFront(true) ; }
 }
 
 void AvCaster::DisplayAlert()

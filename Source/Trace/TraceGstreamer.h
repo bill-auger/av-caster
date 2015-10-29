@@ -80,10 +80,10 @@
 
 #  define DEBUG_TRACE_CONFIG_AUDIO                                                      \
   String              api_name = CONFIG::AUDIO_APIS[audio_api] ;                        \
-  AvCasterConfig::AudioApi api = (AvCasterConfig::AudioApi)audio_api ;                  \
-  String bit_depth = (api == AvCasterConfig::ALSA_AUDIO ) ? "16" :                      \
-                     (api == AvCasterConfig::PULSE_AUDIO) ? "16" :                      \
-                     (api == AvCasterConfig::JACK_AUDIO ) ? "32" : "unknown" ;          \
+  AvCasterStore::AudioApi api = (AvCasterStore::AudioApi)audio_api ;                    \
+  String bit_depth = (api == AvCasterStore::ALSA_AUDIO ) ? "16" :                       \
+                     (api == AvCasterStore::PULSE_AUDIO) ? "16" :                       \
+                     (api == AvCasterStore::JACK_AUDIO ) ? "32" : "unknown" ;           \
   Trace::TraceState("configuring " + api_name + " audio (" + String(plugin_id) + ") " + \
                     bit_depth + "bit @ " + String(samplerate) + "hz x "               + \
                     String(n_channels) + " channels"                                  ) ;

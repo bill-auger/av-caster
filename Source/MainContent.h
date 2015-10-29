@@ -10,11 +10,13 @@
 #ifndef MAINCONTENT_H_INCLUDED
 #define MAINCONTENT_H_INCLUDED
 
+#include "Background.h"
 #include "Config.h"
+#include "Controls.h"
 #include "Statusbar.h"
 
 
-/** this is the main GUI container class */
+/** MainContent is the main GUI container class for the AvCaster application. */
 class MainContent : public Component
 {
   friend class AvCaster ;
@@ -31,14 +33,17 @@ public:
 
 private:
 
-  DocumentWindow*          mainWindow ;
-  ScopedPointer<Config   > config ;
-  ScopedPointer<Statusbar> statusbar ;
+  DocumentWindow*           mainWindow ;
+  ScopedPointer<Background> background ;
+  ScopedPointer<Controls  > controls ;
+  ScopedPointer<Config    > config ;
+  ScopedPointer<Statusbar > statusbar ;
 
-  void instantiate(ValueTree config_store , ValueTree camera_store , ValueTree audio_store) ;
-  void setTitle   (String title_text) ;
-  void warning    (String message_text) ;
-  void error      (String message_text) ;
+  void instantiate (ValueTree config_root  , ValueTree config_store ,
+                    ValueTree camera_store , ValueTree audio_store  ) ;
+  void setTitle    (String title_text) ;
+  void warning     (String message_text) ;
+  void error       (String message_text) ;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContent)
 } ;

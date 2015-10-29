@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_21AE3B746DB36E0C__
-#define __JUCE_HEADER_21AE3B746DB36E0C__
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -32,19 +32,18 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-this is the output configuration GUI
-    it has it controls for setting the stream parameters
+  Config is the output configuration GUI for the AvCaster application..
+  It has it controls for setting the stream parameters.
                                                                     //[/Comments]
 */
 class Config  : public Component,
                 public TextEditor::Listener,
                 public SliderListener,
-                public ComboBoxListener,
-                public ButtonListener
+                public ComboBoxListener
 {
 public:
     //==============================================================================
-    Config (Component* main_window, ValueTree config_store, ValueTree camera_store, ValueTree audio_store);
+    Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_store);
     ~Config();
 
     //==============================================================================
@@ -58,20 +57,21 @@ public:
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  void textEditorFocusLost(TextEditor& a_text_editor) ;
+  void broughtToFront() override ;
+  void textEditorFocusLost(TextEditor& a_text_editor) override ;
 
   void populateComboBoxes() ;
-  void loadConfig() ;
-  void setConfig(Identifier a_key , var a_value) ;
+  void loadConfig        () ;
 
 
+  ValueTree configRoot ;
+  ValueTree configPresets ;
   ValueTree configStore ;
   ValueTree cameraDevices ;
   ValueTree audioDevices ;
@@ -130,8 +130,6 @@ private:
     ScopedPointer<ComboBox> videoBitrateCombo;
     ScopedPointer<Label> outputDestLabel;
     ScopedPointer<TextEditor> outputDestText;
-    ScopedPointer<GroupComponent> monitorsGroup;
-    ScopedPointer<ToggleButton> monitorsToggle;
 
 
     //==============================================================================
@@ -141,4 +139,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_21AE3B746DB36E0C__
+#endif // CONFIG_H_INCLUDED

@@ -27,7 +27,7 @@ public:
     if (AvCaster::Initialize(main_content))
     {
       // start GUI update timers
-      startTimer(APP::GUI_TIMER_HI_ID  , APP::GUI_UPDATE_HI_IVL ) ;
+//       startTimer(APP::GUI_TIMER_HI_ID  , APP::GUI_UPDATE_HI_IVL ) ;
       startTimer(APP::GUI_TIMER_MED_ID , APP::GUI_UPDATE_MED_IVL) ;
       startTimer(APP::GUI_TIMER_LO_ID  , APP::GUI_UPDATE_LO_IVL ) ;
     }

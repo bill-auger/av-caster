@@ -6,6 +6,10 @@
 #include "Constants.h"
 
 
+/**
+  Gstreamer is a the media handling class for the AvCaster application.
+  It encapsulates interactions with the libgstreamer C library.
+*/
 class Gstreamer
 {
   friend class AvCaster ;
@@ -17,6 +21,7 @@ private:
   static void Shutdown() ;
 
   // configuration
+  static bool Configure() ;
   static bool ConfigureScreencap() ;
   static bool ConfigureCamera() ;
   static bool ConfigureText() ;

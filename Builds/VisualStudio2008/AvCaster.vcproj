@@ -129,23 +129,27 @@
         <Filter Name="Trace">
           <File RelativePath="..\..\Source\Trace\Trace.h"/>
           <File RelativePath="..\..\Source\Trace\TraceAvCaster.h"/>
-          <File RelativePath="..\..\Source\Trace\TraceAvCasterConfig.h"/>
+          <File RelativePath="..\..\Source\Trace\TraceAvCasterStore.h"/>
           <File RelativePath="..\..\Source\Trace\TraceConfig.h"/>
           <File RelativePath="..\..\Source\Trace\TraceGstreamer.h"/>
           <File RelativePath="..\..\Source\Trace\TraceMain.h"/>
         </Filter>
         <File RelativePath="..\..\Source\AvCaster.h"/>
-        <File RelativePath="..\..\Source\AvCasterConfig.h"/>
+        <File RelativePath="..\..\Source\AvCasterStore.h"/>
+        <File RelativePath="..\..\Source\Background.h"/>
         <File RelativePath="..\..\Source\Config.h"/>
         <File RelativePath="..\..\Source\Constants.h"/>
+        <File RelativePath="..\..\Source\Controls.h"/>
         <File RelativePath="..\..\Source\Gstreamer.h"/>
         <File RelativePath="..\..\Source\MainContent.h"/>
         <File RelativePath="..\..\Source\Statusbar.h"/>
       </Filter>
       <Filter Name="Source">
         <File RelativePath="..\..\Source\AvCaster.cpp"/>
-        <File RelativePath="..\..\Source\AvCasterConfig.cpp"/>
+        <File RelativePath="..\..\Source\AvCasterStore.cpp"/>
+        <File RelativePath="..\..\Source\Background.cpp"/>
         <File RelativePath="..\..\Source\Config.cpp"/>
+        <File RelativePath="..\..\Source\Controls.cpp"/>
         <File RelativePath="..\..\Source\Gstreamer.cpp"/>
         <File RelativePath="..\..\Source\Main.cpp"/>
         <File RelativePath="..\..\Source\MainContent.cpp"/>
