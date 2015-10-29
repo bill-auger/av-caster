@@ -1,3 +1,21 @@
+/*\
+|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|
+|*|  This file is part of the AvCaster program.
+|*|
+|*|  AvCaster is free software: you can redistribute it and/or modify
+|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  as published by the Free Software Foundation.
+|*|
+|*|  AvCaster is distributed in the hope that it will be useful,
+|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
+|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+|*|  GNU Lesser General Public License for more details.
+|*|
+|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
+\*/
+
 
 #include "AvCaster.h"
 #include "MainContent.h"
@@ -58,10 +76,10 @@ void MainContent::resized()
   int status_w = GUI::CONTENT_W ;
   int status_h = GUI::STATUSBAR_H ;
 
-  this->controls ->setBounds(background_x , background_y , background_w , background_h) ;
-  this->controls ->setBounds(controls_x   , controls_y   , controls_w   , controls_h  ) ;
-  this->config   ->setBounds(config_x     , config_y     , config_w     , config_h    ) ;
-  this->statusbar->setBounds(status_x     , status_y     , status_w     , status_h    ) ;
+  this->background->setBounds(background_x , background_y , background_w , background_h) ;
+  this->controls  ->setBounds(controls_x   , controls_y   , controls_w   , controls_h  ) ;
+  this->config    ->setBounds(config_x     , config_y     , config_w     , config_h    ) ;
+  this->statusbar ->setBounds(status_x     , status_y     , status_w     , status_h    ) ;
 }
 
 void MainContent::instantiate(ValueTree config_root  , ValueTree config_store ,

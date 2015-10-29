@@ -1,15 +1,24 @@
-/*
-  ==============================================================================
+/*\
+|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|
+|*|  This file is part of the AvCaster program.
+|*|
+|*|  AvCaster is free software: you can redistribute it and/or modify
+|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  as published by the Free Software Foundation.
+|*|
+|*|  AvCaster is distributed in the hope that it will be useful,
+|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
+|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+|*|  GNU Lesser General Public License for more details.
+|*|
+|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
+\*/
 
-    Constants.h
-    Author:  bill-auger
-
-  ==============================================================================
-*/
 
 #ifndef AVCASTER_H_INCLUDED
 #define AVCASTER_H_INCLUDED
-
 
 #include "Constants.h"
 #include "AvCasterStore.h"
@@ -94,4 +103,4 @@ private:
   static bool          IsAlertModal ;
 } ;
 
-#endif  // AVCASTER_H_INCLUDED
+#endif // AVCASTER_H_INCLUDED
