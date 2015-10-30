@@ -32,31 +32,30 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-  Config is the output configuration GUI for the AvCaster application..
+  Config is the presets configuration GUI for the AvCaster application.
   It has it controls for setting the stream parameters.
                                                                     //[/Comments]
 */
 class Config  : public Component,
                 public TextEditor::Listener,
                 public SliderListener,
-                public ComboBoxListener
+                public ComboBoxListener,
+                public ButtonListener
 {
 public:
     //==============================================================================
-    Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_store);
+    Config ();
     ~Config();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-
-//  friend class MainContent ;
-
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
@@ -66,15 +65,12 @@ private:
   void broughtToFront() override ;
   void textEditorFocusLost(TextEditor& a_text_editor) override ;
 
-  void populateComboBoxes() ;
-  void loadConfig        () ;
-
-
-  ValueTree configRoot ;
-  ValueTree configPresets ;
-  ValueTree configStore ;
-  ValueTree cameraDevices ;
-  ValueTree audioDevices ;
+  void configureSlider    (Slider* a_slider) ;
+  void configureTextEditor(TextEditor*  a_text_editor , int max_n_chars ,
+                           const String allowed_chars                   ) ;
+  void configureCombobox  (ComboBox* a_combobox) ;
+  void loadConfig         () ;
+  void enableComponents   () ;
 
     //[/UserVariables]
 
@@ -111,12 +107,16 @@ private:
     ScopedPointer<Label> audioBitrateLabel;
     ScopedPointer<ComboBox> audioBitrateCombo;
     ScopedPointer<GroupComponent> textGroup;
-    ScopedPointer<Label> overlayLabel;
-    ScopedPointer<TextEditor> overlayText;
+    ScopedPointer<Label> messageLabel;
+    ScopedPointer<TextEditor> motdText;
     ScopedPointer<Label> textStyleLabel;
     ScopedPointer<ComboBox> textStyleCombo;
     ScopedPointer<Label> textPosLabel;
     ScopedPointer<ComboBox> textPosCombo;
+    ScopedPointer<GroupComponent> interstitialGroup;
+    ScopedPointer<Label> locationLabel;
+    ScopedPointer<TextEditor> locationText;
+    ScopedPointer<TextButton> browseButton;
     ScopedPointer<GroupComponent> outputGroup;
     ScopedPointer<Label> outputStreamLabel;
     ScopedPointer<ComboBox> outputStreamCombo;

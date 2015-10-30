@@ -21,6 +21,7 @@
 #define CONSTANTS_H_INCLUDED
 
 // enable standard features
+// #  define DISPLAY_ALERTS
 #  define CONFIGURE_SCREENCAP_BIN   1
 #  define CONFIGURE_CAMERA_BIN      1
 #  define CONFIGURE_AUDIO_BIN       1
@@ -29,6 +30,9 @@
 #  define CONFIGURE_MUX_BIN         (CONFIGURE_AUDIO_BIN && (CONFIGURE_SCREENCAP_BIN || CONFIGURE_CAMERA_BIN || CONFIGURE_COMPOSITING_BIN))
 #  define CONFIGURE_OUTPUT_BIN      (1 && CONFIGURE_MUX_BIN)
 #  define CONFIGURE_TEES            (1 && CONFIGURE_COMPOSITING_BIN)
+
+// debugging tweaks and kludges
+#  define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
 // #  define DISABLE_SCREENCAP
 // #  define DISABLE_CAMERA
 // #  define FAUX_SCREEN_SRC
@@ -62,6 +66,7 @@
 #endif // DEBUG
 #define DEBUG_TRACE        DEBUG_DEFINED && 1
 #define DEBUG_TRACE_EVENTS DEBUG_DEFINED && 1
+#define DEBUG_TRACE_GUI    DEBUG_DEFINED && 1
 #define DEBUG_TRACE_CONFIG DEBUG_DEFINED && 1
 #define DEBUG_TRACE_STATE  DEBUG_DEFINED && 1
 #define DEBUG_TRACE_VB     DEBUG_DEFINED && 0
@@ -70,27 +75,47 @@
 #include "JuceHeader.h"
 
 
+/** the APP namespace defines configuration and runtime constants
+        pertaining to the core AvCaster application and business logic */
 namespace APP
 {
   // names and IDs
   static const String APP_NAME         = "AvCaster" ;
   static const String JACK_CLIENT_NAME = APP_NAME ;
+  static const String VALID_ID_CHARS   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_- " ;
+  static const String DIGITS           = "0123456789" ;
 
   // timers
   static const int GUI_TIMER_HI_ID  = 1 ; static const int GUI_UPDATE_HI_IVL  = 125 ;
   static const int GUI_TIMER_MED_ID = 2 ; static const int GUI_UPDATE_MED_IVL = 500 ;
   static const int GUI_TIMER_LO_ID  = 3 ; static const int GUI_UPDATE_LO_IVL  = 5000 ;
 
+  // files
+  static const File   HOME_DIR      = File::getSpecialLocation(File::userHomeDirectory           ) ;
+  static const File   APPDATA_DIR   = File::getSpecialLocation(File::userApplicationDataDirectory) ;
+  static const File   VIDEOS_DIR    = File::getSpecialLocation(File::userMoviesDirectory         ) ;
+  static const String PNG_FILE_EXT  = ".png" ;
+  static const String IMG_FILE_EXTS = "*" + APP::PNG_FILE_EXT + ",*" + APP::PNG_FILE_EXT ;
+
   // get device info
   static const String CAMERA_DEVICES_DIR = "/sys/class/video4linux" ;
 }
 
+
+/** the GUI namespace defines configuration and runtime constants
+        pertaining to graphical elements                          */
 namespace GUI
 {
   // common
-  static const int PAD  = 4 ;
-  static const int PAD2 = PAD * 2 ;
-  static const int PAD3 = PAD * 3 ;
+  static const int    PAD                 = 4 ;
+  static const int    PAD2                = PAD * 2 ;
+  static const int    PAD3                = PAD * 3 ;
+  static const Colour TEXT_BG_COLOR       = Colour(0xFF000000) ;
+  static const Colour TEXT_FG_COLOR       = Colour(0xFFBBBBFF) ;
+  static const Colour TEXT_CARET_COLOR    = Colour(0xFFFFFFFF) ;
+  static const Colour TEXT_HILITEBG_COLOR = Colour(0xFF000040) ;
+  static const Colour TEXT_HILITE_COLOR   = Colour(0xFFFFFFFF) ;
+  static const Colour TEXT_DISABLED_COLOR = Colour(0xFF808080) ;
 
   // Main
   static const int BORDERS_W  = 2 ;
@@ -99,13 +124,14 @@ namespace GUI
   static const int WINDOW_H   = 720 - BORDERS_W - TITLEBAR_H ;
 
   // Background
-  static const String BACKGROUND_GUI_ID    = "statusbar-gui" ;
+  static const String BACKGROUND_GUI_ID = "statusbar-gui" ;
 
   // StatusBar
-  static const String STATUSBAR_GUI_ID = "statusbar-gui" ;
-  static const String INIT_STATUS_TEXT = "Initializing" ;
-  static const int    STATUSBAR_H      = 24 ;
-  static const int    STATUSBAR_Y      = WINDOW_H - STATUSBAR_H - PAD ;
+  static const String STATUSBAR_GUI_ID  = "statusbar-gui" ;
+  static const String INIT_STATUS_TEXT  = "Initializing" ;
+  static const String READY_STATUS_TEXT = "Ready" ;
+  static const int    STATUSBAR_H       = 24 ;
+  static const int    STATUSBAR_Y       = WINDOW_H - STATUSBAR_H - PAD ;
 
   // MainContent
   static const String CONTENT_GUI_ID = "main-content-gui" ;
@@ -118,15 +144,25 @@ namespace GUI
   static const String PRESETS_TEXT    = "Presets" ;
 
   // Config
-  static const String CONFIG_GUI_ID        = "config-gui" ;
-  static const int    CONFIG_H             = CONTENT_H - 80 ;
-  static const int    CONFIG_Y             = WINDOW_H - CONFIG_H - STATUSBAR_H - PAD2 ;
-  static const int    MONITORS_W           = 160 ;
-  static const int    MONITORS_H           = 120 ;
-  static const int    MONITORS_Y           = 504 + TITLEBAR_H ;
-  static const int    FULLSCREEN_MONITOR_X = 40 ;
-  static const int    OVERLAY_MONITOR_X    = 224 ;
-  static const int    COMPOSITE_MONITOR_X  = 408 ;
+  static const String CONFIG_GUI_ID          = "config-gui" ;
+  static const int    CONFIG_H               = CONTENT_H - 80 ;
+  static const int    CONFIG_Y               = WINDOW_H - CONFIG_H - STATUSBAR_H - PAD2 ;
+  static const int    MONITORS_W             = 160 ;
+  static const int    MONITORS_H             = 120 ;
+  static const int    MONITORS_Y             = 504 + TITLEBAR_H ;
+  static const int    FULLSCREEN_MONITOR_X   = 40 ;
+  static const int    OVERLAY_MONITOR_X      = 224 ;
+  static const int    COMPOSITE_MONITOR_X    = 408 ;
+  static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
+  static const String DELETE_BTN_DELETE_TEXT = "Delete" ;
+  static const String DELETE_BTN_RESET_TEXT  = "Reset" ;
+  static const int    MAX_RES_N_CHARS        = 4 ;
+  static const int    MAX_MOTD_LEN           = 2048 ;
+  static const int    MAX_FILENAME_LEN       = 255 ;
+  static const String IMAGE_CHOOSER_TEXT     = "Select an image file ..." ;
+  static const String DEST_FILE_TEXT         = "Location:" ;
+  static const String DEST_RTMP_TEXT         = "URI:" ;
+  static const String DEST_LCTV_TEXT         = "Stream Key:" ;
 
   // alerts
   enum         AlertType { ALERT_TYPE_WARNING , ALERT_TYPE_ERROR } ;
@@ -162,25 +198,27 @@ namespace GUI
   static const String NO_CAMERAS_ERROR_MSG        = "No video capture devices were found on you system.  If you indeed have one mounted , you will need to enter its mountpoint manually." ;
   static const String STORAGE_WRITE_ERROR_MSG     = "I/O error storing configuration." ;
   static const String PRESET_NAME_ERROR_MSG       = "Enter a name for this preset in the \"Preset\" box then press \"Save\" again." ;
+  static const String PRESET_RENAME_ERROR_MSG     = "A preset already exists with that name." ;
   static const String CONFIG_CHANGE_ERROR_MSG     = "Can not re-configure while the stream is active." ;
 }
 
+
+/** the CONFIG namespace defines keys/value pairs and default value constants
+        pertaining to the configuration/persistence model                     */
 namespace CONFIG
 {
 /*\ CAVEATS:
 |*|  when defining new nodes or properties be sure to:
-|*|    * if new node     - verify schema in AvCasterStore::validateConfig()
-|*|    * if new property - verify schema in AvCasterStore::validateConfig()
-|*|                      - sanitize data in AvCasterStore::sanitizeConfig()
-|*|    * validate and trace data/errors in  #define DEBUG_TRACE_VALIDATE_CONFIG
-|*|                                         #define DEBUG_TRACE_SANITIZE_CONFIG
+|*|    * if new node            - verify schema in AvCasterStore::validateConfig()
+|*|    * if new root property   - verify schema in AvCasterStore::validateConfig()
+|*|                             - sanitize data in AvCasterStore::sanitizeConfig()
+|*|    * if new preset property - verify schema in AvCasterStore::validatePreset()
 |*|    * update the SCHEMA below
 \*/
 
 /*\ SCHEMA:
 |*|
 |*| // AvCasterStore->configRoot
-|*| // AvCasterStore->configPresets
 |*| STORAGE_ID:
 |*| {
 |*|   // config root IDs
@@ -191,75 +229,90 @@ namespace CONFIG
 |*| }
 |*|
 |*| // AvCasterStore->configStore
+|*| // AvCasterStore->configPresets (each child)
 |*| VOLATILE_CONFIG_ID:
 |*| {
 |*|   // control IDs
-|*|   IS_OUTPUT_ON_ID:       a_bool ,
-|*|   IS_INTERSTITIAL_ON_ID: a_bool ,
-|*|   IS_SCREENCAP_ON_ID:    a_bool ,
-|*|   IS_CAMERA_ON_ID:       a_bool ,
-|*|   IS_TEXT_ON_ID:         a_bool ,
-|*|   IS_PREVIEW_ON_ID:      a_bool ,
+|*|   PRESET_NAME_ID:        a_string ,
+|*|   IS_OUTPUT_ON_ID:       a_bool   ,
+|*|   IS_INTERSTITIAL_ON_ID: a_bool   ,
+|*|   IS_SCREENCAP_ON_ID:    a_bool   ,
+|*|   IS_CAMERA_ON_ID:       a_bool   ,
+|*|   IS_TEXT_ON_ID:         a_bool   ,
+|*|   IS_PREVIEW_ON_ID:      a_bool   ,
 |*|   // screen IDs
-|*|   DISPLAY_N_ID:          an_int ,
-|*|   SCREEN_N_ID:           an_int ,
-|*|   SCREENCAP_W_ID:        an_int ,
-|*|   SCREENCAP_H_ID:        an_int ,
-|*|   OFFSET_X_ID:           an_int ,
-|*|   OFFSET_Y_ID:           an_int ,
+|*|   DISPLAY_N_ID:          an_int   ,
+|*|   SCREEN_N_ID:           an_int   ,
+|*|   SCREENCAP_W_ID:        an_int   ,
+|*|   SCREENCAP_H_ID:        an_int   ,
+|*|   OFFSET_X_ID:           an_int   ,
+|*|   OFFSET_Y_ID:           an_int   ,
 |*|   // camera IDs
-|*|   CAMERA_DEV_ID:         an_int ,
-|*|   CAMERA_RES_ID:         an_int ,
+|*|   CAMERA_DEV_ID:         an_int   ,
+|*|   CAMERA_RES_ID:         an_int   ,
 |*|   // audio IDs
-|*|   AUDIO_API_ID:          an_int ,
-|*|   AUDIO_DEVICE_ID:       an_int ,
-|*|   AUDIO_CODEC_ID:        an_int ,
-|*|   N_CHANNELS_ID:         an_int ,
-|*|   SAMPLERATE_ID:         an_int ,
-|*|   AUDIO_BITRATE_ID:      an_int ,
+|*|   AUDIO_API_ID:          an_int   ,
+|*|   AUDIO_DEVICE_ID:       an_int   ,
+|*|   AUDIO_CODEC_ID:        an_int   ,
+|*|   N_CHANNELS_ID:         an_int   ,
+|*|   SAMPLERATE_ID:         an_int   ,
+|*|   AUDIO_BITRATE_ID:      an_int   ,
 |*|   // text IDs
-|*|   OVERLAY_TEXT_ID:       "a string" ,
-|*|   TEXT_STYLE_ID:         an_int ,
-|*|   TEXT_POSITION_ID:      an_int ,
+|*|   MOTD_TEXT_ID:          a_string ,
+|*|   TEXT_STYLE_ID:         an_int   ,
+|*|   TEXT_POSITION_ID:      an_int   ,
+|*|   // interstitial IDs
+|*|   INTERSTITIAL_TEXT_ID:  a_string ,
 |*|   // output IDs
-|*|   OUTPUT_STREAM_ID:      an_int ,
-|*|   OUTPUT_CONTAINER_ID:   an_int ,
-|*|   OUTPUT_W_ID:           an_int ,
-|*|   OUTPUT_H_ID:           an_int ,
-|*|   FRAMERATE_ID:          an_int ,
-|*|   VIDEO_BITRATE_ID:      an_int ,
-|*|   OUTPUT_DEST_ID:        "a string"
+|*|   OUTPUT_STREAM_ID:      an_int   ,
+|*|   OUTPUT_CONTAINER_ID:   an_int   ,
+|*|   OUTPUT_W_ID:           an_int   ,
+|*|   OUTPUT_H_ID:           an_int   ,
+|*|   FRAMERATE_ID:          an_int   ,
+|*|   VIDEO_BITRATE_ID:      an_int   ,
+|*|   OUTPUT_DEST_ID:        a_string
 |*| }
 |*|
 |*| // AvCasterStore->cameraDevices
 |*| CAMERA_DEVICES_ID:
 |*| {
-|*|   CAMERA_PATH_ID: "a_string" , // e.g. "/dev/video0"
-|*|   CAMERA_NAME_ID: "a_string"   // e.g "USB Video Cam"
+|*|   CAMERA_PATH_ID:        a_string , // e.g. "/dev/video0"
+|*|   CAMERA_NAME_ID:        a_string , // e.g "USB Video Cam"
+|*|   CAMERA_RATE_ID:        an_int   ,
+|*|   CAMERA_RESOLUTIONS_ID: a_string
 |*| }
 |*|
 |*| // AvCasterStore->audioDevices
 |*| AUDIO_DEVICES_ID: { nyi }
 \*/
+
+
+  static Identifier FilterId(String a_string)
+  {
+    return a_string.retainCharacters(APP::VALID_ID_CHARS)
+                   .toLowerCase()
+                   .replaceCharacter('_', '-')
+                   .replaceCharacter(' ', '-') ;
+  }
+
   // nodes
   static const Identifier STORAGE_ID            = "av-caster-config" ;
+  static const Identifier PRESETS_ID            = "presets" ;
   static const Identifier VOLATILE_CONFIG_ID    = "volatile-config" ;
   static const Identifier CAMERA_DEVICES_ID     = "camera-devices" ;
   static const Identifier AUDIO_DEVICES_ID      = "audio-devices" ;
-  static const Identifier DEFAULT_PRESET_ID     = "default-preset" ;
-  static const ValueTree  DEFAULT_PRESET_NODE   = ValueTree(Identifier(DEFAULT_PRESET_ID)) ;
   // config root IDs
   static const Identifier CONFIG_VERSION_ID     = "config-version" ;
   static const Identifier PRESET_ID             = "preset-idx" ;
-  static const Identifier PRESETS_ID            = "presets" ;
+  static const Identifier IS_CONFIG_PENDING_ID  = "is-config-pending" ;
   // control IDs
+  static const Identifier PRESET_NAME_ID        = "preset-name" ;
   static const Identifier IS_OUTPUT_ON_ID       = "is-output-on" ;
   static const Identifier IS_INTERSTITIAL_ON_ID = "is-interstitial-on" ;
   static const Identifier IS_SCREENCAP_ON_ID    = "is-screencap-on" ;
   static const Identifier IS_CAMERA_ON_ID       = "is-camera-on" ;
   static const Identifier IS_TEXT_ON_ID         = "is-text-on" ;
   static const Identifier IS_PREVIEW_ON_ID      = "is-preview-on" ;
-  static const Identifier IS_CONFIG_PENDING_ID  = "is-config-pending" ;
   // screen IDs
   static const Identifier DISPLAY_N_ID          = "display-n" ;
   static const Identifier SCREEN_N_ID           = "screen-n" ;
@@ -272,6 +325,8 @@ namespace CONFIG
   static const Identifier CAMERA_RES_ID         = "camera-res-idx" ;
   static const Identifier CAMERA_PATH_ID        = "camera-dev-path" ;
   static const Identifier CAMERA_NAME_ID        = "camera-dev-name" ;
+  static const Identifier CAMERA_RATE_ID        = "camera-framerate" ;
+  static const Identifier CAMERA_RESOLUTIONS_ID = "camera-resolutions" ;
   // audio IDs
   static const Identifier AUDIO_API_ID          = "audio-api-idx" ;
   static const Identifier AUDIO_DEVICE_ID       = "audio-device-idx" ;
@@ -280,9 +335,11 @@ namespace CONFIG
   static const Identifier SAMPLERATE_ID         = "samplerate-idx" ;
   static const Identifier AUDIO_BITRATE_ID      = "audio-bitrate-idx" ;
   // text IDs
-  static const Identifier OVERLAY_TEXT_ID       = "overlay-text" ;
+  static const Identifier MOTD_TEXT_ID          = "motd-text" ;
   static const Identifier TEXT_STYLE_ID         = "text-style-idx" ;
   static const Identifier TEXT_POSITION_ID      = "text-pos-idx" ;
+  // interstitial IDs
+  static const Identifier INTERSTITIAL_LOC_ID   = "interstitial-img" ;
   // output IDs
   static const Identifier OUTPUT_STREAM_ID      = "output-stream-idx" ;
   static const Identifier OUTPUT_CONTAINER_ID   = "output-container-idx" ;
@@ -294,86 +351,101 @@ namespace CONFIG
 
   // root defaults
 #ifdef _WIN32
-  static const String STORAGE_DIRNAME              = "AvCaster\\" ;
+  static const String     STORAGE_DIRNAME              = "AvCaster\\" ;
 #else // _WIN32
-  static const String STORAGE_DIRNAME              = ".av-caster/" ;
+  static const String     STORAGE_DIRNAME              = ".av-caster/" ;
 #endif // _WIN32
-  static const String STORAGE_FILENAME             = STORAGE_DIRNAME + "AvCaster.bin" ;
-  static const double CONFIG_VERSION               = 0.2 ;
-  // control defulats
-  static const bool   DEFAULT_IS_OUTPUT_ON         = false ;
-  static const bool   DEFAULT_IS_INTERSTITIAL_ON   = true ;
-  static const bool   DEFAULT_IS_SCREENCAP_ON      = false ;
-  static const bool   DEFAULT_IS_CAMERA_ON         = false ;
-  static const bool   DEFAULT_IS_TEXT_ON           = false ;
-  static const bool   DEFAULT_IS_PREVIEW_ON        = true ;
-  static const bool   DEFAULT_IS_CONFIG_PENDING    = false ;
-  static const int    DEFAULT_PRESET_IDX           = 0 ;
-  // screen defulats
-  static const int    DEFAULT_DISPLAY_N            = 0 ;
-  static const int    DEFAULT_SCREEN_N             = 0 ;
-  static const int    DEFAULT_SCREENCAP_W          = 640 ;
-  static const int    DEFAULT_SCREENCAP_H          = 480 ;
-  static const int    DEFAULT_OFFSET_X             = 0 ;
-  static const int    DEFAULT_OFFSET_Y             = 0 ;
-  // camera defulats
-  static const int    DEFAULT_CAMERA_DEV_IDX       = 0 ;
-  static const int    DEFAULT_CAMERA_RES_IDX       = 0 ;
-  // audio defulats
-  static const int    DEFAULT_AUDIO_API_IDX        = 0 ;
-  static const int    DEFAULT_AUDIO_DEVICE_IDX     = 0 ;
-  static const int    DEFAULT_AUDIO_CODEC_IDX      = 0 ;
-  static const int    DEFAULT_N_CHANNELS           = 2 ;
-  static const int    DEFAULT_SAMPLERATE_IDX       = 0 ;
-  static const int    DEFAULT_AUDIO_BITRATE_IDX    = 0 ;
-  // text defulats
-  static const String DEFAULT_OVERLAY_TEXT         = "" ;
-  static const int    DEFAULT_TEXT_STYLE_IDX       = 0 ;
-  static const int    DEFAULT_TEXT_POSITION_IDX    = 0 ;
-  // output defulats
-  static const int    DEFAULT_OUTPUT_STREAM_IDX    = 0 ;
-  static const int    DEFAULT_OUTPUT_CONTAINER_IDX = 0 ;
-  static const int    DEFAULT_OUTPUT_W             = 640 ;
-  static const int    DEFAULT_OUTPUT_H             = 480 ;
-  static const int    DEFAULT_FRAMERATE_IDX        = 0 ;
-  static const int    DEFAULT_VIDEO_BITRATE_IDX    = 0 ;
-  static const String DEFAULT_OUTPUT_DEST          = APP::APP_NAME + ".mp4" ;
+  static const String     STORAGE_FILENAME             = "AvCaster.bin" ;
+  static const double     CONFIG_VERSION               = 0.2 ;
+  static const int        DEFAULT_PRESET_IDX           = 0 ; // ASSERT: must be 0
+  static const int        N_STATIC_PRESETS             = 3 ; // ASSERT: num PresetSeed subclasses
+  static const bool       DEFAULT_IS_CONFIG_PENDING    = false ;
+
+  // control defaults
+  static const String     FILE_PRESET_NAME             = "Local File" ;
+  static const String     RTMP_PRESET_NAME             = "RTMP Server" ;
+  static const String     LCTV_PRESET_NAME             = "livecoding.tv" ;
+  static const String     DEFAULT_PRESET_NAME          = FILE_PRESET_NAME ;
+  static const Identifier DEFAULT_PRESET_ID            = FilterId(DEFAULT_PRESET_NAME) ;
+  static const bool       DEFAULT_IS_OUTPUT_ON         = false ;
+  static const bool       DEFAULT_IS_INTERSTITIAL_ON   = true ;
+  static const bool       DEFAULT_IS_SCREENCAP_ON      = false ;
+  static const bool       DEFAULT_IS_CAMERA_ON         = false ;
+  static const bool       DEFAULT_IS_TEXT_ON           = false ;
+  static const bool       DEFAULT_IS_PREVIEW_ON        = true ;
+  // screen defaults
+  static const int        DEFAULT_DISPLAY_N            = 0 ;
+  static const int        DEFAULT_SCREEN_N             = 0 ;
+  static const int        DEFAULT_SCREENCAP_W          = 640 ;
+  static const int        DEFAULT_SCREENCAP_H          = 480 ;
+  static const int        DEFAULT_OFFSET_X             = 0 ;
+  static const int        DEFAULT_OFFSET_Y             = 0 ;
+  // camera defaults
+  static const int        DEFAULT_CAMERA_DEV_IDX       = 0 ;
+  static const int        DEFAULT_CAMERA_RES_IDX       = 0 ;
+  // audio defaults
+  static const int        DEFAULT_AUDIO_API_IDX        = 0 ;
+  static const int        DEFAULT_AUDIO_DEVICE_IDX     = 0 ;
+  static const int        DEFAULT_AUDIO_CODEC_IDX      = 0 ;
+  static const int        DEFAULT_N_CHANNELS           = 2 ;
+  static const int        DEFAULT_SAMPLERATE_IDX       = 0 ;
+  static const int        DEFAULT_AUDIO_BITRATE_IDX    = 0 ;
+  // text defaults
+  static const String     DEFAULT_MOTD_TEXT            = "" ;
+  static const int        DEFAULT_TEXT_STYLE_IDX       = 0 ;
+  static const int        DEFAULT_TEXT_POSITION_IDX    = 0 ;
+  // interstitial defaults
+  static const String     DEFAULT_INTERSTITIAL_LOC     = "" ;
+  // output defaults
+  static const int        DEFAULT_OUTPUT_STREAM_IDX    = 0 ;
+  static const int        DEFAULT_OUTPUT_CONTAINER_IDX = 0 ;
+  static const int        DEFAULT_OUTPUT_W             = 640 ;
+  static const int        DEFAULT_OUTPUT_H             = 480 ;
+  static const int        DEFAULT_FRAMERATE_IDX        = 0 ;
+  static const int        DEFAULT_VIDEO_BITRATE_IDX    = 0 ;
+  static const String     DEFAULT_OUTPUT_DEST          = APP::APP_NAME + ".flv" ;
+
+  // config indices
+  static const int FILE_PRESET_IDX = 0 ;
+  static const int RTMP_PRESET_IDX = 1 ;
+  static const int LCTV_PRESET_IDX = 2 ;
+  static const int FILE_STREAM_IDX = 0 ;
+  static const int RTMP_STREAM_IDX = 1 ;
 
   // config strings
-  static const String      FILE_OUTPUT        = "File" ;
-  static const String      RTMP_OUTPUT        = "RTMP" ;
-  static const String      FLV_CONTAINER      = ".flv" ;
-  static const StringArray PRESETS            = StringArray::fromLines("Default"             ) ;
-  static const StringArray CAMERA_RESOLUTIONS = StringArray::fromLines("160x120"   + newLine +
-                                                                       "320x240"   + newLine +
-                                                                       "640x480"             ) ;
-  static const StringArray AUDIO_APIS         = StringArray::fromLines("ALSA"      + newLine +
-                                                                       "Pulse"     + newLine +
-                                                                       "JACK"                ) ;
-  static const StringArray AUDIO_CODECS       = StringArray::fromLines("AAC"       + newLine +
-                                                                       "MP3"                 ) ;
-  static const StringArray AUDIO_SAMPLERATES  = StringArray::fromLines("11025"     + newLine +
-                                                                       "22050"     + newLine +
-                                                                       "44100"               ) ;
-  static const StringArray AUDIO_BITRATES     = StringArray::fromLines("64k"       + newLine +
-                                                                       "96k"       + newLine +
-                                                                       "128k"      + newLine +
-                                                                       "192k"                ) ;
-  static const StringArray TEXT_STYLES        = StringArray::fromLines("Static"    + newLine +
-                                                                       "Marquee"             ) ;
-  static const StringArray TEXT_POSITIONS     = StringArray::fromLines("Top"       + newLine +
-                                                                       "Bottom"              ) ;
-  static const StringArray OUTPUT_STREAMS     = StringArray::fromLines(FILE_OUTPUT + newLine +
-                                                                       RTMP_OUTPUT           ) ;
-  static const StringArray OUTPUT_CONTAINERS  = StringArray::fromLines(FLV_CONTAINER         ) ;
-  static const StringArray FRAMERATES         = StringArray::fromLines("8"         + newLine +
-                                                                       "12"        + newLine +
-                                                                       "20"        + newLine +
-                                                                       "30"                  ) ;
-  static const StringArray VIDEO_BITRATES     = StringArray::fromLines("800k"      + newLine +
-                                                                       "1200k"               ) ;
+  static const String      FILE_OUTPUT       = "File" ;
+  static const String      RTMP_OUTPUT       = "RTMP" ;
+  static const String      FLV_CONTAINER     = ".flv" ;
+  static const StringArray AUDIO_APIS        = StringArray::fromLines("ALSA"      + newLine +
+                                                                      "Pulse"     + newLine +
+                                                                      "JACK"                ) ;
+  static const StringArray AUDIO_CODECS      = StringArray::fromLines("MP3"       + newLine +
+                                                                      "AAC"                 ) ;
+  static const StringArray AUDIO_SAMPLERATES = StringArray::fromLines("11025"     + newLine +
+                                                                      "22050"     + newLine +
+                                                                      "44100"               ) ;
+  static const StringArray AUDIO_BITRATES    = StringArray::fromLines("64k"       + newLine +
+                                                                      "96k"       + newLine +
+                                                                      "128k"      + newLine +
+                                                                      "192k"                ) ;
+  static const StringArray TEXT_STYLES       = StringArray::fromLines("Static"    + newLine +
+                                                                      "Marquee"             ) ;
+  static const StringArray TEXT_POSITIONS    = StringArray::fromLines("Top"       + newLine +
+                                                                      "Bottom"              ) ;
+  static const StringArray OUTPUT_STREAMS    = StringArray::fromLines(FILE_OUTPUT + newLine +
+                                                                      RTMP_OUTPUT           ) ;
+  static const StringArray OUTPUT_CONTAINERS = StringArray::fromLines(FLV_CONTAINER         ) ;
+  static const StringArray FRAMERATES        = StringArray::fromLines("8"         + newLine +
+                                                                      "12"        + newLine +
+                                                                      "20"        + newLine +
+                                                                      "30"                  ) ;
+  static const StringArray VIDEO_BITRATES    = StringArray::fromLines("800k"      + newLine +
+                                                                      "1200k"               ) ;
 }
 
+
+/** the GUI namespace defines configuration and runtime constants
+        pertaining to the gStreamer media backend                 */
 namespace GST
 {
   static const String ALSA_PLUGIN_ID  = "alsasrc" ;

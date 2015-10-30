@@ -31,7 +31,7 @@
             BufferSecurityCheck=""
             DebugInformationFormat="4"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.12.0;JUCE_APP_VERSION_HEX=0xc00"
+            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.13.0;JUCE_APP_VERSION_HEX=0xd00"
             RuntimeLibrary="1"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -86,7 +86,7 @@
             InlineFunctionExpansion="1"
             StringPooling="true"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.12.0;JUCE_APP_VERSION_HEX=0xc00"
+            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.13.0;JUCE_APP_VERSION_HEX=0xd00"
             RuntimeLibrary="0"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -135,6 +135,7 @@
           <File RelativePath="..\..\Source\Trace\TraceMain.h"/>
         </Filter>
         <File RelativePath="..\..\Source\AvCaster.h"/>
+        <File RelativePath="..\..\Source\PresetSeed.h"/>
         <File RelativePath="..\..\Source\AvCasterStore.h"/>
         <File RelativePath="..\..\Source\Background.h"/>
         <File RelativePath="..\..\Source\Config.h"/>
@@ -146,6 +147,7 @@
       </Filter>
       <Filter Name="Source">
         <File RelativePath="..\..\Source\AvCaster.cpp"/>
+        <File RelativePath="..\..\Source\PresetSeed.cpp"/>
         <File RelativePath="..\..\Source\AvCasterStore.cpp"/>
         <File RelativePath="..\..\Source\Background.cpp"/>
         <File RelativePath="..\..\Source\Config.cpp"/>

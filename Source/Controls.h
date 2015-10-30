@@ -31,9 +31,8 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-    An auto-generated component, created by the Introjucer.
-
-    Describe your class and how it works here!
+  Controls is the media selection and preview GUI for the AvCaster application.
+  It serves only as a consistent backdrop and/or interstitial.
                                                                     //[/Comments]
 */
 class Controls  : public Component,
@@ -42,7 +41,7 @@ class Controls  : public Component,
 {
 public:
     //==============================================================================
-    Controls (ValueTree config_root, ValueTree config_store);
+    Controls ();
     ~Controls();
 
     //==============================================================================
@@ -68,14 +67,16 @@ private:
 
   void broughtToFront() override ;
 
-  void toggleControls(bool is_config_pending) ;
-  void loadConfig() ;
-  bool rejectConfigChange() ;
-
-
-  ValueTree configRoot ;
-  ValueTree configPresets ;
-  ValueTree configStore ;
+  void configureCombobox  (ComboBox* a_combobox) ;
+  void handleSaveButton   () ;
+  void handleNewButton    () ;
+  void handleDeleteButton () ;
+  void handlePresetCombo  () ;
+  void toggleControls     () ;
+  void loadConfig         () ;
+  bool rejectPresetChange () ;
+  void setCreatePresetMode(bool is_pending_new_preset_name) ;
+  bool isCreatePresetMode () ;
 
     //[/UserVariables]
 

@@ -40,6 +40,7 @@ GstElement* Gstreamer::AudioBin        = nullptr ;
 GstElement* Gstreamer::InterstitialBin = nullptr ;
 GstElement* Gstreamer::MuxBin          = nullptr ;
 GstElement* Gstreamer::OutputBin       = nullptr ;
+ValueTree   Gstreamer::ConfigStore ;               // Configure()
 #ifdef FAKE_MUX_ENCODER_SRC_AND_SINK
 guintptr Gstreamer::WindowHandle ;
 #endif // FAKE_MUX_ENCODER_SRC_AND_SINK
@@ -57,7 +58,7 @@ DEBUG_TRACE_GST_INIT_PHASE_1
 /* TODO: not sure if we will need to handle signals
 bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 gst_bus_set_sync_handler (bus, (GstBusSyncHandler) cbw, pipeline, NULL);
-static GstBusSyncReply cb(GstBus * bus, GstMessage * message, GstPipeline * pipeline)
+static GstBusSyncReply cb(GstBus* bus , GstMessage* message, GstPipeline* pipeline)
 */
 
   // instantiate pipeline
@@ -145,11 +146,7 @@ false)
 DEBUG_TRACE_GST_INIT_PHASE_3
 
   // configure elements
-  // Configure() ; // TODO: factor these out after reconfiguration is robust
-  if (!ConfigureScreencap()  || !ConfigureCamera() || !ConfigureText()         ||
-      !ConfigureCompositor() || !ConfigureAudio()  || !ConfigureInterstitial() ||
-      !ConfigureMux()        || !ConfigureOutput()                              )
-  { AvCaster::Error(GUI::GST_CONFIG_ERROR_MSG) ; return false ; }
+  if (!ConfigureTodo()) return false ;
 
 DEBUG_TRACE_GST_INIT_PHASE_4
 
@@ -211,9 +208,22 @@ void Gstreamer::Shutdown()
   //       then wait for EOS message on bus before setting pipeline state to NULL
   SetState(Pipeline , GST_STATE_NULL) ;
   if (Pipeline != nullptr) gst_object_unref(Pipeline) ;
+
+  ConfigStore = ValueTree::invalid ;
 }
 
 bool Gstreamer::Configure() {} // TODO:
+bool Gstreamer::ConfigureTodo() // TODO: rename this after reconfiguration is robust
+{
+  ConfigStore = AvCaster::GetConfigStore() ;
+
+  if (!ConfigureScreencap()  || !ConfigureCamera() || !ConfigureText()         ||
+      !ConfigureCompositor() || !ConfigureAudio()  || !ConfigureInterstitial() ||
+      !ConfigureMux()        || !ConfigureOutput()                              )
+  { AvCaster::Error(GUI::GST_CONFIG_ERROR_MSG) ; return false ; }
+
+  return true ;
+}
 
 bool Gstreamer::ConfigureScreencap()
 {
@@ -221,9 +231,9 @@ bool Gstreamer::ConfigureScreencap()
   GstElement *source , *capsfilter , *converter , *queue ;
   GstCaps    *caps ;
 
-  int    screencap_w = int(AvCaster::Store->configStore[CONFIG::SCREENCAP_W_ID]) ;
-  int    screencap_h = int(AvCaster::Store->configStore[CONFIG::SCREENCAP_H_ID]) ;
-  int    framerate_n = int(AvCaster::Store->configStore[CONFIG::FRAMERATE_ID  ]) ;
+  int    screencap_w = int(ConfigStore[CONFIG::SCREENCAP_W_ID]) ;
+  int    screencap_h = int(ConfigStore[CONFIG::SCREENCAP_H_ID]) ;
+  int    framerate_n = int(ConfigStore[CONFIG::FRAMERATE_ID  ]) ;
   String framerate   = CONFIG::FRAMERATES[framerate_n] ;
 #if JUCE_LINUX
   String plugin_id = "ximagesrc" ;
@@ -311,25 +321,21 @@ bool Gstreamer::ConfigureCamera()
   GstCaps*    caps ;
 
   // TODO: query device for resolutions (eliminate CONFIG::CAMERA_RESOLUTIONS)
-  // TODO: more robust resolution selection
-  int          dev_n             = int(AvCaster::Store->configStore[CONFIG::CAMERA_DEV_ID]) ;
-  int          res_n             = int(AvCaster::Store->configStore[CONFIG::CAMERA_RES_ID]) ;
-  ValueTree    selected_dev      = AvCaster::Store->cameraDevices.getChild(dev_n) ;
-  bool         is_camera_enabled = selected_dev.isValid() ;
-  String       device_path       = STRING(selected_dev[CONFIG::CAMERA_PATH_ID]) ;
-  int          framerate         = int   (selected_dev[CONFIG::FRAMERATE_ID  ]) ;
-  String       resolution        = CONFIG::CAMERA_RESOLUTIONS[res_n] ;
-  StringArray  res_tokens        = StringArray::fromTokens(resolution , "x" , "") ;
-  int          camera_w          = res_tokens[0].getIntValue() ;
-  int          camera_h          = res_tokens[1].getIntValue() ;
+  String      device_path       = AvCaster::GetCameraPath() ;
+  int         framerate         = AvCaster::GetCameraRate() ;
+  String      resolution        = AvCaster::GetCameraResolution() ;
+  bool        is_camera_enabled = device_path.isNotEmpty() ;
+  StringArray res_tokens        = StringArray::fromTokens(resolution , "x" , "") ;
+  int         camera_w          = res_tokens[0].getIntValue() ;
+  int         camera_h          = res_tokens[1].getIntValue() ;
 #if JUCE_LINUX
-  String       plugin_id         = "v4l2src" ;
-  String       caps_str          = String("video/x-raw, ")                             +
-//                                    "width=(int)"          + String(camera_w ) + ", "   +
-//                                    "height=(int)"         + String(camera_h ) + ", "   +
-//                                    "framerate=(fraction)" + String(framerate) + "/1, " +
-//                                    "format=I420, "                                     +
-                                   "pixel-aspect-ratio=(fraction)1/1"                  ;
+  String      plugin_id         = "v4l2src" ;
+  String      caps_str          = String("video/x-raw, ")                             +
+//                                   "width=(int)"          + String(camera_w ) + ", "   +
+//                                   "height=(int)"         + String(camera_h ) + ", "   +
+//                                   "framerate=(fraction)" + String(framerate) + "/1, " +
+//                                   "format=I420, "                                     +
+                                  "pixel-aspect-ratio=(fraction)1/1"                  ;
 #endif // JUCE_LINUX
 
 #ifdef FAUX_CAMERA_SRC
@@ -399,9 +405,9 @@ bool Gstreamer::ConfigureText()
 
   GstElement *filesrc , *subparser , *source , *converter , *queue ;
 
-  String overlay_text = STRING(AvCaster::Store->configStore[CONFIG::OVERLAY_TEXT_ID]) ;
-  int    text_style_n = int   (AvCaster::Store->configStore[CONFIG::TEXT_STYLE_ID  ]) ;
-  int    text_pos_n   = int   (AvCaster::Store->configStore[CONFIG::TEXT_POS_ID    ]) ;
+  String motd_text    = STRING(ConfigStore[CONFIG::MOTD_TEXT_ID ]) ;
+  int    text_style_n = int   (ConfigStore[CONFIG::TEXT_STYLE_ID]) ;
+  int    text_pos_n   = int   (ConfigStore[CONFIG::TEXT_POS_ID  ]) ;
 
 DEBUG_TRACE_CONFIG_TEXT
 
@@ -451,26 +457,25 @@ bool Gstreamer::ConfigureCompositor()
   GstCaps*    caps ;
   GstPad     *compositor_fullscreen_sinkpad , *compositor_overlay_sinkpad ;
 
-  int         fullscreen_w   = int(AvCaster::Store->configStore[CONFIG::SCREENCAP_W_ID]) ;
-  int         fullscreen_h   = int(AvCaster::Store->configStore[CONFIG::SCREENCAP_H_ID]) ;
-  int         res_n          = int(AvCaster::Store->configStore[CONFIG::CAMERA_RES_ID ]) ;
-  int         output_w       = int(AvCaster::Store->configStore[CONFIG::OUTPUT_W_ID   ]) ;
-  int         output_h       = int(AvCaster::Store->configStore[CONFIG::OUTPUT_H_ID   ]) ;
-  int         framerate_n    = int(AvCaster::Store->configStore[CONFIG::FRAMERATE_ID  ]) ;
-  String      resolution     = CONFIG::CAMERA_RESOLUTIONS[res_n      ] ;
-  int         framerate      = CONFIG::FRAMERATES        [framerate_n].getIntValue() ;
-  StringArray res_tokens     = StringArray::fromTokens(resolution , "x" , "") ;
-  int         overlay_w      = res_tokens[0].getIntValue() ;
-  int         overlay_h      = res_tokens[1].getIntValue() ;
-  int         overlay_x      = fullscreen_w - overlay_w ;
-  int         overlay_y      = fullscreen_h - overlay_h ;
-  String      caps_str       = String("video/x-raw, ")                             +
-                               "width=(int)"          + String(output_w ) + ", "   +
-                               "height=(int)"         + String(output_h ) + ", "   +
-                               "framerate=(fraction)" + String(framerate) + "/1, " +
-                               "format=I420, "                                     +
-                               "interlace-mode=(string)progressive, "              +
-                               "pixel-aspect-ratio=(fraction)1/1"                  ;
+  int         fullscreen_w = int(ConfigStore[CONFIG::SCREENCAP_W_ID]) ;
+  int         fullscreen_h = int(ConfigStore[CONFIG::SCREENCAP_H_ID]) ;
+  int         output_w     = int(ConfigStore[CONFIG::OUTPUT_W_ID   ]) ;
+  int         output_h     = int(ConfigStore[CONFIG::OUTPUT_H_ID   ]) ;
+  int         framerate_n  = int(ConfigStore[CONFIG::FRAMERATE_ID  ]) ;
+  int         framerate    = CONFIG::FRAMERATES[framerate_n].getIntValue() ;
+  String      overlay_res  = AvCaster::GetCameraResolution() ;
+  StringArray res_tokens   = StringArray::fromTokens(overlay_res , "x" , "") ;
+  int         overlay_w    = res_tokens[0].getIntValue() ;
+  int         overlay_h    = res_tokens[1].getIntValue() ;
+  int         overlay_x    = fullscreen_w - overlay_w ;
+  int         overlay_y    = fullscreen_h - overlay_h ;
+  String      caps_str     = String("video/x-raw, ")                             +
+                             "width=(int)"          + String(output_w ) + ", "   +
+                             "height=(int)"         + String(output_h ) + ", "   +
+                             "framerate=(fraction)" + String(framerate) + "/1, " +
+                             "format=I420, "                                     +
+                             "interlace-mode=(string)progressive, "              +
+                             "pixel-aspect-ratio=(fraction)1/1"                  ;
 
 DEBUG_TRACE_CONFIG_COMPOSITOR
 
@@ -708,9 +713,9 @@ bool Gstreamer::ConfigureAudio()
   GstElement *source , *capsfilter , *converter , *queue ;
   GstCaps*    caps ;
 
-  int    audio_api        = int(AvCaster::Store->configStore[CONFIG::AUDIO_API_ID ]) ;
-  int    n_channels       = int(AvCaster::Store->configStore[CONFIG::N_CHANNELS_ID]) ;
-  int    samplerate_n     = int(AvCaster::Store->configStore[CONFIG::SAMPLERATE_ID]) ;
+  int    audio_api        = int(ConfigStore[CONFIG::AUDIO_API_ID ]) ;
+  int    n_channels       = int(ConfigStore[CONFIG::N_CHANNELS_ID]) ;
+  int    samplerate_n     = int(ConfigStore[CONFIG::SAMPLERATE_ID]) ;
   int    samplerate       = CONFIG::AUDIO_SAMPLERATES[samplerate_n].getIntValue() ;
   String audio16_caps_str = String("audio/x-raw, "               )               +
                             String("format=(string)S16LE, "      )               +
@@ -782,9 +787,9 @@ bool Gstreamer::ConfigureInterstitial()
   GstElement *source , *decoder , *capsfilter , *converter , *scaler , *freezer , *queue ;
   GstCaps    *caps ;
 
-  int    interstitial_w = int(AvCaster::Store->configStore[CONFIG::SCREENCAP_W_ID]) ;
-  int    interstitial_h = int(AvCaster::Store->configStore[CONFIG::SCREENCAP_H_ID]) ;
-  int    framerate_n    = int(AvCaster::Store->configStore[CONFIG::FRAMERATE_ID  ]) ;
+  int    interstitial_w = int(ConfigStore[CONFIG::SCREENCAP_W_ID]) ;
+  int    interstitial_h = int(ConfigStore[CONFIG::SCREENCAP_H_ID]) ;
+  int    framerate_n    = int(ConfigStore[CONFIG::FRAMERATE_ID  ]) ;
   String framerate      = CONFIG::FRAMERATES[framerate_n] ;
   String image_filename = "/home/bill/img/tech-diff.png" ;
 interstitial_w = 1280 ;
@@ -833,9 +838,9 @@ DEBUG_TRACE_CONFIG_INTERSTITIAL
   GstCaps    *caps ;
 
   // TODO: static image src
-  int    interstitial_w = int(AvCaster::Store->configStore[CONFIG::SCREENCAP_W_ID]) ;
-  int    interstitial_h = int(AvCaster::Store->configStore[CONFIG::SCREENCAP_H_ID]) ;
-  int    framerate_n    = int(AvCaster::Store->configStore[CONFIG::FRAMERATE_ID  ]) ;
+  int    interstitial_w = int(ConfigStore[CONFIG::SCREENCAP_W_ID]) ;
+  int    interstitial_h = int(ConfigStore[CONFIG::SCREENCAP_H_ID]) ;
+  int    framerate_n    = int(ConfigStore[CONFIG::FRAMERATE_ID  ]) ;
   String framerate      = CONFIG::FRAMERATES[framerate_n] ;
   String plugin_id      = "videotestsrc" ;
   String caps_str       = String("video/x-raw, ")                                  +
@@ -884,13 +889,13 @@ bool Gstreamer::ConfigureMux()
   GstElement *mux ;
   GstCaps    *video_caps ;
 
-  int   output_w        = int(AvCaster::Store->configStore[CONFIG::OUTPUT_W_ID     ]) ;
-  int   output_h        = int(AvCaster::Store->configStore[CONFIG::OUTPUT_H_ID     ]) ;
-  int   video_bitrate_n = int(AvCaster::Store->configStore[CONFIG::VIDEO_BITRATE_ID]) ;
-  int   audio_bitrate_n = int(AvCaster::Store->configStore[CONFIG::AUDIO_BITRATE_ID]) ;
-  int   framerate_n     = int(AvCaster::Store->configStore[CONFIG::FRAMERATE_ID    ]) ;
-  int   n_channels      = int(AvCaster::Store->configStore[CONFIG::N_CHANNELS_ID   ]) ;
-  int   samplerate_n    = int(AvCaster::Store->configStore[CONFIG::SAMPLERATE_ID   ]) ;
+  int   output_w        = int(ConfigStore[CONFIG::OUTPUT_W_ID     ]) ;
+  int   output_h        = int(ConfigStore[CONFIG::OUTPUT_H_ID     ]) ;
+  int   video_bitrate_n = int(ConfigStore[CONFIG::VIDEO_BITRATE_ID]) ;
+  int   audio_bitrate_n = int(ConfigStore[CONFIG::AUDIO_BITRATE_ID]) ;
+  int   framerate_n     = int(ConfigStore[CONFIG::FRAMERATE_ID    ]) ;
+  int   n_channels      = int(ConfigStore[CONFIG::N_CHANNELS_ID   ]) ;
+  int   samplerate_n    = int(ConfigStore[CONFIG::SAMPLERATE_ID   ]) ;
   guint video_bitrate   = CONFIG::VIDEO_BITRATES   [video_bitrate_n].getIntValue() ;
   guint audio_bitrate   = CONFIG::AUDIO_BITRATES   [audio_bitrate_n].getIntValue() ;
   int   framerate       = CONFIG::FRAMERATES       [framerate_n    ].getIntValue() ;
@@ -1036,15 +1041,17 @@ bool Gstreamer::ConfigureOutput()
 
   GstElement *queue , *sink ;
 
-  int    stream_n    = int   (AvCaster::Store->configStore[CONFIG::OUTPUT_STREAM_ID]) ;
-  String dest        = STRING(AvCaster::Store->configStore[CONFIG::OUTPUT_DEST_ID  ]) ;
-  String stream      = CONFIG::OUTPUT_STREAMS[stream_n] ;
-  File   videos_dir  = File::getSpecialLocation(File::userMoviesDirectory) ;
-  File   output_file = videos_dir.getNonexistentChildFile(dest , CONFIG::FLV_CONTAINER , false) ;
+  int    stream_idx  = int   (ConfigStore[CONFIG::OUTPUT_STREAM_ID]) ;
+  String dest        = STRING(ConfigStore[CONFIG::OUTPUT_DEST_ID  ]) ;
+  String stream      = CONFIG::OUTPUT_STREAMS[stream_idx] ;
+  String file_ext    = CONFIG::FLV_CONTAINER ;
+  String filename    = dest.upToLastOccurrenceOf(file_ext , false , true) ;
+  File   output_file = APP::VIDEOS_DIR.getNonexistentChildFile(filename , file_ext , false) ;
   String file_url    = output_file.getFullPathName() ;
-  String rtmp_url    = GST::LCTV_RTMP_URL + dest + " live=1" ;
-  String plugin_id , output_url ;
+  bool   is_lctv     = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
+  String rtmp_url    = (is_lctv) ? MakeLctvUrl(dest) : dest ;
 
+  String plugin_id , output_url ;
   if      (stream == CONFIG::FILE_OUTPUT) { plugin_id = "filesink" ; output_url = file_url ; }
   else if (stream == CONFIG::RTMP_OUTPUT) { plugin_id = "rtmpsink" ; output_url = rtmp_url ; }
   else                                    { AvCaster::Error(GUI::OUTPUT_CFG_ERROR_MSG) ; return false ; }
@@ -1078,7 +1085,7 @@ Trace::TraceState("bypassing output configuration") ;
 
 bool Gstreamer::TogglePreview()
 {
-  bool     is_preview_on = bool(AvCaster::Store->configStore[CONFIG::IS_PREVIEW_ON_ID]) ;
+  bool     is_preview_on = bool(ConfigStore[CONFIG::IS_PREVIEW_ON_ID]) ;
   GstState next_state    = (is_preview_on) ? GST_STATE_PLAYING : GST_STATE_PAUSED ;
   // TODO: howto
 }
@@ -1086,7 +1093,7 @@ bool Gstreamer::TogglePreview()
 /*
 bool Gstreamer::ToggleOutput()
 {
-  bool     is_output_on = bool(AvCaster::Store->configStore[CONFIG::IS_OUTPUT_ON_ID]) ;
+  bool     is_output_on = bool(ConfigStore[CONFIG::IS_OUTPUT_ON_ID]) ;
   GstState next_state   = (is_output_on) ? GST_STATE_PLAYING : GST_STATE_PAUSED ;
 
   // TODO: disable the muxer - swapping in fakesink in parallel with preview
@@ -1300,4 +1307,10 @@ DEBUG_TRACE_GET_REQUEST_PAD
 bool Gstreamer::IsInPipeline(GstElement* an_element)
 {
   return GST_ELEMENT_PARENT(an_element) == Pipeline ;
+}
+
+String Gstreamer::MakeLctvUrl(String dest)
+{
+  return GST::LCTV_RTMP_URL + dest.fromFirstOccurrenceOf(GST::LCTV_RTMP_URL , false , true) +
+         " live=1" ;
 }

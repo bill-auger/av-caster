@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.12.0"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.13.0"
               bundleIdentifier="com.bill-auger.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
@@ -16,6 +16,7 @@
         <FILE id="ltIPwf" name="TraceMain.h" compile="0" resource="0" file="Source/Trace/TraceMain.h"/>
       </GROUP>
       <FILE id="IHfl77" name="AvCaster.h" compile="0" resource="0" file="Source/AvCaster.h"/>
+      <FILE id="Fz2IkW" name="PresetSeed.h" compile="0" resource="0" file="Source/PresetSeed.h"/>
       <FILE id="y9Co3C" name="AvCasterStore.h" compile="0" resource="0" file="Source/AvCasterStore.h"/>
       <FILE id="DrBwb8" name="Background.h" compile="0" resource="0" file="Source/Background.h"/>
       <FILE id="uoYh4l" name="Config.h" compile="0" resource="0" file="Source/Config.h"/>
@@ -27,6 +28,7 @@
     </GROUP>
     <GROUP id="{B76039D2-8BDF-7740-0816-1A69395E900D}" name="Source">
       <FILE id="zm6wrJ" name="AvCaster.cpp" compile="1" resource="0" file="Source/AvCaster.cpp"/>
+      <FILE id="yA08dL" name="PresetSeed.cpp" compile="1" resource="0" file="Source/PresetSeed.cpp"/>
       <FILE id="zF9KTX" name="AvCasterStore.cpp" compile="1" resource="0"
             file="Source/AvCasterStore.cpp"/>
       <FILE id="j4Ctdm" name="Background.cpp" compile="1" resource="0" file="Source/Background.cpp"/>

@@ -31,8 +31,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_store)
-    : configStore(config_store), cameraDevices(camera_store), audioDevices(audio_store)
+Config::Config ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -52,7 +51,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     displayLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (displaySlider = new Slider ("displaySlider"));
-    displaySlider->setExplicitFocusOrder (5);
+    displaySlider->setExplicitFocusOrder (1);
     displaySlider->setRange (0, 10, 0);
     displaySlider->setSliderStyle (Slider::IncDecButtons);
     displaySlider->setTextBoxStyle (Slider::TextBoxLeft, false, 24, 20);
@@ -68,7 +67,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     screenLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (screenSlider = new Slider ("screenSlider"));
-    screenSlider->setExplicitFocusOrder (8);
+    screenSlider->setExplicitFocusOrder (2);
     screenSlider->setRange (0, 10, 0);
     screenSlider->setSliderStyle (Slider::IncDecButtons);
     screenSlider->setTextBoxStyle (Slider::TextBoxLeft, false, 24, 20);
@@ -84,7 +83,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     screenWidthLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (screenWidthText = new TextEditor ("screenWidthText"));
-    screenWidthText->setExplicitFocusOrder (6);
+    screenWidthText->setExplicitFocusOrder (3);
     screenWidthText->setMultiLine (false);
     screenWidthText->setReturnKeyStartsNewLine (false);
     screenWidthText->setReadOnly (false);
@@ -103,7 +102,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     screenHeightLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (screenHeightText = new TextEditor ("screenHeightText"));
-    screenHeightText->setExplicitFocusOrder (9);
+    screenHeightText->setExplicitFocusOrder (4);
     screenHeightText->setMultiLine (false);
     screenHeightText->setReturnKeyStartsNewLine (false);
     screenHeightText->setReadOnly (false);
@@ -122,7 +121,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     xOffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (xOffsetText = new TextEditor ("xOffsetText"));
-    xOffsetText->setExplicitFocusOrder (7);
+    xOffsetText->setExplicitFocusOrder (5);
     xOffsetText->setMultiLine (false);
     xOffsetText->setReturnKeyStartsNewLine (false);
     xOffsetText->setReadOnly (false);
@@ -141,7 +140,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     yOffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (yOffsetText = new TextEditor ("yOffsetText"));
-    yOffsetText->setExplicitFocusOrder (10);
+    yOffsetText->setExplicitFocusOrder (6);
     yOffsetText->setMultiLine (false);
     yOffsetText->setReturnKeyStartsNewLine (false);
     yOffsetText->setReadOnly (false);
@@ -165,7 +164,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     cameraDevLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (cameraDevCombo = new ComboBox ("cameraDevCombo"));
-    cameraDevCombo->setExplicitFocusOrder (11);
+    cameraDevCombo->setExplicitFocusOrder (7);
     cameraDevCombo->setEditableText (false);
     cameraDevCombo->setJustificationType (Justification::centredLeft);
     cameraDevCombo->setTextWhenNothingSelected (TRANS("(no camera devices)"));
@@ -182,7 +181,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     cameraResLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (cameraResCombo = new ComboBox ("cameraResCombo"));
-    cameraResCombo->setExplicitFocusOrder (12);
+    cameraResCombo->setExplicitFocusOrder (8);
     cameraResCombo->setEditableText (false);
     cameraResCombo->setJustificationType (Justification::centredLeft);
     cameraResCombo->setTextWhenNothingSelected (String::empty);
@@ -204,7 +203,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     audioApiLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (audioApiCombo = new ComboBox ("audioApiCombo"));
-    audioApiCombo->setExplicitFocusOrder (13);
+    audioApiCombo->setExplicitFocusOrder (9);
     audioApiCombo->setEditableText (false);
     audioApiCombo->setJustificationType (Justification::centredLeft);
     audioApiCombo->setTextWhenNothingSelected (String::empty);
@@ -221,7 +220,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     audioDevLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (audioDevCombo = new ComboBox ("audioDevCombo"));
-    audioDevCombo->setExplicitFocusOrder (14);
+    audioDevCombo->setExplicitFocusOrder (10);
     audioDevCombo->setEditableText (false);
     audioDevCombo->setJustificationType (Justification::centredLeft);
     audioDevCombo->setTextWhenNothingSelected (TRANS("(no audio devices)"));
@@ -238,7 +237,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     audioCodecLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (audioCodecCombo = new ComboBox ("audioCodecCombo"));
-    audioCodecCombo->setExplicitFocusOrder (15);
+    audioCodecCombo->setExplicitFocusOrder (11);
     audioCodecCombo->setEditableText (false);
     audioCodecCombo->setJustificationType (Justification::centredLeft);
     audioCodecCombo->setTextWhenNothingSelected (String::empty);
@@ -255,7 +254,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     nChannelsLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (nChannelsSlider = new Slider ("nChannelsSlider"));
-    nChannelsSlider->setExplicitFocusOrder (16);
+    nChannelsSlider->setExplicitFocusOrder (12);
     nChannelsSlider->setRange (0, 10, 0);
     nChannelsSlider->setSliderStyle (Slider::IncDecButtons);
     nChannelsSlider->setTextBoxStyle (Slider::TextBoxLeft, false, 24, 20);
@@ -271,7 +270,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     samplerateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (samplerateCombo = new ComboBox ("samplerateCombo"));
-    samplerateCombo->setExplicitFocusOrder (17);
+    samplerateCombo->setExplicitFocusOrder (13);
     samplerateCombo->setEditableText (false);
     samplerateCombo->setJustificationType (Justification::centredLeft);
     samplerateCombo->setTextWhenNothingSelected (String::empty);
@@ -288,7 +287,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     audioBitrateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (audioBitrateCombo = new ComboBox ("audioBitrateCombo"));
-    audioBitrateCombo->setExplicitFocusOrder (18);
+    audioBitrateCombo->setExplicitFocusOrder (14);
     audioBitrateCombo->setEditableText (false);
     audioBitrateCombo->setJustificationType (Justification::centredLeft);
     audioBitrateCombo->setTextWhenNothingSelected (String::empty);
@@ -300,24 +299,24 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     textGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     textGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (overlayLabel = new Label ("overlayLabel",
+    addAndMakeVisible (messageLabel = new Label ("messageLabel",
                                                  TRANS("Message:")));
-    overlayLabel->setFont (Font (15.00f, Font::plain));
-    overlayLabel->setJustificationType (Justification::centredLeft);
-    overlayLabel->setEditable (false, false, false);
-    overlayLabel->setColour (Label::textColourId, Colours::white);
-    overlayLabel->setColour (TextEditor::textColourId, Colours::black);
-    overlayLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    messageLabel->setFont (Font (15.00f, Font::plain));
+    messageLabel->setJustificationType (Justification::centredLeft);
+    messageLabel->setEditable (false, false, false);
+    messageLabel->setColour (Label::textColourId, Colours::white);
+    messageLabel->setColour (TextEditor::textColourId, Colours::black);
+    messageLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (overlayText = new TextEditor ("overlayText"));
-    overlayText->setExplicitFocusOrder (19);
-    overlayText->setMultiLine (false);
-    overlayText->setReturnKeyStartsNewLine (false);
-    overlayText->setReadOnly (false);
-    overlayText->setScrollbarsShown (true);
-    overlayText->setCaretVisible (true);
-    overlayText->setPopupMenuEnabled (true);
-    overlayText->setText (String::empty);
+    addAndMakeVisible (motdText = new TextEditor ("motdText"));
+    motdText->setExplicitFocusOrder (15);
+    motdText->setMultiLine (false);
+    motdText->setReturnKeyStartsNewLine (false);
+    motdText->setReadOnly (false);
+    motdText->setScrollbarsShown (true);
+    motdText->setCaretVisible (true);
+    motdText->setPopupMenuEnabled (true);
+    motdText->setText (String::empty);
 
     addAndMakeVisible (textStyleLabel = new Label ("textStyleLabel",
                                                    TRANS("Style:")));
@@ -329,7 +328,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     textStyleLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (textStyleCombo = new ComboBox ("textStyleCombo"));
-    textStyleCombo->setExplicitFocusOrder (20);
+    textStyleCombo->setExplicitFocusOrder (16);
     textStyleCombo->setEditableText (false);
     textStyleCombo->setJustificationType (Justification::centredLeft);
     textStyleCombo->setTextWhenNothingSelected (String::empty);
@@ -346,12 +345,41 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     textPosLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (textPosCombo = new ComboBox ("textPosCombo"));
-    textPosCombo->setExplicitFocusOrder (21);
+    textPosCombo->setExplicitFocusOrder (17);
     textPosCombo->setEditableText (false);
     textPosCombo->setJustificationType (Justification::centredLeft);
     textPosCombo->setTextWhenNothingSelected (String::empty);
     textPosCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     textPosCombo->addListener (this);
+
+    addAndMakeVisible (interstitialGroup = new GroupComponent ("interstitialGroup",
+                                                               TRANS("Interstitial")));
+    interstitialGroup->setColour (GroupComponent::outlineColourId, Colours::white);
+    interstitialGroup->setColour (GroupComponent::textColourId, Colours::white);
+
+    addAndMakeVisible (locationLabel = new Label ("locationLabel",
+                                                  TRANS("Location:")));
+    locationLabel->setFont (Font (15.00f, Font::plain));
+    locationLabel->setJustificationType (Justification::centredLeft);
+    locationLabel->setEditable (false, false, false);
+    locationLabel->setColour (Label::textColourId, Colours::white);
+    locationLabel->setColour (TextEditor::textColourId, Colours::black);
+    locationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (locationText = new TextEditor ("locationText"));
+    locationText->setExplicitFocusOrder (18);
+    locationText->setMultiLine (false);
+    locationText->setReturnKeyStartsNewLine (false);
+    locationText->setReadOnly (false);
+    locationText->setScrollbarsShown (true);
+    locationText->setCaretVisible (true);
+    locationText->setPopupMenuEnabled (true);
+    locationText->setText (String::empty);
+
+    addAndMakeVisible (browseButton = new TextButton ("browseButton"));
+    browseButton->setExplicitFocusOrder (19);
+    browseButton->setButtonText (TRANS("Browse"));
+    browseButton->addListener (this);
 
     addAndMakeVisible (outputGroup = new GroupComponent ("outputGroup",
                                                          TRANS("Output")));
@@ -359,7 +387,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     outputGroup->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (outputStreamLabel = new Label ("outputStreamLabel",
-                                                      TRANS("Dest:")));
+                                                      TRANS("Destination:")));
     outputStreamLabel->setFont (Font (15.00f, Font::plain));
     outputStreamLabel->setJustificationType (Justification::centredLeft);
     outputStreamLabel->setEditable (false, false, false);
@@ -368,7 +396,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     outputStreamLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (outputStreamCombo = new ComboBox ("outputStreamCombo"));
-    outputStreamCombo->setExplicitFocusOrder (22);
+    outputStreamCombo->setExplicitFocusOrder (20);
     outputStreamCombo->setEditableText (false);
     outputStreamCombo->setJustificationType (Justification::centredLeft);
     outputStreamCombo->setTextWhenNothingSelected (String::empty);
@@ -385,12 +413,12 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     outputWidthLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (outputWidthText = new TextEditor ("outputWidthText"));
-    outputWidthText->setExplicitFocusOrder (23);
+    outputWidthText->setExplicitFocusOrder (21);
     outputWidthText->setMultiLine (false);
     outputWidthText->setReturnKeyStartsNewLine (false);
     outputWidthText->setReadOnly (false);
     outputWidthText->setScrollbarsShown (false);
-    outputWidthText->setCaretVisible (true);
+    outputWidthText->setCaretVisible (false);
     outputWidthText->setPopupMenuEnabled (true);
     outputWidthText->setText (String::empty);
 
@@ -404,12 +432,12 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     outputHeightLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (outputHeightText = new TextEditor ("outputHeightText"));
-    outputHeightText->setExplicitFocusOrder (24);
+    outputHeightText->setExplicitFocusOrder (22);
     outputHeightText->setMultiLine (false);
     outputHeightText->setReturnKeyStartsNewLine (false);
     outputHeightText->setReadOnly (false);
     outputHeightText->setScrollbarsShown (false);
-    outputHeightText->setCaretVisible (true);
+    outputHeightText->setCaretVisible (false);
     outputHeightText->setPopupMenuEnabled (true);
     outputHeightText->setText (String::empty);
 
@@ -423,7 +451,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     framerateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (framerateCombo = new ComboBox ("framerateCombo"));
-    framerateCombo->setExplicitFocusOrder (25);
+    framerateCombo->setExplicitFocusOrder (23);
     framerateCombo->setEditableText (false);
     framerateCombo->setJustificationType (Justification::centredLeft);
     framerateCombo->setTextWhenNothingSelected (String::empty);
@@ -440,7 +468,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     bitrateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (videoBitrateCombo = new ComboBox ("videoBitrateCombo"));
-    videoBitrateCombo->setExplicitFocusOrder (26);
+    videoBitrateCombo->setExplicitFocusOrder (24);
     videoBitrateCombo->setEditableText (false);
     videoBitrateCombo->setJustificationType (Justification::centredLeft);
     videoBitrateCombo->setTextWhenNothingSelected (String::empty);
@@ -448,7 +476,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     videoBitrateCombo->addListener (this);
 
     addAndMakeVisible (outputDestLabel = new Label ("outputDestLabel",
-                                                    TRANS("URI:")));
+                                                    TRANS("Location:")));
     outputDestLabel->setFont (Font (15.00f, Font::plain));
     outputDestLabel->setJustificationType (Justification::centredLeft);
     outputDestLabel->setEditable (false, false, false);
@@ -457,7 +485,7 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
     outputDestLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (outputDestText = new TextEditor ("outputDestText"));
-    outputDestText->setExplicitFocusOrder (27);
+    outputDestText->setExplicitFocusOrder (25);
     outputDestText->setMultiLine (false);
     outputDestText->setReturnKeyStartsNewLine (false);
     outputDestText->setReadOnly (false);
@@ -475,17 +503,35 @@ Config::Config (ValueTree config_store, ValueTree camera_store, ValueTree audio_
 
     //[Constructor] You can add your own custom stuff here..
 
-  populateComboBoxes() ;
-  this->screenWidthText ->addListener(this) ;
-  this->screenHeightText->addListener(this) ;
-  this->xOffsetText     ->addListener(this) ;
-  this->yOffsetText     ->addListener(this) ;
-  this->overlayText     ->addListener(this) ;
-  this->outputWidthText ->addListener(this) ;
-  this->outputHeightText->addListener(this) ;
-  this->outputDestText  ->addListener(this) ;
+  configureSlider(this->displaySlider  ) ;
+  configureSlider(this->screenSlider   ) ;
+  configureSlider(this->nChannelsSlider) ;
 
-  //this->displaySlider->setRange(0 , GUI::MAX_DISPLAY_N , 1) ; // TODO: ?
+  configureTextEditor(this->screenWidthText  , GUI::MAX_RES_N_CHARS   , APP::DIGITS        ) ;
+  configureTextEditor(this->screenHeightText , GUI::MAX_RES_N_CHARS   , APP::DIGITS        ) ;
+  configureTextEditor(this->xOffsetText      , GUI::MAX_RES_N_CHARS   , APP::DIGITS        ) ;
+  configureTextEditor(this->yOffsetText      , GUI::MAX_RES_N_CHARS   , APP::DIGITS        ) ;
+  configureTextEditor(this->motdText         , GUI::MAX_MOTD_LEN      , ""                 ) ;
+  configureTextEditor(this->locationText     , GUI::MAX_FILENAME_LEN  , APP::VALID_ID_CHARS) ;
+  configureTextEditor(this->outputWidthText  , GUI::MAX_RES_N_CHARS   , APP::DIGITS        ) ;
+  configureTextEditor(this->outputHeightText , GUI::MAX_RES_N_CHARS   , APP::DIGITS        ) ;
+  configureTextEditor(this->outputDestText   , GUI::MAX_FILENAME_LEN  , APP::VALID_ID_CHARS) ;
+
+  configureCombobox(this->cameraDevCombo   ) ;
+  configureCombobox(this->cameraResCombo   ) ;
+  configureCombobox(this->audioApiCombo    ) ;
+  configureCombobox(this->audioDevCombo    ) ;
+  configureCombobox(this->audioCodecCombo  ) ;
+  configureCombobox(this->samplerateCombo  ) ;
+  configureCombobox(this->audioBitrateCombo) ;
+  configureCombobox(this->textStyleCombo   ) ;
+  configureCombobox(this->textPosCombo     ) ;
+  configureCombobox(this->outputStreamCombo) ;
+  configureCombobox(this->framerateCombo   ) ;
+  configureCombobox(this->videoBitrateCombo) ;
+
+  // TODO: validations here or AvCasterStore->sanitizeConfig()
+  //this->displaySlider->setRange(0 , GUI::MAX_DISPLAY_N , 1) ;
 
     //[/Constructor]
 }
@@ -527,12 +573,16 @@ Config::~Config()
     audioBitrateLabel = nullptr;
     audioBitrateCombo = nullptr;
     textGroup = nullptr;
-    overlayLabel = nullptr;
-    overlayText = nullptr;
+    messageLabel = nullptr;
+    motdText = nullptr;
     textStyleLabel = nullptr;
     textStyleCombo = nullptr;
     textPosLabel = nullptr;
     textPosCombo = nullptr;
+    interstitialGroup = nullptr;
+    locationLabel = nullptr;
+    locationText = nullptr;
+    browseButton = nullptr;
     outputGroup = nullptr;
     outputStreamLabel = nullptr;
     outputStreamCombo = nullptr;
@@ -601,25 +651,29 @@ void Config::resized()
     audioBitrateLabel->setBounds (574, 244, 64, 24);
     audioBitrateCombo->setBounds (640, 244, 80, 24);
     textGroup->setBounds (16, 292, getWidth() - 32, 64);
-    overlayLabel->setBounds (32, 316, 80, 24);
-    overlayText->setBounds (120, 316, 284, 24);
+    messageLabel->setBounds (32, 316, 80, 24);
+    motdText->setBounds (120, 316, 284, 24);
     textStyleLabel->setBounds (420, 316, 52, 24);
     textStyleCombo->setBounds (480, 316, 80, 24);
-    textPosLabel->setBounds (576, 316, 64, 24);
+    textPosLabel->setBounds (568, 316, 64, 24);
     textPosCombo->setBounds (640, 316, 80, 24);
-    outputGroup->setBounds (16, 364, getWidth() - 32, 100);
-    outputStreamLabel->setBounds (32, 388, 80, 24);
-    outputStreamCombo->setBounds (120, 388, 64, 24);
-    outputWidthLabel->setBounds (204, 388, 64, 24);
-    outputWidthText->setBounds (268, 388, 48, 24);
-    outputHeightLabel->setBounds (331, 388, 64, 24);
-    outputHeightText->setBounds (395, 388, 48, 24);
-    framerateLabel->setBounds (460, 388, 40, 24);
-    framerateCombo->setBounds (505, 388, 48, 24);
-    bitrateLabel->setBounds (573, 388, 64, 24);
-    videoBitrateCombo->setBounds (640, 388, 80, 24);
-    outputDestLabel->setBounds (32, 424, 80, 24);
-    outputDestText->setBounds (120, 424, 600, 24);
+    interstitialGroup->setBounds (18, 364, getWidth() - 32, 64);
+    locationLabel->setBounds (34, 388, 80, 24);
+    locationText->setBounds (122, 388, 486, 24);
+    browseButton->setBounds (640, 388, 80, 24);
+    outputGroup->setBounds (16, 436, getWidth() - 32, 100);
+    outputStreamLabel->setBounds (32, 460, 80, 24);
+    outputStreamCombo->setBounds (120, 460, 64, 24);
+    outputWidthLabel->setBounds (204, 460, 64, 24);
+    outputWidthText->setBounds (268, 460, 48, 24);
+    outputHeightLabel->setBounds (332, 460, 64, 24);
+    outputHeightText->setBounds (396, 460, 48, 24);
+    framerateLabel->setBounds (460, 460, 40, 24);
+    framerateCombo->setBounds (506, 460, 48, 24);
+    bitrateLabel->setBounds (572, 460, 64, 24);
+    videoBitrateCombo->setBounds (640, 460, 80, 24);
+    outputDestLabel->setBounds (32, 496, 80, 24);
+    outputDestText->setBounds (120, 496, 600, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -794,6 +848,35 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[/UsercomboBoxChanged_Post]
 }
 
+void Config::buttonClicked (Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+
+  Identifier key ;
+  var        value ;
+
+    //[/UserbuttonClicked_Pre]
+
+    if (buttonThatWasClicked == browseButton)
+    {
+        //[UserButtonCode_browseButton] -- add your button handler code here..
+
+      FileChooser chooser(GUI::IMAGE_CHOOSER_TEXT , APP::HOME_DIR , APP::IMG_FILE_EXTS) ;
+      if (!chooser.browseForFileToOpen()) return ;
+
+      key   = CONFIG::INTERSTITIAL_LOC_ID ;
+      value = var(chooser.getResult().getFullPathName()) ;
+
+        //[/UserButtonCode_browseButton]
+    }
+
+    //[UserbuttonClicked_Post]
+
+  AvCaster::SetConfig(key , value) ;
+
+    //[/UserbuttonClicked_Post]
+}
+
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -802,89 +885,146 @@ void Config::broughtToFront() { loadConfig() ; }
 
 void Config::textEditorFocusLost(TextEditor& a_text_editor)
 {
-  Identifier a_key ;
+  var        value = var((&a_text_editor)->getText()) ;
+  Identifier key   = (&a_text_editor == this->screenWidthText ) ? CONFIG::SCREENCAP_W_ID  :
+                     (&a_text_editor == this->screenHeightText) ? CONFIG::SCREENCAP_H_ID  :
+                     (&a_text_editor == this->xOffsetText     ) ? CONFIG::OFFSET_X_ID     :
+                     (&a_text_editor == this->yOffsetText     ) ? CONFIG::OFFSET_Y_ID     :
+                     (&a_text_editor == this->motdText        ) ? CONFIG::MOTD_TEXT_ID    :
+                     (&a_text_editor == this->outputDestText  ) ? CONFIG::OUTPUT_DEST_ID  :
+                                                                  Identifier()            ;
 
-  if      (&a_text_editor == this->screenWidthText ) a_key = CONFIG::SCREENCAP_W_ID  ;
-  else if (&a_text_editor == this->screenHeightText) a_key = CONFIG::SCREENCAP_H_ID  ;
-  else if (&a_text_editor == this->xOffsetText     ) a_key = CONFIG::OFFSET_X_ID     ;
-  else if (&a_text_editor == this->yOffsetText     ) a_key = CONFIG::OFFSET_Y_ID     ;
-  else if (&a_text_editor == this->overlayText     ) a_key = CONFIG::OVERLAY_TEXT_ID ;
-  else if (&a_text_editor == this->outputWidthText ) a_key = CONFIG::OUTPUT_W_ID     ;
-  else if (&a_text_editor == this->outputHeightText) a_key = CONFIG::OUTPUT_H_ID     ;
-  else if (&a_text_editor == this->outputDestText  ) a_key = CONFIG::OUTPUT_DEST_ID  ;
-
-  AvCaster::SetConfig(a_key , var((&a_text_editor)->getText())) ;
+  AvCaster::SetConfig(key , value) ;
 }
 
-void Config::populateComboBoxes()
+void Config::configureSlider(Slider* a_slider)
 {
-  this->cameraResCombo   ->addItemList(CONFIG::CAMERA_RESOLUTIONS , 1) ;
-  this->audioApiCombo    ->addItemList(CONFIG::AUDIO_APIS         , 1) ;
-  this->audioCodecCombo  ->addItemList(CONFIG::AUDIO_CODECS       , 1) ;
-  this->samplerateCombo  ->addItemList(CONFIG::AUDIO_SAMPLERATES  , 1) ;
-  this->audioBitrateCombo->addItemList(CONFIG::AUDIO_BITRATES     , 1) ;
-  this->textStyleCombo   ->addItemList(CONFIG::TEXT_STYLES        , 1) ;
-  this->textPosCombo     ->addItemList(CONFIG::TEXT_POSITIONS     , 1) ;
-  this->outputStreamCombo->addItemList(CONFIG::OUTPUT_STREAMS     , 1) ;
-  this->framerateCombo   ->addItemList(CONFIG::FRAMERATES         , 1) ;
-  this->videoBitrateCombo->addItemList(CONFIG::VIDEO_BITRATES     , 1) ;
+  a_slider->setColour(Slider::textBoxBackgroundColourId   , GUI::TEXT_BG_COLOR   ) ;
+  a_slider->setColour(Slider::textBoxTextColourId         , GUI::TEXT_FG_COLOR   ) ;
+  a_slider->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR) ;
+  a_slider->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
+  a_slider->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR) ;
+}
+
+void Config::configureTextEditor(TextEditor*  a_text_editor , int max_n_chars ,
+                                 const String allowed_chars                   )
+{
+  a_text_editor->setSelectAllWhenFocused(true) ;
+  a_text_editor->setInputRestrictions(max_n_chars , allowed_chars) ;
+  a_text_editor->setColour(TextEditor::backgroundColourId      , GUI::TEXT_BG_COLOR      ) ;
+  a_text_editor->setColour(TextEditor::textColourId            , GUI::TEXT_FG_COLOR      ) ;
+  a_text_editor->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
+  a_text_editor->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
+  a_text_editor->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
+
+  a_text_editor->addListener(this) ;
+}
+
+void Config::configureCombobox(ComboBox* a_combobox)
+{
+  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_FG_COLOR) ;
+  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR) ;
 }
 
 void Config::loadConfig()
 {
-//DEBUG_TRACE_DUMP_CONFIG_VOLATILE
+  ValueTree   config_store       = AvCaster::GetConfigStore() ;
+  StringArray camera_devices     = AvCaster::GetCameraNames() ;
+  StringArray camera_resolutions = AvCaster::GetCameraResolutions() ;
+  StringArray audio_devices      = AvCaster::GetAudioNames() ;
 
-  double      display_n         = double(this->configStore[CONFIG::DISPLAY_N_ID       ]) ;
-  double      screen_n          = double(this->configStore[CONFIG::SCREEN_N_ID        ]) ;
-  String      screencap_w       = STRING(this->configStore[CONFIG::SCREENCAP_W_ID     ]) ;
-  String      screencap_h       = STRING(this->configStore[CONFIG::SCREENCAP_H_ID     ]) ;
-  String      offset_x          = STRING(this->configStore[CONFIG::OFFSET_X_ID        ]) ;
-  String      offset_y          = STRING(this->configStore[CONFIG::OFFSET_Y_ID        ]) ;
-  StringArray camera_devices    = AvCaster::DevicesNames(this->cameraDevices) ;
-  int         camera_dev_idx    = int   (this->configStore[CONFIG::CAMERA_DEV_ID      ]) ;
-  int         camera_res_idx    = int   (this->configStore[CONFIG::CAMERA_RES_ID      ]) ;
-  int         audio_api_idx     = int   (this->configStore[CONFIG::AUDIO_API_ID       ]) ;
-  StringArray audio_devices     = AvCaster::DevicesNames(this->audioDevices) ;
-  int         audio_dev_idx     = int   (this->configStore[CONFIG::AUDIO_DEVICE_ID    ]) ;
-  int         audio_codec_idx   = int   (this->configStore[CONFIG::AUDIO_CODEC_ID     ]) ;
-  double      n_channels        = double(this->configStore[CONFIG::N_CHANNELS_ID      ]) ;
-  int         samplerate_idx    = int   (this->configStore[CONFIG::SAMPLERATE_ID      ]) ;
-  int         audio_bitrate_idx = int   (this->configStore[CONFIG::AUDIO_BITRATE_ID   ]) ;
-  int         text_style_idx    = int   (this->configStore[CONFIG::TEXT_STYLE_ID      ]) ;
-  int         text_pos_idx      = int   (this->configStore[CONFIG::TEXT_POSITION_ID   ]) ;
-  String      overlay_text      = STRING(this->configStore[CONFIG::OVERLAY_TEXT_ID    ]) ;
-  int         output_stream_idx = int   (this->configStore[CONFIG::OUTPUT_STREAM_ID   ]) ;
-  String      output_w_text     = STRING(this->configStore[CONFIG::OUTPUT_W_ID        ]) ;
-  String      output_h_text     = STRING(this->configStore[CONFIG::OUTPUT_H_ID        ]) ;
-  int         framerate_idx     = int   (this->configStore[CONFIG::FRAMERATE_ID       ]) ;
-  int         video_bitrate_idx = int   (this->configStore[CONFIG::VIDEO_BITRATE_ID   ]) ;
-  String      output_dest_text  = STRING(this->configStore[CONFIG::OUTPUT_DEST_ID     ]) ;
+DEBUG_TRACE_CONFIG_LOAD_CONFIG
 
-  this->displaySlider    ->setValue            (display_n ) ;
-  this->screenSlider     ->setValue            (screen_n  ) ;
-  this->nChannelsSlider  ->setValue            (n_channels) ;
-  this->screenWidthText  ->setText             (screencap_w     ) ;
-  this->screenHeightText ->setText             (screencap_h     ) ;
-  this->xOffsetText      ->setText             (offset_x        ) ;
-  this->yOffsetText      ->setText             (offset_y        ) ;
-  this->overlayText      ->setText             (overlay_text    ) ;
-  this->outputWidthText  ->setText             (output_w_text   ) ;
-  this->outputHeightText ->setText             (output_h_text   ) ;
-  this->outputDestText   ->setText             (output_dest_text) ;
-  this->cameraDevCombo   ->addItemList         (camera_devices    , 1) ;
-  this->audioDevCombo    ->addItemList         (audio_devices     , 1) ;
-  this->cameraDevCombo   ->setSelectedItemIndex(camera_dev_idx    , juce::dontSendNotification) ;
-  this->cameraResCombo   ->setSelectedItemIndex(camera_res_idx    , juce::dontSendNotification) ;
-  this->audioApiCombo    ->setSelectedItemIndex(audio_api_idx     , juce::dontSendNotification) ;
-  this->audioDevCombo    ->setSelectedItemIndex(audio_dev_idx     , juce::dontSendNotification) ;
-  this->audioCodecCombo  ->setSelectedItemIndex(audio_codec_idx   , juce::dontSendNotification) ;
-  this->samplerateCombo  ->setSelectedItemIndex(samplerate_idx    , juce::dontSendNotification) ;
-  this->audioBitrateCombo->setSelectedItemIndex(audio_bitrate_idx , juce::dontSendNotification) ;
-  this->textStyleCombo   ->setSelectedItemIndex(text_style_idx    , juce::dontSendNotification) ;
-  this->textPosCombo     ->setSelectedItemIndex(text_pos_idx      , juce::dontSendNotification) ;
-  this->outputStreamCombo->setSelectedItemIndex(output_stream_idx , juce::dontSendNotification) ;
-  this->framerateCombo   ->setSelectedItemIndex(framerate_idx     , juce::dontSendNotification) ;
-  this->videoBitrateCombo->setSelectedItemIndex(video_bitrate_idx , juce::dontSendNotification) ;
+  double display_n         = double(config_store[CONFIG::DISPLAY_N_ID       ]) ;
+  double screen_n          = double(config_store[CONFIG::SCREEN_N_ID        ]) ;
+  String screencap_w       = STRING(config_store[CONFIG::SCREENCAP_W_ID     ]) ;
+  String screencap_h       = STRING(config_store[CONFIG::SCREENCAP_H_ID     ]) ;
+  String offset_x          = STRING(config_store[CONFIG::OFFSET_X_ID        ]) ;
+  String offset_y          = STRING(config_store[CONFIG::OFFSET_Y_ID        ]) ;
+  int    camera_dev_idx    = int   (config_store[CONFIG::CAMERA_DEV_ID      ]) ;
+  int    camera_res_idx    = int   (config_store[CONFIG::CAMERA_RES_ID      ]) ;
+  int    audio_api_idx     = int   (config_store[CONFIG::AUDIO_API_ID       ]) ;
+  int    audio_dev_idx     = int   (config_store[CONFIG::AUDIO_DEVICE_ID    ]) ;
+  int    audio_codec_idx   = int   (config_store[CONFIG::AUDIO_CODEC_ID     ]) ;
+  double n_channels        = double(config_store[CONFIG::N_CHANNELS_ID      ]) ;
+  int    samplerate_idx    = int   (config_store[CONFIG::SAMPLERATE_ID      ]) ;
+  int    audio_bitrate_idx = int   (config_store[CONFIG::AUDIO_BITRATE_ID   ]) ;
+  int    text_style_idx    = int   (config_store[CONFIG::TEXT_STYLE_ID      ]) ;
+  int    text_pos_idx      = int   (config_store[CONFIG::TEXT_POSITION_ID   ]) ;
+  String motd_text         = STRING(config_store[CONFIG::MOTD_TEXT_ID       ]) ;
+  String interstitial_text = STRING(config_store[CONFIG::INTERSTITIAL_LOC_ID]) ;
+  int    output_stream_idx = int   (config_store[CONFIG::OUTPUT_STREAM_ID   ]) ;
+  String output_w_text     = STRING(config_store[CONFIG::OUTPUT_W_ID        ]) ;
+  String output_h_text     = STRING(config_store[CONFIG::OUTPUT_H_ID        ]) ;
+  int    framerate_idx     = int   (config_store[CONFIG::FRAMERATE_ID       ]) ;
+  int    video_bitrate_idx = int   (config_store[CONFIG::VIDEO_BITRATE_ID   ]) ;
+  String output_dest_text  = STRING(config_store[CONFIG::OUTPUT_DEST_ID     ]) ;
+  bool   is_lctv           = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
+  String stream_type       = CONFIG::OUTPUT_STREAMS[output_stream_idx] ;
+  String output_label_text = (is_lctv                           ) ? GUI::DEST_LCTV_TEXT :
+                             (stream_type == CONFIG::FILE_OUTPUT) ? GUI::DEST_FILE_TEXT :
+                             (stream_type == CONFIG::RTMP_OUTPUT) ? GUI::DEST_RTMP_TEXT :
+                                                                    "ERR"               ;
+
+  this->displaySlider    ->setValue              (display_n ) ;
+  this->screenSlider     ->setValue              (screen_n  ) ;
+  this->nChannelsSlider  ->setValue              (n_channels) ;
+  this->screenWidthText  ->setText               (screencap_w      ) ;
+  this->screenHeightText ->setText               (screencap_h      ) ;
+  this->xOffsetText      ->setText               (offset_x         ) ;
+  this->yOffsetText      ->setText               (offset_y         ) ;
+  this->motdText         ->setText               (motd_text        ) ;
+  this->locationText     ->setText               (interstitial_text) ;
+  this->outputWidthText  ->setText               (output_w_text    ) ;
+  this->outputHeightText ->setText               (output_h_text    ) ;
+  this->outputDestText   ->setText               (output_dest_text ) ;
+  this->outputDestLabel  ->setText               (output_label_text , juce::dontSendNotification) ;
+  this->cameraDevCombo   ->clear                 (juce::dontSendNotification) ;
+  this->cameraResCombo   ->clear                 (juce::dontSendNotification) ;
+  this->audioDevCombo    ->clear                 (juce::dontSendNotification) ;
+  this->audioApiCombo    ->clear                 (juce::dontSendNotification) ;
+  this->audioCodecCombo  ->clear                 (juce::dontSendNotification) ;
+  this->samplerateCombo  ->clear                 (juce::dontSendNotification) ;
+  this->audioBitrateCombo->clear                 (juce::dontSendNotification) ;
+  this->textStyleCombo   ->clear                 (juce::dontSendNotification) ;
+  this->textPosCombo     ->clear                 (juce::dontSendNotification) ;
+  this->outputStreamCombo->clear                 (juce::dontSendNotification) ;
+  this->framerateCombo   ->clear                 (juce::dontSendNotification) ;
+  this->videoBitrateCombo->clear                 (juce::dontSendNotification) ;
+  this->cameraDevCombo   ->addItemList           (camera_devices            , 1) ;
+  this->cameraResCombo   ->addItemList           (camera_resolutions        , 1) ;
+  this->audioApiCombo    ->addItemList           (CONFIG::AUDIO_APIS        , 1) ;
+  this->audioDevCombo    ->addItemList           (audio_devices             , 1) ;
+  this->audioCodecCombo  ->addItemList           (CONFIG::AUDIO_CODECS      , 1) ;
+  this->samplerateCombo  ->addItemList           (CONFIG::AUDIO_SAMPLERATES , 1) ;
+  this->audioBitrateCombo->addItemList           (CONFIG::AUDIO_BITRATES    , 1) ;
+  this->textStyleCombo   ->addItemList           (CONFIG::TEXT_STYLES       , 1) ;
+  this->textPosCombo     ->addItemList           (CONFIG::TEXT_POSITIONS    , 1) ;
+  this->outputStreamCombo->addItemList           (CONFIG::OUTPUT_STREAMS    , 1) ;
+  this->framerateCombo   ->addItemList           (CONFIG::FRAMERATES        , 1) ;
+  this->videoBitrateCombo->addItemList           (CONFIG::VIDEO_BITRATES    , 1) ;
+  this->cameraDevCombo   ->setSelectedItemIndex  (camera_dev_idx    , juce::dontSendNotification) ;
+  this->cameraResCombo   ->setSelectedItemIndex  (camera_res_idx    , juce::dontSendNotification) ;
+  this->audioApiCombo    ->setSelectedItemIndex  (audio_api_idx     , juce::dontSendNotification) ;
+  this->audioDevCombo    ->setSelectedItemIndex  (audio_dev_idx     , juce::dontSendNotification) ;
+  this->audioCodecCombo  ->setSelectedItemIndex  (audio_codec_idx   , juce::dontSendNotification) ;
+  this->samplerateCombo  ->setSelectedItemIndex  (samplerate_idx    , juce::dontSendNotification) ;
+  this->audioBitrateCombo->setSelectedItemIndex  (audio_bitrate_idx , juce::dontSendNotification) ;
+  this->textStyleCombo   ->setSelectedItemIndex  (text_style_idx    , juce::dontSendNotification) ;
+  this->textPosCombo     ->setSelectedItemIndex  (text_pos_idx      , juce::dontSendNotification) ;
+  this->outputStreamCombo->setSelectedItemIndex  (output_stream_idx , juce::dontSendNotification) ;
+  this->framerateCombo   ->setSelectedItemIndex  (framerate_idx     , juce::dontSendNotification) ;
+  this->videoBitrateCombo->setSelectedItemIndex  (video_bitrate_idx , juce::dontSendNotification) ;
+
+  enableComponents() ;
+}
+
+void Config::enableComponents()
+{
+  bool is_static_preset = AvCaster::IsStaticPreset() ;
+
+  this->audioCodecCombo  ->setEnabled(!is_static_preset) ; // TODO: videoCodecCombo
+  this->outputStreamCombo->setEnabled(!is_static_preset) ;
 }
 
 //[/MiscUserCode]
@@ -901,10 +1041,9 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Config" componentName=""
                  parentClasses="public Component, public TextEditor::Listener"
-                 constructorParams="ValueTree config_store, ValueTree camera_store, ValueTree audio_store"
-                 variableInitialisers="configStore(config_store), cameraDevices(camera_store), audioDevices(audio_store)"
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="1" initialHeight="1">
+                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
+                 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
+                 initialHeight="1">
   <BACKGROUND backgroundColour="ff101010"/>
   <GROUPCOMPONENT name="screenGroup" id="3d078232c622c691" memberName="screenGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 4 32M 100" outlinecol="ffffffff"
@@ -915,7 +1054,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <SLIDER name="displaySlider" id="2250b6248ed28fc6" memberName="displaySlider"
-          virtualName="" explicitFocusOrder="5" pos="120 28 64 24" min="0"
+          virtualName="" explicitFocusOrder="1" pos="120 28 64 24" min="0"
           max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
           textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="screenLabel" id="68a950dbc12277f7" memberName="screenLabel"
@@ -924,7 +1063,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <SLIDER name="screenSlider" id="74df429060e256ad" memberName="screenSlider"
-          virtualName="" explicitFocusOrder="8" pos="120 60 64 24" min="0"
+          virtualName="" explicitFocusOrder="2" pos="120 60 64 24" min="0"
           max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
           textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="screenWidthLabel" id="1a8ebe15d549d3a2" memberName="screenWidthLabel"
@@ -933,7 +1072,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="screenWidthText" id="179a2a3eef834bff" memberName="screenWidthText"
-              virtualName="" explicitFocusOrder="6" pos="264 28 48 24" initialText=""
+              virtualName="" explicitFocusOrder="3" pos="264 28 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <LABEL name="screenHeightLabel" id="778bbd3e6ce86ce2" memberName="screenHeightLabel"
@@ -942,7 +1081,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="screenHeightText" id="fabfd798833e0222" memberName="screenHeightText"
-              virtualName="" explicitFocusOrder="9" pos="264 60 48 24" initialText=""
+              virtualName="" explicitFocusOrder="4" pos="264 60 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <LABEL name="xOffsetLabel" id="fca78bd84d691a86" memberName="xOffsetLabel"
@@ -951,7 +1090,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="xOffsetText" id="a370562e4f63e34" memberName="xOffsetText"
-              virtualName="" explicitFocusOrder="7" pos="390 28 48 24" initialText=""
+              virtualName="" explicitFocusOrder="5" pos="390 28 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <LABEL name="yOffsetLabel" id="f2efae168df49c68" memberName="yOffsetLabel"
@@ -960,7 +1099,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="yOffsetText" id="e4bb3613f81dc5f4" memberName="yOffsetText"
-              virtualName="" explicitFocusOrder="10" pos="390 60 48 24" initialText=""
+              virtualName="" explicitFocusOrder="6" pos="390 60 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <GROUPCOMPONENT name="cameraGroup" id="5f4ffe47101cb73b" memberName="cameraGroup"
@@ -972,7 +1111,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="cameraDevCombo" id="f143a9d8fad92dd2" memberName="cameraDevCombo"
-            virtualName="" explicitFocusOrder="11" pos="120 136 200 24" editable="0"
+            virtualName="" explicitFocusOrder="7" pos="120 136 200 24" editable="0"
             layout="33" items="" textWhenNonSelected="(no camera devices)"
             textWhenNoItems="(no camera devices)"/>
   <LABEL name="cameraResLabel" id="e2a00639ad344d6" memberName="cameraResLabel"
@@ -981,7 +1120,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="cameraResCombo" id="bcc0c59e13c46f76" memberName="cameraResCombo"
-            virtualName="" explicitFocusOrder="12" pos="420 136 200 24" editable="0"
+            virtualName="" explicitFocusOrder="8" pos="420 136 200 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <GROUPCOMPONENT name="audioGroup" id="bd120721f1c416c8" memberName="audioGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 184 32M 100" outlinecol="ffffffff"
@@ -992,7 +1131,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="audioApiCombo" id="1534dd6f247fe207" memberName="audioApiCombo"
-            virtualName="" explicitFocusOrder="13" pos="120 208 200 24" editable="0"
+            virtualName="" explicitFocusOrder="9" pos="120 208 200 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="audioDevLabel" id="12df9ce40ba72b7a" memberName="audioDevLabel"
          virtualName="" explicitFocusOrder="0" pos="332 208 80 24" textCol="ffffffff"
@@ -1000,7 +1139,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="audioDevCombo" id="899e83b4b547b630" memberName="audioDevCombo"
-            virtualName="" explicitFocusOrder="14" pos="420 208 200 24" editable="0"
+            virtualName="" explicitFocusOrder="10" pos="420 208 200 24" editable="0"
             layout="33" items="" textWhenNonSelected="(no audio devices)"
             textWhenNoItems="(no audio devices)"/>
   <LABEL name="audioCodecLabel" id="7994dcfae467506e" memberName="audioCodecLabel"
@@ -1009,7 +1148,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="audioCodecCombo" id="2a7a7ebbdd0e6d60" memberName="audioCodecCombo"
-            virtualName="" explicitFocusOrder="15" pos="121 244 96 24" editable="0"
+            virtualName="" explicitFocusOrder="11" pos="121 244 96 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no devices)"/>
   <LABEL name="nChannelsLabel" id="96c39fde349e5dd5" memberName="nChannelsLabel"
          virtualName="" explicitFocusOrder="0" pos="232 244 80 24" textCol="ffffffff"
@@ -1017,7 +1156,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <SLIDER name="nChannelsSlider" id="f465840b69633eb" memberName="nChannelsSlider"
-          virtualName="" explicitFocusOrder="16" pos="320 244 64 24" min="0"
+          virtualName="" explicitFocusOrder="12" pos="320 244 64 24" min="0"
           max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
           textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="samplerateLabel" id="9744752cbe30d209" memberName="samplerateLabel"
@@ -1026,7 +1165,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="samplerateCombo" id="6adde69b5cba6e32" memberName="samplerateCombo"
-            virtualName="" explicitFocusOrder="17" pos="478 244 80 24" editable="0"
+            virtualName="" explicitFocusOrder="13" pos="478 244 80 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="audioBitrateLabel" id="166d559a6691cadc" memberName="audioBitrateLabel"
          virtualName="" explicitFocusOrder="0" pos="574 244 64 24" textCol="ffffffff"
@@ -1034,88 +1173,102 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="audioBitrateCombo" id="7a1546dc1bcc36" memberName="audioBitrateCombo"
-            virtualName="" explicitFocusOrder="18" pos="640 244 80 24" editable="0"
+            virtualName="" explicitFocusOrder="14" pos="640 244 80 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <GROUPCOMPONENT name="textGroup" id="223402a4fb961517" memberName="textGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 292 32M 64" outlinecol="ffffffff"
                   textcol="ffffffff" title="Text"/>
-  <LABEL name="overlayLabel" id="f17950cf5d2f42c4" memberName="overlayLabel"
+  <LABEL name="messageLabel" id="e26a158d569b8f" memberName="messageLabel"
          virtualName="" explicitFocusOrder="0" pos="32 316 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Message:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="overlayText" id="71e2b30829ce5057" memberName="overlayText"
-              virtualName="" explicitFocusOrder="19" pos="120 316 284 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+  <TEXTEDITOR name="motdText" id="fb4f8a059431ce61" memberName="motdText" virtualName=""
+              explicitFocusOrder="15" pos="120 316 284 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="textStyleLabel" id="3e58deec4ea2f148" memberName="textStyleLabel"
          virtualName="" explicitFocusOrder="0" pos="420 316 52 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Style:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="textStyleCombo" id="1d3707271064fb55" memberName="textStyleCombo"
-            virtualName="" explicitFocusOrder="20" pos="480 316 80 24" editable="0"
+            virtualName="" explicitFocusOrder="16" pos="480 316 80 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="textPosLabel" id="6dd629239c17c38b" memberName="textPosLabel"
-         virtualName="" explicitFocusOrder="0" pos="576 316 64 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="568 316 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Position:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="textPosCombo" id="3074c311575e36ac" memberName="textPosCombo"
-            virtualName="" explicitFocusOrder="21" pos="640 316 80 24" editable="0"
+            virtualName="" explicitFocusOrder="17" pos="640 316 80 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+  <GROUPCOMPONENT name="interstitialGroup" id="21b5d7e16b61393b" memberName="interstitialGroup"
+                  virtualName="" explicitFocusOrder="0" pos="18 364 32M 64" outlinecol="ffffffff"
+                  textcol="ffffffff" title="Interstitial"/>
+  <LABEL name="locationLabel" id="d9e5b9eda1c0b4fe" memberName="locationLabel"
+         virtualName="" explicitFocusOrder="0" pos="34 388 80 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Location:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="locationText" id="7634583caff4457b" memberName="locationText"
+              virtualName="" explicitFocusOrder="18" pos="122 388 486 24" initialText=""
+              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
+              caret="1" popupmenu="1"/>
+  <TEXTBUTTON name="browseButton" id="b593253ef702db73" memberName="browseButton"
+              virtualName="" explicitFocusOrder="19" pos="640 388 80 24" buttonText="Browse"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GROUPCOMPONENT name="outputGroup" id="1fdfd2606ad4d79b" memberName="outputGroup"
-                  virtualName="" explicitFocusOrder="0" pos="16 364 32M 100" outlinecol="ffffffff"
+                  virtualName="" explicitFocusOrder="0" pos="16 436 32M 100" outlinecol="ffffffff"
                   textcol="ffffffff" title="Output"/>
   <LABEL name="outputStreamLabel" id="dac22e20ce0dd8e" memberName="outputStreamLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 388 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Dest:" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="32 460 80 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Destination:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="outputStreamCombo" id="12e0750a2c746a13" memberName="outputStreamCombo"
-            virtualName="" explicitFocusOrder="22" pos="120 388 64 24" editable="0"
+            virtualName="" explicitFocusOrder="20" pos="120 460 64 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no devices)"/>
   <LABEL name="outputWidthLabel" id="f42b11722ea56a92" memberName="outputWidthLabel"
-         virtualName="" explicitFocusOrder="0" pos="204 388 64 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="204 460 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Width:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="outputWidthText" id="57d131f0667f6b73" memberName="outputWidthText"
-              virtualName="" explicitFocusOrder="23" pos="268 388 48 24" initialText=""
+              virtualName="" explicitFocusOrder="21" pos="268 460 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
-              caret="1" popupmenu="1"/>
-  <LABEL name="outputHeightLabel" id="f36b02ee3419aaaf" memberName="outputHeightLabel"
-         virtualName="" explicitFocusOrder="0" pos="331 388 64 24" textCol="ffffffff"
+              caret="0" popupmenu="1"/>
+  <LABEL name="outputHeightLabel" id="786372012685b65a" memberName="outputHeightLabel"
+         virtualName="" explicitFocusOrder="0" pos="332 460 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Height:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="outputHeightText" id="eaa77dbf97344cbc" memberName="outputHeightText"
-              virtualName="" explicitFocusOrder="24" pos="395 388 48 24" initialText=""
+  <TEXTEDITOR name="outputHeightText" id="7e14834485ae7a91" memberName="outputHeightText"
+              virtualName="" explicitFocusOrder="22" pos="396 460 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
-              caret="1" popupmenu="1"/>
+              caret="0" popupmenu="1"/>
   <LABEL name="framerateLabel" id="45b2235a7a1f9614" memberName="framerateLabel"
-         virtualName="" explicitFocusOrder="0" pos="460 388 40 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="460 460 40 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="FPS:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="framerateCombo" id="2560e172b011e11c" memberName="framerateCombo"
-            virtualName="" explicitFocusOrder="25" pos="505 388 48 24" editable="0"
+            virtualName="" explicitFocusOrder="23" pos="506 460 48 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="bitrateLabel" id="bc6b3717e710f16c" memberName="bitrateLabel"
-         virtualName="" explicitFocusOrder="0" pos="573 388 64 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="572 460 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Bitrate:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="videoBitrateCombo" id="54c30dff37473763" memberName="videoBitrateCombo"
-            virtualName="" explicitFocusOrder="26" pos="640 388 80 24" editable="0"
+            virtualName="" explicitFocusOrder="24" pos="640 460 80 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="outputDestLabel" id="a1c19ea70cf15d1b" memberName="outputDestLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 424 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="URI:" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="32 496 80 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Location:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="outputDestText" id="569abe636085fb4a" memberName="outputDestText"
-              virtualName="" explicitFocusOrder="27" pos="120 424 600 24" initialText=""
+              virtualName="" explicitFocusOrder="25" pos="120 496 600 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
 </JUCER_COMPONENT>

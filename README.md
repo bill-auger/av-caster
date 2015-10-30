@@ -51,7 +51,11 @@ $ sudo apt-get install av-caster
 
 
 ### Community Support
-Feel free to to post any questions or comments to the [AvCaster issue tracker](https://github.com/bill-auger/av-caster/issues) and you can visit the home page of the [AvCaster wiki](https://github.com/bill-auger/av-caster/wiki) for updates  Also, this project is open-source and pull requests are quite welcomed.
+AvCaster is still very much in beta so testers comments and suggestions are appreciated. Also, this project is open-source and pull requests are quite welcomed.
+
+If AvCaster refuses to launch after changing some parameters in the GUI you can try deleting the persistent configuration file in your AppData dir (e.g. ~/.av-caster/AvCaster.bin).
+
+Feel free to to post any questions or comments to the [AvCaster issue tracker](https://github.com/bill-auger/av-caster/issues) and you can visit the home page of the [AvCaster wiki](https://github.com/bill-auger/av-caster/wiki) for updates.
 
 
 ### Building from source

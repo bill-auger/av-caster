@@ -49,8 +49,8 @@ void MainContent::paint(Graphics& g)
 
 void MainContent::resized()
 {
-  if (this->controls  == nullptr || this->config == nullptr ||
-      this->statusbar == nullptr                             ) return ;
+  if (this->background == nullptr || this->controls  == nullptr ||
+      this->config     == nullptr || this->statusbar == nullptr  ) return ;
 
   // background
   int background_x = GUI::PAD ;
@@ -58,17 +58,17 @@ void MainContent::resized()
   int background_w = GUI::CONTENT_W ;
   int background_h = GUI::CONFIG_H ;
 
-  // config
-  int config_x = GUI::PAD ;
-  int config_y = GUI::CONFIG_Y ;
-  int config_w = GUI::CONTENT_W ;
-  int config_h = GUI::CONFIG_H ;
-
   // controls
   int controls_x = GUI::PAD ;
   int controls_y = GUI::PAD ;
   int controls_w = GUI::CONTENT_W ;
   int controls_h = GUI::CONTENT_H ;
+
+  // config
+  int config_x = GUI::PAD ;
+  int config_y = GUI::CONFIG_Y ;
+  int config_w = GUI::CONTENT_W ;
+  int config_h = GUI::CONFIG_H ;
 
   // statusbar
   int status_x = GUI::PAD ;
@@ -90,11 +90,11 @@ void MainContent::instantiate(ValueTree config_root  , ValueTree config_store ,
   this->addChildAndSetID(this->background , GUI::BACKGROUND_GUI_ID) ;
 
   // controls
-  this->controls = new Controls(config_root , config_store) ;
+  this->controls = new Controls() ;
   this->addChildAndSetID(this->controls , GUI::CONTROLS_GUI_ID) ;
 
   // config
-  this->config = new Config(config_store , camera_store , audio_store) ;
+  this->config = new Config() ;
   this->addChildAndSetID(this->config , GUI::CONFIG_GUI_ID) ;
 
   // statusbar
@@ -113,10 +113,6 @@ void MainContent::setTitle(String title_text)
 
 void MainContent::warning(String message_text)
 {
-#ifdef DEBUG
-  Trace::TraceWarning(message_text) ;
-#endif // DEBUG
-
   if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
 
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon , GUI::MODAL_WARNING_TITLE ,
@@ -126,10 +122,6 @@ void MainContent::warning(String message_text)
 
 void MainContent::error(String message_text)
 {
-#ifdef DEBUG
-  Trace::TraceError(message_text) ;
-#endif // DEBUG
-
   if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
 
   AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon , GUI::MODAL_ERROR_TITLE ,

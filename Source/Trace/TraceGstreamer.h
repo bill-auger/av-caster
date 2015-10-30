@@ -72,11 +72,10 @@
 #  define DEBUG_TRACE_CONFIG_CAMERA                                                  \
   if (is_camera_enabled)                                                             \
   {                                                                                  \
-    String devname = STRING(selected_dev[CONFIG::CAMERA_NAME_ID]) ;                  \
-    Trace::TraceState(String("configuring camera '") + devname                   +   \
-                      "' (" + device_path + ") @ "   + resolution                +   \
-                      " @ "                          + String(framerate) + "fps" +   \
-                      " using "                      + plugin_id                 ) ; \
+    Trace::TraceState(String("configuring camera '") + device_path               +   \
+                             "' @ "                  + resolution                +   \
+                             " @ "                   + String(framerate) + "fps" +   \
+                             " using "               + plugin_id                 ) ; \
     if (IsInPipeline(ScreencapBin) &&                                                \
        !IsInPipeline(CompositorBin) ) Trace::TraceConfig("adding CompositorBin") ;   \
   }                                                                                  \
@@ -117,8 +116,9 @@
       "mp3 audio 16bit @ " + String(samplerate)    + "hz -> " + String(audio_bitrate) + \
                  "kbps x " + String(n_channels)    + " channels"                      ) ;
 
-#  define DEBUG_TRACE_CONFIG_OUTPUT                                            \
-  Trace::TraceState("configuring " + stream + " output stream to " + output_url) ;
+#  define DEBUG_TRACE_CONFIG_OUTPUT                                                       \
+  String server = String((is_lctv) ? "LCTV " : "") ;                                      \
+  Trace::TraceState("configuring " + server + stream + " output stream to " + output_url) ;
 
 #  define DEBUG_TRACE_MAKE_ELEMENT                                                  \
   bool   is_err = new_element == nullptr ;                                         \

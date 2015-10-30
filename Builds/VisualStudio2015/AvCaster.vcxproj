@@ -56,7 +56,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.12.0;JUCE_APP_VERSION_HEX=0xc00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.13.0;JUCE_APP_VERSION_HEX=0xd00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -97,7 +97,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.12.0;JUCE_APP_VERSION_HEX=0xc00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.13.0;JUCE_APP_VERSION_HEX=0xd00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\AvCaster.cpp"/>
+    <ClCompile Include="..\..\Source\PresetSeed.cpp"/>
     <ClCompile Include="..\..\Source\AvCasterStore.cpp"/>
     <ClCompile Include="..\..\Source\Background.cpp"/>
     <ClCompile Include="..\..\Source\Config.cpp"/>
@@ -909,6 +910,7 @@
     <ClInclude Include="..\..\Source\Trace\TraceGstreamer.h"/>
     <ClInclude Include="..\..\Source\Trace\TraceMain.h"/>
     <ClInclude Include="..\..\Source\AvCaster.h"/>
+    <ClInclude Include="..\..\Source\PresetSeed.h"/>
     <ClInclude Include="..\..\Source\AvCasterStore.h"/>
     <ClInclude Include="..\..\Source\Background.h"/>
     <ClInclude Include="..\..\Source\Config.h"/>

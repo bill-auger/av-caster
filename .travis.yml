@@ -4,7 +4,7 @@ sudo:           required
 dist:           trusty
 before_install:
   - # per app config
-  - VERSION=0.12.000
+  - VERSION=0.13.000
   - SOURCE_REPO_NAME='bill-auger'
   - PACKAGE_REPO_NAME='ninjam'
   - PROJECT_NAME='av-caster' # ASSERT: matches dev repo name, binary filename, deb repo name, etc.
@@ -22,45 +22,52 @@ before_install:
   - DEBIAN_PACKAGE_64="$PROJECT_NAME"_"$VERSION"_amd64.deb
   - DEBIAN_PACKAGE_32="$PROJECT_NAME"_"$VERSION"_i386.deb
   - # setup
-  - ((  $DEBIAN_64)) || ((  $DEBIAN_32)) || echo "no build targets enabled"
-  - ((  $DEBIAN_64)) || ((  $DEBIAN_32))
-  - ((! $DEBIAN_64)) && ((! $DEBIAN_32)) || mkdir -p $ARTIFACTS_DIR
-  - ((! $DEBIAN_64)) && ((! $DEBIAN_32)) || gem install --no-rdoc --no-ri $GEMS
+  - ((  $BUILD_64)) || ((  $BUILD_32)) || echo "no build targets enabled"
+  - ((  $BUILD_64)) || ((  $BUILD_32))
+  - ((! $BUILD_64)) && ((! $BUILD_32)) || mkdir -p $ARTIFACTS_DIR
+  - ((! $BUILD_64)) && ((! $BUILD_32)) || gem install --no-rdoc --no-ri $GEMS
 script:
   - # 64-bit build
-  - ((! $DEBIAN_64)) || echo "building 64-bit $PROJECT_NAME"
-  - ((! $DEBIAN_64)) || sudo apt-get update -qq
-  - ((! $DEBIAN_64)) || sudo apt-get install -y $DEPS_64
-  - ((! $DEBIAN_64)) || cd $BUILD_DIR
-  - ((! $DEBIAN_64)) || make CONFIG=Release
+  - (($BUILD_64)) && echo "building 64-bit $PROJECT_NAME"
+  - (($BUILD_64)) && sudo apt-get update -qq
+  - (($BUILD_64)) && sudo apt-get install -y $DEPS_64
+  - (($BUILD_64)) && cd $BUILD_DIR
+  - (($BUILD_64)) && make CONFIG=Release
   - # 64-bit debian packaging
-  - ((! $DEBIAN_64)) || echo "packaging for 64-bit debian $DEBIAN_PACKAGE_64"
-  - ((! $DEBIAN_64)) || mv build/$PROJECT_NAME $ARTIFACTS_DIR/
-  - ((! $DEBIAN_64)) || cd $PACKAGING_DIR
-  - ((! $DEBIAN_64)) || ./fpm-build.sh $VERSION amd64
-  - ((! $DEBIAN_64)) || mv $ARTIFACTS_DIR/$PROJECT_NAME $ARTIFACTS_DIR/$PROJECT_NAME-amd64
+  - (($BUILD_64)) && echo "packaging for 64-bit debian $BUILD_PACKAGE_64"
+  - (($BUILD_64)) && mv build/$PROJECT_NAME $ARTIFACTS_DIR/
+  - (($BUILD_64)) && cd $PACKAGING_DIR
+  - (($BUILD_64)) && ./fpm-build.sh $VERSION amd64
+  - (($BUILD_64)) && mv $ARTIFACTS_DIR/$PROJECT_NAME $ARTIFACTS_DIR/$PROJECT_NAME-amd64
   - # 32-bit build
-  - ((! $DEBIAN_32)) || echo "building 32-bit $PROJECT_NAME"
-  - ((! $DEBIAN_32)) || sudo dpkg --add-architecture i386
-  - ((! $DEBIAN_32)) || sudo apt-get update -qq
-  - ((! $DEBIAN_32)) || sudo apt-get install -y g++-multilib libc6-dev-i386
-  - ((! $DEBIAN_32)) || sudo apt-get install -y $DEPS_32
-  - ((! $DEBIAN_32)) || cd $BUILD_DIR
-  - ((! $DEBIAN_32)) || make CONFIG=Release32 PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
+  - (($BUILD_32)) && echo "building 32-bit $PROJECT_NAME"
+  - (($BUILD_32)) && sudo dpkg --add-architecture i386
+  - (($BUILD_32)) && sudo apt-get update -qq
+  - (($BUILD_32)) && sudo apt-get install -y g++-multilib libc6-dev-i386
+  - (($BUILD_32)) && sudo apt-get install -y $DEPS_32
+  - (($BUILD_32)) && cd $BUILD_DIR
+  - (($BUILD_32)) && make CONFIG=Release32 PKG_CONFIG_PATH=/usr/lib/i386-linux-gnu/pkgconfig/
   - # 32-bit debian packaging
-  - ((! $DEBIAN_32)) || echo "packaging for 32-bit debian $DEBIAN_PACKAGE_32"
-  - ((! $DEBIAN_32)) || mv build/$PROJECT_NAME $ARTIFACTS_DIR/
-  - ((! $DEBIAN_32)) || cd $PACKAGING_DIR
-  - ((! $DEBIAN_32)) || ./fpm-build.sh $VERSION i386
-  - ((! $DEBIAN_64)) || mv $ARTIFACTS_DIR/$PROJECT_NAME $ARTIFACTS_DIR/$PROJECT_NAME-i386
+  - (($BUILD_32)) && echo "packaging for 32-bit debian $BUILD_PACKAGE_32"
+  - (($BUILD_32)) && mv build/$PROJECT_NAME $ARTIFACTS_DIR/
+  - (($BUILD_32)) && cd $PACKAGING_DIR
+  - (($BUILD_32)) && ./fpm-build.sh $VERSION i386
+  - (($BUILD_32)) && mv $ARTIFACTS_DIR/$PROJECT_NAME $ARTIFACTS_DIR/$PROJECT_NAME-i386
 after_script:
   - echo "build stage ended"
   - ls -l $ARTIFACTS_DIR
   - ls -l $PACKAGING_DIR
 after_success:
+  - # push packages for stable master branch only
+  - if [ "$TRAVIS_BRANCH"       == "master" ] ; then IS_MASTER=1 ; else IS_MASTER=0 ; fi ;
+  - if [ "$TRAVIS_PULL_REQUEST" == "false"  ] ; then IS_PR=0     ; else IS_PR=1     ; fi ;
+  - (($IS_MASTER))  && ((! $IS_PR))  && PACKAGE=1    || PACKAGE=0
+  - (($PACKAGE))    && (($BUILD_64)) && PACKAGE_64=1 || PACKAGE_64=0
+  - (($PACKAGE))    && (($BUILD_32)) && PACKAGE_32=1 || PACKAGE_32=0
+  - (($PACKAGE))    || echo "skipping deployment - this is not the master branch"
   - # 64-bit debian deployment
-  - ((! $DEBIAN_64)) || echo "deploying 64-bit deb package $DEBIAN_PACKAGE_64 to $PACKAGE_REPO_NAME/$PROJECT_NAME repo"
-  - ((! $DEBIAN_64)) || ./push-package.sh $PACKAGE_REPO_NAME/$PROJECT_NAME $DEBIAN_PACKAGE_64
+  - (($PACKAGE_64)) && echo "deploying 64-bit deb package $DEBIAN_PACKAGE_64 to $PACKAGE_REPO_NAME/$PROJECT_NAME repo"
+  - (($PACKAGE_64)) && ./push-package.sh $PACKAGE_REPO_NAME/$PROJECT_NAME $DEBIAN_PACKAGE_64
   - # 32-bit debian deployment
-  - ((! $DEBIAN_32)) || echo "deploying 32-bit deb package $DEBIAN_PACKAGE_32 to $PACKAGE_REPO_NAME/$PROJECT_NAME repo"
-  - ((! $DEBIAN_32)) || ./push-package.sh $PACKAGE_REPO_NAME/$PROJECT_NAME $DEBIAN_PACKAGE_32
+  - (($PACKAGE_32)) && echo "deploying 32-bit deb package $DEBIAN_PACKAGE_32 to $PACKAGE_REPO_NAME/$PROJECT_NAME repo"
+  - (($PACKAGE_32)) && ./push-package.sh $PACKAGE_REPO_NAME/$PROJECT_NAME $DEBIAN_PACKAGE_32

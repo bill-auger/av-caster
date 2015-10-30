@@ -41,6 +41,7 @@ private:
 
   // configuration
   static bool Configure() ;
+  static bool ConfigureTodo() ;
   static bool ConfigureScreencap() ;
   static bool ConfigureCamera() ;
   static bool ConfigureText() ;
@@ -84,8 +85,8 @@ private:
   static GstPad*     NewRequestSinkPad(GstElement* an_element) ;
   static GstPad*     NewRequestSrcPad (GstElement* an_element) ;
   static GstPad*     NewRequestPad    (GstElement* an_element , String template_id) ;
-  static bool        IsInPipeline(     GstElement* an_element) ;
-  static String      StateName(        GstState next_state) ;
+  static bool        IsInPipeline     (GstElement* an_element) ;
+  static String      MakeLctvUrl      (String dest) ;
 
 
   // pipeline
@@ -101,8 +102,15 @@ private:
   static GstElement* CompositeSink ;
   static GstElement* MuxBin ;
   static GstElement* OutputBin ;
+
+  // configuration
+  static ValueTree ConfigStore ;
+
+#ifdef FAKE_MUX_ENCODER_SRC_AND_SINK
 static guintptr WindowHandle ;
+#endif // FAKE_MUX_ENCODER_SRC_AND_SINK
 } ;
+
 #endif // GSTREAMER_H_INCLUDED
 
 

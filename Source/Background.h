@@ -31,9 +31,8 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-    An auto-generated component, created by the Introjucer.
-
-    Describe your class and how it works here!
+  Background is an empty GUI for the AvCaster application.
+  It serves only as a consistent backdrop and/or interstitial.
                                                                     //[/Comments]
 */
 class Background  : public Component

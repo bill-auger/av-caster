@@ -1,7 +1,14 @@
+av-caster (0.13.000) whatever; urgency=medium
+
+  * implement saving confgurations as presets
+
+ -- bill-auger@programmer.net  Mon, 02 Nov 2015 04:20:42 -0400
+
+
 av-caster (0.12.000) whatever; urgency=medium
 
   * initial debian package
   * milestone 'first usable version'
   * package created with FPM
 
- -- bill-auger@programmer.net  Web, 21 Oct 2015 04:20:42 -0400
+ -- bill-auger@programmer.net  Wed, 21 Oct 2015 04:20:42 -0400

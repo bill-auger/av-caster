@@ -31,7 +31,8 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-This is the bottom statusbar.
+  Statusbar is the bottom statusbar GUI for the AvCaster application.
+  It does nothing useful yet.
                                                                     //[/Comments]
 */
 class Statusbar  : public Component

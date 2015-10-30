@@ -55,27 +55,68 @@ ModalComponentManager::Callback* AvCaster::GetModalCb()
 
 void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
-StringArray AvCaster::PresetsNames() { return Store->presetsNames() ; }
-
-StringArray AvCaster::DevicesNames(ValueTree a_devices_node)
-{
-  return Store->devicesNames(a_devices_node) ;
-}
-
 void AvCaster::SetConfig(Identifier a_key , var a_value)
 {
   ValueTree storage_node = (a_key == CONFIG::PRESET_ID          ||
                             a_key == CONFIG::IS_CONFIG_PENDING_ID) ? Store->configRoot  :
                                                                      Store->configStore ;
-
 DEBUG_TRACE_SET_CONFIG
 
-  storage_node.setProperty(a_key , a_value , nullptr) ;
+  if (a_key.isValid()) storage_node.setProperty(a_key , a_value , nullptr) ;
 }
 
 void AvCaster::StorePreset(String preset_name) { Store->storePreset(preset_name) ; }
 
+void AvCaster::RenamePreset(String preset_name) { Store->renamePreset(preset_name) ; }
+
 void AvCaster::DeletePreset() { Store->deletePreset() ; }
+
+void AvCaster::ResetPreset() { Store->resetPreset() ; }
+
+ValueTree AvCaster::GetConfigStore() { return Store->configStore ; }
+
+bool AvCaster::IsStaticPreset() { return AvCaster::GetPresetIdx() < CONFIG::N_STATIC_PRESETS ; }
+
+int AvCaster::GetPresetIdx() { return int(Store->configRoot[CONFIG::PRESET_ID]) ; }
+
+String AvCaster::GetPresetName()
+{
+  ValueTree current_preset = Store->configPresets.getChild(GetPresetIdx()) ;
+
+  return STRING(current_preset[CONFIG::PRESET_NAME_ID]) ;
+}
+
+bool AvCaster::GetIsConfigPending() { return bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ; }
+
+StringArray AvCaster::GetPresetsNames() { return Store->presetsNames() ; }
+
+StringArray AvCaster::GetCameraNames() { return Store->cameraNames() ; }
+
+StringArray AvCaster::GetAudioNames() { return Store->audioNames() ; }
+
+StringArray AvCaster::GetCameraResolutions() { return Store->getCameraResolutions() ; }
+
+String AvCaster::GetCameraResolution()
+{
+  int         resolution_n = int(Store->configStore[CONFIG::CAMERA_RES_ID]) ;
+  StringArray resolutions  = Store->getCameraResolutions() ;
+
+  return resolutions[resolution_n] ;
+}
+
+String AvCaster::GetCameraPath()
+{
+  ValueTree camera_store = Store->getCameraConfig() ;
+
+  return STRING(camera_store[CONFIG::CAMERA_PATH_ID]) ;
+}
+
+int AvCaster::GetCameraRate()
+{
+  ValueTree camera_store = Store->getCameraConfig() ;
+
+  return int(camera_store[CONFIG::CAMERA_RATE_ID]) ;
+}
 
 
 /* AvCaster private class methods */
@@ -86,22 +127,28 @@ bool AvCaster::Initialize(MainContent* main_content)
 
 DEBUG_TRACE_INIT_PHASE_1
 
+  if (!IsEnvironmentSane()) return false ;
+
+DEBUG_TRACE_INIT_PHASE_2
+
   // load persistent configuration
   if ((Store = new AvCasterStore()) == nullptr) return false ;
 
-DEBUG_TRACE_INIT_PHASE_2
+DEBUG_TRACE_INIT_PHASE_3
 
   // instantiate GUI
   Gui->instantiate(Store->configRoot    , Store->configStore ,
                    Store->cameraDevices , Store->audioDevices) ;
-  ToggleConfig() ;
+  RefreshGui() ;
 
-DEBUG_TRACE_INIT_PHASE_3
+DEBUG_TRACE_INIT_PHASE_4
 
   // initialize gStreamer
   if (!Gstreamer::Initialize(Gui->getWindowHandle())) return false ;
 
-DEBUG_TRACE_INIT_PHASE_4
+DEBUG_TRACE_INIT_PHASE_5
+
+  Gui->statusbar->setStatusL(GUI::READY_STATUS_TEXT) ;
 
   return true ;
 }
@@ -140,14 +187,18 @@ void AvCaster::UpdateStatusGUI()
 
 void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
-  if (a_key == CONFIG::IS_OUTPUT_ON_ID      ) { ToggleOutput() ;    Gstreamer::Configure() ; }
-  if (a_key == CONFIG::IS_INTERSTITIAL_ON_ID) { TogglePreview() ;   Gstreamer::Configure() ; }
-  if (a_key == CONFIG::IS_SCREENCAP_ON_ID   ) { ToggleScreencap() ; Gstreamer::Configure() ; }
-  if (a_key == CONFIG::IS_CAMERA_ON_ID      ) { ToggleCamera() ;    Gstreamer::Configure() ; }
-  if (a_key == CONFIG::IS_TEXT_ON_ID        ) { ToggleText() ;      Gstreamer::Configure() ; }
-  if (a_key == CONFIG::IS_PREVIEW_ON_ID     ) { TogglePreview() ;   Gstreamer::Configure() ; }
-  if (a_key == CONFIG::IS_CONFIG_PENDING_ID ) { ToggleConfig() ;    Gstreamer::Configure() ; }
-  if (a_key == CONFIG::PRESET_ID            ) { Gui->config ->toBack() ; ToggleConfig() ; }
+  if (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
+      a_key == CONFIG::PRESET_ID             ) { RefreshGui() ; return ; }
+
+  if      (a_key == CONFIG::IS_OUTPUT_ON_ID      ) ToggleOutput() ;
+  else if (a_key == CONFIG::IS_INTERSTITIAL_ON_ID) TogglePreview() ;
+  else if (a_key == CONFIG::IS_SCREENCAP_ON_ID   ) ToggleScreencap() ;
+  else if (a_key == CONFIG::IS_CAMERA_ON_ID      ) ToggleCamera() ;
+  else if (a_key == CONFIG::IS_TEXT_ON_ID        ) ToggleText() ;
+  else if (a_key == CONFIG::IS_PREVIEW_ON_ID     ) TogglePreview() ;
+  else return ;
+
+  Gstreamer::Configure() ;
 }
 
 void AvCaster::ToggleOutput() { /* TODO: */ }
@@ -156,8 +207,11 @@ void AvCaster::ToggleScreencap() { /* TODO: */ }
 void AvCaster::ToggleCamera() { /* TODO: */ }
 void AvCaster::ToggleText() { /* TODO: */ }
 void AvCaster::TogglePreview() { /* TODO: */ }
-void AvCaster::ToggleConfig()
+
+void AvCaster::RefreshGui()
 {
+DEBUG_TRACE_TOGGLE_CONFIG
+
   bool is_config_pending = bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ;
 
   Gui->background->toFront(true) ;
@@ -165,16 +219,28 @@ void AvCaster::ToggleConfig()
   else                   { Gui->config  ->toFront(true) ; Gui->controls->toFront(true) ; }
 }
 
+bool AvCaster::IsEnvironmentSane()
+{
+  return APP::HOME_DIR   .isDirectory() &&
+         APP::APPDATA_DIR.isDirectory() &&
+         APP::VIDEOS_DIR .isDirectory()  ;
+}
+
 void AvCaster::DisplayAlert()
 {
   if (IsAlertModal || Alerts.size() == 0) return ;
 
-  switch (Alerts[0]->messageType)
+  GUI::AlertType message_type = Alerts[0]->messageType ;
+  String         message_text = Alerts[0]->messageText ;
+
+DISPLAY_ALERT
+
+  switch (message_type)
   {
-    case GUI::ALERT_TYPE_WARNING:
-      Gui->warning(Alerts[0]->messageText) ; Alerts.remove(0) ; break ;
-    case GUI::ALERT_TYPE_ERROR:
-      Gui->error  (Alerts[0]->messageText) ; Alerts.remove(0) ; break ;
-    default:                                                    break ;
+    case GUI::ALERT_TYPE_WARNING: Gui->warning(message_text) ; break ;
+    case GUI::ALERT_TYPE_ERROR:   Gui->error  (message_text) ; break ;
+    default:                                                   break ;
   }
+
+  Alerts.remove(0) ;
 }

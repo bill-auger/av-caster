@@ -39,18 +39,8 @@ public:
 
 
   enum AudioApi     { ALSA_AUDIO , PULSE_AUDIO , JACK_AUDIO } ;
-//   enum MainInput    { SCREENCAP_INPUT , INTERSTITIAL_INPUT } ; // TODO: GUI nyi
-//   enum OverlayInput { CAMERA_INPUT , LOGO_INPUT } ;            // TODO: GUI nyi
-  enum AudioCodec   { AAC_AUDIO , MP3_AUDIO } ;
-//   enum VideoCodec   { X264_VIDEO } ;                           // TODO: GUI nyi
+  enum AudioCodec   { MP3_AUDIO , AAC_AUDIO } ;
   enum OutputStream { FILE_OUTPUT , RTMP_OUTPUT } ;
-
-  // configuration/persistence
-  ValueTree configRoot ;    // config root           (STORAGE_ID node)
-  ValueTree configPresets ; // persistent GUI config (PRESETS_ID node)
-  ValueTree configStore ;   // volatile GUI config   (VOLATILE_CONFIG_ID node)
-  ValueTree cameraDevices ; // video devices info    (CAMERA_DEVICES_ID node)
-  ValueTree audioDevices ;  // audio devices info    (AUDIO_DEVICES_ID node)
 
 
 private:
@@ -59,6 +49,7 @@ private:
 
   // persistence
   ValueTree verifyConfig  (ValueTree config_store , Identifier root_node_id) ;
+  ValueTree createPresets () ;
   void      validateConfig() ;
   void      validatePreset() ;
   void      sanitizeConfig() ;
@@ -77,14 +68,20 @@ private:
   void detectCaptureDevices       () ;
   void loadPreset                 () ;
   void storePreset                (String preset_name) ;
+  void renamePreset               (String preset_name) ;
   void deletePreset               () ;
+  void resetPreset                () ;
 
   // event handlers
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
-  // helpers
+  // getters/setters
   StringArray presetsNames() ;
-  StringArray devicesNames(ValueTree a_devices_node) ;
+  StringArray devicesNames(Identifier a_node_id) ;
+  StringArray cameraNames() ;
+  StringArray audioNames() ;
+  ValueTree   getCameraConfig() ;
+  StringArray getCameraResolutions() ;
 
   // unused ValueTree::Listener interface implementations
   void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
@@ -100,7 +97,14 @@ private:
 //   void valueTreeRedirected       (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
 
 
-  File configFile ;
+  // configuration/persistence
+  ValueTree configRoot ;    // config root           (STORAGE_ID node)
+  ValueTree configPresets ; // persistent GUI config (PRESETS_ID node)
+  ValueTree configStore ;   // volatile GUI config   (VOLATILE_CONFIG_ID node)
+  ValueTree cameraDevices ; // video devices info    (CAMERA_DEVICES_ID node)
+  ValueTree audioDevices ;  // audio devices info    (AUDIO_DEVICES_ID node)
+  File      configDir ;
+  File      configFile ;
 } ;
 
 

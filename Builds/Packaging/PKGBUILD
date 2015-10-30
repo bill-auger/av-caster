@@ -1,6 +1,6 @@
 # Maintainer: bill-auger <bill-auger@programmer.net>
 pkgname=av-caster
-pkgver=0.12.000
+pkgver=0.13.000
 pkgrel=1
 epoch=
 pkgdesc="a simple native gStreamer GUI front-end for screencast and webcam streaming"

@@ -65,12 +65,25 @@ public:
   static ModalComponentManager::Callback* GetModalCb() ;
   static void                             OnModalDismissed(int result , int unused) ;
 
-  // helpers
-  static StringArray PresetsNames() ;
-  static StringArray DevicesNames(ValueTree a_devices_node) ;
-  static void        SetConfig   (Identifier a_key , var a_value) ;
-  static void        StorePreset (String preset_name) ;
-  static void        DeletePreset() ;
+  // getters/setters
+  static void        SetConfig           (Identifier a_key , var a_value) ;
+  static void        StorePreset         (String preset_name) ;
+  static void        RenamePreset        (String preset_name) ;
+  static void        DeletePreset        () ;
+  static void        ResetPreset         () ;
+  static ValueTree   GetConfigStore      () ;
+  static bool        IsStaticPreset      () ;
+  static int         GetPresetIdx        () ;
+  static String      GetPresetName       () ;
+  static bool        GetIsConfigPending  () ;
+  static StringArray GetPresetsNames     () ;
+  static StringArray GetCameraNames      () ;
+  static StringArray GetAudioNames       () ;
+  static StringArray GetCameraResolutions() ;
+  static String      GetCameraResolution () ;
+  static String      GetCameraPath       () ;
+  static int         GetCameraRate       () ;
+
 
   // persistence
   static ScopedPointer<AvCasterStore> Store ;
@@ -92,10 +105,11 @@ private:
   static void ToggleCamera       () ;
   static void ToggleText         () ;
   static void TogglePreview      () ;
-  static void ToggleConfig       () ;
+  static void RefreshGui         () ;
 
   // helpers
-  static void DisplayAlert() ;
+  static bool IsEnvironmentSane() ;
+  static void DisplayAlert     () ;
 
 
   static MainContent*  Gui ;

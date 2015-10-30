@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 
 #include "AvCaster.h"
+#include "Trace/TraceControls.h"
 
 //[/Headers]
 
@@ -30,8 +31,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-Controls::Controls (ValueTree config_root, ValueTree config_store)
-    : configRoot(config_root), configStore(config_store)
+Controls::Controls ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -85,7 +85,7 @@ Controls::Controls (ValueTree config_root, ValueTree config_store)
 
     addAndMakeVisible (presetCombo = new ComboBox ("presetCombo"));
     presetCombo->setExplicitFocusOrder (7);
-    presetCombo->setEditableText (false);
+    presetCombo->setEditableText (true);
     presetCombo->setJustificationType (Justification::centredLeft);
     presetCombo->setTextWhenNothingSelected (String::empty);
     presetCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
@@ -137,7 +137,7 @@ Controls::Controls (ValueTree config_root, ValueTree config_store)
 
     //[Constructor] You can add your own custom stuff here..
 
-  this->configPresets = this->configRoot.getChildWithName(CONFIG::PRESETS_ID) ;
+  configureCombobox(this->presetCombo) ;
 
     //[/Constructor]
 }
@@ -199,6 +199,7 @@ void Controls::resized()
     presetLabel->setBounds (440, 36, 80, 24);
     previewGroup->setBounds (16, 84, getWidth() - 32, getHeight() - 100);
     //[UserResized] Add your own custom resize handling here..
+if (getHeight() > 1) DBG("Controls::resized() previewGroupW=" + String(getWidth() - 32) + " previewGroupH=" + String(getHeight() - 100)) ;
     //[/UserResized]
 }
 
@@ -263,10 +264,10 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_configButton] -- add your button handler code here..
 
-      if (rejectConfigChange()) return ;
+      if (rejectPresetChange()) return ;
 
       key   = CONFIG::IS_CONFIG_PENDING_ID ;
-      value = var(!bool(this->configRoot[key])) ;
+      value = var(!AvCaster::GetIsConfigPending()) ;
 
         //[/UserButtonCode_configButton]
     }
@@ -274,16 +275,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_saveButton] -- add your button handler code here..
 
-      String preset_name =  this->presetCombo->getText() ;
-
-      if (preset_name == String::empty) AvCaster::Warning(GUI::PRESET_NAME_ERROR_MSG) ;
-      else
-      {
-        this->presetCombo->setEditableText(false) ;
-        AvCaster::StorePreset(preset_name) ;
-      }
-
-      return ;
+      handleSaveButton() ; return ;
 
         //[/UserButtonCode_saveButton]
     }
@@ -291,10 +283,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_newButton] -- add your button handler code here..
 
-      this->presetCombo->setText(String::empty , juce::dontSendNotification) ;
-      this->presetCombo->setEditableText(true) ;
-
-      return ;
+      handleNewButton() ; return ;
 
         //[/UserButtonCode_newButton]
     }
@@ -302,17 +291,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_deleteButton] -- add your button handler code here..
 
-      int    preset_idx  = int(this->configRoot[CONFIG::PRESET_ID]) ;
-      String preset_name = String(this->configPresets.getChild(preset_idx).getType()) ;
-
-      if (this->presetCombo->isTextEditable()) AvCaster::DeletePreset() ;
-      else
-      {
-        this->presetCombo->setEditableText(false) ;
-        this->presetCombo->setText(preset_name , juce::dontSendNotification) ;
-      }
-
-      return ;
+      handleDeleteButton() ; return ;
 
         //[/UserButtonCode_deleteButton]
     }
@@ -333,15 +312,16 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_presetCombo] -- add your combo box handling code here..
 
-      Identifier key          = CONFIG::PRESET_ID ;
-      int        default_idx  = CONFIG::DEFAULT_PRESET_IDX ;
-      bool       should_reset = rejectConfigChange() ;
-      int        option_n     = this->presetCombo->getSelectedItemIndex() ;
-      var        value        = (should_reset) ? this->configRoot[key] :
-                                (~option_n   ) ? var(option_n)         : var(default_idx) ;
+      String preset_name = this->presetCombo->getText() ;
+      bool   is_saving   = this->saveButton  ->isDown() ; // defer to handleSaveButton()
+      bool   is_deleting = this->deleteButton->isDown() ; // defer to handleDeleteButton()
 
-      this->presetCombo->setSelectedItemIndex(int(value)) ;
-      if (!should_reset) AvCaster::SetConfig(key , value) ;
+      if (is_deleting) return ;
+
+      if      (isCreatePresetMode()) AvCaster::StorePreset(preset_name) ;
+      else if (!is_saving          ) handlePresetCombo() ;
+
+      return ;
 
         //[/UserComboBoxCode_presetCombo]
     }
@@ -354,16 +334,74 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void Controls::broughtToFront()
-{
-  bool is_config_pending = bool(this->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ;
+void Controls::broughtToFront() { toggleControls() ; loadConfig() ; }
 
-  toggleControls(is_config_pending) ; if (!is_config_pending) loadConfig() ;
+void Controls::configureCombobox(ComboBox* a_combobox)
+{
+  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_FG_COLOR) ;
+  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR) ;
 }
 
-void Controls::toggleControls(bool is_config_pending)
+void Controls::handleSaveButton()
 {
-  String group_text = (is_config_pending) ? GUI::CONTROLS_TEXT : GUI::PRESETS_TEXT ;
+  String preset_name = this->presetCombo->getText() ;
+
+  if (preset_name.isEmpty()) AvCaster::Warning(GUI::PRESET_NAME_ERROR_MSG) ;
+  else
+  {
+    setCreatePresetMode(false) ; AvCaster::StorePreset(preset_name) ;
+  }
+}
+
+void Controls::handleNewButton()
+{
+  this->presetCombo ->setText(String::empty , juce::dontSendNotification) ;
+  this->presetCombo ->grabKeyboardFocus() ;
+  setCreatePresetMode(true) ;
+}
+
+void Controls::handleDeleteButton()
+{
+  if (isCreatePresetMode())
+  {
+    setCreatePresetMode(false) ;
+    this->presetCombo ->setText(AvCaster::GetPresetName() , juce::dontSendNotification) ;
+  }
+  else if (AvCaster::IsStaticPreset()) AvCaster::ResetPreset() ;
+  else                                 AvCaster::DeletePreset() ;
+}
+
+void Controls::handlePresetCombo()
+{
+  Identifier key                  = CONFIG::PRESET_ID ;
+  String     preset_name          = this->presetCombo->getText() ;
+  int        option_n             = this->presetCombo->getSelectedItemIndex() ;
+  int        stored_option_n      = AvCaster::GetPresetIdx() ;
+  String     stored_preset_name   = AvCaster::GetPresetName() ;
+  bool       is_valid_option      = !!(~option_n) ;
+  bool       is_static_preset     = AvCaster::IsStaticPreset() ;
+  bool       is_empty             = preset_name.isEmpty() ;
+  bool       has_name_changed     = preset_name != stored_preset_name && !is_empty ;
+  bool       should_rename_preset = !is_valid_option && has_name_changed && !is_static_preset ;
+  bool       should_reset_option  = rejectPresetChange() || should_rename_preset ;
+  var        value                = var((is_valid_option) ? option_n : stored_option_n) ;
+
+DEBUG_TRACE_HANDLE_PRESETCOMBO
+
+  // reject empty preset name
+  if (!is_valid_option) if (!is_empty) setCreatePresetMode(false) ; else return ;
+
+  // rename preset , restore selection , or commit preset change
+  if (should_rename_preset) AvCaster::RenamePreset(preset_name) ;
+  if (should_reset_option ) loadConfig() ;
+
+  AvCaster::SetConfig(key , value) ;
+}
+
+void Controls::toggleControls()
+{
+  bool   is_config_pending = AvCaster::GetIsConfigPending() ;
+  String group_text        = (is_config_pending) ? GUI::CONTROLS_TEXT : GUI::PRESETS_TEXT ;
 
   this->controlGroup      ->setText(group_text) ;
   this->outputToggle      ->setVisible(!is_config_pending) ;
@@ -380,31 +418,55 @@ void Controls::toggleControls(bool is_config_pending)
 
 void Controls::loadConfig()
 {
-  bool        is_output_on       = bool(this->configStore[CONFIG::IS_OUTPUT_ON_ID      ]) ;
-  bool        is_interstitial_on = bool(this->configStore[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
-  bool        is_screencap_on    = bool(this->configStore[CONFIG::IS_SCREENCAP_ON_ID   ]) ;
-  bool        is_camera_on       = bool(this->configStore[CONFIG::IS_CAMERA_ON_ID      ]) ;
-  bool        is_text_on         = bool(this->configStore[CONFIG::IS_TEXT_ON_ID        ]) ;
-  bool        is_preview_on      = bool(this->configStore[CONFIG::IS_PREVIEW_ON_ID     ]) ;
-  StringArray preset_names       = AvCaster::PresetsNames() ;
+  ValueTree   config_store = AvCaster::GetConfigStore() ;
+  StringArray preset_names = AvCaster::GetPresetsNames() ;
+  int         preset_idx   = AvCaster::GetPresetIdx() ;
 
-  this->outputToggle      ->setToggleState(is_output_on      , juce::dontSendNotification) ;
-  this->interstitialToggle->setToggleState(is_interstitial_on, juce::dontSendNotification) ;
-  this->screencapToggle   ->setToggleState(is_screencap_on   , juce::dontSendNotification) ;
-  this->cameraToggle      ->setToggleState(is_camera_on      , juce::dontSendNotification) ;
-  this->textToggle        ->setToggleState(is_text_on        , juce::dontSendNotification) ;
-  this->previewToggle     ->setToggleState(is_preview_on     , juce::dontSendNotification) ;
-  this->presetCombo       ->clear         (juce::dontSendNotification) ;
-  this->presetCombo       ->addItemList   (preset_names , 1) ;
+  bool is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ON_ID      ]) ;
+  bool is_interstitial_on = bool(config_store[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
+  bool is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ON_ID   ]) ;
+  bool is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ON_ID      ]) ;
+  bool is_text_on         = bool(config_store[CONFIG::IS_TEXT_ON_ID        ]) ;
+  bool is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ON_ID     ]) ;
+
+  this->outputToggle      ->setToggleState      (is_output_on       , juce::dontSendNotification) ;
+  this->interstitialToggle->setToggleState      (is_interstitial_on , juce::dontSendNotification) ;
+  this->screencapToggle   ->setToggleState      (is_screencap_on    , juce::dontSendNotification) ;
+  this->cameraToggle      ->setToggleState      (is_camera_on       , juce::dontSendNotification) ;
+  this->textToggle        ->setToggleState      (is_text_on         , juce::dontSendNotification) ;
+  this->previewToggle     ->setToggleState      (is_preview_on      , juce::dontSendNotification) ;
+  this->presetCombo       ->clear               (juce::dontSendNotification) ;
+  this->presetCombo       ->addItemList         (preset_names , 1) ;
+  this->presetCombo       ->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
+
+  setCreatePresetMode(false) ;
 }
 
-bool Controls::rejectConfigChange()
+bool Controls::rejectPresetChange()
 {
-  bool is_active = this->outputToggle->getToggleState() ;
+  bool is_output_active = this->outputToggle->getToggleState() ;
 
-  if (is_active) AvCaster::Warning(GUI::CONFIG_CHANGE_ERROR_MSG) ;
+DEBUG_TRACE_REJECT_CONFIG_CHANGE
 
-  return is_active ;
+  if (is_output_active) AvCaster::Warning(GUI::CONFIG_CHANGE_ERROR_MSG) ;
+
+  return is_output_active ;
+}
+
+void Controls::setCreatePresetMode(bool is_pending_new_preset_name)
+{
+  bool   is_static_preset = AvCaster::IsStaticPreset() ;
+  String button_text      = (is_pending_new_preset_name) ? GUI::DELETE_BTN_CANCEL_TEXT :
+                            (is_static_preset          ) ? GUI::DELETE_BTN_RESET_TEXT  :
+                                                           GUI::DELETE_BTN_DELETE_TEXT ;
+
+  this->presetCombo ->setEditableText(is_pending_new_preset_name || !is_static_preset) ;
+  this->deleteButton->setButtonText  (button_text) ;
+}
+
+bool Controls::isCreatePresetMode()
+{
+  return this->deleteButton->getButtonText() == GUI::DELETE_BTN_CANCEL_TEXT ;
 }
 
 //[/MiscUserCode]
@@ -420,8 +482,7 @@ bool Controls::rejectConfigChange()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Controls" componentName=""
-                 parentClasses="public Component" constructorParams="ValueTree config_root, ValueTree config_store"
-                 variableInitialisers="configRoot(config_root), configStore(config_store)"
+                 parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="ff101010"/>
@@ -453,7 +514,7 @@ BEGIN_JUCER_METADATA
                 buttonText="Preview" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="1"/>
   <COMBOBOX name="presetCombo" id="94d77976c2b2f37" memberName="presetCombo"
-            virtualName="" explicitFocusOrder="7" pos="512 36 176 24" editable="0"
+            virtualName="" explicitFocusOrder="7" pos="512 36 176 24" editable="1"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
                virtualName="" explicitFocusOrder="8" pos="696 36 24 24" buttonText="configButton"
