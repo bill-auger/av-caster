@@ -36,7 +36,7 @@ AvCasterStore::AvCasterStore()
 
   // create shared config ValueTree from persistent storage or defaults
   this->configRoot    = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
-  this->configPresets = createPresets() ;
+  this->configPresets = verifyPresets() ;
   this->configStore   = ValueTree(CONFIG::VOLATILE_CONFIG_ID) ;
   this->cameraDevices = ValueTree(CONFIG::CAMERA_DEVICES_ID ) ;
   this->audioDevices  = ValueTree(CONFIG::AUDIO_DEVICES_ID  ) ;
@@ -76,12 +76,12 @@ DEBUG_TRACE_VERIFY_CONFIG
   return config_store ;
 }
 
-ValueTree AvCasterStore::createPresets()
+ValueTree AvCasterStore::verifyPresets()
 {
-  ValueTree presets     = this->configRoot.getOrCreateChildWithName(CONFIG::PRESETS_ID , nullptr) ;
-  ValueTree file_preset = PresetSeed::NewPreset(CONFIG::FILE_PRESET_IDX) ;
-  ValueTree rtmp_preset = PresetSeed::NewPreset(CONFIG::RTMP_PRESET_IDX) ;
-  ValueTree lctv_preset = PresetSeed::NewPreset(CONFIG::LCTV_PRESET_IDX) ;
+  ValueTree   presets   = this->configRoot.getOrCreateChildWithName(CONFIG::PRESETS_ID , nullptr) ;
+  PresetSeed* file_seed = new FilePresetSeed() ; ValueTree file_preset = file_seed->preset ;
+  PresetSeed* rtmp_seed = new RtmpPresetSeed() ; ValueTree rtmp_preset = rtmp_seed->preset ;
+  PresetSeed* lctv_seed = new LctvPresetSeed() ; ValueTree lctv_preset = lctv_seed->preset ;
 
   if (!presets.getChild(CONFIG::FILE_PRESET_IDX).hasType(file_preset.getType()))
     presets.addChild(file_preset , CONFIG::FILE_PRESET_IDX , nullptr) ;
@@ -89,6 +89,7 @@ ValueTree AvCasterStore::createPresets()
     presets.addChild(rtmp_preset , CONFIG::RTMP_PRESET_IDX , nullptr) ;
   if (!presets.getChild(CONFIG::LCTV_PRESET_IDX).hasType(lctv_preset.getType()))
     presets.addChild(lctv_preset , CONFIG::LCTV_PRESET_IDX , nullptr) ;
+  delete file_seed ; delete rtmp_seed ; delete lctv_seed ;
 
   return presets ;
 }
@@ -396,14 +397,21 @@ void AvCasterStore::resetPreset()
 {
   if (!AvCaster::IsStaticPreset()) return ;
 
-  int       preset_idx = int(this->configRoot[CONFIG::PRESET_ID]) ;
-  ValueTree preset     = PresetSeed::NewPreset(preset_idx) ;
+  int         preset_idx = int(this->configRoot[CONFIG::PRESET_ID]) ;
+  PresetSeed* seed ;
 
-  if (preset.isValid())
+  switch (preset_idx)
   {
-    this->configPresets.removeChild(preset_idx , nullptr) ;
-    this->configPresets.addChild(preset , preset_idx , nullptr) ;
+    case CONFIG::FILE_PRESET_IDX: seed = new FilePresetSeed() ; break ;
+    case CONFIG::RTMP_PRESET_IDX: seed = new RtmpPresetSeed() ; break ;
+    case CONFIG::LCTV_PRESET_IDX: seed = new LctvPresetSeed() ; break ;
+    default:                      return ;                      break ;
   }
+
+  this->configPresets.removeChild(preset_idx , nullptr) ;
+  this->configPresets.addChild(seed->preset , preset_idx , nullptr) ;
+  delete seed ;
+
   AvCaster::RefreshGui() ;
 }
 

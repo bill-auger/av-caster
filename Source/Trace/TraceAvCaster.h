@@ -33,9 +33,19 @@
 
 #  define DEBUG_TRACE_INIT_PHASE_3 Trace::TraceState("instantiating GUI") ;
 
-#  define DEBUG_TRACE_INIT_PHASE_4 Trace::TraceState("instantiating Gstreamer") ;
+#  define DEBUG_TRACE_INIT_PHASE_4 Trace::TraceState("instantiating gStreamer") ;
 
 #  define DEBUG_TRACE_INIT_PHASE_5 Trace::TraceState("AvCaster ready") ;
+
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS                                         \
+  if (CliParams.contains(APP::CLI_QUIT_TOKEN)) Trace::TraceState("forced quit") ;
+
+#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT                                                 \
+  bool is_err = false ; String dbg = "" ;                                                  \
+  if (!APP::HOME_DIR   .isDirectory()) { is_err = true ; dbg += " invlaid HOME_DIR" ;    } \
+  if (!APP::APPDATA_DIR.isDirectory()) { is_err = true ; dbg += " invlaid APPDATA_DIR" ; } \
+  if (!APP::VIDEOS_DIR .isDirectory()) { is_err = true ; dbg += " invlaid VIDEOS_DIR" ;  } \
+  if (is_err) Trace::TraceError(dbg) ; else Trace::TraceState("environment is sane")       ;
 
 #  define DEBUG_TRACE_TOGGLE_CONFIG                                                 \
   bool should_show_config = bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ; \
@@ -58,14 +68,15 @@
 
 #else // DEBUG
 
-#  define DEBUG_TRACE_INIT_PHASE_1  ;
-#  define DEBUG_TRACE_INIT_PHASE_2  ;
-#  define DEBUG_TRACE_INIT_PHASE_3  ;
-#  define DEBUG_TRACE_INIT_PHASE_4  ;
-#  define DEBUG_TRACE_INIT_PHASE_5  ;
-#  define DEBUG_TRACE_TOGGLE_CONFIG ;
-#  define DEBUG_TRACE_SET_CONFIG    ;
-#  define DISPLAY_ALERT             ;
+#  define DEBUG_TRACE_INIT_PHASE_1         ;
+#  define DEBUG_TRACE_INIT_PHASE_2         ;
+#  define DEBUG_TRACE_INIT_PHASE_3         ;
+#  define DEBUG_TRACE_INIT_PHASE_4         ;
+#  define DEBUG_TRACE_INIT_PHASE_5         ;
+#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT ;
+#  define DEBUG_TRACE_TOGGLE_CONFIG        ;
+#  define DEBUG_TRACE_SET_CONFIG           ;
+#  define DISPLAY_ALERT                    ;
 
 #endif // DEBUG
 #endif  // TRACEAVCASTER_H_INCLUDED

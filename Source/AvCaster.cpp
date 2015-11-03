@@ -30,6 +30,7 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 /* AvCaster private class variables */
 
 MainContent*  AvCaster::Gui          = nullptr ; // Initialize()
+StringArray   AvCaster::CliParams ;              // initialize()
 Array<Alert*> AvCaster::Alerts ;
 bool          AvCaster::IsAlertModal = false ;   // Warning() , Error()
 
@@ -123,11 +124,12 @@ int AvCaster::GetCameraRate()
 
 bool AvCaster::Initialize(MainContent* main_content)
 {
-  Gui = main_content ;
+  Gui       = main_content ;
+  CliParams = JUCEApplicationBase::getCommandLineParameterArray() ;
 
 DEBUG_TRACE_INIT_PHASE_1
 
-  if (!IsEnvironmentSane()) return false ;
+  if (!ValidateEnvironment()) return false ;
 
 DEBUG_TRACE_INIT_PHASE_2
 
@@ -150,6 +152,8 @@ DEBUG_TRACE_INIT_PHASE_5
 
   Gui->statusbar->setStatusL(GUI::READY_STATUS_TEXT) ;
 
+  if (!HandleCliParams()) return false ;
+
   return true ;
 }
 
@@ -159,7 +163,7 @@ void AvCaster::Shutdown()
 
   Gstreamer::Shutdown() ;
 
-  Store->storeConfig() ; Store = nullptr ;
+  if (Store != nullptr) Store->storeConfig() ; Store = nullptr ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
@@ -219,11 +223,45 @@ DEBUG_TRACE_TOGGLE_CONFIG
   else                   { Gui->config  ->toFront(true) ; Gui->controls->toFront(true) ; }
 }
 
-bool AvCaster::IsEnvironmentSane()
+bool AvCaster::HandleCliParams()
 {
-  return APP::HOME_DIR   .isDirectory() &&
-         APP::APPDATA_DIR.isDirectory() &&
-         APP::VIDEOS_DIR .isDirectory()  ;
+DEBUG_TRACE_HANDLE_CLI_PARAMS
+
+  if      (CliParams.contains(APP::CLI_QUIT_TOKEN   )) return false ;
+  else if (CliParams.contains(APP::CLI_PRESETS_TOKEN))
+  {
+    int n_presets = Store->configPresets.getNumChildren() ; if (n_presets == 0) return false ;
+
+    // dump preset indices and names then quit
+    printf("Presets:\n") ;
+    for (int preset_n = 0  ; preset_n < n_presets ; ++preset_n)
+    {
+      ValueTree preset      = Store->configPresets.getChild(preset_n) ;
+      String    preset_name = STRING(preset[CONFIG::PRESET_NAME_ID]) ;
+      printf("\t%d: \"%s\"\n" , preset_n , CHARSTAR(preset_name)) ;
+    }
+
+    return false ;
+  }
+  else if (CliParams.contains(APP::CLI_PRESET_TOKEN))
+  {
+    // set initial preset from cli param
+    int token_idx  = CliParams.indexOf(APP::CLI_PRESET_TOKEN) ;
+    int preset_idx = CliParams[token_idx + 1].getIntValue() ;
+DBG("preloading preset_n=" + preset_idx) ;
+    if (~preset_idx) SetConfig(CONFIG::PRESET_ID , preset_idx) ;
+  }
+
+   return true ;
+}
+
+bool AvCaster::ValidateEnvironment()
+{
+DEBUG_TRACE_VALIDATE_ENVIRONMENT
+
+  return APP::HOME_DIR   .isDirectory()           &&
+         APP::APPDATA_DIR.isDirectory()           &&
+         APP::VIDEOS_DIR .isDirectory()            ;
 }
 
 void AvCaster::DisplayAlert()

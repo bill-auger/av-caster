@@ -1311,6 +1311,8 @@ bool Gstreamer::IsInPipeline(GstElement* an_element)
 
 String Gstreamer::MakeLctvUrl(String dest)
 {
-  return GST::LCTV_RTMP_URL + dest.fromFirstOccurrenceOf(GST::LCTV_RTMP_URL , false , true) +
-         " live=1" ;
+  return GST::LCTV_RTMP_URL                                            +
+         dest.fromFirstOccurrenceOf(GST::LCTV_RTMP_URL , false , true) +
+         dest.upToLastOccurrenceOf (" live=1"          , false , true) +
+         " live=1"                                                     ;
 }

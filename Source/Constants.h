@@ -22,14 +22,15 @@
 
 // enable standard features
 // #  define DISPLAY_ALERTS
-#  define CONFIGURE_SCREENCAP_BIN   1
-#  define CONFIGURE_CAMERA_BIN      1
-#  define CONFIGURE_AUDIO_BIN       1
-#  define CONFIGURE_TEXT_BIN        0
-#  define CONFIGURE_COMPOSITING_BIN (1 && CONFIGURE_SCREENCAP_BIN && CONFIGURE_CAMERA_BIN)
-#  define CONFIGURE_MUX_BIN         (CONFIGURE_AUDIO_BIN && (CONFIGURE_SCREENCAP_BIN || CONFIGURE_CAMERA_BIN || CONFIGURE_COMPOSITING_BIN))
-#  define CONFIGURE_OUTPUT_BIN      (1 && CONFIGURE_MUX_BIN)
-#  define CONFIGURE_TEES            (1 && CONFIGURE_COMPOSITING_BIN)
+#  define CONFIGURE_SCREENCAP_BIN    1
+#  define CONFIGURE_CAMERA_BIN       1
+#  define CONFIGURE_AUDIO_BIN        1
+#  define CONFIGURE_TEXT_BIN         0
+#  define CONFIGURE_INTERSTITIAL_BIN 0
+#  define CONFIGURE_COMPOSITING_BIN  (1 && CONFIGURE_SCREENCAP_BIN && CONFIGURE_CAMERA_BIN)
+#  define CONFIGURE_MUX_BIN          (CONFIGURE_AUDIO_BIN && (CONFIGURE_SCREENCAP_BIN || CONFIGURE_CAMERA_BIN || CONFIGURE_COMPOSITING_BIN))
+#  define CONFIGURE_OUTPUT_BIN       (1 && CONFIGURE_MUX_BIN)
+#  define CONFIGURE_TEES             (1 && CONFIGURE_COMPOSITING_BIN)
 
 // debugging tweaks and kludges
 #  define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
@@ -89,6 +90,20 @@ namespace APP
   static const int GUI_TIMER_HI_ID  = 1 ; static const int GUI_UPDATE_HI_IVL  = 125 ;
   static const int GUI_TIMER_MED_ID = 2 ; static const int GUI_UPDATE_MED_IVL = 500 ;
   static const int GUI_TIMER_LO_ID  = 3 ; static const int GUI_UPDATE_LO_IVL  = 5000 ;
+
+  // cli args
+  static const String CLI_HELP_TOKEN    = "--help" ;
+  static const String CLI_PRESETS_TOKEN = "--presets" ;
+  static const String CLI_PRESET_TOKEN  = "--preset" ;
+  static const String CLI_QUIT_TOKEN    = "--quit" ;
+  static const String CLI_USAGE_MSG     = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN    + "                  ] |"                                 +
+                                                           "\n\t          [ " + CLI_PRESETS_TOKEN + "                  ] |"                                 +
+                                                           "\n\t          [ " + CLI_PRESET_TOKEN  + " n                ] |"                                   +
+                                                           "\n\t          [ " + CLI_QUIT_TOKEN    + "                  ]  "                                 +
+                                                           "\n\n\t"           + CLI_HELP_TOKEN    + "\n\t\t\tprints this message"                           +
+                                                           "\n\n\t"           + CLI_PRESETS_TOKEN + "\n\t\t\tlist stored presets"                           +
+                                                           "\n\n\t"           + CLI_PRESET_TOKEN  + "\n\t\t\tstart with initial preset number n"            +
+                                                           "\n\n\t"           + CLI_QUIT_TOKEN    + "\n\t\t\tquits the application immediately upon launch" ;
 
   // files
   static const File   HOME_DIR      = File::getSpecialLocation(File::userHomeDirectory           ) ;

@@ -25,20 +25,12 @@
 
 class PresetSeed
 {
-public:
+protected:
 
-  static ValueTree NewPreset(int preset_idx) ;
+  PresetSeed() ;
 
+  void createPreset() ;
 
-private:
-
-  PresetSeed(String preset_name , int stream_idx , String output_dest) ;
-
-  ~PresetSeed() {}
-
-
-  // AvCasterStore->configPresets child  node
-  ValueTree preset ;
 
   // node ID
   Identifier presetId ;
@@ -88,15 +80,21 @@ private:
   int        framerate ;
   int        videoBitrate ;
   String     outputDest ;
+
+
+public:
+
+  // AvCasterStore->configPresets child node
+  ValueTree preset ;
 } ;
 
 
-class FilePresetSeed : public PresetSeed {} ;
+class FilePresetSeed : public PresetSeed { public: FilePresetSeed() ; } ;
 
 
-class RtmpPresetSeed : public PresetSeed {} ;
+class RtmpPresetSeed : public PresetSeed { public: RtmpPresetSeed() ; } ;
 
 
-class LctvPresetSeed : public PresetSeed {} ;
+class LctvPresetSeed : public PresetSeed { public: LctvPresetSeed() ; } ;
 
 #endif // AVCASTERPRESETSEED_H_INCLUDED

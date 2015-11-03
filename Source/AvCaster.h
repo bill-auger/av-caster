@@ -108,11 +108,13 @@ private:
   static void RefreshGui         () ;
 
   // helpers
-  static bool IsEnvironmentSane() ;
-  static void DisplayAlert     () ;
+  static bool HandleCliParams    () ;
+  static bool ValidateEnvironment() ;
+  static void DisplayAlert       () ;
 
 
   static MainContent*  Gui ;
+  static StringArray   CliParams ;
   static Array<Alert*> Alerts ;
   static bool          IsAlertModal ;
 } ;

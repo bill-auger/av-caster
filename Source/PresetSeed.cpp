@@ -20,25 +20,8 @@
 #include "PresetSeed.h"
 
 
-ValueTree PresetSeed::NewPreset(int preset_idx)
+PresetSeed::PresetSeed()
 {
-  PresetSeed* file_seed = new PresetSeed(CONFIG::FILE_PRESET_NAME , CONFIG::FILE_STREAM_IDX , CONFIG::DEFAULT_OUTPUT_DEST) ;
-  PresetSeed* rtmp_seed = new PresetSeed(CONFIG::RTMP_PRESET_NAME , CONFIG::RTMP_STREAM_IDX , String::empty) ;
-  PresetSeed* lctv_seed = new PresetSeed(CONFIG::LCTV_PRESET_NAME , CONFIG::RTMP_STREAM_IDX , String::empty) ;
-  PresetSeed* seed   = (preset_idx == CONFIG::FILE_PRESET_IDX) ? file_seed :
-                       (preset_idx == CONFIG::RTMP_PRESET_IDX) ? rtmp_seed :
-                       (preset_idx == CONFIG::LCTV_PRESET_IDX) ? lctv_seed : nullptr ;
-  ValueTree   preset = seed->preset ;
-
-  delete file_seed ; delete rtmp_seed ; delete lctv_seed ;
-
-  return preset ;
-}
-
-PresetSeed::PresetSeed(String preset_name , int stream_idx , String output_dest)
-{
-  presetId            = CONFIG::FilterId(preset_name) ;
-  presetName          = preset_name ;
   isOutputOn          = CONFIG::DEFAULT_IS_OUTPUT_ON ;
   isInterstitialOn    = CONFIG::DEFAULT_IS_INTERSTITIAL_ON ;
   isScreencapOn       = CONFIG::DEFAULT_IS_SCREENCAP_ON ;
@@ -63,14 +46,15 @@ PresetSeed::PresetSeed(String preset_name , int stream_idx , String output_dest)
   textStyleIdx        = CONFIG::DEFAULT_TEXT_STYLE_IDX ;
   textPosIdx          = CONFIG::DEFAULT_TEXT_POSITION_IDX ;
   interstitialLoc     = CONFIG::DEFAULT_INTERSTITIAL_LOC ;
-  streamIdx           = stream_idx ;
   containerIdx        = CONFIG::DEFAULT_OUTPUT_CONTAINER_IDX ;
   outputW             = CONFIG::DEFAULT_OUTPUT_W ;
   outputH             = CONFIG::DEFAULT_OUTPUT_H ;
   framerate           = CONFIG::DEFAULT_FRAMERATE_IDX ;
   videoBitrate        = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
-  outputDest          = output_dest ;
+}
 
+void PresetSeed::createPreset()
+{
   preset = ValueTree(presetId) ;
   preset.setProperty(CONFIG::PRESET_NAME_ID        , var(presetName         ) , nullptr) ;
   preset.setProperty(CONFIG::IS_OUTPUT_ON_ID       , var(isOutputOn         ) , nullptr) ;
@@ -104,4 +88,31 @@ PresetSeed::PresetSeed(String preset_name , int stream_idx , String output_dest)
   preset.setProperty(CONFIG::FRAMERATE_ID          , var(framerate          ) , nullptr) ;
   preset.setProperty(CONFIG::VIDEO_BITRATE_ID      , var(videoBitrate       ) , nullptr) ;
   preset.setProperty(CONFIG::OUTPUT_DEST_ID        , var(outputDest         ) , nullptr) ;
+}
+
+FilePresetSeed::FilePresetSeed()
+{
+  presetName = CONFIG::FILE_PRESET_NAME ;
+  presetId   = CONFIG::FilterId(presetName) ;
+  streamIdx  = CONFIG::FILE_STREAM_IDX ;
+  outputDest = CONFIG::DEFAULT_OUTPUT_DEST ;
+  createPreset() ;
+}
+
+RtmpPresetSeed::RtmpPresetSeed()
+{
+  presetName = CONFIG::RTMP_PRESET_NAME ;
+  presetId   = CONFIG::FilterId(presetName) ;
+  streamIdx  = CONFIG::RTMP_STREAM_IDX ;
+  outputDest = String::empty ;
+  createPreset() ;
+}
+
+LctvPresetSeed::LctvPresetSeed()
+{
+  presetName = CONFIG::LCTV_PRESET_NAME ;
+  presetId   = CONFIG::FilterId(presetName) ;
+  streamIdx  = CONFIG::RTMP_STREAM_IDX ;
+  outputDest = String::empty ;
+  createPreset() ;
 }

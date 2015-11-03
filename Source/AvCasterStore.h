@@ -49,7 +49,7 @@ private:
 
   // persistence
   ValueTree verifyConfig  (ValueTree config_store , Identifier root_node_id) ;
-  ValueTree createPresets () ;
+  ValueTree verifyPresets () ;
   void      validateConfig() ;
   void      validatePreset() ;
   void      sanitizeConfig() ;

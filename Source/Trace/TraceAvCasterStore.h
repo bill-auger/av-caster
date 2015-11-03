@@ -49,12 +49,12 @@
 
 #  define DEBUG_TRACE_DUMP_STORE_CONFIG                                          \
   if (!this->configRoot.isValid()) Trace::TraceError("error storing config") ;   \
-  else                             Trace::TraceConfig("storing config")        ; \
-  DEBUG_TRACE_DUMP_CONFIG_ROOT                                                   \
-  DEBUG_TRACE_DUMP_CONFIG_PRESETS                                                \
-  DEBUG_TRACE_DUMP_CONFIG_VOLATILE                                               \
-  DEBUG_TRACE_DUMP_CONFIG_CAMERAS                                                \
-  DEBUG_TRACE_DUMP_CONFIG_AUDIO
+  else {                           Trace::TraceConfig("storing config")        ; \
+         DEBUG_TRACE_DUMP_CONFIG_ROOT                                            \
+         DEBUG_TRACE_DUMP_CONFIG_PRESETS                                         \
+         DEBUG_TRACE_DUMP_CONFIG_VOLATILE                                        \
+         DEBUG_TRACE_DUMP_CONFIG_CAMERAS                                         \
+         DEBUG_TRACE_DUMP_CONFIG_AUDIO                                           }
 
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT     if (DEBUG_TRACE_VB) Trace::DumpConfig(this->configRoot    , "root"    ) ;
 #  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE if (DEBUG_TRACE_VB) Trace::DumpConfig(this->configStore   , "volatile") ;
