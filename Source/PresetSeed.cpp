@@ -46,7 +46,7 @@ PresetSeed::PresetSeed()
   textStyleIdx        = CONFIG::DEFAULT_TEXT_STYLE_IDX ;
   textPosIdx          = CONFIG::DEFAULT_TEXT_POSITION_IDX ;
   interstitialLoc     = CONFIG::DEFAULT_INTERSTITIAL_LOC ;
-  containerIdx        = CONFIG::DEFAULT_OUTPUT_CONTAINER_IDX ;
+  muxerIdx            = CONFIG::DEFAULT_OUTPUT_MUXER_IDX ;
   outputW             = CONFIG::DEFAULT_OUTPUT_W ;
   outputH             = CONFIG::DEFAULT_OUTPUT_H ;
   framerate           = CONFIG::DEFAULT_FRAMERATE_IDX ;
@@ -81,8 +81,8 @@ void PresetSeed::createPreset()
   preset.setProperty(CONFIG::TEXT_STYLE_ID         , var(textStyleIdx       ) , nullptr) ;
   preset.setProperty(CONFIG::TEXT_POSITION_ID      , var(textPosIdx         ) , nullptr) ;
   preset.setProperty(CONFIG::INTERSTITIAL_LOC_ID   , var(interstitialLoc    ) , nullptr) ;
-  preset.setProperty(CONFIG::OUTPUT_STREAM_ID      , var(streamIdx          ) , nullptr) ;
-  preset.setProperty(CONFIG::OUTPUT_CONTAINER_ID   , var(containerIdx       ) , nullptr) ;
+  preset.setProperty(CONFIG::OUTPUT_SINK_ID        , var(sinkIdx            ) , nullptr) ;
+  preset.setProperty(CONFIG::OUTPUT_MUXER_ID       , var(muxerIdx           ) , nullptr) ;
   preset.setProperty(CONFIG::OUTPUT_W_ID           , var(outputW            ) , nullptr) ;
   preset.setProperty(CONFIG::OUTPUT_H_ID           , var(outputH            ) , nullptr) ;
   preset.setProperty(CONFIG::FRAMERATE_ID          , var(framerate          ) , nullptr) ;
@@ -94,7 +94,7 @@ FilePresetSeed::FilePresetSeed()
 {
   presetName = CONFIG::FILE_PRESET_NAME ;
   presetId   = CONFIG::FilterId(presetName) ;
-  streamIdx  = CONFIG::FILE_STREAM_IDX ;
+  sinkIdx    = CONFIG::FILE_STREAM_IDX ;
   outputDest = CONFIG::DEFAULT_OUTPUT_DEST ;
   createPreset() ;
 }
@@ -103,7 +103,7 @@ RtmpPresetSeed::RtmpPresetSeed()
 {
   presetName = CONFIG::RTMP_PRESET_NAME ;
   presetId   = CONFIG::FilterId(presetName) ;
-  streamIdx  = CONFIG::RTMP_STREAM_IDX ;
+  sinkIdx    = CONFIG::RTMP_STREAM_IDX ;
   outputDest = String::empty ;
   createPreset() ;
 }
@@ -112,7 +112,7 @@ LctvPresetSeed::LctvPresetSeed()
 {
   presetName = CONFIG::LCTV_PRESET_NAME ;
   presetId   = CONFIG::FilterId(presetName) ;
-  streamIdx  = CONFIG::RTMP_STREAM_IDX ;
+  sinkIdx    = CONFIG::RTMP_STREAM_IDX ;
   outputDest = String::empty ;
   createPreset() ;
 }

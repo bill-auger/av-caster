@@ -33,11 +33,9 @@
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_3 Trace::TraceState("configuring elements") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_4 Trace::TraceState("attaching native xwindows") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_4 Trace::TraceState("starting pipeline") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_5 Trace::TraceState("starting pipeline") ;
-
-#  define DEBUG_TRACE_GST_INIT_PHASE_6 Trace::TraceState("Gstreamer ready") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_5 Trace::TraceState("Gstreamer ready") ;
 
 #  define DEBUG_TRACE_SET_GST_STATE                                                              \
   String element_name = (!!an_element) ? String(gst_element_get_name(an_element)) : "" ;         \
@@ -48,77 +46,53 @@
                  (next_state == GST_STATE_PLAYING     ) ? "GST_STATE_PLAYING"      : "unknown" ; \
   String dbg = " '" + element_name + "' to state " + state ;                                     \
   if (is_err) Trace::TraceError("error setting" + dbg) ;                                         \
-  else        Trace::TraceConfig("set" + dbg) ;
+  else        Trace::TraceConfig("set"          + dbg) ;
 
 
 /* configuration */
 
-#  define DEBUG_TRACE_CONFIG_SCREENCAP                                               \
-  if (is_screencap_enabled)                                                          \
-  {                                                                                  \
-    Trace::TraceState("configuring screencap @ "                       +             \
-                      String(screencap_w) + "x"  + String(screencap_h) +             \
-                      " using "           + plugin_id                  ) ;           \
-    if (IsInPipeline(CameraBin    ) &&                                               \
-       !IsInPipeline(CompositorBin) ) Trace::TraceConfig("adding CompositorBin") ;   \
-  }                                                                                  \
-  else                                                                               \
-  {                                                                                  \
-    Trace::TraceState("bypassing screencap") ;                                       \
-    if (IsInPipeline(ScreencapBin ))  Trace::TraceConfig("removing ScreencapBin" ) ; \
-    if (IsInPipeline(CompositorBin))  Trace::TraceConfig("removing CompositorBin") ; \
-  }
+#  define DEBUG_TRACE_CONFIG_SCREENCAP                                \
+  Trace::TraceState("configuring screencap @ "                      + \
+                    String(screencap_w) + "x" + String(screencap_h) + \
+                    " using "           + plugin_id                 ) ;
 
-#  define DEBUG_TRACE_CONFIG_CAMERA                                                  \
-  if (is_camera_enabled)                                                             \
-  {                                                                                  \
-    Trace::TraceState(String("configuring camera '") + device_path               +   \
-                             "' @ "                  + resolution                +   \
-                             " @ "                   + String(framerate) + "fps" +   \
-                             " using "               + plugin_id                 ) ; \
-    if (IsInPipeline(ScreencapBin) &&                                                \
-       !IsInPipeline(CompositorBin) ) Trace::TraceConfig("adding CompositorBin") ;   \
-  }                                                                                  \
-  else                                                                               \
-  {                                                                                  \
-    Trace::TraceState("bypassing camera") ;                                          \
-    if (IsInPipeline(CameraBin    ))  Trace::TraceConfig("removing CameraBin"    ) ; \
-    if (IsInPipeline(CompositorBin))  Trace::TraceConfig("removing CompositorBin") ; \
-  }
+#  define DEBUG_TRACE_CONFIG_CAMERA                                 \
+  String dev_path = (device_path.isEmpty()) ? "n/a" : device_path ; \
+  Trace::TraceState("configuring camera '" + device_path    +       \
+                    "' @ "      + resolution                +       \
+                    " @ "       + String(framerate) + "fps" +       \
+                    " using "   + plugin_id                 )       ;
 
-#  define DEBUG_TRACE_CONFIG_TEXT                                                 \
+#  define DEBUG_TRACE_CONFIG_TEXT                                                \
   Trace::TraceState("configuring text " + CONFIG::TEXT_STYLES   [text_style_n] + \
                     " overlay @ "       + CONFIG::TEXT_POSITIONS[text_pos_n  ] ) ;
-
-#  define DEBUG_TRACE_CONFIG_COMPOSITOR                                         \
-  if (!IsInPipeline(CompositorBin)) Trace::TraceState("bypassing compositor") ; \
-  else Trace::TraceState("configuring compositor @ "                       +    \
-                         String(output_w) + "x" + String(output_h)         +    \
-                         " @ "                  + String(framerate) + "fps")    ;
-
-#  define DEBUG_TRACE_CONFIG_AUDIO                                                      \
-  String              api_name = CONFIG::AUDIO_APIS[audio_api] ;                        \
-  AvCasterStore::AudioApi api = (AvCasterStore::AudioApi)audio_api ;                    \
-  String bit_depth = (api == AvCasterStore::ALSA_AUDIO ) ? "16" :                       \
-                     (api == AvCasterStore::PULSE_AUDIO) ? "16" :                       \
-                     (api == AvCasterStore::JACK_AUDIO ) ? "32" : "unknown" ;           \
-  Trace::TraceState("configuring " + api_name + " audio (" + String(plugin_id) + ") " + \
-                    bit_depth + "bit @ " + String(samplerate) + "hz x "               + \
-                    String(n_channels) + " channels"                                  ) ;
 
 #  define DEBUG_TRACE_CONFIG_INTERSTITIAL                                \
   Trace::TraceState("configuring interstitial '" + image_filename + "'") ;
 
-#  define DEBUG_TRACE_CONFIG_MUX                                                        \
-  Trace::TraceState(String("configuring mux ")                                        + \
+#  define DEBUG_TRACE_CONFIG_COMPOSITOR                                 \
+  Trace::TraceState("configuring compositor @ "                       + \
+                    String(output_w) + "x" + String(output_h)         + \
+                    " @ "                  + String(framerate) + "fps") ;
+
+#  define DEBUG_TRACE_CONFIG_AUDIO                                              \
+  String bit_depth = (plugin_id == GST::ALSA_PLUGIN_ID ) ? "16" :               \
+                     (plugin_id == GST::PULSE_PLUGIN_ID) ? "16" :               \
+                     (plugin_id == GST::JACK_PLUGIN_ID ) ? "32" : "16" ;        \
+  Trace::TraceState("configuring audio " + bit_depth + "bit @ "               + \
+                    String(samplerate)   + "hz x "                            + \
+                    String(n_channels)   + " channels" + " using " + plugin_id) ;
+
+#  define DEBUG_TRACE_CONFIG_FLVMUX                                                     \
+  Trace::TraceState(String("configuring flvmux ")                                     + \
       "h264 video @ "      + String(output_w)      + "x"      + String(output_h)      + \
                    " -> "  + String(video_bitrate) + "kbps - "                        + \
       "mp3 audio 16bit @ " + String(samplerate)    + "hz -> " + String(audio_bitrate) + \
                  "kbps x " + String(n_channels)    + " channels"                      ) ;
 
-#  define DEBUG_TRACE_CONFIG_OUTPUT                                                       \
-  String server = String((is_lctv) ? "LCTV " : "") ;                                      \
-  Trace::TraceState("configuring " + server + stream + " output stream to " + output_url) ;
+#  define DEBUG_TRACE_CONFIG_OUTPUT                                               \
+  String server = String((is_lctv) ? "LCTV " : "") ;                              \
+  Trace::TraceState("configuring " + server + "output stream using " + plugin_id) ;
 
 #  define DEBUG_TRACE_MAKE_ELEMENT                                                  \
   bool   is_err = new_element == nullptr ;                                         \

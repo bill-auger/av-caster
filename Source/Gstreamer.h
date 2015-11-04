@@ -37,56 +37,55 @@ private:
 
   // setup
   static bool Initialize(void* x_window_handle) ;
-  static void Shutdown() ;
+  static void Shutdown  () ;
 
   // configuration
-  static bool Configure() ;
-  static bool ConfigureTodo() ;
-  static bool ConfigureScreencap() ;
-  static bool ConfigureCamera() ;
-  static bool ConfigureText() ;
-  static bool ConfigureCompositor() ;
-  static bool ConfigureAudio() ;
-  static bool ConfigureInterstitial() ;
-  static bool ConfigureMux() ;
-  static bool ConfigureOutput() ;
+  static bool Configure              () ;
+  static bool ConfigureTodo          () ;
+  static bool ConfigureScreencap     () ;
+  static bool ConfigureCamera        () ;
+  static bool ConfigureText          () ;
+  static bool ConfigureInterstitial  () ;
+  static bool ConfigureCompositor    () ;
+  static bool ConfigureAudio         () ;
+  static bool ConfigureMux           () ;
+  static bool ConfigureOutput        () ;
+  static void ReconfigureOutput      () ;
+  static void ReconfigureInterstitial() ;
+  static void ReconfigureScreencap   () ;
+  static void ReconfigureCamera      () ;
+  static void ReconfigureText        () ;
+  static void ReconfigurePreview     () ;
 
   // stream state
   static bool TogglePreview() ;
 //   static bool ToggleOutput() ;
-  static bool SetState(GstElement* an_element , GstState next_state) ;
+  static bool SetState     (GstElement* an_element , GstState next_state) ;
 
   // helpers
-  static GstElement* MakeElement      (String plugin_id , String element_id) ;
-  static GstCaps*    MakeCaps         (String caps_str) ;
-  static bool        AddElement       (GstElement* a_bin , GstElement* an_element) ;
-  static bool        AddBin           (GstElement* a_bin) ;
-  static bool        RemoveBin        (GstElement* a_bin) ;
-  static bool        LinkElements     (GstElement* source , GstElement* sink) ;
-  static bool        LinkPads         (GstPad* srcpad , GstPad* sinkpad) ;
-  static bool        AddGhostPad      (GstElement* a_bin , GstPad* public_pad) ;
-  static GstPad*     AddGhostSrcPad   (GstElement* a_bin         , GstElement* an_element ,
-                                       String      public_pad_id                          ) ;
-  static GstPad*     AddGhostSinkPad  (GstElement* a_bin         , GstElement* an_element ,
-                                       String      public_pad_id                          ) ;
-  static GstPad*     AddGhostPad      (GstElement* a_bin          , GstElement* an_element   ,
-                                       String      private_pad_id , String      public_pad_id) ;
-#if ! CONFIGURE_TEES
-  static GstPad*     MakeRequestSrcPad  (GstElement* a_bin         , GstElement* an_element ,
+  static GstElement* MakeElement        (String plugin_id , String element_id) ;
+  static GstCaps*    MakeCaps           (String caps_str) ;
+  static bool        AddElement         (GstElement* a_bin , GstElement* an_element) ;
+  static bool        AddBin             (GstElement* a_bin) ;
+  static bool        RemoveBin          (GstElement* a_bin) ;
+  static bool        LinkElements       (GstElement* source , GstElement* sink) ;
+  static bool        LinkPads           (GstPad* srcpad , GstPad* sinkpad) ;
+  static bool        AddGhostPad        (GstElement* a_bin , GstPad* public_pad) ;
+  static GstPad*     AddGhostSrcPad     (GstElement* a_bin         , GstElement* an_element ,
                                          String      public_pad_id                          ) ;
-  static GstPad*     MakeRequestSinkPad (GstElement* a_bin         , GstElement* an_element ,
+  static GstPad*     AddGhostSinkPad    (GstElement* a_bin         , GstElement* an_element ,
                                          String      public_pad_id                          ) ;
-  static GstPad*     MakeRequestGhostPad(GstElement* a_bin          , GstElement* an_element   ,
+  static GstPad*     AddGhostPad        (GstElement* a_bin          , GstElement* an_element   ,
                                          String      private_pad_id , String      public_pad_id) ;
-#endif // CONFIGURE_TEES
-  static GstPad*     NewStaticSinkPad (GstElement* an_element) ;
-  static GstPad*     NewStaticSrcPad  (GstElement* an_element) ;
-  static GstPad*     NewStaticPad     (GstElement* an_element , String template_id) ;
-  static GstPad*     NewRequestSinkPad(GstElement* an_element) ;
-  static GstPad*     NewRequestSrcPad (GstElement* an_element) ;
-  static GstPad*     NewRequestPad    (GstElement* an_element , String template_id) ;
-  static bool        IsInPipeline     (GstElement* an_element) ;
-  static String      MakeLctvUrl      (String dest) ;
+  static GstPad*     NewStaticSinkPad   (GstElement* an_element) ;
+  static GstPad*     NewStaticSrcPad    (GstElement* an_element) ;
+  static GstPad*     NewStaticPad       (GstElement* an_element , String template_id) ;
+  static GstPad*     NewRequestSinkPad  (GstElement* an_element) ;
+  static GstPad*     NewRequestSrcPad   (GstElement* an_element) ;
+  static GstPad*     NewRequestPad      (GstElement* an_element , String template_id) ;
+  static bool        IsInPipeline       (GstElement* an_element) ;
+  static String      MakeVideoCapsString(int width , int height , int framerate) ;
+  static String      MakeLctvUrl        (String dest) ;
 
 
   // pipeline
@@ -94,21 +93,15 @@ private:
   static GstElement* ScreencapBin ;
   static GstElement* CameraBin ;
   static GstElement* TextBin ;
+  static GstElement* InterstitialBin ;
   static GstElement* CompositorBin ;
   static GstElement* AudioBin ;
-  static GstElement* InterstitialBin ;
-  static GstElement* FullscreenSink ;
-  static GstElement* OverlaySink ;
-  static GstElement* CompositeSink ;
   static GstElement* MuxBin ;
   static GstElement* OutputBin ;
 
   // configuration
   static ValueTree ConfigStore ;
-
-#ifdef FAKE_MUX_ENCODER_SRC_AND_SINK
-static guintptr WindowHandle ;
-#endif // FAKE_MUX_ENCODER_SRC_AND_SINK
+  static guintptr  WindowHandle ;
 } ;
 
 #endif // GSTREAMER_H_INCLUDED
@@ -119,23 +112,20 @@ static guintptr WindowHandle ;
 -> static src
 <? ghost sink
 ?> ghost src
-{? request src
-?} request sink
+{? request src       - (corresponds to number of calls to NewRequestSrcPad())
+?} request sink      - (corresponds to number of calls to NewRequestSinkPad())
 <=> ghost pad link   - (corresponds to number of calls to AddGhostSinkPad() or AddGhostSrcPad())
 <-> request pad link - (corresponds to number of calls to LinkPads())
-                                     ? <-> =>fullscreen_sink_queue-> =>FullscreenSink
-CompositorBin<? <=> =>fullscreen-tee{
-                                     ? <-> =>fullscreen_thru_queue-> <-> ?
-                                                                          }compositor->
-                                     ? <-> =>overlay_thru_queue   -> <-> ?
-CompositorBin<? <=> =>overlay-tee   {
-                                     ? <-> =>overlay_sink_queue   -> =>OverlaySink
 
-?                                                           ?
- }compositor-> =>capsfilter-> =>converter-> =>composite-tee{
-?                                                           ?
+  CompositorBin<? <=> =>fullscreen_queue-> <-> ?
+                                                }compositor->
+  CompositorBin<? <=> =>overlay_queue   -> <-> ?
 
-                                     ? <-> =>composite_sink_queue ->     =>CompositeSink
-                    =>composite-tee {
-                                     ? <-> =>composite_thru_queue -> <=> ?>CompositorBin
+  ?                                                           ?
+   }compositor-> =>capsfilter-> =>converter-> =>composite_tee{
+  ?                                                           ?
+
+                   ? <-> =>composite_sink_queue->     =>composite_sink
+  =>composite-tee {
+                   ? <-> =>composite_thru_queue-> <=> ?>CompositorBin
 */

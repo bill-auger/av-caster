@@ -18,7 +18,7 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := -march=native
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.13.0" -D "JUCE_APP_VERSION_HEX=0xd00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.14.0" -D "JUCE_APP_VERSION_HEX=0xe00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
@@ -38,7 +38,7 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := -march=native
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.13.0" -D "JUCE_APP_VERSION_HEX=0xd00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.14.0" -D "JUCE_APP_VERSION_HEX=0xe00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -O3 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
@@ -58,7 +58,7 @@ ifeq ($(CONFIG),Release32)
     TARGET_ARCH := -m32
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.13.0" -D "JUCE_APP_VERSION_HEX=0xd00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.14.0" -D "JUCE_APP_VERSION_HEX=0xe00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -O3 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
@@ -70,7 +70,6 @@ endif
 
 OBJECTS := \
   $(OBJDIR)/AvCaster_86a5e2ca.o \
-  $(OBJDIR)/PresetSeed_7897bb79.o \
   $(OBJDIR)/AvCasterStore_6b7801.o \
   $(OBJDIR)/Background_ba4a3b7.o \
   $(OBJDIR)/Config_5aed31cb.o \
@@ -78,6 +77,7 @@ OBJECTS := \
   $(OBJDIR)/Gstreamer_49eed0f5.o \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainContent_6313eee1.o \
+  $(OBJDIR)/PresetSeed_7897bb79.o \
   $(OBJDIR)/Statusbar_a0c28bc2.o \
   $(OBJDIR)/Trace_fd3024bc.o \
   $(OBJDIR)/juce_core_aff681cc.o \
@@ -106,11 +106,6 @@ strip:
 $(OBJDIR)/AvCaster_86a5e2ca.o: ../../Source/AvCaster.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling AvCaster.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/PresetSeed_7897bb79.o: ../../Source/PresetSeed.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PresetSeed.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/AvCasterStore_6b7801.o: ../../Source/AvCasterStore.cpp
@@ -146,6 +141,11 @@ $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 $(OBJDIR)/MainContent_6313eee1.o: ../../Source/MainContent.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling MainContent.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/PresetSeed_7897bb79.o: ../../Source/PresetSeed.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling PresetSeed.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Statusbar_a0c28bc2.o: ../../Source/Statusbar.cpp

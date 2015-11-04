@@ -73,8 +73,8 @@ protected:
   String     interstitialLoc ;
 
   // output params
-  int        streamIdx ;
-  int        containerIdx ;
+  int        sinkIdx ;
+  int        muxerIdx ;
   int        outputW ;
   int        outputH ;
   int        framerate ;

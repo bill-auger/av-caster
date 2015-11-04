@@ -16,7 +16,6 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
 #ifndef CONTROLS_H_INCLUDED
 #define CONTROLS_H_INCLUDED
 

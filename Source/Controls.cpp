@@ -45,42 +45,36 @@ Controls::Controls ()
     outputToggle->setExplicitFocusOrder (1);
     outputToggle->setButtonText (TRANS("Broadcast"));
     outputToggle->addListener (this);
-    outputToggle->setToggleState (true, dontSendNotification);
     outputToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (interstitialToggle = new ToggleButton ("interstitialToggle"));
     interstitialToggle->setExplicitFocusOrder (2);
     interstitialToggle->setButtonText (TRANS("Pause"));
     interstitialToggle->addListener (this);
-    interstitialToggle->setToggleState (true, dontSendNotification);
     interstitialToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (screencapToggle = new ToggleButton ("screencapToggle"));
     screencapToggle->setExplicitFocusOrder (3);
     screencapToggle->setButtonText (TRANS("Screen"));
     screencapToggle->addListener (this);
-    screencapToggle->setToggleState (true, dontSendNotification);
     screencapToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (cameraToggle = new ToggleButton ("cameraToggle"));
     cameraToggle->setExplicitFocusOrder (4);
     cameraToggle->setButtonText (TRANS("Camera"));
     cameraToggle->addListener (this);
-    cameraToggle->setToggleState (true, dontSendNotification);
     cameraToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (textToggle = new ToggleButton ("textToggle"));
     textToggle->setExplicitFocusOrder (5);
     textToggle->setButtonText (TRANS("Text"));
     textToggle->addListener (this);
-    textToggle->setToggleState (true, dontSendNotification);
     textToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (previewToggle = new ToggleButton ("previewToggle"));
     previewToggle->setExplicitFocusOrder (6);
     previewToggle->setButtonText (TRANS("Preview"));
     previewToggle->addListener (this);
-    previewToggle->setToggleState (true, dontSendNotification);
     previewToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (presetCombo = new ComboBox ("presetCombo"));
@@ -199,7 +193,6 @@ void Controls::resized()
     presetLabel->setBounds (440, 36, 80, 24);
     previewGroup->setBounds (16, 84, getWidth() - 32, getHeight() - 100);
     //[UserResized] Add your own custom resize handling here..
-if (getHeight() > 1) DBG("Controls::resized() previewGroupW=" + String(getWidth() - 32) + " previewGroupH=" + String(getHeight() - 100)) ;
     //[/UserResized]
 }
 
@@ -492,27 +485,27 @@ BEGIN_JUCER_METADATA
   <TOGGLEBUTTON name="outputToggle" id="22cf1f64bccae1df" memberName="outputToggle"
                 virtualName="" explicitFocusOrder="1" pos="32 36 80 24" txtcol="ffffffff"
                 buttonText="Broadcast" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="1"/>
+                state="0"/>
   <TOGGLEBUTTON name="interstitialToggle" id="6a66a5d35080c1cd" memberName="interstitialToggle"
                 virtualName="" explicitFocusOrder="2" pos="120 36 80 24" txtcol="ffffffff"
                 buttonText="Pause" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="1"/>
+                state="0"/>
   <TOGGLEBUTTON name="screencapToggle" id="ccd6f9830703071b" memberName="screencapToggle"
                 virtualName="" explicitFocusOrder="3" pos="192 36 80 24" txtcol="ffffffff"
                 buttonText="Screen" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="1"/>
+                state="0"/>
   <TOGGLEBUTTON name="cameraToggle" id="844fe21cdd50ef0b" memberName="cameraToggle"
                 virtualName="" explicitFocusOrder="4" pos="272 36 80 24" txtcol="ffffffff"
                 buttonText="Camera" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="1"/>
+                state="0"/>
   <TOGGLEBUTTON name="textToggle" id="a63786623ec66379" memberName="textToggle"
                 virtualName="" explicitFocusOrder="5" pos="360 36 80 24" txtcol="ffffffff"
                 buttonText="Text" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="1"/>
+                state="0"/>
   <TOGGLEBUTTON name="previewToggle" id="692b72b8aa04c022" memberName="previewToggle"
                 virtualName="" explicitFocusOrder="6" pos="424 36 80 24" txtcol="ffffffff"
                 buttonText="Preview" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="1"/>
+                state="0"/>
   <COMBOBOX name="presetCombo" id="94d77976c2b2f37" memberName="presetCombo"
             virtualName="" explicitFocusOrder="7" pos="512 36 176 24" editable="1"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>

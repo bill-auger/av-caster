@@ -395,13 +395,13 @@ Config::Config ()
     outputStreamLabel->setColour (TextEditor::textColourId, Colours::black);
     outputStreamLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (outputStreamCombo = new ComboBox ("outputStreamCombo"));
-    outputStreamCombo->setExplicitFocusOrder (20);
-    outputStreamCombo->setEditableText (false);
-    outputStreamCombo->setJustificationType (Justification::centredLeft);
-    outputStreamCombo->setTextWhenNothingSelected (String::empty);
-    outputStreamCombo->setTextWhenNoChoicesAvailable (TRANS("(no devices)"));
-    outputStreamCombo->addListener (this);
+    addAndMakeVisible (outputSinkCombo = new ComboBox ("outputSinkCombo"));
+    outputSinkCombo->setExplicitFocusOrder (20);
+    outputSinkCombo->setEditableText (false);
+    outputSinkCombo->setJustificationType (Justification::centredLeft);
+    outputSinkCombo->setTextWhenNothingSelected (String::empty);
+    outputSinkCombo->setTextWhenNoChoicesAvailable (TRANS("(no devices)"));
+    outputSinkCombo->addListener (this);
 
     addAndMakeVisible (outputWidthLabel = new Label ("outputWidthLabel",
                                                      TRANS("Width:")));
@@ -526,7 +526,7 @@ Config::Config ()
   configureCombobox(this->audioBitrateCombo) ;
   configureCombobox(this->textStyleCombo   ) ;
   configureCombobox(this->textPosCombo     ) ;
-  configureCombobox(this->outputStreamCombo) ;
+  configureCombobox(this->outputSinkCombo  ) ;
   configureCombobox(this->framerateCombo   ) ;
   configureCombobox(this->videoBitrateCombo) ;
 
@@ -585,7 +585,7 @@ Config::~Config()
     browseButton = nullptr;
     outputGroup = nullptr;
     outputStreamLabel = nullptr;
-    outputStreamCombo = nullptr;
+    outputSinkCombo = nullptr;
     outputWidthLabel = nullptr;
     outputWidthText = nullptr;
     outputHeightLabel = nullptr;
@@ -663,7 +663,7 @@ void Config::resized()
     browseButton->setBounds (640, 388, 80, 24);
     outputGroup->setBounds (16, 436, getWidth() - 32, 100);
     outputStreamLabel->setBounds (32, 460, 80, 24);
-    outputStreamCombo->setBounds (120, 460, 64, 24);
+    outputSinkCombo->setBounds (120, 460, 64, 24);
     outputWidthLabel->setBounds (204, 460, 64, 24);
     outputWidthText->setBounds (268, 460, 48, 24);
     outputHeightLabel->setBounds (332, 460, 64, 24);
@@ -811,14 +811,14 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
         //[/UserComboBoxCode_textPosCombo]
     }
-    else if (comboBoxThatHasChanged == outputStreamCombo)
+    else if (comboBoxThatHasChanged == outputSinkCombo)
     {
-        //[UserComboBoxCode_outputStreamCombo] -- add your combo box handling code here..
+        //[UserComboBoxCode_outputSinkCombo] -- add your combo box handling code here..
 
-      key         = CONFIG::OUTPUT_STREAM_ID ;
-      default_idx = CONFIG::DEFAULT_OUTPUT_STREAM_IDX ;
+      key         = CONFIG::OUTPUT_SINK_ID ;
+      default_idx = CONFIG::DEFAULT_OUTPUT_SINK_IDX ;
 
-        //[/UserComboBoxCode_outputStreamCombo]
+        //[/UserComboBoxCode_outputSinkCombo]
     }
     else if (comboBoxThatHasChanged == framerateCombo)
     {
@@ -953,17 +953,17 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   int    text_pos_idx      = int   (config_store[CONFIG::TEXT_POSITION_ID   ]) ;
   String motd_text         = STRING(config_store[CONFIG::MOTD_TEXT_ID       ]) ;
   String interstitial_text = STRING(config_store[CONFIG::INTERSTITIAL_LOC_ID]) ;
-  int    output_stream_idx = int   (config_store[CONFIG::OUTPUT_STREAM_ID   ]) ;
+  int    output_sink_idx   = int   (config_store[CONFIG::OUTPUT_SINK_ID     ]) ;
   String output_w_text     = STRING(config_store[CONFIG::OUTPUT_W_ID        ]) ;
   String output_h_text     = STRING(config_store[CONFIG::OUTPUT_H_ID        ]) ;
   int    framerate_idx     = int   (config_store[CONFIG::FRAMERATE_ID       ]) ;
   int    video_bitrate_idx = int   (config_store[CONFIG::VIDEO_BITRATE_ID   ]) ;
   String output_dest_text  = STRING(config_store[CONFIG::OUTPUT_DEST_ID     ]) ;
   bool   is_lctv           = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
-  String stream_type       = CONFIG::OUTPUT_STREAMS[output_stream_idx] ;
+  String output_sink       = CONFIG::OUTPUT_SINKS[output_sink_idx] ;
   String output_label_text = (is_lctv                           ) ? GUI::DEST_LCTV_TEXT :
-                             (stream_type == CONFIG::FILE_OUTPUT) ? GUI::DEST_FILE_TEXT :
-                             (stream_type == CONFIG::RTMP_OUTPUT) ? GUI::DEST_RTMP_TEXT :
+                             (output_sink == CONFIG::FILE_OUTPUT) ? GUI::DEST_FILE_TEXT :
+                             (output_sink == CONFIG::RTMP_OUTPUT) ? GUI::DEST_RTMP_TEXT :
                                                                     "ERR"               ;
 
   this->displaySlider    ->setValue              (display_n ) ;
@@ -988,7 +988,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->audioBitrateCombo->clear                 (juce::dontSendNotification) ;
   this->textStyleCombo   ->clear                 (juce::dontSendNotification) ;
   this->textPosCombo     ->clear                 (juce::dontSendNotification) ;
-  this->outputStreamCombo->clear                 (juce::dontSendNotification) ;
+  this->outputSinkCombo  ->clear                 (juce::dontSendNotification) ;
   this->framerateCombo   ->clear                 (juce::dontSendNotification) ;
   this->videoBitrateCombo->clear                 (juce::dontSendNotification) ;
   this->cameraDevCombo   ->addItemList           (camera_devices            , 1) ;
@@ -1000,7 +1000,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->audioBitrateCombo->addItemList           (CONFIG::AUDIO_BITRATES    , 1) ;
   this->textStyleCombo   ->addItemList           (CONFIG::TEXT_STYLES       , 1) ;
   this->textPosCombo     ->addItemList           (CONFIG::TEXT_POSITIONS    , 1) ;
-  this->outputStreamCombo->addItemList           (CONFIG::OUTPUT_STREAMS    , 1) ;
+  this->outputSinkCombo  ->addItemList           (CONFIG::OUTPUT_SINKS      , 1) ;
   this->framerateCombo   ->addItemList           (CONFIG::FRAMERATES        , 1) ;
   this->videoBitrateCombo->addItemList           (CONFIG::VIDEO_BITRATES    , 1) ;
   this->cameraDevCombo   ->setSelectedItemIndex  (camera_dev_idx    , juce::dontSendNotification) ;
@@ -1012,7 +1012,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->audioBitrateCombo->setSelectedItemIndex  (audio_bitrate_idx , juce::dontSendNotification) ;
   this->textStyleCombo   ->setSelectedItemIndex  (text_style_idx    , juce::dontSendNotification) ;
   this->textPosCombo     ->setSelectedItemIndex  (text_pos_idx      , juce::dontSendNotification) ;
-  this->outputStreamCombo->setSelectedItemIndex  (output_stream_idx , juce::dontSendNotification) ;
+  this->outputSinkCombo  ->setSelectedItemIndex  (output_sink_idx   , juce::dontSendNotification) ;
   this->framerateCombo   ->setSelectedItemIndex  (framerate_idx     , juce::dontSendNotification) ;
   this->videoBitrateCombo->setSelectedItemIndex  (video_bitrate_idx , juce::dontSendNotification) ;
 
@@ -1023,8 +1023,8 @@ void Config::enableComponents()
 {
   bool is_static_preset = AvCaster::IsStaticPreset() ;
 
-  this->audioCodecCombo  ->setEnabled(!is_static_preset) ; // TODO: videoCodecCombo
-  this->outputStreamCombo->setEnabled(!is_static_preset) ;
+  this->audioCodecCombo->setEnabled(!is_static_preset) ; // TODO: videoCodecCombo
+  this->outputSinkCombo->setEnabled(!is_static_preset) ; // TODO: outputMuxerCombo
 }
 
 //[/MiscUserCode]
@@ -1225,7 +1225,7 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Destination:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="outputStreamCombo" id="12e0750a2c746a13" memberName="outputStreamCombo"
+  <COMBOBOX name="outputSinkCombo" id="12e0750a2c746a13" memberName="outputSinkCombo"
             virtualName="" explicitFocusOrder="20" pos="120 460 64 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no devices)"/>
   <LABEL name="outputWidthLabel" id="f42b11722ea56a92" memberName="outputWidthLabel"

@@ -49,7 +49,7 @@
 
 #  define DEBUG_TRACE_DUMP_STORE_CONFIG                                          \
   if (!this->configRoot.isValid()) Trace::TraceError("error storing config") ;   \
-  else {                           Trace::TraceConfig("storing config")        ; \
+  else {                           Trace::TraceConfig("storing config") ;        \
          DEBUG_TRACE_DUMP_CONFIG_ROOT                                            \
          DEBUG_TRACE_DUMP_CONFIG_PRESETS                                         \
          DEBUG_TRACE_DUMP_CONFIG_VOLATILE                                        \
@@ -73,7 +73,10 @@
   Trace::TraceEvent("value changed => " + key + " => " + val) ;
 
 #define DEBUG_TRACE_DETECT_CAPTURE_DEVICES                                                             \
-  Trace::TraceState("detected (" + String(this->cameraDevices.getNumChildren()) + ") capture devices") ;
+  bool is_bogus_cam = cameraDevices.getChild(0).getType() == Identifier("bogus-cam") ; \
+  String n_devices = String((is_bogus_cam) ? 0                             :           \
+                                             cameraDevices.getNumChildren()) ;         \
+  Trace::TraceState("detected (" + n_devices + ") capture devices") ;
 
 #  define DEBUG_TRACE_STORE_PRESET                                 \
   Trace::TraceConfig("storing preset[" + String(preset_idx) +      \

@@ -194,27 +194,20 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
   if (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
       a_key == CONFIG::PRESET_ID             ) { RefreshGui() ; return ; }
 
-  if      (a_key == CONFIG::IS_OUTPUT_ON_ID      ) ToggleOutput() ;
-  else if (a_key == CONFIG::IS_INTERSTITIAL_ON_ID) TogglePreview() ;
-  else if (a_key == CONFIG::IS_SCREENCAP_ON_ID   ) ToggleScreencap() ;
-  else if (a_key == CONFIG::IS_CAMERA_ON_ID      ) ToggleCamera() ;
-  else if (a_key == CONFIG::IS_TEXT_ON_ID        ) ToggleText() ;
-  else if (a_key == CONFIG::IS_PREVIEW_ON_ID     ) TogglePreview() ;
-  else return ;
+  if      (a_key == CONFIG::IS_OUTPUT_ON_ID      ) Gstreamer::ReconfigureOutput() ;
+  else if (a_key == CONFIG::IS_INTERSTITIAL_ON_ID) Gstreamer::ReconfigurePreview() ;
+  else if (a_key == CONFIG::IS_SCREENCAP_ON_ID   ) Gstreamer::ReconfigureScreencap() ;
+  else if (a_key == CONFIG::IS_CAMERA_ON_ID      ) Gstreamer::ReconfigureCamera() ;
+  else if (a_key == CONFIG::IS_TEXT_ON_ID        ) Gstreamer::ReconfigureText() ;
+  else if (a_key == CONFIG::IS_PREVIEW_ON_ID     ) Gstreamer::ReconfigurePreview() ;
+  else                                             return ;
 
-  Gstreamer::Configure() ;
+  AvCaster::StorePreset(GetPresetName()) ; Gstreamer::Configure() ;
 }
-
-void AvCaster::ToggleOutput() { /* TODO: */ }
-void AvCaster::ToggleInterstitial() { /* TODO: */ }
-void AvCaster::ToggleScreencap() { /* TODO: */ }
-void AvCaster::ToggleCamera() { /* TODO: */ }
-void AvCaster::ToggleText() { /* TODO: */ }
-void AvCaster::TogglePreview() { /* TODO: */ }
 
 void AvCaster::RefreshGui()
 {
-DEBUG_TRACE_TOGGLE_CONFIG
+DEBUG_TRACE_REFRESH_GUI
 
   bool is_config_pending = bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ;
 

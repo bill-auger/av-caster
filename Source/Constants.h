@@ -22,34 +22,19 @@
 
 // enable standard features
 // #  define DISPLAY_ALERTS
-#  define CONFIGURE_SCREENCAP_BIN    1
-#  define CONFIGURE_CAMERA_BIN       1
-#  define CONFIGURE_AUDIO_BIN        1
 #  define CONFIGURE_TEXT_BIN         0
 #  define CONFIGURE_INTERSTITIAL_BIN 0
-#  define CONFIGURE_COMPOSITING_BIN  (1 && CONFIGURE_SCREENCAP_BIN && CONFIGURE_CAMERA_BIN)
-#  define CONFIGURE_MUX_BIN          (CONFIGURE_AUDIO_BIN && (CONFIGURE_SCREENCAP_BIN || CONFIGURE_CAMERA_BIN || CONFIGURE_COMPOSITING_BIN))
-#  define CONFIGURE_OUTPUT_BIN       (1 && CONFIGURE_MUX_BIN)
-#  define CONFIGURE_TEES             (1 && CONFIGURE_COMPOSITING_BIN)
+#  define CONFIGURE_OUTPUT_BIN       1
 
 // debugging tweaks and kludges
+#  define INJECT_DEFAULT_CAMERA_DEVICE_INFO
 #  define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
-// #  define DISABLE_SCREENCAP
-// #  define DISABLE_CAMERA
-// #  define FAUX_SCREEN_SRC
-// #  define FAUX_CAMERA_SRC
-// #  define FAUX_AUDIO_SRC
-// #  define FAKE_MUX_ENCODER_SRC_AND_SINK          // isolate compositor from encoder and muxer from output
-// #define FAUX_FULLSCREEN_SINK                     // instatiate FullscreenSink as fakesink
-// #define FAUX_OVERLAY_SINK                        // instatiate OverlaySink    as fakesink
-// #define FAUX_COMPOSITE_SINK                      // instatiate CompositeSink  as fakesink
-// #define FAUX_COMPOSITOR_COMPOSITE_FULLSCREEN_SRC // replace static  srcpad  on fullscreen_thru_queue (nyi)
-// #define FAUX_COMPOSITOR_COMPOSITE_OVERLAY_SRC    // replace static  srcpad  on overlay_thru_queue (nyi)
-// #define FAUX_COMPOSITOR_FULLSCREEN_THRU_SINK     // replace request snkpad  on compositor (nyi)
-// #define FAUX_COMPOSITOR_OVERLAY_THRU_SINK        // replace request snkpad  on compositor (nyi)
-// #ifndef CONFIGURE_SCREENCAP_BIN                // replace ghost   sinkpad on fullscreen-tee
-// #ifndef CONFIGURE_CAMERA_BIN                   // replace ghost   sinkpad on overlay-tee
-// #ifndef CONFIGURE_MUX_BIN                      // replace ghost   srcpad  on composite_thru_queue
+// #  define FAUX_SCREEN                   // replace sceen-real-source with fakesrc
+// #  define FAUX_CAMERA                   // replace camera-real-source with fakesrc
+// #  define FAUX_AUDIO                    // replace audio-real-source with fakesrc
+// #  define FAUX_PREVIEW                  // replace composite-sink with fakesink
+// #  define FAUX_OUTPUT                   // replace filesink or rtmpsink
+// #  define FAKE_MUX_ENCODER_SRC_AND_SINK // isolate compositor from encoder and muxer from output
 
 
 // enable debug features
@@ -125,6 +110,7 @@ namespace GUI
   static const int    PAD                 = 4 ;
   static const int    PAD2                = PAD * 2 ;
   static const int    PAD3                = PAD * 3 ;
+  static const int    PAD4                = PAD * 4 ;
   static const Colour TEXT_BG_COLOR       = Colour(0xFF000000) ;
   static const Colour TEXT_FG_COLOR       = Colour(0xFFBBBBFF) ;
   static const Colour TEXT_CARET_COLOR    = Colour(0xFFFFFFFF) ;
@@ -157,17 +143,15 @@ namespace GUI
   static const String CONTROLS_GUI_ID = "controls-gui" ;
   static const String CONTROLS_TEXT   = "Controls" ;
   static const String PRESETS_TEXT    = "Presets" ;
+  static const int    PREVIEW_X       = PAD4 + PAD4 ;
+  static const int    PREVIEW_Y       = TITLEBAR_H + 64  + PAD4 + PAD2 ;
+  static const int    PREVIEW_W       = CONTENT_W  - 32  - PAD4 - PAD2 ;
+  static const int    PREVIEW_H       = CONTENT_H  - 100 + PAD2 ;
 
   // Config
   static const String CONFIG_GUI_ID          = "config-gui" ;
   static const int    CONFIG_H               = CONTENT_H - 80 ;
   static const int    CONFIG_Y               = WINDOW_H - CONFIG_H - STATUSBAR_H - PAD2 ;
-  static const int    MONITORS_W             = 160 ;
-  static const int    MONITORS_H             = 120 ;
-  static const int    MONITORS_Y             = 504 + TITLEBAR_H ;
-  static const int    FULLSCREEN_MONITOR_X   = 40 ;
-  static const int    OVERLAY_MONITOR_X      = 224 ;
-  static const int    COMPOSITE_MONITOR_X    = 408 ;
   static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
   static const String DELETE_BTN_DELETE_TEXT = "Delete" ;
   static const String DELETE_BTN_RESET_TEXT  = "Reset" ;
@@ -189,28 +173,25 @@ namespace GUI
   static const String GST_ADD_ERROR_MSG           = "Error adding static GstElements to the pipeline." ;
   static const String GST_CONFIG_ERROR_MSG        = "Error configuring dynamic GstElements." ;
   static const String GST_XWIN_ERROR_MSG          = "Error attaching gStreamer to native x-window." ;
-  static const String AUDIO_CFG_ERROR_MSG         = "Error reading AudioBin config." ;
-  static const String OUTPUT_CFG_ERROR_MSG        = "Error reading OutputBin config." ;
   static const String SCREENCAP_INIT_ERROR_MSG    = "Error creating ScreencapBin GstElements." ;
   static const String CAMERA_INIT_ERROR_MSG       = "Error creating CameraBin GstElements." ;
   static const String TEXT_INIT_ERROR_MSG         = "Error creating TextBin GstElements." ;
+  static const String INTERSTITIAL_INIT_ERROR_MSG = "Error creating InterstitialBin GstElements." ;
   static const String MIXER_INIT_ERROR_MSG        = "Error creating CompositorBin GstElements." ;
   static const String MIXER_PAD_INIT_ERROR_MSG    = "Error creating CompositorBin GstPads." ;
   static const String AUDIO_INIT_ERROR_MSG        = "Error creating AudioBin GstElements." ;
-  static const String INTERSTITIAL_INIT_ERROR_MSG = "Error creating InterstitialBin GstElements." ;
   static const String MUX_INIT_ERROR_MSG          = "Error creating MuxBin GstElements." ;
   static const String OUTPUT_INIT_ERROR_MSG       = "Error creating OutputBin GstElements." ;
   static const String SCREENCAP_LINK_ERROR_MSG    = "Error linking ScreencapBin GstElements." ;
   static const String CAMERA_LINK_ERROR_MSG       = "Error linking CameraBin GstElements." ;
   static const String TEXT_LINK_ERROR_MSG         = "Error linking TextBin GstElements." ;
+  static const String INTERSTITIAL_LINK_ERROR_MSG = "Error linking InterstitialBin GstElements." ;
   static const String MIXER_LINK_ERROR_MSG        = "Error linking CompositorBin GstElements." ;
   static const String MIXER_PAD_LINK_ERROR_MSG    = "Error linking CompositorBin GstPads." ;
   static const String AUDIO_LINK_ERROR_MSG        = "Error linking AudioBin GstElements." ;
-  static const String INTERSTITIAL_LINK_ERROR_MSG = "Error linking InterstitialBin GstElements." ;
   static const String MUX_LINK_ERROR_MSG          = "Error linking MuxBin GstElements." ;
   static const String OUTPUT_LINK_ERROR_MSG       = "Error linking OutputBin GstElements." ;
   static const String GST_STATE_ERROR_MSG         = "Invalid configuration." ;
-  static const String NO_CAMERAS_ERROR_MSG        = "No video capture devices were found on you system.  If you indeed have one mounted , you will need to enter its mountpoint manually." ;
   static const String STORAGE_WRITE_ERROR_MSG     = "I/O error storing configuration." ;
   static const String PRESET_NAME_ERROR_MSG       = "Enter a name for this preset in the \"Preset\" box then press \"Save\" again." ;
   static const String PRESET_RENAME_ERROR_MSG     = "A preset already exists with that name." ;
@@ -279,8 +260,8 @@ namespace CONFIG
 |*|   // interstitial IDs
 |*|   INTERSTITIAL_TEXT_ID:  a_string ,
 |*|   // output IDs
-|*|   OUTPUT_STREAM_ID:      an_int   ,
-|*|   OUTPUT_CONTAINER_ID:   an_int   ,
+|*|   OUTPUT_SINK_ID:        an_int   ,
+|*|   OUTPUT_MUXER_ID:       an_int   ,
 |*|   OUTPUT_W_ID:           an_int   ,
 |*|   OUTPUT_H_ID:           an_int   ,
 |*|   FRAMERATE_ID:          an_int   ,
@@ -356,8 +337,8 @@ namespace CONFIG
   // interstitial IDs
   static const Identifier INTERSTITIAL_LOC_ID   = "interstitial-img" ;
   // output IDs
-  static const Identifier OUTPUT_STREAM_ID      = "output-stream-idx" ;
-  static const Identifier OUTPUT_CONTAINER_ID   = "output-container-idx" ;
+  static const Identifier OUTPUT_SINK_ID        = "output-sink-idx" ;
+  static const Identifier OUTPUT_MUXER_ID       = "output-muxer-idx" ;
   static const Identifier OUTPUT_W_ID           = "output-w" ;
   static const Identifier OUTPUT_H_ID           = "output-h" ;
   static const Identifier FRAMERATE_ID          = "framerate-idx" ;
@@ -366,59 +347,59 @@ namespace CONFIG
 
   // root defaults
 #ifdef _WIN32
-  static const String     STORAGE_DIRNAME              = "AvCaster\\" ;
+  static const String     STORAGE_DIRNAME            = "AvCaster\\" ;
 #else // _WIN32
-  static const String     STORAGE_DIRNAME              = ".av-caster/" ;
+  static const String     STORAGE_DIRNAME            = ".av-caster/" ;
 #endif // _WIN32
-  static const String     STORAGE_FILENAME             = "AvCaster.bin" ;
-  static const double     CONFIG_VERSION               = 0.2 ;
-  static const int        DEFAULT_PRESET_IDX           = 0 ; // ASSERT: must be 0
-  static const int        N_STATIC_PRESETS             = 3 ; // ASSERT: num PresetSeed subclasses
-  static const bool       DEFAULT_IS_CONFIG_PENDING    = false ;
+  static const String     STORAGE_FILENAME           = "AvCaster.bin" ;
+  static const double     CONFIG_VERSION             = 0.3 ;
+  static const int        DEFAULT_PRESET_IDX         = 0 ; // ASSERT: must be 0
+  static const int        N_STATIC_PRESETS           = 3 ; // ASSERT: num PresetSeed subclasses
+  static const bool       DEFAULT_IS_CONFIG_PENDING  = false ;
 
   // control defaults
-  static const String     FILE_PRESET_NAME             = "Local File" ;
-  static const String     RTMP_PRESET_NAME             = "RTMP Server" ;
-  static const String     LCTV_PRESET_NAME             = "livecoding.tv" ;
-  static const String     DEFAULT_PRESET_NAME          = FILE_PRESET_NAME ;
-  static const Identifier DEFAULT_PRESET_ID            = FilterId(DEFAULT_PRESET_NAME) ;
-  static const bool       DEFAULT_IS_OUTPUT_ON         = false ;
-  static const bool       DEFAULT_IS_INTERSTITIAL_ON   = true ;
-  static const bool       DEFAULT_IS_SCREENCAP_ON      = false ;
-  static const bool       DEFAULT_IS_CAMERA_ON         = false ;
-  static const bool       DEFAULT_IS_TEXT_ON           = false ;
-  static const bool       DEFAULT_IS_PREVIEW_ON        = true ;
+  static const String     FILE_PRESET_NAME           = "Local File" ;
+  static const String     RTMP_PRESET_NAME           = "RTMP Server" ;
+  static const String     LCTV_PRESET_NAME           = "livecoding.tv" ;
+  static const String     DEFAULT_PRESET_NAME        = FILE_PRESET_NAME ;
+  static const Identifier DEFAULT_PRESET_ID          = FilterId(DEFAULT_PRESET_NAME) ;
+  static const bool       DEFAULT_IS_OUTPUT_ON       = false ;
+  static const bool       DEFAULT_IS_INTERSTITIAL_ON = true ;
+  static const bool       DEFAULT_IS_SCREENCAP_ON    = false ;
+  static const bool       DEFAULT_IS_CAMERA_ON       = false ;
+  static const bool       DEFAULT_IS_TEXT_ON         = false ;
+  static const bool       DEFAULT_IS_PREVIEW_ON      = true ;
   // screen defaults
-  static const int        DEFAULT_DISPLAY_N            = 0 ;
-  static const int        DEFAULT_SCREEN_N             = 0 ;
-  static const int        DEFAULT_SCREENCAP_W          = 640 ;
-  static const int        DEFAULT_SCREENCAP_H          = 480 ;
-  static const int        DEFAULT_OFFSET_X             = 0 ;
-  static const int        DEFAULT_OFFSET_Y             = 0 ;
+  static const int        DEFAULT_DISPLAY_N          = 0 ;
+  static const int        DEFAULT_SCREEN_N           = 0 ;
+  static const int        DEFAULT_SCREENCAP_W        = 640 ;
+  static const int        DEFAULT_SCREENCAP_H        = 480 ;
+  static const int        DEFAULT_OFFSET_X           = 0 ;
+  static const int        DEFAULT_OFFSET_Y           = 0 ;
   // camera defaults
-  static const int        DEFAULT_CAMERA_DEV_IDX       = 0 ;
-  static const int        DEFAULT_CAMERA_RES_IDX       = 0 ;
+  static const int        DEFAULT_CAMERA_DEV_IDX     = 0 ;
+  static const int        DEFAULT_CAMERA_RES_IDX     = 0 ;
   // audio defaults
-  static const int        DEFAULT_AUDIO_API_IDX        = 0 ;
-  static const int        DEFAULT_AUDIO_DEVICE_IDX     = 0 ;
-  static const int        DEFAULT_AUDIO_CODEC_IDX      = 0 ;
-  static const int        DEFAULT_N_CHANNELS           = 2 ;
-  static const int        DEFAULT_SAMPLERATE_IDX       = 0 ;
-  static const int        DEFAULT_AUDIO_BITRATE_IDX    = 0 ;
+  static const int        DEFAULT_AUDIO_API_IDX      = 0 ;
+  static const int        DEFAULT_AUDIO_DEVICE_IDX   = 0 ;
+  static const int        DEFAULT_AUDIO_CODEC_IDX    = 0 ;
+  static const int        DEFAULT_N_CHANNELS         = 2 ;
+  static const int        DEFAULT_SAMPLERATE_IDX     = 0 ;
+  static const int        DEFAULT_AUDIO_BITRATE_IDX  = 0 ;
   // text defaults
-  static const String     DEFAULT_MOTD_TEXT            = "" ;
-  static const int        DEFAULT_TEXT_STYLE_IDX       = 0 ;
-  static const int        DEFAULT_TEXT_POSITION_IDX    = 0 ;
+  static const String     DEFAULT_MOTD_TEXT          = "" ;
+  static const int        DEFAULT_TEXT_STYLE_IDX     = 0 ;
+  static const int        DEFAULT_TEXT_POSITION_IDX  = 0 ;
   // interstitial defaults
-  static const String     DEFAULT_INTERSTITIAL_LOC     = "" ;
+  static const String     DEFAULT_INTERSTITIAL_LOC   = "" ;
   // output defaults
-  static const int        DEFAULT_OUTPUT_STREAM_IDX    = 0 ;
-  static const int        DEFAULT_OUTPUT_CONTAINER_IDX = 0 ;
-  static const int        DEFAULT_OUTPUT_W             = 640 ;
-  static const int        DEFAULT_OUTPUT_H             = 480 ;
-  static const int        DEFAULT_FRAMERATE_IDX        = 0 ;
-  static const int        DEFAULT_VIDEO_BITRATE_IDX    = 0 ;
-  static const String     DEFAULT_OUTPUT_DEST          = APP::APP_NAME + ".flv" ;
+  static const int        DEFAULT_OUTPUT_SINK_IDX    = 0 ;
+  static const int        DEFAULT_OUTPUT_MUXER_IDX   = 0 ;
+  static const int        DEFAULT_OUTPUT_W           = 640 ;
+  static const int        DEFAULT_OUTPUT_H           = 480 ;
+  static const int        DEFAULT_FRAMERATE_IDX      = 0 ;
+  static const int        DEFAULT_VIDEO_BITRATE_IDX  = 0 ;
+  static const String     DEFAULT_OUTPUT_DEST        = APP::APP_NAME + ".flv" ;
 
   // config indices
   static const int FILE_PRESET_IDX = 0 ;
@@ -430,7 +411,7 @@ namespace CONFIG
   // config strings
   static const String      FILE_OUTPUT       = "File" ;
   static const String      RTMP_OUTPUT       = "RTMP" ;
-  static const String      FLV_CONTAINER     = ".flv" ;
+  static const String      FLV_MUXER         = ".flv" ;
   static const StringArray AUDIO_APIS        = StringArray::fromLines("ALSA"      + newLine +
                                                                       "Pulse"     + newLine +
                                                                       "JACK"                ) ;
@@ -447,9 +428,9 @@ namespace CONFIG
                                                                       "Marquee"             ) ;
   static const StringArray TEXT_POSITIONS    = StringArray::fromLines("Top"       + newLine +
                                                                       "Bottom"              ) ;
-  static const StringArray OUTPUT_STREAMS    = StringArray::fromLines(FILE_OUTPUT + newLine +
+  static const StringArray OUTPUT_SINKS      = StringArray::fromLines(FILE_OUTPUT + newLine +
                                                                       RTMP_OUTPUT           ) ;
-  static const StringArray OUTPUT_CONTAINERS = StringArray::fromLines(FLV_CONTAINER         ) ;
+  static const StringArray OUTPUT_MUXERS     = StringArray::fromLines(FLV_MUXER             ) ;
   static const StringArray FRAMERATES        = StringArray::fromLines("8"         + newLine +
                                                                       "12"        + newLine +
                                                                       "20"        + newLine +
@@ -463,9 +444,18 @@ namespace CONFIG
         pertaining to the gStreamer media backend                 */
 namespace GST
 {
-  static const String ALSA_PLUGIN_ID  = "alsasrc" ;
-  static const String PULSE_PLUGIN_ID = "pulsesrc" ;
-  static const String JACK_PLUGIN_ID  = "jackaudiosrc" ;
+  static const String NIX_SCREEN_PLUGIN_ID  = "ximagesrc" ;
+  static const String V4L2_PLUGIN_ID        = "v4l2src" ;
+  static const String FAUX_VIDEO_PLUGIN_ID  = "videotestsrc" ;
+  static const String ALSA_PLUGIN_ID        = "alsasrc" ;
+  static const String PULSE_PLUGIN_ID       = "pulsesrc" ;
+  static const String JACK_PLUGIN_ID        = "jackaudiosrc" ;
+  static const String FAUX_AUDIO_PLUGIN_ID  = "audiotestsrc" ;
+  static const String NIX_PREVIEW_PLUGIN_ID = "xvimagesink" ;
+  static const String FILE_SINK_PLUGIN_ID   = "filesink" ;
+  static const String RTMP_SINK_PLUGIN_ID   = "rtmpsink" ;
+  static const String FAUX_SINK_PLUGIN_ID   = "fakesink" ;
+  static const String FAUX_AUDIO_CAPS       = "audio/x-raw, format=(string)S16LE, endianness=(int)1234, signed=(boolean)true, width=(int)16, depth=(int)16, rate=(int)44100, channels=(int)2" ;
 
   static const String LCTV_RTMP_URL = "rtmp://usmedia3.livecoding.tv:1935/livecodingtv/" ;
 }

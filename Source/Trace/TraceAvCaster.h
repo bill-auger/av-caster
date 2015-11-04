@@ -47,7 +47,7 @@
   if (!APP::VIDEOS_DIR .isDirectory()) { is_err = true ; dbg += " invlaid VIDEOS_DIR" ;  } \
   if (is_err) Trace::TraceError(dbg) ; else Trace::TraceState("environment is sane")       ;
 
-#  define DEBUG_TRACE_TOGGLE_CONFIG                                                 \
+#  define DEBUG_TRACE_REFRESH_GUI                                                   \
   bool should_show_config = bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ; \
   String gui = (should_show_config) ? "Config" : "Controls" ;                       \
   Trace::TraceState("showing " + gui + " GUI") ;
@@ -73,8 +73,9 @@
 #  define DEBUG_TRACE_INIT_PHASE_3         ;
 #  define DEBUG_TRACE_INIT_PHASE_4         ;
 #  define DEBUG_TRACE_INIT_PHASE_5         ;
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS    ;
 #  define DEBUG_TRACE_VALIDATE_ENVIRONMENT ;
-#  define DEBUG_TRACE_TOGGLE_CONFIG        ;
+#  define DEBUG_TRACE_REFRESH_GUI          ;
 #  define DEBUG_TRACE_SET_CONFIG           ;
 #  define DISPLAY_ALERT                    ;
 

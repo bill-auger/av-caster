@@ -99,12 +99,6 @@ private:
   static void HandleTimer        (int timer_id) ;
   static void UpdateStatusGUI    () ;
   static void HandleConfigChanged(const Identifier& a_key) ;
-  static void ToggleOutput       () ;
-  static void ToggleInterstitial () ;
-  static void ToggleScreencap    () ;
-  static void ToggleCamera       () ;
-  static void ToggleText         () ;
-  static void TogglePreview      () ;
   static void RefreshGui         () ;
 
   // helpers

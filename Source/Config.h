@@ -119,7 +119,7 @@ private:
     ScopedPointer<TextButton> browseButton;
     ScopedPointer<GroupComponent> outputGroup;
     ScopedPointer<Label> outputStreamLabel;
-    ScopedPointer<ComboBox> outputStreamCombo;
+    ScopedPointer<ComboBox> outputSinkCombo;
     ScopedPointer<Label> outputWidthLabel;
     ScopedPointer<TextEditor> outputWidthText;
     ScopedPointer<Label> outputHeightLabel;

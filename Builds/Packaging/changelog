@@ -1,3 +1,10 @@
+av-caster (0.14.000) whatever; urgency=medium
+
+  * handle command line arguments
+
+ -- bill-auger@programmer.net  Mon, 03 Nov 2015 04:20:42 -0400
+
+
 av-caster (0.13.000) whatever; urgency=medium
 
   * implement saving confgurations as presets

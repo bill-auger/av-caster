@@ -56,7 +56,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.13.0;JUCE_APP_VERSION_HEX=0xd00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.14.0;JUCE_APP_VERSION_HEX=0xe00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -97,7 +97,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.13.0;JUCE_APP_VERSION_HEX=0xd00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.14.0;JUCE_APP_VERSION_HEX=0xe00;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -130,7 +130,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\AvCaster.cpp"/>
-    <ClCompile Include="..\..\Source\PresetSeed.cpp"/>
     <ClCompile Include="..\..\Source\AvCasterStore.cpp"/>
     <ClCompile Include="..\..\Source\Background.cpp"/>
     <ClCompile Include="..\..\Source\Config.cpp"/>
@@ -138,6 +137,7 @@
     <ClCompile Include="..\..\Source\Gstreamer.cpp"/>
     <ClCompile Include="..\..\Source\Main.cpp"/>
     <ClCompile Include="..\..\Source\MainContent.cpp"/>
+    <ClCompile Include="..\..\Source\PresetSeed.cpp"/>
     <ClCompile Include="..\..\Source\Statusbar.cpp"/>
     <ClCompile Include="..\..\Source\Trace\Trace.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_Base64.cpp">
@@ -910,7 +910,6 @@
     <ClInclude Include="..\..\Source\Trace\TraceGstreamer.h"/>
     <ClInclude Include="..\..\Source\Trace\TraceMain.h"/>
     <ClInclude Include="..\..\Source\AvCaster.h"/>
-    <ClInclude Include="..\..\Source\PresetSeed.h"/>
     <ClInclude Include="..\..\Source\AvCasterStore.h"/>
     <ClInclude Include="..\..\Source\Background.h"/>
     <ClInclude Include="..\..\Source\Config.h"/>
@@ -918,6 +917,7 @@
     <ClInclude Include="..\..\Source\Controls.h"/>
     <ClInclude Include="..\..\Source\Gstreamer.h"/>
     <ClInclude Include="..\..\Source\MainContent.h"/>
+    <ClInclude Include="..\..\Source\PresetSeed.h"/>
     <ClInclude Include="..\..\Source\Statusbar.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_Base64.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharacterFunctions.h"/>

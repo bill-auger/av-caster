@@ -124,38 +124,38 @@ DEBUG_TRACE_VALIDATE_CONFIG_PRESET
   if (!this->configStore.isValid()) return ;
 
   // transfer missing properties
-  validatePresetProperty(CONFIG::PRESET_NAME_ID        , var(CONFIG::DEFAULT_PRESET_NAME         )) ;
-  validatePresetProperty(CONFIG::IS_OUTPUT_ON_ID       , var(CONFIG::DEFAULT_IS_OUTPUT_ON        )) ;
-  validatePresetProperty(CONFIG::IS_INTERSTITIAL_ON_ID , var(CONFIG::DEFAULT_IS_INTERSTITIAL_ON  )) ;
-  validatePresetProperty(CONFIG::IS_SCREENCAP_ON_ID    , var(CONFIG::DEFAULT_IS_SCREENCAP_ON     )) ;
-  validatePresetProperty(CONFIG::IS_CAMERA_ON_ID       , var(CONFIG::DEFAULT_IS_CAMERA_ON        )) ;
-  validatePresetProperty(CONFIG::IS_TEXT_ON_ID         , var(CONFIG::DEFAULT_IS_TEXT_ON          )) ;
-  validatePresetProperty(CONFIG::IS_PREVIEW_ON_ID      , var(CONFIG::DEFAULT_IS_PREVIEW_ON       )) ;
-  validatePresetProperty(CONFIG::DISPLAY_N_ID          , var(CONFIG::DEFAULT_DISPLAY_N           )) ;
-  validatePresetProperty(CONFIG::SCREEN_N_ID           , var(CONFIG::DEFAULT_SCREEN_N            )) ;
-  validatePresetProperty(CONFIG::SCREENCAP_W_ID        , var(CONFIG::DEFAULT_SCREENCAP_W         )) ;
-  validatePresetProperty(CONFIG::SCREENCAP_H_ID        , var(CONFIG::DEFAULT_SCREENCAP_H         )) ;
-  validatePresetProperty(CONFIG::OFFSET_X_ID           , var(CONFIG::DEFAULT_OFFSET_X            )) ;
-  validatePresetProperty(CONFIG::OFFSET_Y_ID           , var(CONFIG::DEFAULT_OFFSET_Y            )) ;
-  validatePresetProperty(CONFIG::CAMERA_DEV_ID         , var(CONFIG::DEFAULT_CAMERA_DEV_IDX      )) ;
-  validatePresetProperty(CONFIG::CAMERA_RES_ID         , var(CONFIG::DEFAULT_CAMERA_RES_IDX      )) ;
-  validatePresetProperty(CONFIG::AUDIO_API_ID          , var(CONFIG::DEFAULT_AUDIO_API_IDX       )) ;
-  validatePresetProperty(CONFIG::AUDIO_DEVICE_ID       , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX    )) ;
-  validatePresetProperty(CONFIG::AUDIO_CODEC_ID        , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX     )) ;
-  validatePresetProperty(CONFIG::N_CHANNELS_ID         , var(CONFIG::DEFAULT_N_CHANNELS          )) ;
-  validatePresetProperty(CONFIG::SAMPLERATE_ID         , var(CONFIG::DEFAULT_SAMPLERATE_IDX      )) ;
-  validatePresetProperty(CONFIG::AUDIO_BITRATE_ID      , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX   )) ;
-  validatePresetProperty(CONFIG::MOTD_TEXT_ID          , var(CONFIG::DEFAULT_MOTD_TEXT           )) ;
-  validatePresetProperty(CONFIG::TEXT_STYLE_ID         , var(CONFIG::DEFAULT_TEXT_STYLE_IDX      )) ;
-  validatePresetProperty(CONFIG::TEXT_POSITION_ID      , var(CONFIG::DEFAULT_TEXT_POSITION_IDX   )) ;
-  validatePresetProperty(CONFIG::INTERSTITIAL_LOC_ID   , var(CONFIG::DEFAULT_INTERSTITIAL_LOC    )) ;
-  validatePresetProperty(CONFIG::OUTPUT_STREAM_ID      , var(CONFIG::DEFAULT_OUTPUT_STREAM_IDX   )) ;
-  validatePresetProperty(CONFIG::OUTPUT_CONTAINER_ID   , var(CONFIG::DEFAULT_OUTPUT_CONTAINER_IDX)) ;
-  validatePresetProperty(CONFIG::OUTPUT_W_ID           , var(CONFIG::DEFAULT_OUTPUT_W            )) ;
-  validatePresetProperty(CONFIG::OUTPUT_H_ID           , var(CONFIG::DEFAULT_OUTPUT_H            )) ;
-  validatePresetProperty(CONFIG::FRAMERATE_ID          , var(CONFIG::DEFAULT_FRAMERATE_IDX       )) ;
-  validatePresetProperty(CONFIG::VIDEO_BITRATE_ID      , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX   )) ;
-  validatePresetProperty(CONFIG::OUTPUT_DEST_ID        , var(CONFIG::DEFAULT_OUTPUT_DEST         )) ;
+  validatePresetProperty(CONFIG::PRESET_NAME_ID        , var(CONFIG::DEFAULT_PRESET_NAME       )) ;
+  validatePresetProperty(CONFIG::IS_OUTPUT_ON_ID       , var(CONFIG::DEFAULT_IS_OUTPUT_ON      )) ;
+  validatePresetProperty(CONFIG::IS_INTERSTITIAL_ON_ID , var(CONFIG::DEFAULT_IS_INTERSTITIAL_ON)) ;
+  validatePresetProperty(CONFIG::IS_SCREENCAP_ON_ID    , var(CONFIG::DEFAULT_IS_SCREENCAP_ON   )) ;
+  validatePresetProperty(CONFIG::IS_CAMERA_ON_ID       , var(CONFIG::DEFAULT_IS_CAMERA_ON      )) ;
+  validatePresetProperty(CONFIG::IS_TEXT_ON_ID         , var(CONFIG::DEFAULT_IS_TEXT_ON        )) ;
+  validatePresetProperty(CONFIG::IS_PREVIEW_ON_ID      , var(CONFIG::DEFAULT_IS_PREVIEW_ON     )) ;
+  validatePresetProperty(CONFIG::DISPLAY_N_ID          , var(CONFIG::DEFAULT_DISPLAY_N         )) ;
+  validatePresetProperty(CONFIG::SCREEN_N_ID           , var(CONFIG::DEFAULT_SCREEN_N          )) ;
+  validatePresetProperty(CONFIG::SCREENCAP_W_ID        , var(CONFIG::DEFAULT_SCREENCAP_W       )) ;
+  validatePresetProperty(CONFIG::SCREENCAP_H_ID        , var(CONFIG::DEFAULT_SCREENCAP_H       )) ;
+  validatePresetProperty(CONFIG::OFFSET_X_ID           , var(CONFIG::DEFAULT_OFFSET_X          )) ;
+  validatePresetProperty(CONFIG::OFFSET_Y_ID           , var(CONFIG::DEFAULT_OFFSET_Y          )) ;
+  validatePresetProperty(CONFIG::CAMERA_DEV_ID         , var(CONFIG::DEFAULT_CAMERA_DEV_IDX    )) ;
+  validatePresetProperty(CONFIG::CAMERA_RES_ID         , var(CONFIG::DEFAULT_CAMERA_RES_IDX    )) ;
+  validatePresetProperty(CONFIG::AUDIO_API_ID          , var(CONFIG::DEFAULT_AUDIO_API_IDX     )) ;
+  validatePresetProperty(CONFIG::AUDIO_DEVICE_ID       , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX  )) ;
+  validatePresetProperty(CONFIG::AUDIO_CODEC_ID        , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX   )) ;
+  validatePresetProperty(CONFIG::N_CHANNELS_ID         , var(CONFIG::DEFAULT_N_CHANNELS        )) ;
+  validatePresetProperty(CONFIG::SAMPLERATE_ID         , var(CONFIG::DEFAULT_SAMPLERATE_IDX    )) ;
+  validatePresetProperty(CONFIG::AUDIO_BITRATE_ID      , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX )) ;
+  validatePresetProperty(CONFIG::MOTD_TEXT_ID          , var(CONFIG::DEFAULT_MOTD_TEXT         )) ;
+  validatePresetProperty(CONFIG::TEXT_STYLE_ID         , var(CONFIG::DEFAULT_TEXT_STYLE_IDX    )) ;
+  validatePresetProperty(CONFIG::TEXT_POSITION_ID      , var(CONFIG::DEFAULT_TEXT_POSITION_IDX )) ;
+  validatePresetProperty(CONFIG::INTERSTITIAL_LOC_ID   , var(CONFIG::DEFAULT_INTERSTITIAL_LOC  )) ;
+  validatePresetProperty(CONFIG::OUTPUT_SINK_ID        , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX   )) ;
+  validatePresetProperty(CONFIG::OUTPUT_MUXER_ID       , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX  )) ;
+  validatePresetProperty(CONFIG::OUTPUT_W_ID           , var(CONFIG::DEFAULT_OUTPUT_W          )) ;
+  validatePresetProperty(CONFIG::OUTPUT_H_ID           , var(CONFIG::DEFAULT_OUTPUT_H          )) ;
+  validatePresetProperty(CONFIG::FRAMERATE_ID          , var(CONFIG::DEFAULT_FRAMERATE_IDX     )) ;
+  validatePresetProperty(CONFIG::VIDEO_BITRATE_ID      , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX )) ;
+  validatePresetProperty(CONFIG::OUTPUT_DEST_ID        , var(CONFIG::DEFAULT_OUTPUT_DEST       )) ;
 }
 
 void AvCasterStore::sanitizeConfig() // TODO: more
@@ -163,20 +163,20 @@ void AvCasterStore::sanitizeConfig() // TODO: more
   if (!this->configRoot   .isValid() || !this->configStore .isValid() ||
       !this->cameraDevices.isValid() || !this->audioDevices.isValid()  ) return ;
 
-  sanitizeRootComboProperty  (CONFIG::PRESET_ID           , presetsNames()            ) ;
-  sanitizePresetComboProperty(CONFIG::CAMERA_DEV_ID       , getCameraResolutions()    ) ;
-  sanitizePresetComboProperty(CONFIG::CAMERA_DEV_ID       , cameraNames()             ) ;
-  sanitizePresetComboProperty(CONFIG::AUDIO_API_ID        , CONFIG::AUDIO_APIS        ) ;
-  sanitizePresetComboProperty(CONFIG::AUDIO_DEVICE_ID     , audioNames()              ) ;
-  sanitizePresetComboProperty(CONFIG::AUDIO_CODEC_ID      , CONFIG::AUDIO_CODECS      ) ;
-  sanitizePresetComboProperty(CONFIG::SAMPLERATE_ID       , CONFIG::AUDIO_SAMPLERATES ) ;
-  sanitizePresetComboProperty(CONFIG::AUDIO_BITRATE_ID    , CONFIG::AUDIO_BITRATES    ) ;
-  sanitizePresetComboProperty(CONFIG::TEXT_STYLE_ID       , CONFIG::TEXT_STYLES       ) ;
-  sanitizePresetComboProperty(CONFIG::TEXT_POSITION_ID    , CONFIG::TEXT_POSITIONS    ) ;
-  sanitizePresetComboProperty(CONFIG::OUTPUT_STREAM_ID    , CONFIG::OUTPUT_STREAMS    ) ;
-  sanitizePresetComboProperty(CONFIG::OUTPUT_CONTAINER_ID , CONFIG::OUTPUT_CONTAINERS ) ;
-  sanitizePresetComboProperty(CONFIG::FRAMERATE_ID        , CONFIG::FRAMERATES        ) ;
-  sanitizePresetComboProperty(CONFIG::VIDEO_BITRATE_ID    , CONFIG::VIDEO_BITRATES    ) ;
+  sanitizeRootComboProperty  (CONFIG::PRESET_ID        , presetsNames()           ) ;
+  sanitizePresetComboProperty(CONFIG::CAMERA_DEV_ID    , getCameraResolutions()   ) ;
+  sanitizePresetComboProperty(CONFIG::CAMERA_DEV_ID    , cameraNames()            ) ;
+  sanitizePresetComboProperty(CONFIG::AUDIO_API_ID     , CONFIG::AUDIO_APIS       ) ;
+  sanitizePresetComboProperty(CONFIG::AUDIO_DEVICE_ID  , audioNames()             ) ;
+  sanitizePresetComboProperty(CONFIG::AUDIO_CODEC_ID   , CONFIG::AUDIO_CODECS     ) ;
+  sanitizePresetComboProperty(CONFIG::SAMPLERATE_ID    , CONFIG::AUDIO_SAMPLERATES) ;
+  sanitizePresetComboProperty(CONFIG::AUDIO_BITRATE_ID , CONFIG::AUDIO_BITRATES   ) ;
+  sanitizePresetComboProperty(CONFIG::TEXT_STYLE_ID    , CONFIG::TEXT_STYLES      ) ;
+  sanitizePresetComboProperty(CONFIG::TEXT_POSITION_ID , CONFIG::TEXT_POSITIONS   ) ;
+  sanitizePresetComboProperty(CONFIG::OUTPUT_SINK_ID   , CONFIG::OUTPUT_SINKS     ) ;
+  sanitizePresetComboProperty(CONFIG::OUTPUT_MUXER_ID  , CONFIG::OUTPUT_MUXERS    ) ;
+  sanitizePresetComboProperty(CONFIG::FRAMERATE_ID     , CONFIG::FRAMERATES       ) ;
+  sanitizePresetComboProperty(CONFIG::VIDEO_BITRATE_ID , CONFIG::VIDEO_BITRATES   ) ;
 
   validateConfig() ;
 }
@@ -322,7 +322,14 @@ static CameraDevice* CameraDevice::openDevice   (
       ++device_info_dir ;
     }
   }
-  else AvCaster::Warning(GUI::NO_CAMERAS_ERROR_MSG) ;
+#ifdef INJECT_DEFAULT_CAMERA_DEVICE_INFO
+else { ValueTree device_info = ValueTree(Identifier("bogus-cam")) ;
+       device_info.setProperty(CONFIG::CAMERA_PATH_ID        , var(String::empty ) , nullptr) ;
+       device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var("bogus-camera") , nullptr) ;
+       device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(8             ) , nullptr) ;
+       device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions   ) , nullptr) ;
+       this->cameraDevices.addChild(device_info , -1 , nullptr) ; }
+#endif // INJECT_DEFAULT_CAMERA_DEVICE_INFO
 
 #endif // JUCE_LINUX
 
