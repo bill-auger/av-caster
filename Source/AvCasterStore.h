@@ -75,14 +75,6 @@ private:
   // event handlers
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
-  // getters/setters
-  StringArray presetsNames() ;
-  StringArray devicesNames(Identifier a_node_id) ;
-  StringArray cameraNames() ;
-  StringArray audioNames() ;
-  ValueTree   getCameraConfig() ;
-  StringArray getCameraResolutions() ;
-
   // unused ValueTree::Listener interface implementations
   void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
   void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
@@ -95,6 +87,15 @@ private:
 //   void valueTreeChildOrderChanged(ValueTree& a_parent_node , int prev_idx , int curr_idx) override { UNUSED(a_parent_node) ; UNUSED(prev_idx) ; UNUSED(curr_idx) ; }
 //   void valueTreeParentChanged    (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
 //   void valueTreeRedirected       (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
+
+  // getters/setters
+  StringArray presetsNames        () ;
+  StringArray devicesNames        (Identifier a_node_id) ;
+  StringArray cameraNames         () ;
+  StringArray audioNames          () ;
+  ValueTree   getCameraConfig     () ;
+  StringArray getCameraResolutions() ;
+  void        toogleControl       (const Identifier& a_key) ;
 
 
   // configuration/persistence

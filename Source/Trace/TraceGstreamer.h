@@ -29,9 +29,9 @@
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_1 Trace::TraceState("instantiating pipeline") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_2 Trace::TraceState("configuring pipeline") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_2 Trace::TraceState("initializing pipeline") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_3 Trace::TraceState("configuring elements") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_3 Trace::TraceState("configuring pipeline") ;
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_4 Trace::TraceState("starting pipeline") ;
 
@@ -51,6 +51,9 @@
 
 /* configuration */
 
+#  define DEBUG_TRACE_CONFIGURE_PIPELINE                        \
+  if (IsPlaying()) Trace::TraceState("re-configuring pipeline") ;
+
 #  define DEBUG_TRACE_CONFIG_SCREENCAP                                \
   Trace::TraceState("configuring screencap @ "                      + \
                     String(screencap_w) + "x" + String(screencap_h) + \
@@ -58,8 +61,8 @@
 
 #  define DEBUG_TRACE_CONFIG_CAMERA                                 \
   String dev_path = (device_path.isEmpty()) ? "n/a" : device_path ; \
-  Trace::TraceState("configuring camera '" + device_path    +       \
-                    "' @ "      + resolution                +       \
+  Trace::TraceState("configuring camera '" + dev_path       +       \
+                    "' -> "     + resolution                +       \
                     " @ "       + String(framerate) + "fps" +       \
                     " using "   + plugin_id                 )       ;
 
@@ -75,6 +78,9 @@
                     String(output_w) + "x" + String(output_h)         + \
                     " @ "                  + String(framerate) + "fps") ;
 
+#  define DEBUG_TRACE_CONFIG_PREVIEW                          \
+  Trace::TraceState("configuring preview using " + plugin_id) ;
+
 #  define DEBUG_TRACE_CONFIG_AUDIO                                              \
   String bit_depth = (plugin_id == GST::ALSA_PLUGIN_ID ) ? "16" :               \
                      (plugin_id == GST::PULSE_PLUGIN_ID) ? "16" :               \
@@ -84,9 +90,9 @@
                     String(n_channels)   + " channels" + " using " + plugin_id) ;
 
 #  define DEBUG_TRACE_CONFIG_FLVMUX                                                     \
-  Trace::TraceState(String("configuring flvmux ")                                     + \
-      "h264 video @ "      + String(output_w)      + "x"      + String(output_h)      + \
-                   " -> "  + String(video_bitrate) + "kbps - "                        + \
+  Trace::TraceState(String("configuring flvmux - ")                                   + \
+      "h264 video -> "     + String(output_w)      + "x"      + String(output_h)      + \
+                 " @ "     + String(video_bitrate) + "kbps - "                        + \
       "mp3 audio 16bit @ " + String(samplerate)    + "hz -> " + String(audio_bitrate) + \
                  "kbps x " + String(n_channels)    + " channels"                      ) ;
 
@@ -94,13 +100,17 @@
   String server = String((is_lctv) ? "LCTV " : "") ;                              \
   Trace::TraceState("configuring " + server + "output stream using " + plugin_id) ;
 
-#  define DEBUG_TRACE_MAKE_ELEMENT                                                  \
+#  define DEBUG_TRACE_RECONFIGURE_BIN                                                     \
+  String is_on = (bool(ConfigStore[config_key])) ? "on" : "off" ;                         \
+  Trace::TraceConfig("reconfiguring pipeline - '" + String(config_key) + "' is " + is_on) ;
+
+#  define DEBUG_TRACE_MAKE_ELEMENT                                                 \
   bool   is_err = new_element == nullptr ;                                         \
   String dbg    = " element '" + plugin_id + "' GstElement '" + element_id + "'" ; \
   if (is_err) Trace::TraceError("error creating" + dbg) ;                          \
   else        Trace::TraceConfig("created" + dbg) ;
 
-#  define DEBUG_TRACE_MAKE_CAPS                           \
+#  define DEBUG_TRACE_MAKE_CAPS                          \
   bool   is_err = new_caps == nullptr ;                  \
   if (is_err) Trace::TraceError("error creating caps") ; \
   else        Trace::TraceConfig("created caps") ;
@@ -111,6 +121,12 @@
   String dbg = " element '" + element_id + "' to '" + bin_id + "'" ;                    \
   if (is_err) Trace::TraceError("error adding" + dbg) ;                                 \
   else        Trace::TraceConfig("added" + dbg) ;
+
+#  define DEBUG_FILTER_BINS                                                                     \
+  gchar* name = gst_element_get_name(a_bin) ; String binid = String(name) ;                     \
+  bool should_bypass = ((!CONFIGURE_TEXT_BIN         && binid == GST::TEXT_BIN_ID        ) ||   \
+                        (!CONFIGURE_INTERSTITIAL_BIN && binid == GST::INTERSTITIAL_BIN_ID)  ) ; \
+  g_free(name) ; if (should_bypass) return true ;
 
 #  define DEBUG_TRACE_ADD_BIN                                                  \
   gchar* id  = gst_element_get_name(a_bin) ; String bin_id = id ; g_free(id) ; \
@@ -170,40 +186,45 @@
 #  define DEBUG_TRACE_GET_REQUEST_PAD String pad_avail = "request" ; DEBUG_TRACE_GET_PAD
 
 #  define DEBUG_MAKE_GRAPHVIZ                                                          \
+  String color = (DEBUG_ANSI_COLORS) ? "\033[1;32m" : "" ;                             \
   char* graph_name = std::getenv("AVCASTER_GRAPH_NAME") ;                              \
-  Trace::TraceConfig("creating graph " + String(graph_name)) ;                         \
+  Trace::TraceConfig(color +  "creating graph " + String(graph_name)) ;                \
   GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(Pipeline) , GST_DEBUG_GRAPH_SHOW_ALL , graph_name) ;
 
 #else // DEBUG
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_1  ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_2  ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_3  ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_4  ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_5  ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_6  ;
-#  define DEBUG_TRACE_SET_GST_STATE     ;
-#  define DEBUG_TRACE_CONFIG_SCREENCAP  ;
-#  define DEBUG_TRACE_CONFIG_CAMERA     ;
-#  define DEBUG_TRACE_CONFIG_TEXT       ;
-#  define DEBUG_TRACE_CONFIG_COMPOSITOR ;
-#  define DEBUG_TRACE_CONFIG_AUDIO      ;
-#  define DEBUG_TRACE_CONFIG_MUX        ;
-#  define DEBUG_TRACE_CONFIG_OUTPUT     ;
-#  define DEBUG_TRACE_MAKE_ELEMENT      ;
-#  define DEBUG_TRACE_MAKE_CAPS         ;
-#  define DEBUG_TRACE_ADD_ELEMENT       ;
-#  define DEBUG_TRACE_ADD_BIN           ;
-#  define DEBUG_TRACE_REMOVE_BIN_IN     ;
-#  define DEBUG_TRACE_REMOVE_BIN_OUT    ;
-#  define DEBUG_TRACE_LINK_ELEMENTS     ;
-#  define DEBUG_TRACE_LINK_PADS         ;
-#  define DEBUG_TRACE_MAKE_GHOST_PAD    ;
-#  define DEBUG_TRACE_ADD_GHOST_PAD     ;
-#  define DEBUG_TRACE_GET_PAD           ;
-#  define DEBUG_TRACE_GET_STATIC_PAD    ;
-#  define DEBUG_TRACE_GET_REQUEST_PAD   ;
-#  define DEBUG_MAKE_GRAPHVIZ           ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_1   ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_2   ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_3   ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_4   ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_5   ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_6   ;
+#  define DEBUG_TRACE_SET_GST_STATE      ;
+#  define DEBUG_TRACE_CONFIGURE_PIPELINE ;
+#  define DEBUG_TRACE_CONFIG_SCREENCAP   ;
+#  define DEBUG_TRACE_CONFIG_CAMERA      ;
+#  define DEBUG_TRACE_CONFIG_TEXT        ;
+#  define DEBUG_TRACE_CONFIG_COMPOSITOR  ;
+#  define DEBUG_TRACE_CONFIG_PREVIEW     ;
+#  define DEBUG_TRACE_CONFIG_AUDIO       ;
+#  define DEBUG_TRACE_CONFIG_FLVMUX      ;
+#  define DEBUG_TRACE_CONFIG_OUTPUT      ;
+#  define DEBUG_TRACE_RECONFIGURE_BIN    ;
+#  define DEBUG_TRACE_MAKE_ELEMENT       ;
+#  define DEBUG_TRACE_MAKE_CAPS          ;
+#  define DEBUG_TRACE_ADD_ELEMENT        ;
+#  define DEBUG_FILTER_BINS              ;
+#  define DEBUG_TRACE_ADD_BIN            ;
+#  define DEBUG_TRACE_REMOVE_BIN_IN      ;
+#  define DEBUG_TRACE_REMOVE_BIN_OUT     ;
+#  define DEBUG_TRACE_LINK_ELEMENTS      ;
+#  define DEBUG_TRACE_LINK_PADS          ;
+#  define DEBUG_TRACE_MAKE_GHOST_PAD     ;
+#  define DEBUG_TRACE_ADD_GHOST_PAD      ;
+#  define DEBUG_TRACE_GET_PAD            ;
+#  define DEBUG_TRACE_GET_STATIC_PAD     ;
+#  define DEBUG_TRACE_GET_REQUEST_PAD    ;
+#  define DEBUG_MAKE_GRAPHVIZ            ;
 
 #endif // DEBUG
 #endif // TRACEGSTREAMER_H_INCLUDED

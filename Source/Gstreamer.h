@@ -40,52 +40,59 @@ private:
   static void Shutdown  () ;
 
   // configuration
-  static bool Configure              () ;
-  static bool ConfigureTodo          () ;
-  static bool ConfigureScreencap     () ;
-  static bool ConfigureCamera        () ;
-  static bool ConfigureText          () ;
-  static bool ConfigureInterstitial  () ;
-  static bool ConfigureCompositor    () ;
-  static bool ConfigureAudio         () ;
-  static bool ConfigureMux           () ;
-  static bool ConfigureOutput        () ;
-  static void ReconfigureOutput      () ;
-  static void ReconfigureInterstitial() ;
-  static void ReconfigureScreencap   () ;
-  static void ReconfigureCamera      () ;
-  static void ReconfigureText        () ;
-  static void ReconfigurePreview     () ;
+  static bool ConfigurePipeline    () ;
+  static bool ConfigureScreencap   () ;
+  static bool ConfigureCamera      () ;
+  static bool ConfigureText        () ;
+  static bool ConfigureInterstitial() ;
+  static bool ConfigureCompositor  () ;
+  static bool ConfigurePreview     () ;
+  static bool ConfigureAudio       () ;
+  static bool ConfigureMuxer       () ;
+  static bool ConfigureOutput      () ;
+  static bool Reconfigure          (const Identifier& config_key) ;
+//   static bool ReconfigureBin       (String      bin_id       , GstElement* a_bin) ;
 
-  // stream state
-  static bool TogglePreview() ;
-//   static bool ToggleOutput() ;
-  static bool SetState     (GstElement* an_element , GstState next_state) ;
+    // state
+  static bool SetState(GstElement* an_element , GstState next_state) ;
+
+  // element creation and destruction
+  static GstElement* NewPipeline      (String pipeline_id) ;
+  static GstElement* NewBin           (String bin_id) ;
+  static GstElement* NewElement       (String plugin_id , String element_id) ;
+  static GstCaps*    NewCaps          (String caps_str) ;
+  static bool        AddElement       (GstElement* a_bin , GstElement* an_element) ;
+  static void        DeleteElement    (GstElement* an_element) ;
+  static bool        AddBin           (GstElement* a_bin) ;
+  static bool        RemoveBin        (GstElement* a_bin) ;
+  static void        DestroyBin       (GstElement* a_bin) ;
+  static GstElement* RecreateBin      (GstElement* a_bin , String bin_id) ;
+  static bool        LinkElements     (GstElement* source , GstElement* sink) ;
+  static bool        LinkPads         (GstPad* srcpad , GstPad* sinkpad) ;
+  static GstPad*     NewGhostSrcPad   (GstElement* a_bin         , GstElement* an_element ,
+                                       String      public_pad_id                          ) ;
+  static GstPad*     NewGhostSinkPad  (GstElement* a_bin         , GstElement* an_element ,
+                                       String      public_pad_id                          ) ;
+  static GstPad*     NewGhostPad      (GstElement* a_bin          , GstElement* an_element   ,
+                                       String      private_pad_id , String      public_pad_id) ;
+  static bool        AddGhostPad      (GstElement* a_bin , GstPad* public_pad) ;
+  static GstPad*     NewStaticSinkPad (GstElement* an_element) ;
+  static GstPad*     NewStaticSrcPad  (GstElement* an_element) ;
+  static GstPad*     NewStaticPad     (GstElement* an_element , String template_id) ;
+  static GstPad*     NewRequestSinkPad(GstElement* an_element) ;
+  static GstPad*     NewRequestSrcPad (GstElement* an_element) ;
+  static GstPad*     NewRequestPad    (GstElement* an_element , String template_id) ;
 
   // helpers
-  static GstElement* MakeElement        (String plugin_id , String element_id) ;
-  static GstCaps*    MakeCaps           (String caps_str) ;
-  static bool        AddElement         (GstElement* a_bin , GstElement* an_element) ;
-  static bool        AddBin             (GstElement* a_bin) ;
-  static bool        RemoveBin          (GstElement* a_bin) ;
-  static bool        LinkElements       (GstElement* source , GstElement* sink) ;
-  static bool        LinkPads           (GstPad* srcpad , GstPad* sinkpad) ;
-  static bool        AddGhostPad        (GstElement* a_bin , GstPad* public_pad) ;
-  static GstPad*     AddGhostSrcPad     (GstElement* a_bin         , GstElement* an_element ,
-                                         String      public_pad_id                          ) ;
-  static GstPad*     AddGhostSinkPad    (GstElement* a_bin         , GstElement* an_element ,
-                                         String      public_pad_id                          ) ;
-  static GstPad*     AddGhostPad        (GstElement* a_bin          , GstElement* an_element   ,
-                                         String      private_pad_id , String      public_pad_id) ;
-  static GstPad*     NewStaticSinkPad   (GstElement* an_element) ;
-  static GstPad*     NewStaticSrcPad    (GstElement* an_element) ;
-  static GstPad*     NewStaticPad       (GstElement* an_element , String template_id) ;
-  static GstPad*     NewRequestSinkPad  (GstElement* an_element) ;
-  static GstPad*     NewRequestSrcPad   (GstElement* an_element) ;
-  static GstPad*     NewRequestPad      (GstElement* an_element , String template_id) ;
-  static bool        IsInPipeline       (GstElement* an_element) ;
-  static String      MakeVideoCapsString(int width , int height , int framerate) ;
-  static String      MakeLctvUrl        (String dest) ;
+  static String MakeVideoCapsString (int width , int height , int framerate) ;
+  static String MakeScreenCapsString(int screencap_w , int screencap_h , int framerate) ;
+  static String MakeCameraCapsString(int camera_w , int camera_h , int framerate) ;
+  static String MakeAudioCapsString (String format , int samplerate , int n_channels) ;
+  static String MakeH264CapsString  (int output_w , int output_h , int framerate) ;
+  static String MakeMp3CapsString   (int samplerate , int n_channels) ;
+  static String MakeLctvUrl         (String dest) ;
+  static bool   IsPlaying           () ;
+  static bool   IsInPipeline        (GstElement* an_element) ;
 
 
   // pipeline
@@ -95,8 +102,9 @@ private:
   static GstElement* TextBin ;
   static GstElement* InterstitialBin ;
   static GstElement* CompositorBin ;
+  static GstElement* PreviewBin ;
   static GstElement* AudioBin ;
-  static GstElement* MuxBin ;
+  static GstElement* MuxerBin ;
   static GstElement* OutputBin ;
 
   // configuration

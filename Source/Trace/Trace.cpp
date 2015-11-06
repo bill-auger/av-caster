@@ -28,7 +28,7 @@ bool Trace::TraceEvent  (String msg) { if (DEBUG_TRACE_EVENTS) DBG(          "[E
 bool Trace::TraceGui    (String msg) { if (DEBUG_TRACE_GUI   ) DBG(          "[GUI]:     " + msg) ; return true ; }
 bool Trace::TraceConfig (String msg) { if (DEBUG_TRACE_CONFIG) DBG(          "[CONFIG]:  " + msg) ; return true ; }
 bool Trace::TraceVerbose(String msg) { if (DEBUG_TRACE_VB    ) DBG(          "[DEBUG]:   " + msg) ; return true ; }
-#  ifndef DEBUG_ANSI_COLORS
+#  if ! DEBUG_ANSI_COLORS
 bool Trace::TraceState  (String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[STATE]:   " + msg) ; return true ; }
 bool Trace::TraceWarning(String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[WARNING]: " + msg) ; return true ; }
 bool Trace::TraceError  (String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[ERROR]:   " + msg) ; return true ; }

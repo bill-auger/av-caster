@@ -39,7 +39,7 @@
 
 // enable debug features
 #ifdef DEBUG
-#  define DEBUG_ANSI_COLORS
+#  define DEBUG_ANSI_COLORS 1
 // #  define DEBUG_QUIT_IMMEDIATELY
 #endif // DEBUG
 
@@ -81,10 +81,10 @@ namespace APP
   static const String CLI_PRESETS_TOKEN = "--presets" ;
   static const String CLI_PRESET_TOKEN  = "--preset" ;
   static const String CLI_QUIT_TOKEN    = "--quit" ;
-  static const String CLI_USAGE_MSG     = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN    + "                  ] |"                                 +
-                                                           "\n\t          [ " + CLI_PRESETS_TOKEN + "                  ] |"                                 +
-                                                           "\n\t          [ " + CLI_PRESET_TOKEN  + " n                ] |"                                   +
-                                                           "\n\t          [ " + CLI_QUIT_TOKEN    + "                  ]  "                                 +
+  static const String CLI_USAGE_MSG     = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN    + "     ] |"                                              +
+                                                           "\n\t          [ " + CLI_PRESETS_TOKEN + "  ] |"                                                 +
+                                                           "\n\t          [ " + CLI_PRESET_TOKEN  + " n ] |"                                                +
+                                                           "\n\t          [ " + CLI_QUIT_TOKEN    + "     ]  "                                              +
                                                            "\n\n\t"           + CLI_HELP_TOKEN    + "\n\t\t\tprints this message"                           +
                                                            "\n\n\t"           + CLI_PRESETS_TOKEN + "\n\t\t\tlist stored presets"                           +
                                                            "\n\n\t"           + CLI_PRESET_TOKEN  + "\n\t\t\tstart with initial preset number n"            +
@@ -179,8 +179,9 @@ namespace GUI
   static const String INTERSTITIAL_INIT_ERROR_MSG = "Error creating InterstitialBin GstElements." ;
   static const String MIXER_INIT_ERROR_MSG        = "Error creating CompositorBin GstElements." ;
   static const String MIXER_PAD_INIT_ERROR_MSG    = "Error creating CompositorBin GstPads." ;
+  static const String PREVIEW_INIT_ERROR_MSG      = "Error creating PreviewBin GstElements." ;
   static const String AUDIO_INIT_ERROR_MSG        = "Error creating AudioBin GstElements." ;
-  static const String MUX_INIT_ERROR_MSG          = "Error creating MuxBin GstElements." ;
+  static const String MUXER_INIT_ERROR_MSG        = "Error creating MuxerBin GstElements." ;
   static const String OUTPUT_INIT_ERROR_MSG       = "Error creating OutputBin GstElements." ;
   static const String SCREENCAP_LINK_ERROR_MSG    = "Error linking ScreencapBin GstElements." ;
   static const String CAMERA_LINK_ERROR_MSG       = "Error linking CameraBin GstElements." ;
@@ -188,8 +189,11 @@ namespace GUI
   static const String INTERSTITIAL_LINK_ERROR_MSG = "Error linking InterstitialBin GstElements." ;
   static const String MIXER_LINK_ERROR_MSG        = "Error linking CompositorBin GstElements." ;
   static const String MIXER_PAD_LINK_ERROR_MSG    = "Error linking CompositorBin GstPads." ;
+  static const String MIXER_BIN_LINK_ERROR_MSG    = "Error linking CompositorBin to other bins." ;
+  static const String PREVIEW_LINK_ERROR_MSG      = "Error linking PreviewBin GstElements." ;
   static const String AUDIO_LINK_ERROR_MSG        = "Error linking AudioBin GstElements." ;
-  static const String MUX_LINK_ERROR_MSG          = "Error linking MuxBin GstElements." ;
+  static const String MUXER_LINK_ERROR_MSG        = "Error linking MuxerBin GstElements." ;
+  static const String MUXER_BIN_LINK_ERROR_MSG    = "Error linking MuxerBin to other bins." ;
   static const String OUTPUT_LINK_ERROR_MSG       = "Error linking OutputBin GstElements." ;
   static const String GST_STATE_ERROR_MSG         = "Invalid configuration." ;
   static const String STORAGE_WRITE_ERROR_MSG     = "I/O error storing configuration." ;
@@ -230,12 +234,13 @@ namespace CONFIG
 |*| {
 |*|   // control IDs
 |*|   PRESET_NAME_ID:        a_string ,
-|*|   IS_OUTPUT_ON_ID:       a_bool   ,
-|*|   IS_INTERSTITIAL_ON_ID: a_bool   ,
 |*|   IS_SCREENCAP_ON_ID:    a_bool   ,
 |*|   IS_CAMERA_ON_ID:       a_bool   ,
 |*|   IS_TEXT_ON_ID:         a_bool   ,
+|*|   IS_INTERSTITIAL_ON_ID: a_bool   ,
 |*|   IS_PREVIEW_ON_ID:      a_bool   ,
+|*|   IS_AUDIO_ON_ID:        a_bool   ,
+|*|   IS_OUTPUT_ON_ID:       a_bool   ,
 |*|   // screen IDs
 |*|   DISPLAY_N_ID:          an_int   ,
 |*|   SCREEN_N_ID:           an_int   ,
@@ -303,12 +308,13 @@ namespace CONFIG
   static const Identifier IS_CONFIG_PENDING_ID  = "is-config-pending" ;
   // control IDs
   static const Identifier PRESET_NAME_ID        = "preset-name" ;
-  static const Identifier IS_OUTPUT_ON_ID       = "is-output-on" ;
-  static const Identifier IS_INTERSTITIAL_ON_ID = "is-interstitial-on" ;
   static const Identifier IS_SCREENCAP_ON_ID    = "is-screencap-on" ;
   static const Identifier IS_CAMERA_ON_ID       = "is-camera-on" ;
   static const Identifier IS_TEXT_ON_ID         = "is-text-on" ;
   static const Identifier IS_PREVIEW_ON_ID      = "is-preview-on" ;
+  static const Identifier IS_AUDIO_ON_ID        = "is-audio-on" ;
+  static const Identifier IS_INTERSTITIAL_ON_ID = "is-interstitial-on" ;
+  static const Identifier IS_OUTPUT_ON_ID       = "is-output-on" ;
   // screen IDs
   static const Identifier DISPLAY_N_ID          = "display-n" ;
   static const Identifier SCREEN_N_ID           = "screen-n" ;
@@ -363,12 +369,13 @@ namespace CONFIG
   static const String     LCTV_PRESET_NAME           = "livecoding.tv" ;
   static const String     DEFAULT_PRESET_NAME        = FILE_PRESET_NAME ;
   static const Identifier DEFAULT_PRESET_ID          = FilterId(DEFAULT_PRESET_NAME) ;
-  static const bool       DEFAULT_IS_OUTPUT_ON       = false ;
-  static const bool       DEFAULT_IS_INTERSTITIAL_ON = true ;
   static const bool       DEFAULT_IS_SCREENCAP_ON    = false ;
   static const bool       DEFAULT_IS_CAMERA_ON       = false ;
   static const bool       DEFAULT_IS_TEXT_ON         = false ;
+  static const bool       DEFAULT_IS_INTERSTITIAL_ON = true ;
   static const bool       DEFAULT_IS_PREVIEW_ON      = true ;
+  static const bool       DEFAULT_IS_AUDIO_ON        = false ;
+  static const bool       DEFAULT_IS_OUTPUT_ON       = false ;
   // screen defaults
   static const int        DEFAULT_DISPLAY_N          = 0 ;
   static const int        DEFAULT_SCREEN_N           = 0 ;
@@ -444,6 +451,16 @@ namespace CONFIG
         pertaining to the gStreamer media backend                 */
 namespace GST
 {
+  static const String PIPELINE_ID           = "pipeline" ;
+  static const String SCREENCAP_BIN_ID      = "screencap-bin" ;
+  static const String CAMERA_BIN_ID         = "camera-bin" ;
+  static const String TEXT_BIN_ID           = "text-bin" ;
+  static const String INTERSTITIAL_BIN_ID   = "interstitial-bin" ;
+  static const String COMPOSITOR_BIN_ID     = "compositor-bin" ;
+  static const String PREVIEW_BIN_ID        = "preview-bin" ;
+  static const String AUDIO_BIN_ID          = "audio-bin" ;
+  static const String MUXER_BIN_ID          = "muxer-bin" ;
+  static const String OUTPUT_BIN_ID         = "output-bin" ;
   static const String NIX_SCREEN_PLUGIN_ID  = "ximagesrc" ;
   static const String V4L2_PLUGIN_ID        = "v4l2src" ;
   static const String FAUX_VIDEO_PLUGIN_ID  = "videotestsrc" ;

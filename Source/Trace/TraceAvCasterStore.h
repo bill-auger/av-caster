@@ -38,8 +38,10 @@
                      ((!do_versions_match                  ) ? outdated_msg  :              \
                                                                success_msg))))              ;
 
-#  define DEBUG_TRACE_VALIDATE_CONFIG_ROOT                                  \
-  if (!this->configRoot.isValid()) Trace::TraceError("invalid config root") ;
+#  define DEBUG_TRACE_VALIDATE_CONFIG                                         \
+  if (!this->configRoot.isValid()) Trace::TraceError("invalid config root") ; \
+  else                             { DEBUG_TRACE_DUMP_CONFIG_ROOT             \
+                                     DEBUG_TRACE_DUMP_CONFIG_PRESETS          }
 
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PRESET                            \
   if (!this->configStore.isValid()) Trace::TraceError("invalid preset") ;
@@ -67,10 +69,14 @@
 
 /* state */
 
-#  define DEBUG_TRACE_CONFIG_TREE_CHANGED                     \
-  String key = String(a_key) ;                                \
-  String val = a_node[a_key].toString() ;                     \
-  Trace::TraceEvent("value changed => " + key + " => " + val) ;
+#  define DEBUG_TRACE_CONFIG_TREE_CHANGED                        \
+  String parent_id = String(a_node.getParent().getType()) ;      \
+  String node_id   = String(a_node.getType()) ;                  \
+  String key       = String(a_key) ;                             \
+  String val       = STRING(a_node[a_key]) ;                     \
+  Trace::TraceEvent("value changed for "                       + \
+                    parent_id + "['"     + node_id + "'] => '" + \
+                    key       + "' => '" + val     + "'"       ) ;
 
 #define DEBUG_TRACE_DETECT_CAPTURE_DEVICES                                                             \
   bool is_bogus_cam = cameraDevices.getChild(0).getType() == Identifier("bogus-cam") ; \
@@ -91,10 +97,13 @@
   Trace::TraceConfig("deleting preset[" + String(preset_idx)             + \
                      "] '"              + AvCaster::GetPresetName() + "'") ;
 
+#  define DEBUG_TRACE_TOGGLE_CONTROL                                          \
+  Trace::TraceConfig("error re-configuring media - reverting control toggle") ;
+
 #else // DEBUG
 
 #  define DEBUG_TRACE_VERIFY_CONFIG            ;
-#  define DEBUG_TRACE_VALIDATE_CONFIG_ROOT     ;
+#  define DEBUG_TRACE_VALIDATE_CONFIG          ;
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PRESET   ;
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PROPERTY ;
 #  define DEBUG_TRACE_DUMP_STORE_CONFIG        ;
@@ -108,6 +117,7 @@
 #  define DEBUG_TRACE_STORE_PRESET             ;
 #  define DEBUG_TRACE_RENAME_PRESET            ;
 #  define DEBUG_TRACE_DELETE_PRESET            ;
+#  define DEBUG_TRACE_TOGGLE_CONTROL           ;
 
 #endif // DEBUG
 #endif  // TRACEAVCASTERSTORE_H_INCLUDED

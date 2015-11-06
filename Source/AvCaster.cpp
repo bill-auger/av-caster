@@ -191,18 +191,10 @@ void AvCaster::UpdateStatusGUI()
 
 void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
-  if (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
-      a_key == CONFIG::PRESET_ID             ) { RefreshGui() ; return ; }
-
-  if      (a_key == CONFIG::IS_OUTPUT_ON_ID      ) Gstreamer::ReconfigureOutput() ;
-  else if (a_key == CONFIG::IS_INTERSTITIAL_ON_ID) Gstreamer::ReconfigurePreview() ;
-  else if (a_key == CONFIG::IS_SCREENCAP_ON_ID   ) Gstreamer::ReconfigureScreencap() ;
-  else if (a_key == CONFIG::IS_CAMERA_ON_ID      ) Gstreamer::ReconfigureCamera() ;
-  else if (a_key == CONFIG::IS_TEXT_ON_ID        ) Gstreamer::ReconfigureText() ;
-  else if (a_key == CONFIG::IS_PREVIEW_ON_ID     ) Gstreamer::ReconfigurePreview() ;
-  else                                             return ;
-
-  AvCaster::StorePreset(GetPresetName()) ; Gstreamer::Configure() ;
+  if      (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
+           a_key == CONFIG::PRESET_ID             ) RefreshGui() ;
+  else if (Gstreamer::Reconfigure(a_key))           StorePreset(GetPresetName()) ;
+  else                                              Store->toogleControl(a_key) ;
 }
 
 void AvCaster::RefreshGui()
@@ -214,6 +206,8 @@ DEBUG_TRACE_REFRESH_GUI
   Gui->background->toFront(true) ;
   if (is_config_pending) { Gui->controls->toFront(true) ; Gui->config  ->toFront(true) ; }
   else                   { Gui->config  ->toFront(true) ; Gui->controls->toFront(true) ; }
+
+  if (!is_config_pending) Gstreamer::ConfigurePipeline() ;
 }
 
 bool AvCaster::HandleCliParams()
@@ -221,6 +215,8 @@ bool AvCaster::HandleCliParams()
 DEBUG_TRACE_HANDLE_CLI_PARAMS
 
   if      (CliParams.contains(APP::CLI_QUIT_TOKEN   )) return false ;
+  if      (CliParams.contains(APP::CLI_HELP_TOKEN   ))
+  { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG)) ; return false ; }
   else if (CliParams.contains(APP::CLI_PRESETS_TOKEN))
   {
     int n_presets = Store->configPresets.getNumChildren() ; if (n_presets == 0) return false ;
