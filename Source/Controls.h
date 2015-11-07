@@ -80,20 +80,19 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> controlGroup;
-    ScopedPointer<ToggleButton> outputToggle;
-    ScopedPointer<ToggleButton> interstitialToggle;
+    ScopedPointer<GroupComponent> controlsGroup;
     ScopedPointer<ToggleButton> screencapToggle;
     ScopedPointer<ToggleButton> cameraToggle;
     ScopedPointer<ToggleButton> textToggle;
+    ScopedPointer<ToggleButton> interstitialToggle;
     ScopedPointer<ToggleButton> previewToggle;
+    ScopedPointer<ToggleButton> outputToggle;
     ScopedPointer<ComboBox> presetCombo;
     ScopedPointer<ImageButton> configButton;
     ScopedPointer<TextButton> saveButton;
     ScopedPointer<TextButton> newButton;
     ScopedPointer<TextButton> deleteButton;
     ScopedPointer<Label> presetLabel;
-    ScopedPointer<GroupComponent> previewGroup;
 
 
     //==============================================================================

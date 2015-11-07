@@ -1,0 +1,5 @@
+#!/bin/bash
+
+
+rm ~/.av-caster/AvCaster.bin > /dev/null
+./mk

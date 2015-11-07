@@ -35,19 +35,15 @@ AvCasterStore::AvCasterStore()
   delete config_stream ;
 
   // create shared config ValueTree from persistent storage or defaults
-  this->configRoot    = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
-  this->configPresets = verifyPresets() ;
-  this->configStore   = ValueTree(CONFIG::VOLATILE_CONFIG_ID) ;
-  this->cameraDevices = ValueTree(CONFIG::CAMERA_DEVICES_ID ) ;
-  this->audioDevices  = ValueTree(CONFIG::AUDIO_DEVICES_ID  ) ;
+  this->root    = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
+  this->presets = verifyPresets() ;
+  this->config  = ValueTree(CONFIG::VOLATILE_CONFIG_ID) ;
+  this->cameras = ValueTree(CONFIG::CAMERA_DEVICES_ID ) ;
+  this->audios  = ValueTree(CONFIG::AUDIO_DEVICES_ID  ) ;
 
   // detect hardware and sanitize config
   detectDisplayDimensions() ; detectCaptureDevices() ;
   validateConfig() ; sanitizeConfig() ; storeConfig() ;
-
-  // subscribe to model changes
-  this->configRoot .addListener(this) ;
-  this->configStore.addListener(this) ;
 }
 
 AvCasterStore::~AvCasterStore() {}
@@ -78,7 +74,7 @@ DEBUG_TRACE_VERIFY_CONFIG
 
 ValueTree AvCasterStore::verifyPresets()
 {
-  ValueTree   presets   = this->configRoot.getOrCreateChildWithName(CONFIG::PRESETS_ID , nullptr) ;
+  ValueTree   presets   = this->root.getOrCreateChildWithName(CONFIG::PRESETS_ID , nullptr) ;
   PresetSeed* file_seed = new FilePresetSeed() ; ValueTree file_preset = file_seed->preset ;
   PresetSeed* rtmp_seed = new RtmpPresetSeed() ; ValueTree rtmp_preset = rtmp_seed->preset ;
   PresetSeed* lctv_seed = new LctvPresetSeed() ; ValueTree lctv_preset = lctv_seed->preset ;
@@ -91,7 +87,7 @@ ValueTree AvCasterStore::verifyPresets()
     presets.addChild(lctv_preset , CONFIG::LCTV_PRESET_IDX , nullptr) ;
   delete file_seed ; delete rtmp_seed ; delete lctv_seed ;
 
-  this->configRoot.removeChild(presets , nullptr) ;
+  this->root.removeChild(presets , nullptr) ;
 
   return presets ;
 }
@@ -100,7 +96,7 @@ void AvCasterStore::validateConfig()
 {
 DEBUG_TRACE_VALIDATE_CONFIG
 
-  if (!this->configRoot.isValid()) return ;
+  if (!this->root.isValid()) return ;
 
   // transfer missing properties
   validateRootProperty(CONFIG::CONFIG_VERSION_ID    , var(CONFIG::CONFIG_VERSION           )) ;
@@ -108,10 +104,10 @@ DEBUG_TRACE_VALIDATE_CONFIG
   validateRootProperty(CONFIG::PRESET_ID            , var(CONFIG::DEFAULT_PRESET_IDX       )) ;
 
   // validate user preset nodes
-  int n_presets = this->configPresets.getNumChildren() ;
+  int n_presets = this->presets.getNumChildren() ;
   for (int preset_n = 0 ; preset_n < n_presets ; ++preset_n)
   {
-    this->configStore = this->configPresets.getChild(preset_n) ;
+    this->config = this->presets.getChild(preset_n) ;
     validatePreset() ;
   }
   loadPreset() ;
@@ -123,7 +119,7 @@ void AvCasterStore::validatePreset()
 {
 DEBUG_TRACE_VALIDATE_CONFIG_PRESET
 
-  if (!this->configStore.isValid()) return ;
+  if (!this->config.isValid()) return ;
 
   // transfer missing properties
   validatePresetProperty(CONFIG::PRESET_NAME_ID        , var(CONFIG::DEFAULT_PRESET_NAME       )) ;
@@ -151,7 +147,7 @@ DEBUG_TRACE_VALIDATE_CONFIG_PRESET
   validatePresetProperty(CONFIG::MOTD_TEXT_ID          , var(CONFIG::DEFAULT_MOTD_TEXT         )) ;
   validatePresetProperty(CONFIG::TEXT_STYLE_ID         , var(CONFIG::DEFAULT_TEXT_STYLE_IDX    )) ;
   validatePresetProperty(CONFIG::TEXT_POSITION_ID      , var(CONFIG::DEFAULT_TEXT_POSITION_IDX )) ;
-  validatePresetProperty(CONFIG::INTERSTITIAL_LOC_ID   , var(CONFIG::DEFAULT_INTERSTITIAL_LOC  )) ;
+  validatePresetProperty(CONFIG::INTERSTITIAL_ID       , var(CONFIG::DEFAULT_INTERSTITIAL_LOC  )) ;
   validatePresetProperty(CONFIG::OUTPUT_SINK_ID        , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX   )) ;
   validatePresetProperty(CONFIG::OUTPUT_MUXER_ID       , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX  )) ;
   validatePresetProperty(CONFIG::OUTPUT_W_ID           , var(CONFIG::DEFAULT_OUTPUT_W          )) ;
@@ -163,8 +159,8 @@ DEBUG_TRACE_VALIDATE_CONFIG_PRESET
 
 void AvCasterStore::sanitizeConfig() // TODO: more
 {
-  if (!this->configRoot   .isValid() || !this->configStore .isValid() ||
-      !this->cameraDevices.isValid() || !this->audioDevices.isValid()  ) return ;
+  if (!this->root   .isValid() || !this->config.isValid() ||
+      !this->cameras.isValid() || !this->audios.isValid()  ) return ;
 
   sanitizeRootComboProperty  (CONFIG::PRESET_ID        , presetsNames()           ) ;
   sanitizePresetComboProperty(CONFIG::CAMERA_DEV_ID    , getCameraResolutions()   ) ;
@@ -188,41 +184,39 @@ void AvCasterStore::storeConfig()
 {
 DEBUG_TRACE_DUMP_STORE_CONFIG
 
-  if (!this->configRoot.isValid()) return ;
+  if (!this->root.isValid()) return ;
 
   // prepare storage directory
   this->configDir .createDirectory() ;
   this->configFile.deleteFile() ;
 
-  // temmporarily ignore model changes
-  this->configRoot .removeListener(this) ;
-  this->configStore.removeListener(this) ;
+  // temmporarily ignore model change events
+  listen(false) ;
 
   // filter transient data
-  var is_config_pending = this->configRoot [CONFIG::IS_CONFIG_PENDING_ID] ;
-  var is_output_on      = this->configStore[CONFIG::IS_OUTPUT_ON_ID     ] ;
-  this->configRoot .removeProperty(CONFIG::IS_CONFIG_PENDING_ID , nullptr) ;
-  this->configStore.removeProperty(CONFIG::IS_OUTPUT_ON_ID      , nullptr) ;
+  var is_config_pending = this->root  [CONFIG::IS_CONFIG_PENDING_ID] ;
+  var is_output_on      = this->config[CONFIG::IS_OUTPUT_ON_ID     ] ;
+  this->root  .removeProperty(CONFIG::IS_CONFIG_PENDING_ID , nullptr) ;
+  this->config.removeProperty(CONFIG::IS_OUTPUT_ON_ID      , nullptr) ;
 
   // append presets to persistent storage
-  this->configRoot.addChild(this->configPresets , -1 , nullptr) ;
+  this->root.addChild(this->presets , -1 , nullptr) ;
 
   // marshall configuration out to persistent binary storage
   FileOutputStream* config_stream = new FileOutputStream(this->configFile) ;
-  if (!config_stream->failedToOpen()) this->configRoot.writeToStream(*config_stream) ;
+  if (!config_stream->failedToOpen()) this->root.writeToStream(*config_stream) ;
   else AvCaster::Error(GUI::STORAGE_WRITE_ERROR_MSG) ;
   delete config_stream ;
 
   // remove presets from runtime store
-  this->configRoot.removeChild(this->configPresets , nullptr) ;
+  this->root.removeChild(this->presets , nullptr) ;
 
   // restore transient data
-  this->configRoot .setProperty(CONFIG::IS_CONFIG_PENDING_ID , is_config_pending , nullptr) ;
-  this->configStore.setProperty(CONFIG::IS_OUTPUT_ON_ID      , is_output_on      , nullptr) ;
+  this->root  .setProperty(CONFIG::IS_CONFIG_PENDING_ID , is_config_pending , nullptr) ;
+  this->config.setProperty(CONFIG::IS_OUTPUT_ON_ID      , is_output_on      , nullptr) ;
 
-  // re-subscribe to model changes
-  this->configRoot .addListener(this) ;
-  this->configStore.addListener(this) ;
+  // re-subscribe to model change events
+  listen(true) ;
 }
 
 
@@ -239,12 +233,12 @@ DEBUG_TRACE_VALIDATE_CONFIG_PROPERTY
 
 void AvCasterStore::validateRootProperty(Identifier a_key , var a_default_value)
 {
-  validateProperty(this->configRoot , a_key , a_default_value) ;
+  validateProperty(this->root , a_key , a_default_value) ;
 }
 
 void AvCasterStore::validatePresetProperty(Identifier a_key , var a_default_value)
 {
-  validateProperty(this->configStore , a_key , a_default_value) ;
+  validateProperty(this->config , a_key , a_default_value) ;
 }
 
 void AvCasterStore::sanitizeIntProperty(ValueTree config_store , Identifier a_key ,
@@ -260,19 +254,19 @@ void AvCasterStore::sanitizeIntProperty(ValueTree config_store , Identifier a_ke
 
 void AvCasterStore::sanitizeRootComboProperty(Identifier a_key , StringArray options)
 {
-  sanitizeIntProperty(this->configRoot , a_key , 0 , options.size() - 1) ;
+  sanitizeIntProperty(this->root , a_key , 0 , options.size() - 1) ;
 }
 
 void AvCasterStore::sanitizePresetComboProperty(Identifier a_key , StringArray options)
 {
-  sanitizeIntProperty(this->configStore , a_key , 0 , options.size() - 1) ;
+  sanitizeIntProperty(this->config , a_key , 0 , options.size() - 1) ;
 }
 
 void AvCasterStore::detectDisplayDimensions()
 {
-/* the JUCE way - does not reflect resolution changes (issue #2 issue #4)
-                  (see ComponentPeer::handleScreenSizeChange and/or Component::getParentMonitorArea)
-                  gStreamer handles resolution changes gracefully so this  may not be strictly necessary */
+/* TODO: the JUCE way - does not reflect resolution changes (issue #2 issue #4)
+                       (see ComponentPeer::handleScreenSizeChange and/or Component::getParentMonitorArea)
+                       gStreamer handles resolution changes gracefully so this  may not be strictly necessary */
 /*
   Rectangle<int> area = Desktop::getInstance().getDisplays().getMainDisplay().totalArea ;
 
@@ -314,7 +308,7 @@ static CameraDevice* CameraDevice::openDevice   (
   String      resolutions        = String("160x120" + newLine + "320x240" + newLine + "640x480") ;
   File*       camera_devices_dir = new File(APP::CAMERA_DEVICES_DIR) ;
   Array<File> device_info_dirs ;
-  this->cameraDevices.removeAllChildren(nullptr) ;
+  this->cameras.removeAllChildren(nullptr) ;
   if (camera_devices_dir->containsSubDirectories()                                       &&
     !!camera_devices_dir->findChildFiles(device_info_dirs , File::findDirectories , false))
   {
@@ -330,7 +324,7 @@ static CameraDevice* CameraDevice::openDevice   (
       device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var(friendly_name) , nullptr) ;
       device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(30           ) , nullptr) ;
       device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions  ) , nullptr) ;
-      this->cameraDevices.addChild(device_info , -1 , nullptr) ;
+      this->cameras.addChild(device_info , -1 , nullptr) ;
       ++device_info_dir ;
     }
   }
@@ -340,7 +334,7 @@ else { ValueTree device_info = ValueTree(Identifier("bogus-cam")) ;
        device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var("bogus-camera") , nullptr) ;
        device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(8             ) , nullptr) ;
        device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions   ) , nullptr) ;
-       this->cameraDevices.addChild(device_info , -1 , nullptr) ; }
+       this->cameras.addChild(device_info , -1 , nullptr) ; }
 #endif // INJECT_DEFAULT_CAMERA_DEVICE_INFO
 
 #endif // JUCE_LINUX
@@ -350,48 +344,48 @@ DEBUG_TRACE_DETECT_CAPTURE_DEVICES
 
 void AvCasterStore::loadPreset()
 {
-  int current_config_idx = int(this->configRoot[CONFIG::PRESET_ID]) ;
+  int current_config_idx = int(this->root[CONFIG::PRESET_ID]) ;
 
-  this->configStore = this->configPresets.getChild(current_config_idx).createCopy() ;
+  this->config = this->presets.getChild(current_config_idx).createCopy() ;
 }
 
 void AvCasterStore::storePreset(String preset_name)
 {
   Identifier preset_id    = CONFIG::FilterId(preset_name) ;
-  ValueTree  preset_store = this->configPresets.getOrCreateChildWithName(preset_id , nullptr) ;
-  int        preset_idx   = this->configPresets.indexOf(preset_store) ;
+  ValueTree  preset_store = this->presets.getOrCreateChildWithName(preset_id , nullptr) ;
+  int        preset_idx   = this->presets.indexOf(preset_store) ;
 
 DEBUG_TRACE_STORE_PRESET
 
 #ifdef FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
-  int         fullscreen_w    = int(this->configStore[CONFIG::SCREENCAP_W_ID]) ;
-  int         fullscreen_h    = int(this->configStore[CONFIG::SCREENCAP_H_ID]) ;
-  int         output_w        = int(this->configStore[CONFIG::OUTPUT_W_ID   ]) ;
-  int         output_h        = int(this->configStore[CONFIG::OUTPUT_H_ID   ]) ;
+  int         fullscreen_w    = int(this->config[CONFIG::SCREENCAP_W_ID]) ;
+  int         fullscreen_h    = int(this->config[CONFIG::SCREENCAP_H_ID]) ;
+  int         output_w        = int(this->config[CONFIG::OUTPUT_W_ID   ]) ;
+  int         output_h        = int(this->config[CONFIG::OUTPUT_H_ID   ]) ;
   String      resolution      = AvCaster::GetCameraResolution() ;
   StringArray res_tokens      = StringArray::fromTokens(resolution , "x" , "") ;
   int         camera_w        = res_tokens[0].getIntValue() ;
   int         camera_h        = res_tokens[1].getIntValue() ;
   bool        has_idx_changed = preset_idx != AvCaster::GetPresetIdx() ;
-  AvCaster::SetConfig(CONFIG::OUTPUT_W_ID , jmax(fullscreen_w , camera_w , output_w)) ;
-  AvCaster::SetConfig(CONFIG::OUTPUT_H_ID , jmax(fullscreen_h , camera_h , output_h)) ;
+  AvCaster::SetConfig(CONFIG::OUTPUT_W_ID , var(jmax(fullscreen_w , camera_w , output_w))) ;
+  AvCaster::SetConfig(CONFIG::OUTPUT_H_ID , var(jmax(fullscreen_h , camera_h , output_h))) ;
   if (!has_idx_changed) AvCaster::RefreshGui() ;
 #endif // FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
 
   AvCaster::SetConfig(CONFIG::PRESET_NAME_ID , preset_name) ;
-  preset_store.copyPropertiesFrom(this->configStore , nullptr) ;
+  preset_store.copyPropertiesFrom(this->config , nullptr) ;
   AvCaster::SetConfig(CONFIG::PRESET_ID      , preset_idx) ;
 }
 
 void AvCasterStore::renamePreset(String preset_name)
 {
   Identifier preset_id      = CONFIG::FilterId(preset_name) ;
-  ValueTree  conflict_store = this->configPresets.getChildWithName(preset_id) ;
+  ValueTree  conflict_store = this->presets.getChildWithName(preset_id) ;
 
   if (conflict_store.isValid()) { AvCaster::Error(GUI::PRESET_RENAME_ERROR_MSG) ; return ; }
 
-  int       preset_idx   = int(this->configRoot[CONFIG::PRESET_ID]) ;
-  ValueTree preset_store = this->configPresets.getChild(preset_idx) ;
+  int       preset_idx   = int(this->root[CONFIG::PRESET_ID]) ;
+  ValueTree preset_store = this->presets.getChild(preset_idx) ;
 
 DEBUG_TRACE_RENAME_PRESET
 
@@ -401,13 +395,13 @@ DEBUG_TRACE_RENAME_PRESET
 
 void AvCasterStore::deletePreset()
 {
-  int preset_idx = int(this->configRoot[CONFIG::PRESET_ID]) ;
+  int preset_idx = int(this->root[CONFIG::PRESET_ID]) ;
 
-  if (this->configPresets.getNumChildren() <= 1) return ;
+  if (this->presets.getNumChildren() <= 1) return ;
 
 DEBUG_TRACE_DELETE_PRESET
 
-  this->configPresets.removeChild(preset_idx , nullptr) ;
+  this->presets.removeChild(preset_idx , nullptr) ;
   AvCaster::SetConfig(CONFIG::PRESET_ID , CONFIG::DEFAULT_PRESET_IDX) ;
   AvCaster::RefreshGui() ;
 }
@@ -416,7 +410,7 @@ void AvCasterStore::resetPreset()
 {
   if (!AvCaster::IsStaticPreset()) return ;
 
-  int         preset_idx = int(this->configRoot[CONFIG::PRESET_ID]) ;
+  int         preset_idx = int(this->root[CONFIG::PRESET_ID]) ;
   PresetSeed* seed ;
 
   switch (preset_idx)
@@ -427,8 +421,8 @@ void AvCasterStore::resetPreset()
     default:                      return ;                      break ;
   }
 
-  this->configPresets.removeChild(preset_idx , nullptr) ;
-  this->configPresets.addChild(seed->preset , preset_idx , nullptr) ;
+  this->presets.removeChild(preset_idx , nullptr) ;
+  this->presets.addChild(seed->preset , preset_idx , nullptr) ;
   delete seed ;
 
   AvCaster::RefreshGui() ;
@@ -436,6 +430,12 @@ void AvCasterStore::resetPreset()
 
 
 /* event handlers */
+
+void AvCasterStore::listen(bool should_listen)
+{
+  if (should_listen) { this->root.addListener   (this) ; this->config.addListener   (this) ; }
+  else               { this->root.removeListener(this) ; this->config.removeListener(this) ; }
+}
 
 void AvCasterStore::valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key)
 {
@@ -449,14 +449,34 @@ DEBUG_TRACE_CONFIG_TREE_CHANGED
 
 /* getters/setters */
 
+ValueTree AvCasterStore::getKeyNode(const Identifier& a_key)
+{
+  return (a_key == CONFIG::PRESET_ID          ||
+          a_key == CONFIG::IS_CONFIG_PENDING_ID) ? this->root : this->config ;
+}
+
+bool AvCasterStore::isControlKey(const Identifier& a_key)
+{
+  // TODO: this could be a static Array<Identifier>
+  return a_key == CONFIG::IS_SCREENCAP_ON_ID    ||
+         a_key == CONFIG::IS_CAMERA_ON_ID       ||
+         a_key == CONFIG::IS_TEXT_ON_ID         ||
+         a_key == CONFIG::IS_INTERSTITIAL_ON_ID ||
+         a_key == CONFIG::IS_PREVIEW_ON_ID      ||
+         a_key == CONFIG::IS_AUDIO_ON_ID        ||
+         a_key == CONFIG::IS_OUTPUT_ON_ID       ||
+         a_key == CONFIG::IS_CONFIG_PENDING_ID  ||
+         a_key == CONFIG::PRESET_ID              ;
+}
+
 StringArray AvCasterStore::presetsNames()
 {
-  int         n_presets    = this->configPresets.getNumChildren() ;
+  int         n_presets    = this->presets.getNumChildren() ;
   StringArray preset_names ;
 
   for (int preset_n = 0 ; preset_n < n_presets ; ++preset_n)
   {
-    ValueTree preset_store = this->configPresets.getChild(preset_n) ;
+    ValueTree preset_store = this->presets.getChild(preset_n) ;
     String    preset_name  = STRING(preset_store[CONFIG::PRESET_NAME_ID]) ;
 
     preset_names.add(preset_name) ;
@@ -467,8 +487,8 @@ StringArray AvCasterStore::presetsNames()
 
 StringArray AvCasterStore::devicesNames(Identifier a_node_id)
 {
-  ValueTree devices_node = (a_node_id == CONFIG::CAMERA_DEVICES_ID) ? this->cameraDevices :
-                           (a_node_id == CONFIG::AUDIO_DEVICES_ID ) ? this->audioDevices  :
+  ValueTree devices_node = (a_node_id == CONFIG::CAMERA_DEVICES_ID) ? this->cameras       :
+                           (a_node_id == CONFIG::AUDIO_DEVICES_ID ) ? this->audios        :
                                                                       ValueTree::invalid  ;
 
   int n_devices = devices_node.getNumChildren() ; StringArray device_names ;
@@ -490,14 +510,14 @@ StringArray AvCasterStore::audioNames() { return devicesNames(CONFIG::CAMERA_DEV
 
 ValueTree AvCasterStore::getCameraConfig()
 {
-  int camera_n = int(this->configStore[CONFIG::CAMERA_DEV_ID]) ;
+  int camera_n = int(this->config[CONFIG::CAMERA_DEV_ID]) ;
 
-  return this->cameraDevices.getChild(camera_n) ;
+  return this->cameras.getChild(camera_n) ;
 }
 
 StringArray AvCasterStore::getCameraResolutions()
 {
-  ValueTree camera_store = this->getCameraConfig() ;
+  ValueTree camera_store = getCameraConfig() ;
 
   return StringArray::fromLines(STRING(camera_store[CONFIG::CAMERA_RESOLUTIONS_ID])) ;
 }
@@ -506,7 +526,7 @@ void AvCasterStore::toogleControl(const Identifier& a_key)
 {
 DEBUG_TRACE_TOGGLE_CONTROL
 
-  this->configStore.removeListener(this) ;
-  AvCaster::SetConfig(a_key , !bool(this->configStore[a_key])) ;
-  this->configStore.addListener(this) ;
+  listen(false) ;
+  AvCaster::SetConfig(a_key , !bool(this->config[a_key])) ; AvCaster::RefreshGui() ;
+  listen(true) ;
 }

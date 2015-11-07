@@ -58,31 +58,34 @@ class AvCaster
 public:
 
   // GUI dispatchers
-  static void Warning(String message_text) ;
-  static void Error  (String message_text) ;
+  static void SetStatusL(String status_text) ;
+  static void Warning   (String message_text) ;
+  static void Error     (String message_text) ;
 
   // callbacks and event handlers
   static ModalComponentManager::Callback* GetModalCb() ;
   static void                             OnModalDismissed(int result , int unused) ;
 
   // getters/setters
-  static void        SetConfig           (Identifier a_key , var a_value) ;
-  static void        StorePreset         (String preset_name) ;
-  static void        RenamePreset        (String preset_name) ;
-  static void        DeletePreset        () ;
-  static void        ResetPreset         () ;
-  static ValueTree   GetConfigStore      () ;
-  static bool        IsStaticPreset      () ;
-  static int         GetPresetIdx        () ;
-  static String      GetPresetName       () ;
-  static bool        GetIsConfigPending  () ;
-  static StringArray GetPresetsNames     () ;
-  static StringArray GetCameraNames      () ;
-  static StringArray GetAudioNames       () ;
-  static StringArray GetCameraResolutions() ;
-  static String      GetCameraResolution () ;
-  static String      GetCameraPath       () ;
-  static int         GetCameraRate       () ;
+  static Rectangle<int> GetPreviewBounds() ;
+  static void           GuiChanged          (Identifier a_key , var a_value) ;
+  static void           SetConfig           (Identifier a_key , var a_value) ;
+  static void           StorePreset         (String preset_name) ;
+  static void           RenamePreset        (String preset_name) ;
+  static void           DeletePreset        () ;
+  static void           ResetPreset         () ;
+  static ValueTree      GetConfigStore      () ;
+  static bool           IsStaticPreset      () ;
+  static int            GetPresetIdx        () ;
+  static String         GetPresetName       () ;
+  static bool           GetIsConfigPending  () ;
+  static StringArray    GetPresetsNames     () ;
+  static StringArray    GetCameraNames      () ;
+  static StringArray    GetAudioNames       () ;
+  static StringArray    GetCameraResolutions() ;
+  static String         GetCameraResolution () ;
+  static String         GetCameraPath       () ;
+  static int            GetCameraRate       () ;
 
 
   // persistence

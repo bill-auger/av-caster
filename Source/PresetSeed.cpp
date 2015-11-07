@@ -80,7 +80,7 @@ void PresetSeed::createPreset()
   preset.setProperty(CONFIG::MOTD_TEXT_ID          , var(motdText           ) , nullptr) ;
   preset.setProperty(CONFIG::TEXT_STYLE_ID         , var(textStyleIdx       ) , nullptr) ;
   preset.setProperty(CONFIG::TEXT_POSITION_ID      , var(textPosIdx         ) , nullptr) ;
-  preset.setProperty(CONFIG::INTERSTITIAL_LOC_ID   , var(interstitialLoc    ) , nullptr) ;
+  preset.setProperty(CONFIG::INTERSTITIAL_ID       , var(interstitialLoc    ) , nullptr) ;
   preset.setProperty(CONFIG::OUTPUT_SINK_ID        , var(sinkIdx            ) , nullptr) ;
   preset.setProperty(CONFIG::OUTPUT_MUXER_ID       , var(muxerIdx           ) , nullptr) ;
   preset.setProperty(CONFIG::OUTPUT_W_ID           , var(outputW            ) , nullptr) ;

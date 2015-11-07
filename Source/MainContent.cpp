@@ -16,88 +16,117 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+//[Headers] You can add your own extra header files here...
 
 #include "AvCaster.h"
-#include "MainContent.h"
 #include "Trace/Trace.h"
 
+//[/Headers]
 
-MainContent::MainContent(DocumentWindow* main_window)
+#include "MainContent.h"
+
+
+//[MiscUserDefs] You can add your own user definitions and misc code here...
+//[/MiscUserDefs]
+
+//==============================================================================
+MainContent::MainContent (DocumentWindow* main_window)
+    : mainWindow(main_window)
 {
-  // MainWindow
-  this->mainWindow = main_window ;
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
 
-  // MainContent
-  setName("MainContent") ;
-  setSize(GUI::WINDOW_W , GUI::WINDOW_H) ;
+    addAndMakeVisible (background = new Background());
+    background->setName ("background");
+
+    addAndMakeVisible (controls = new Controls());
+    controls->setName ("controls");
+
+    addAndMakeVisible (preview = new Preview());
+    preview->setName ("preview");
+
+    addAndMakeVisible (config = new Config());
+    config->setName ("config");
+
+    addAndMakeVisible (statusbar = new Statusbar());
+    statusbar->setName ("statusbar");
+
+
+    //[UserPreSize]
+    //[/UserPreSize]
+
+    setSize (758, 694);
+
+
+    //[Constructor] You can add your own custom stuff here..
+    //[/Constructor]
 }
 
 MainContent::~MainContent()
 {
-  this->background  = nullptr ;
-  this->controls    = nullptr ;
-  this->config      = nullptr ;
-  this->statusbar   = nullptr ;
+    //[Destructor_pre]. You can add your own custom destruction code here..
+    //[/Destructor_pre]
+
+    background = nullptr;
+    controls = nullptr;
+    preview = nullptr;
+    config = nullptr;
+    statusbar = nullptr;
+
+
+    //[Destructor]. You can add your own custom destruction code here..
+    //[/Destructor]
 }
 
-void MainContent::paint(Graphics& g)
+//==============================================================================
+void MainContent::paint (Graphics& g)
 {
-  g.fillAll (Colour (0xff202020));
-  g.setFont (Font (16.0f));
-  g.setColour (Colours::black);
+    //[UserPrePaint] Add your own custom painting code here..
+    //[/UserPrePaint]
+
+    g.fillAll (Colour (0xff101010));
+
+    //[UserPaint] Add your own custom painting code here..
+    //[/UserPaint]
 }
 
 void MainContent::resized()
 {
-  if (this->background == nullptr || this->controls  == nullptr ||
-      this->config     == nullptr || this->statusbar == nullptr  ) return ;
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
 
-  // background
-  int background_x = GUI::PAD ;
-  int background_y = GUI::CONFIG_Y ;
-  int background_w = GUI::CONTENT_W ;
-  int background_h = GUI::CONFIG_H ;
-
-  // controls
-  int controls_x = GUI::PAD ;
-  int controls_y = GUI::PAD ;
-  int controls_w = GUI::CONTENT_W ;
-  int controls_h = GUI::CONTENT_H ;
-
-  // config
-  int config_x = GUI::PAD ;
-  int config_y = GUI::CONFIG_Y ;
-  int config_w = GUI::CONTENT_W ;
-  int config_h = GUI::CONFIG_H ;
-
-  // statusbar
-  int status_x = GUI::PAD ;
-  int status_y = GUI::STATUSBAR_Y ;
-  int status_w = GUI::CONTENT_W ;
-  int status_h = GUI::STATUSBAR_H ;
-
-  this->background->setBounds(background_x , background_y , background_w , background_h) ;
-  this->controls  ->setBounds(controls_x   , controls_y   , controls_w   , controls_h  ) ;
-  this->config    ->setBounds(config_x     , config_y     , config_w     , config_h    ) ;
-  this->statusbar ->setBounds(status_x     , status_y     , status_w     , status_h    ) ;
+    background->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
+    controls->setBounds (0, 0, getWidth() - 0, 76);
+    preview->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
+    config->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
+    statusbar->setBounds (0, getHeight() - 24, getWidth() - 0, 24);
+    //[UserResized] Add your own custom resize handling here..
+    //[/UserResized]
 }
 
-void MainContent::instantiate(ValueTree config_root  , ValueTree config_store ,
-                              ValueTree camera_store , ValueTree audio_store  )
+
+
+//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void MainContent::instantiate()
 {
-  // background
+  // Background
   this->background = new Background() ;
   this->addChildAndSetID(this->background , GUI::BACKGROUND_GUI_ID) ;
 
-  // controls
+  // Controls
   this->controls = new Controls() ;
   this->addChildAndSetID(this->controls , GUI::CONTROLS_GUI_ID) ;
 
-  // config
+  // Preview
+  this->preview = new Preview() ;
+  this->addChildAndSetID(this->preview , GUI::PREVIEW_GUI_ID) ;
+
+  // Config
   this->config = new Config() ;
   this->addChildAndSetID(this->config , GUI::CONFIG_GUI_ID) ;
 
-  // statusbar
+  // Statusbar
   this->statusbar = new Statusbar() ;
   this->addChildAndSetID(this->statusbar , GUI::STATUSBAR_GUI_ID) ;
   this->statusbar->setAlwaysOnTop(true) ;
@@ -128,3 +157,56 @@ void MainContent::error(String message_text)
                                    message_text             , String::empty          ,
                                    nullptr                  , AvCaster::GetModalCb() ) ;
 }
+
+Rectangle<int> MainContent::getPreviewBounds()
+{
+  Rectangle<int> preview_bounds = this->preview->getBounds() ;
+  Rectangle<int> group_bounds   = this->preview->getChildComponent(0)->getBounds() ;
+
+  preview_bounds.setX     (group_bounds  .getX()      + GUI::PAD4) ;
+  preview_bounds.setY     (preview_bounds.getY()      + GUI::PAD4 + GUI::PAD8) ;
+  preview_bounds.setWidth (group_bounds  .getWidth()  - GUI::PAD8) ;
+  preview_bounds.setHeight(group_bounds  .getHeight() - GUI::PAD8) ;
+
+  return preview_bounds ;
+}
+
+//[/MiscUserCode]
+
+
+//==============================================================================
+#if 0
+/*  -- Introjucer information section --
+
+    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    make changes in here at your peril!
+
+BEGIN_JUCER_METADATA
+
+<JUCER_COMPONENT documentType="Component" className="MainContent" componentName=""
+                 parentClasses="public Component" constructorParams="DocumentWindow* main_window"
+                 variableInitialisers="mainWindow(main_window)" snapPixels="8"
+                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="0"
+                 initialWidth="758" initialHeight="694">
+  <BACKGROUND backgroundColour="ff101010"/>
+  <GENERICCOMPONENT name="background" id="4d43eef09b00fdf4" memberName="background"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" class="Background"
+                    params=""/>
+  <GENERICCOMPONENT name="controls" id="7a0ffc87dbd1f2a3" memberName="controls" virtualName=""
+                    explicitFocusOrder="0" pos="0 0 0M 76" class="Controls" params=""/>
+  <GENERICCOMPONENT name="preview" id="ac9a4042c98734e2" memberName="preview" virtualName=""
+                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Preview" params=""/>
+  <GENERICCOMPONENT name="config" id="75e8b11c95e2efaf" memberName="config" virtualName=""
+                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Config" params=""/>
+  <GENERICCOMPONENT name="statusbar" id="2dc0514b582b96cb" memberName="statusbar"
+                    virtualName="" explicitFocusOrder="0" pos="0 0Rr 0M 24" class="Statusbar"
+                    params=""/>
+</JUCER_COMPONENT>
+
+END_JUCER_METADATA
+*/
+#endif
+
+
+//[EndFile] You can add extra defines here...
+//[/EndFile]

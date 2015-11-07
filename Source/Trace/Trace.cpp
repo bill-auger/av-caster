@@ -26,6 +26,7 @@
 
 bool Trace::TraceEvent  (String msg) { if (DEBUG_TRACE_EVENTS) DBG(          "[EVENT]:   " + msg) ; return true ; }
 bool Trace::TraceGui    (String msg) { if (DEBUG_TRACE_GUI   ) DBG(          "[GUI]:     " + msg) ; return true ; }
+bool Trace::TraceMedia  (String msg) { if (DEBUG_TRACE_MEDIA ) DBG(          "[MEDIA]:   " + msg) ; return true ; }
 bool Trace::TraceConfig (String msg) { if (DEBUG_TRACE_CONFIG) DBG(          "[CONFIG]:  " + msg) ; return true ; }
 bool Trace::TraceVerbose(String msg) { if (DEBUG_TRACE_VB    ) DBG(          "[DEBUG]:   " + msg) ; return true ; }
 #  if ! DEBUG_ANSI_COLORS

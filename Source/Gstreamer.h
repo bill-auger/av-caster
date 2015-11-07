@@ -39,21 +39,21 @@ private:
   static bool Initialize(void* x_window_handle) ;
   static void Shutdown  () ;
 
-  // configuration
-  static bool ConfigurePipeline    () ;
-  static bool ConfigureScreencap   () ;
-  static bool ConfigureCamera      () ;
-  static bool ConfigureText        () ;
-  static bool ConfigureInterstitial() ;
-  static bool ConfigureCompositor  () ;
-  static bool ConfigurePreview     () ;
-  static bool ConfigureAudio       () ;
-  static bool ConfigureMuxer       () ;
-  static bool ConfigureOutput      () ;
-  static bool Reconfigure          (const Identifier& config_key) ;
+  // pipeline configuration
+  static bool ConfigurePipeline       () ;
+  static bool ConfigureScreencapBin   () ;
+  static bool ConfigureCameraBin      () ;
+  static bool ConfigureTextBin        () ;
+  static bool ConfigureInterstitialBin() ;
+  static bool ConfigureCompositorBin  () ;
+  static bool ConfigurePreviewBin     () ;
+  static bool ConfigureAudioBin       () ;
+  static bool ConfigureMuxerBin       () ;
+  static bool ConfigureOutputBin      () ;
+  static bool Reconfigure          (const Identifier& config_key , bool is_config_pending) ;
 //   static bool ReconfigureBin       (String      bin_id       , GstElement* a_bin) ;
 
-    // state
+  // state
   static bool SetState(GstElement* an_element , GstState next_state) ;
 
   // element creation and destruction
@@ -83,6 +83,26 @@ private:
   static GstPad*     NewRequestSrcPad (GstElement* an_element) ;
   static GstPad*     NewRequestPad    (GstElement* an_element , String template_id) ;
 
+  // element configuration
+  static void ConfigureCaps          (GstElement* a_capsfilter , GstCaps* a_caps) ;
+  static void ConfigureQueue         (GstElement* a_queue  , guint max_bytes  ,
+                                      guint64     max_time , guint max_buffers) ;
+  static void ConfigureScreen        (GstElement* a_screen_source ,
+                                      guint       capture_w       , guint capture_h  ,
+                                      guint       pattern_n       , bool  is_enabled ) ;
+  static void ConfigureCamera        (GstElement* a_camera_source , String device_path ,
+                                      guint       pattern_n       , bool   is_enabled  ) ;
+  static void ConfigureFauxVideo     (GstElement* a_faux_source , guint pattern_n) ;
+  static void ConfigureText          (GstElement* a_text_source , String font_desc) ;
+  static void ConfigureFile          (GstElement* a_file_source , String file_path) ;
+  static void ConfigureCompositor    (GstElement* a_compositor , guint background_n) ;
+  static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
+  static bool ConfigurePreview       () ;
+  static void ConfigureFauxAudio     (GstElement* faux_source) ;
+  static void ConfigureX264Encoder   (GstElement* an_x264_encoder , guint bitrate) ;
+  static void ConfigureLameEncoder   (GstElement* a_lame_encoder , guint bitrate) ;
+  static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
+
   // helpers
   static String MakeVideoCapsString (int width , int height , int framerate) ;
   static String MakeScreenCapsString(int screencap_w , int screencap_h , int framerate) ;
@@ -91,6 +111,7 @@ private:
   static String MakeH264CapsString  (int output_w , int output_h , int framerate) ;
   static String MakeMp3CapsString   (int samplerate , int n_channels) ;
   static String MakeLctvUrl         (String dest) ;
+  static bool   IsInitialized       () ;
   static bool   IsPlaying           () ;
   static bool   IsInPipeline        (GstElement* an_element) ;
 
@@ -103,6 +124,7 @@ private:
   static GstElement* InterstitialBin ;
   static GstElement* CompositorBin ;
   static GstElement* PreviewBin ;
+  static GstElement* PreviewSink ;
   static GstElement* AudioBin ;
   static GstElement* MuxerBin ;
   static GstElement* OutputBin ;
@@ -116,24 +138,25 @@ private:
 
 
 /* CompositorBin topology
-=> static sink
--> static src
-<? ghost sink
-?> ghost src
-{? request src       - (corresponds to number of calls to NewRequestSrcPad())
-?} request sink      - (corresponds to number of calls to NewRequestSinkPad())
+=>  static sink
+->  static src
+<?  ghost sink
+?>  ghost src
+{?  request src      - (corresponds to number of calls to NewRequestSrcPad())
+?}  request sink     - (corresponds to number of calls to NewRequestSinkPad())
 <=> ghost pad link   - (corresponds to number of calls to AddGhostSinkPad() or AddGhostSrcPad())
 <-> request pad link - (corresponds to number of calls to LinkPads())
+<>  bin link
 
-  CompositorBin<? <=> =>fullscreen_queue-> <-> ?
-                                                }compositor->
-  CompositorBin<? <=> =>overlay_queue   -> <-> ?
+  ScreencapBin <> CompositorBin<? <=> =>fullscreen_queue-> <-> ?
+                                                                }compositor->
+  CameraBin    <> CompositorBin<? <=> =>overlay_queue   -> <-> ?
 
   ?                                                           ?
    }compositor-> =>capsfilter-> =>converter-> =>composite_tee{
   ?                                                           ?
 
-                   ? <-> =>composite_sink_queue->     =>composite_sink
+                   ? <-> =>composite_sink_queue-> <=> ?>CompositorBin <> PreviewBin
   =>composite-tee {
-                   ? <-> =>composite_thru_queue-> <=> ?>CompositorBin
+                   ? <-> =>composite_thru_queue-> <=> ?>CompositorBin <> MuxerBin
 */

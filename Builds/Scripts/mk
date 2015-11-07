@@ -1,0 +1,35 @@
+#!/bin/bash
+
+APP_ROOT_DIR=`pwd`
+
+# enable logging (n=verbosity)
+export GST_DEBUG=4
+# comment this to log to screen
+export GST_DEBUG_NO_COLOR=1 && export GST_DEBUG_FILE=debug.log # log to file
+# enable graphviz
+export DOT_DIR=/code/dot
+export GST_DEBUG_DUMP_DOT_DIR=$DOT_DIR
+
+# build project
+cd Builds/GnuMakefile && make && ./build/av-caster-dbg $*
+
+# convert dot graphs to images
+cd $DOT_DIR
+rm $DOT_DIR/*.png 2> /dev/null
+for graph_dot_file in `ls *.dot`
+do echo "found dot graph $graph_dot_file"
+  graph_png_file=${graph_dot_file%%.dot}.png
+  dot -Tpng $graph_dot_file > $graph_png_file && rm $DOT_DIR/$graph_dot_file
+  [ -f $graph_png_file ] && echo "created graph image $graph_png_file"
+done
+
+# playback file output
+cd $APP_ROOT_DIR
+OUTPUT_NAME=~/AvCaster
+OUTPUT_FILE=$OUTPUT_NAME.flv
+if [ -f $OUTPUT_FILE ]
+then filesize=`ls -s $OUTPUT_FILE`
+     echo "output file exists $filesize"
+     ((${filesize:0:1})) && mplayer $OUTPUT_FILE 2&> /dev/null
+     rm $OUTPUT_NAME*
+fi

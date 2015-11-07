@@ -16,13 +16,11 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef STATUSBAR_H_INCLUDED
-#define STATUSBAR_H_INCLUDED
+#ifndef PREVIEW_H_INCLUDED
+#define PREVIEW_H_INCLUDED
 
 //[Headers]     -- You can add your own extra header files here --
-
 #include "JuceHeader.h"
-
 //[/Headers]
 
 
@@ -30,24 +28,20 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-  Statusbar is the bottom statusbar GUI for the AvCaster application.
-  It does nothing useful yet.
+    An auto-generated component, created by the Introjucer.
+
+    Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Statusbar  : public Component
+class Preview  : public Component
 {
 public:
     //==============================================================================
-    Statusbar ();
-    ~Statusbar();
+    Preview ();
+    ~Preview();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-
-  void setStatusL(String statusText) ;
-  void setStatusC(String statusText) ;
-  void setStatusR(String statusText) ;
-
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -60,16 +54,14 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> statusLLabel;
-    ScopedPointer<Label> statusCLabel;
-    ScopedPointer<Label> statusRLabel;
+    ScopedPointer<GroupComponent> previewGroup;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Statusbar)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Preview)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // STATUSBAR_H_INCLUDED
+#endif // PREVIEW_H_INCLUDED

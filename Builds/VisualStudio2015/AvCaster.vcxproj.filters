@@ -217,6 +217,9 @@
     <ClCompile Include="..\..\Source\PresetSeed.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Preview.cpp">
+      <Filter>AvCaster\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Statusbar.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
@@ -1087,6 +1090,9 @@
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\PresetSeed.h">
+      <Filter>AvCaster\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Preview.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Statusbar.h">

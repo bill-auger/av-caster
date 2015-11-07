@@ -2,9 +2,10 @@ language:       cpp
 compiler:       clang
 sudo:           required
 dist:           trusty
+group:          edge
 before_install:
   - # per app config
-  - VERSION=0.14.000
+  - VERSION=0.15.000
   - SOURCE_REPO_NAME='bill-auger'
   - PACKAGE_REPO_NAME='ninjam'
   - PROJECT_NAME='av-caster' # ASSERT: matches dev repo name, binary filename, deb repo name, etc.
@@ -55,7 +56,8 @@ script:
   - (($BUILD_32)) && mv $ARTIFACTS_DIR/$PROJECT_NAME $PACKAGING_DIR/$PROJECT_NAME-i386
 after_script:
   - echo "build stage ended"
-  - ls -l $PACKAGING_DIR/av-caster*
+  - cd $PACKAGING_DIR
+  - ls -l av-caster*
 after_success:
   - # push packages for stable master branch only
   - if [ "$TRAVIS_BRANCH"       == "master" ] ; then IS_MASTER=1 ; else IS_MASTER=0 ; fi ;
