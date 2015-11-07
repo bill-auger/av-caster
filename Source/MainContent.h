@@ -16,46 +16,73 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
 #ifndef MAINCONTENT_H_INCLUDED
 #define MAINCONTENT_H_INCLUDED
 
+//[Headers]     -- You can add your own extra header files here --
+
 #include "Background.h"
 #include "Config.h"
+#include "Preview.h"
 #include "Controls.h"
 #include "Statusbar.h"
 
+//[/Headers]
 
-/** MainContent is the main GUI container class for the AvCaster application. */
-class MainContent : public Component
+
+
+//==============================================================================
+/**
+                                                                    //[Comments]
+  MainContent is the main GUI container class for the AvCaster application.
+                                                                    //[/Comments]
+*/
+class MainContent  : public Component
 {
-  friend class AvCaster ;
-
-
 public:
+    //==============================================================================
+    MainContent (DocumentWindow* main_window);
+    ~MainContent();
 
-  MainContent(DocumentWindow* main_window) ;
-  ~MainContent();
+    //==============================================================================
+    //[UserMethods]     -- You can add your own custom methods in this section.
+    //[/UserMethods]
 
-  void paint(Graphics&) ;
-  void resized() ;
+    void paint (Graphics& g);
+    void resized();
+
 
 
 private:
+    //[UserVariables]   -- You can add your own custom variables in this section.
 
-  DocumentWindow*           mainWindow ;
-  ScopedPointer<Background> background ;
-  ScopedPointer<Controls  > controls ;
-  ScopedPointer<Config    > config ;
-  ScopedPointer<Statusbar > statusbar ;
+  friend class AvCaster ;
 
-  void instantiate (ValueTree config_root  , ValueTree config_store ,
-                    ValueTree camera_store , ValueTree audio_store  ) ;
-  void setTitle    (String title_text) ;
-  void warning     (String message_text) ;
-  void error       (String message_text) ;
 
-  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContent)
-} ;
+  DocumentWindow* mainWindow ;
 
-#endif  // MAINCONTENT_H_INCLUDED
+
+  void           instantiate     () ;
+  void           setTitle        (String title_text) ;
+  void           warning         (String message_text) ;
+  void           error           (String message_text) ;
+  Rectangle<int> getPreviewBounds() ;
+
+    //[/UserVariables]
+
+    //==============================================================================
+    ScopedPointer<Background> background;
+    ScopedPointer<Controls> controls;
+    ScopedPointer<Preview> preview;
+    ScopedPointer<Config> config;
+    ScopedPointer<Statusbar> statusbar;
+
+
+    //==============================================================================
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContent)
+};
+
+//[EndFile] You can add extra defines here...
+//[/EndFile]
+
+#endif // MAINCONTENT_H_INCLUDED

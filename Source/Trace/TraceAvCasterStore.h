@@ -38,51 +38,49 @@
                      ((!do_versions_match                  ) ? outdated_msg  :              \
                                                                success_msg))))              ;
 
-#  define DEBUG_TRACE_VALIDATE_CONFIG                                         \
-  if (!this->configRoot.isValid()) Trace::TraceError("invalid config root") ; \
-  else                             { DEBUG_TRACE_DUMP_CONFIG_ROOT             \
-                                     DEBUG_TRACE_DUMP_CONFIG_PRESETS          }
+#  define DEBUG_TRACE_VALIDATE_CONFIG                                   \
+  if (!this->root.isValid()) Trace::TraceError("invalid config root") ; \
+  else                       { DEBUG_TRACE_DUMP_CONFIG_ROOT             \
+                               DEBUG_TRACE_DUMP_CONFIG_PRESETS          }
 
-#  define DEBUG_TRACE_VALIDATE_CONFIG_PRESET                            \
-  if (!this->configStore.isValid()) Trace::TraceError("invalid preset") ;
+#  define DEBUG_TRACE_VALIDATE_CONFIG_PRESET                       \
+  if (!this->config.isValid()) Trace::TraceError("invalid preset") ;
 
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PROPERTY                        \
   Trace::TraceMissingProperty(config_store , a_key , a_default_value) ;
 
-#  define DEBUG_TRACE_DUMP_STORE_CONFIG                                          \
-  if (!this->configRoot.isValid()) Trace::TraceError("error storing config") ;   \
-  else {                           Trace::TraceConfig("storing config") ;        \
-         DEBUG_TRACE_DUMP_CONFIG_ROOT                                            \
-         DEBUG_TRACE_DUMP_CONFIG_PRESETS                                         \
-         DEBUG_TRACE_DUMP_CONFIG_VOLATILE                                        \
-         DEBUG_TRACE_DUMP_CONFIG_CAMERAS                                         \
-         DEBUG_TRACE_DUMP_CONFIG_AUDIO                                           }
+#  define DEBUG_TRACE_DUMP_STORE_CONFIG                                  \
+  if (!this->root.isValid()) Trace::TraceError("error storing config") ; \
+  else {                     Trace::TraceConfig("storing config") ;      \
+         DEBUG_TRACE_DUMP_CONFIG_ROOT                                    \
+         DEBUG_TRACE_DUMP_CONFIG_PRESETS                                 \
+         DEBUG_TRACE_DUMP_CONFIG_VOLATILE                                \
+         DEBUG_TRACE_DUMP_CONFIG_CAMERAS                                 \
+         DEBUG_TRACE_DUMP_CONFIG_AUDIOS                                  }
 
-#  define DEBUG_TRACE_DUMP_CONFIG_ROOT     if (DEBUG_TRACE_VB) Trace::DumpConfig(this->configRoot    , "root"    ) ;
-#  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE if (DEBUG_TRACE_VB) Trace::DumpConfig(this->configStore   , "volatile") ;
-#  define DEBUG_TRACE_DUMP_CONFIG_CAMERAS  if (DEBUG_TRACE_VB) Trace::DumpConfig(this->cameraDevices , "cameras" ) ;
-#  define DEBUG_TRACE_DUMP_CONFIG_AUDIO    if (DEBUG_TRACE_VB) Trace::DumpConfig(this->audioDevices  , "audio"   ) ;
-#  define DEBUG_TRACE_DUMP_CONFIG_PRESETS  if (DEBUG_TRACE_VB)               \
-  { int preset_n = this->configPresets.getNumChildren() ; while (preset_n--) \
-    Trace::DumpConfig(this->configPresets.getChild(preset_n) , "presets") ;  }
+#  define DEBUG_TRACE_DUMP_CONFIG_ROOT     if (DEBUG_TRACE_VB) Trace::DumpConfig(this->root    , "root"    ) ;
+#  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE if (DEBUG_TRACE_VB) Trace::DumpConfig(this->config  , "volatile") ;
+#  define DEBUG_TRACE_DUMP_CONFIG_CAMERAS  if (DEBUG_TRACE_VB) Trace::DumpConfig(this->cameras , "cameras" ) ;
+#  define DEBUG_TRACE_DUMP_CONFIG_AUDIOS   if (DEBUG_TRACE_VB) Trace::DumpConfig(this->audios  , "audios"  ) ;
+#  define DEBUG_TRACE_DUMP_CONFIG_PRESETS  if (DEBUG_TRACE_VB)         \
+  { int preset_n = this->presets.getNumChildren() ; while (preset_n--) \
+    Trace::DumpConfig(this->presets.getChild(preset_n) , "presets") ;  }
 
 
 /* state */
 
-#  define DEBUG_TRACE_CONFIG_TREE_CHANGED                        \
-  String parent_id = String(a_node.getParent().getType()) ;      \
-  String node_id   = String(a_node.getType()) ;                  \
-  String key       = String(a_key) ;                             \
-  String val       = STRING(a_node[a_key]) ;                     \
-  Trace::TraceEvent("value changed for "                       + \
-                    parent_id + "['"     + node_id + "'] => '" + \
-                    key       + "' => '" + val     + "'"       ) ;
+#  define DEBUG_TRACE_CONFIG_TREE_CHANGED                                                \
+  String parent_id = String(a_node.getParent().getType()) ;                              \
+  String node_id   = String(a_node.getType()) ;                                          \
+  String key       = String(a_key) ;                                                     \
+  String val       = STRING(a_node[a_key]) ;                                             \
+  Trace::TraceEvent("value changed for " + node_id + "['" + key + "'] => '" + val + "'") ;
 
 #define DEBUG_TRACE_DETECT_CAPTURE_DEVICES                                                             \
-  bool is_bogus_cam = cameraDevices.getChild(0).getType() == Identifier("bogus-cam") ; \
-  String n_devices = String((is_bogus_cam) ? 0                             :           \
-                                             cameraDevices.getNumChildren()) ;         \
-  Trace::TraceState("detected (" + n_devices + ") capture devices") ;
+  bool is_bogus_cam = cameras.getChild(0).getType() == Identifier("bogus-cam") ; \
+  String n_devices = String((is_bogus_cam) ? 0                       :           \
+                                             cameras.getNumChildren()) ;         \
+  Trace::TraceState("detected (" + n_devices + ") capture devices")              ;
 
 #  define DEBUG_TRACE_STORE_PRESET                                 \
   Trace::TraceConfig("storing preset[" + String(preset_idx) +      \
@@ -110,7 +108,7 @@
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT         ;
 #  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE     ;
 #  define DEBUG_TRACE_DUMP_CONFIG_CAMERAS      ;
-#  define DEBUG_TRACE_DUMP_CONFIG_AUDIO        ;
+#  define DEBUG_TRACE_DUMP_CONFIG_AUDIOS       ;
 #  define DEBUG_TRACE_DUMP_CONFIG_PRESETS      ;
 #  define DEBUG_TRACE_CONFIG_TREE_CHANGED      ;
 #  define DEBUG_TRACE_DETECT_CAPTURE_DEVICES   ;

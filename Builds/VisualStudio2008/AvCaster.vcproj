@@ -143,6 +143,7 @@
         <File RelativePath="..\..\Source\Gstreamer.h"/>
         <File RelativePath="..\..\Source\MainContent.h"/>
         <File RelativePath="..\..\Source\PresetSeed.h"/>
+        <File RelativePath="..\..\Source\Preview.h"/>
         <File RelativePath="..\..\Source\Statusbar.h"/>
       </Filter>
       <Filter Name="Source">
@@ -155,6 +156,7 @@
         <File RelativePath="..\..\Source\Main.cpp"/>
         <File RelativePath="..\..\Source\MainContent.cpp"/>
         <File RelativePath="..\..\Source\PresetSeed.cpp"/>
+        <File RelativePath="..\..\Source\Preview.cpp"/>
         <File RelativePath="..\..\Source\Statusbar.cpp"/>
         <File RelativePath="..\..\Source\Trace\Trace.cpp"/>
       </Filter>

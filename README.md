@@ -85,7 +85,8 @@ a [PKGBUILD file][pkgbuild] is included in Builds/Packaging
                        libxcomposite1 libxcursor1 libxext6 libxinerama1 libxrender1
 ```
 \* Other GNU/Linux: install the corresponding libraries as above for your system
-
+#### developers
+  You will find in the Builds/Scripts directory some helpful helper scripts to aid in building and debugging.
 
 ### Similar Projects
 There were several similar projects considered for expansion before this project was launched fresh.  They all can capture and mux in audio but they capture screen only (no webcam/text/logo) and only two of them feature a real-time preview.  They are ordered roughly by feature-set from most to least capable in terms of the AvCaster project's feature requirements.

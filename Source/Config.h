@@ -16,7 +16,6 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
@@ -107,7 +106,7 @@ private:
     ScopedPointer<Label> audioBitrateLabel;
     ScopedPointer<ComboBox> audioBitrateCombo;
     ScopedPointer<GroupComponent> textGroup;
-    ScopedPointer<Label> messageLabel;
+    ScopedPointer<Label> motdLabel;
     ScopedPointer<TextEditor> motdText;
     ScopedPointer<Label> textStyleLabel;
     ScopedPointer<ComboBox> textStyleCombo;
@@ -115,7 +114,7 @@ private:
     ScopedPointer<ComboBox> textPosCombo;
     ScopedPointer<GroupComponent> interstitialGroup;
     ScopedPointer<Label> locationLabel;
-    ScopedPointer<TextEditor> locationText;
+    ScopedPointer<TextEditor> interstitialText;
     ScopedPointer<TextButton> browseButton;
     ScopedPointer<GroupComponent> outputGroup;
     ScopedPointer<Label> outputStreamLabel;

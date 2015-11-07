@@ -16,7 +16,6 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
 //[Headers] You can add your own extra header files here...
 
 #include "AvCaster.h"
@@ -36,46 +35,46 @@ Controls::Controls ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (controlGroup = new GroupComponent ("controlGroup",
-                                                          TRANS("Controls")));
-    controlGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    controlGroup->setColour (GroupComponent::textColourId, Colours::white);
-
-    addAndMakeVisible (outputToggle = new ToggleButton ("outputToggle"));
-    outputToggle->setExplicitFocusOrder (1);
-    outputToggle->setButtonText (TRANS("Broadcast"));
-    outputToggle->addListener (this);
-    outputToggle->setColour (ToggleButton::textColourId, Colours::white);
-
-    addAndMakeVisible (interstitialToggle = new ToggleButton ("interstitialToggle"));
-    interstitialToggle->setExplicitFocusOrder (2);
-    interstitialToggle->setButtonText (TRANS("Pause"));
-    interstitialToggle->addListener (this);
-    interstitialToggle->setColour (ToggleButton::textColourId, Colours::white);
+    addAndMakeVisible (controlsGroup = new GroupComponent ("controlsGroup",
+                                                           TRANS("Controls")));
+    controlsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
+    controlsGroup->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (screencapToggle = new ToggleButton ("screencapToggle"));
-    screencapToggle->setExplicitFocusOrder (3);
+    screencapToggle->setExplicitFocusOrder (1);
     screencapToggle->setButtonText (TRANS("Screen"));
     screencapToggle->addListener (this);
     screencapToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (cameraToggle = new ToggleButton ("cameraToggle"));
-    cameraToggle->setExplicitFocusOrder (4);
+    cameraToggle->setExplicitFocusOrder (2);
     cameraToggle->setButtonText (TRANS("Camera"));
     cameraToggle->addListener (this);
     cameraToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (textToggle = new ToggleButton ("textToggle"));
-    textToggle->setExplicitFocusOrder (5);
+    textToggle->setExplicitFocusOrder (3);
     textToggle->setButtonText (TRANS("Text"));
     textToggle->addListener (this);
     textToggle->setColour (ToggleButton::textColourId, Colours::white);
 
+    addAndMakeVisible (interstitialToggle = new ToggleButton ("interstitialToggle"));
+    interstitialToggle->setExplicitFocusOrder (4);
+    interstitialToggle->setButtonText (TRANS("Pause"));
+    interstitialToggle->addListener (this);
+    interstitialToggle->setColour (ToggleButton::textColourId, Colours::white);
+
     addAndMakeVisible (previewToggle = new ToggleButton ("previewToggle"));
-    previewToggle->setExplicitFocusOrder (6);
+    previewToggle->setExplicitFocusOrder (5);
     previewToggle->setButtonText (TRANS("Preview"));
     previewToggle->addListener (this);
     previewToggle->setColour (ToggleButton::textColourId, Colours::white);
+
+    addAndMakeVisible (outputToggle = new ToggleButton ("outputToggle"));
+    outputToggle->setExplicitFocusOrder (6);
+    outputToggle->setButtonText (TRANS("Broadcast"));
+    outputToggle->addListener (this);
+    outputToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (presetCombo = new ComboBox ("presetCombo"));
     presetCombo->setExplicitFocusOrder (7);
@@ -117,11 +116,6 @@ Controls::Controls ()
     presetLabel->setColour (TextEditor::textColourId, Colours::black);
     presetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (previewGroup = new GroupComponent ("previewGroup",
-                                                          TRANS("Preview")));
-    previewGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    previewGroup->setColour (GroupComponent::textColourId, Colours::white);
-
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -141,20 +135,19 @@ Controls::~Controls()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    controlGroup = nullptr;
-    outputToggle = nullptr;
-    interstitialToggle = nullptr;
+    controlsGroup = nullptr;
     screencapToggle = nullptr;
     cameraToggle = nullptr;
     textToggle = nullptr;
+    interstitialToggle = nullptr;
     previewToggle = nullptr;
+    outputToggle = nullptr;
     presetCombo = nullptr;
     configButton = nullptr;
     saveButton = nullptr;
     newButton = nullptr;
     deleteButton = nullptr;
     presetLabel = nullptr;
-    previewGroup = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -178,20 +171,19 @@ void Controls::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    controlGroup->setBounds (16, 12, getWidth() - 32, 64);
-    outputToggle->setBounds (32, 36, 80, 24);
-    interstitialToggle->setBounds (120, 36, 80, 24);
-    screencapToggle->setBounds (192, 36, 80, 24);
-    cameraToggle->setBounds (272, 36, 80, 24);
-    textToggle->setBounds (360, 36, 80, 24);
-    previewToggle->setBounds (424, 36, 80, 24);
+    controlsGroup->setBounds (16, 12, getWidth() - 32, 64);
+    screencapToggle->setBounds (32, 36, 72, 24);
+    cameraToggle->setBounds (108, 36, 76, 24);
+    textToggle->setBounds (188, 36, 52, 24);
+    interstitialToggle->setBounds (244, 36, 64, 24);
+    previewToggle->setBounds (314, 36, 78, 24);
+    outputToggle->setBounds (396, 36, 90, 24);
     presetCombo->setBounds (512, 36, 176, 24);
     configButton->setBounds (696, 36, 24, 24);
-    saveButton->setBounds (188, 36, 64, 24);
-    newButton->setBounds (276, 36, 64, 24);
-    deleteButton->setBounds (364, 36, 64, 24);
-    presetLabel->setBounds (440, 36, 80, 24);
-    previewGroup->setBounds (16, 84, getWidth() - 32, getHeight() - 100);
+    saveButton->setBounds (156, 36, 64, 24);
+    newButton->setBounds (244, 36, 64, 24);
+    deleteButton->setBounds (332, 36, 64, 24);
+    presetLabel->setBounds (412, 36, 80, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -205,23 +197,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == outputToggle)
-    {
-        //[UserButtonCode_outputToggle] -- add your button handler code here..
-
-      key = CONFIG::IS_OUTPUT_ON_ID ;
-
-        //[/UserButtonCode_outputToggle]
-    }
-    else if (buttonThatWasClicked == interstitialToggle)
-    {
-        //[UserButtonCode_interstitialToggle] -- add your button handler code here..
-
-      key = CONFIG::IS_INTERSTITIAL_ON_ID ;
-
-        //[/UserButtonCode_interstitialToggle]
-    }
-    else if (buttonThatWasClicked == screencapToggle)
+    if (buttonThatWasClicked == screencapToggle)
     {
         //[UserButtonCode_screencapToggle] -- add your button handler code here..
 
@@ -245,6 +221,14 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_textToggle]
     }
+    else if (buttonThatWasClicked == interstitialToggle)
+    {
+        //[UserButtonCode_interstitialToggle] -- add your button handler code here..
+
+      key = CONFIG::IS_INTERSTITIAL_ON_ID ;
+
+        //[/UserButtonCode_interstitialToggle]
+    }
     else if (buttonThatWasClicked == previewToggle)
     {
         //[UserButtonCode_previewToggle] -- add your button handler code here..
@@ -252,6 +236,14 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
       key = CONFIG::IS_PREVIEW_ON_ID ;
 
         //[/UserButtonCode_previewToggle]
+    }
+    else if (buttonThatWasClicked == outputToggle)
+    {
+        //[UserButtonCode_outputToggle] -- add your button handler code here..
+
+      key = CONFIG::IS_OUTPUT_ON_ID ;
+
+        //[/UserButtonCode_outputToggle]
     }
     else if (buttonThatWasClicked == configButton)
     {
@@ -291,7 +283,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
     //[UserbuttonClicked_Post]
 
-  AvCaster::SetConfig(key , value) ;
+  AvCaster::GuiChanged(key , value) ;
 
     //[/UserbuttonClicked_Post]
 }
@@ -343,6 +335,10 @@ void Controls::handleSaveButton()
   else
   {
     setCreatePresetMode(false) ; AvCaster::StorePreset(preset_name) ;
+
+#ifdef STATIC_PIPELINE
+  AvCaster::Warning("Changes will take effect after AvCaster is restarted.") ;
+#endif // STATIC_PIPELINE
   }
 }
 
@@ -386,9 +382,8 @@ DEBUG_TRACE_HANDLE_PRESETCOMBO
 
   // rename preset , restore selection , or commit preset change
   if (should_rename_preset) AvCaster::RenamePreset(preset_name) ;
-  if (should_reset_option ) loadConfig() ;
-
-  AvCaster::SetConfig(key , value) ;
+  if (!should_reset_option) AvCaster::GuiChanged(key , value) ;
+  else                      loadConfig() ;
 }
 
 void Controls::toggleControls()
@@ -396,13 +391,13 @@ void Controls::toggleControls()
   bool   is_config_pending = AvCaster::GetIsConfigPending() ;
   String group_text        = (is_config_pending) ? GUI::CONTROLS_TEXT : GUI::PRESETS_TEXT ;
 
-  this->controlGroup      ->setText(group_text) ;
-  this->outputToggle      ->setVisible(!is_config_pending) ;
-  this->interstitialToggle->setVisible(!is_config_pending) ;
+  this->controlsGroup     ->setText(group_text) ;
   this->screencapToggle   ->setVisible(!is_config_pending) ;
   this->cameraToggle      ->setVisible(!is_config_pending) ;
   this->textToggle        ->setVisible(!is_config_pending) ;
+  this->interstitialToggle->setVisible(!is_config_pending) ;
   this->previewToggle     ->setVisible(!is_config_pending) ;
+  this->outputToggle      ->setVisible(!is_config_pending) ;
   this->saveButton        ->setVisible( is_config_pending) ;
   this->newButton         ->setVisible( is_config_pending) ;
   this->deleteButton      ->setVisible( is_config_pending) ;
@@ -415,24 +410,31 @@ void Controls::loadConfig()
   StringArray preset_names = AvCaster::GetPresetsNames() ;
   int         preset_idx   = AvCaster::GetPresetIdx() ;
 
-  bool is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ON_ID      ]) ;
-  bool is_interstitial_on = bool(config_store[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
   bool is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ON_ID   ]) ;
   bool is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ON_ID      ]) ;
   bool is_text_on         = bool(config_store[CONFIG::IS_TEXT_ON_ID        ]) ;
+  bool is_interstitial_on = bool(config_store[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
   bool is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ON_ID     ]) ;
+  bool is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ON_ID      ]) ;
 
-  this->outputToggle      ->setToggleState      (is_output_on       , juce::dontSendNotification) ;
-  this->interstitialToggle->setToggleState      (is_interstitial_on , juce::dontSendNotification) ;
   this->screencapToggle   ->setToggleState      (is_screencap_on    , juce::dontSendNotification) ;
   this->cameraToggle      ->setToggleState      (is_camera_on       , juce::dontSendNotification) ;
   this->textToggle        ->setToggleState      (is_text_on         , juce::dontSendNotification) ;
+  this->interstitialToggle->setToggleState      (is_interstitial_on , juce::dontSendNotification) ;
   this->previewToggle     ->setToggleState      (is_preview_on      , juce::dontSendNotification) ;
+  this->outputToggle      ->setToggleState      (is_output_on       , juce::dontSendNotification) ;
   this->presetCombo       ->clear               (juce::dontSendNotification) ;
   this->presetCombo       ->addItemList         (preset_names , 1) ;
   this->presetCombo       ->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
 
   setCreatePresetMode(false) ;
+
+#ifdef DISABLE_CONTROLS_NYI
+this->screencapToggle   ->setEnabled(false) ;
+this->cameraToggle      ->setEnabled(false) ;
+this->textToggle        ->setEnabled(false) ;
+this->interstitialToggle->setEnabled(false) ;
+#endif // DISABLE_CONTROLS_NYI
 }
 
 bool Controls::rejectPresetChange()
@@ -479,32 +481,32 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="ff101010"/>
-  <GROUPCOMPONENT name="controlGroup" id="5f4ffe47101cb73b" memberName="controlGroup"
+  <GROUPCOMPONENT name="controlsGroup" id="5f4ffe47101cb73b" memberName="controlsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"
                   textcol="ffffffff" title="Controls"/>
-  <TOGGLEBUTTON name="outputToggle" id="22cf1f64bccae1df" memberName="outputToggle"
-                virtualName="" explicitFocusOrder="1" pos="32 36 80 24" txtcol="ffffffff"
-                buttonText="Broadcast" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <TOGGLEBUTTON name="interstitialToggle" id="6a66a5d35080c1cd" memberName="interstitialToggle"
-                virtualName="" explicitFocusOrder="2" pos="120 36 80 24" txtcol="ffffffff"
-                buttonText="Pause" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
   <TOGGLEBUTTON name="screencapToggle" id="ccd6f9830703071b" memberName="screencapToggle"
-                virtualName="" explicitFocusOrder="3" pos="192 36 80 24" txtcol="ffffffff"
+                virtualName="" explicitFocusOrder="1" pos="32 36 72 24" txtcol="ffffffff"
                 buttonText="Screen" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="cameraToggle" id="844fe21cdd50ef0b" memberName="cameraToggle"
-                virtualName="" explicitFocusOrder="4" pos="272 36 80 24" txtcol="ffffffff"
+                virtualName="" explicitFocusOrder="2" pos="108 36 76 24" txtcol="ffffffff"
                 buttonText="Camera" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="textToggle" id="a63786623ec66379" memberName="textToggle"
-                virtualName="" explicitFocusOrder="5" pos="360 36 80 24" txtcol="ffffffff"
+                virtualName="" explicitFocusOrder="3" pos="188 36 52 24" txtcol="ffffffff"
                 buttonText="Text" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
+  <TOGGLEBUTTON name="interstitialToggle" id="6a66a5d35080c1cd" memberName="interstitialToggle"
+                virtualName="" explicitFocusOrder="4" pos="244 36 64 24" txtcol="ffffffff"
+                buttonText="Pause" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
   <TOGGLEBUTTON name="previewToggle" id="692b72b8aa04c022" memberName="previewToggle"
-                virtualName="" explicitFocusOrder="6" pos="424 36 80 24" txtcol="ffffffff"
+                virtualName="" explicitFocusOrder="5" pos="314 36 78 24" txtcol="ffffffff"
                 buttonText="Preview" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
+  <TOGGLEBUTTON name="outputToggle" id="22cf1f64bccae1df" memberName="outputToggle"
+                virtualName="" explicitFocusOrder="6" pos="396 36 90 24" txtcol="ffffffff"
+                buttonText="Broadcast" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <COMBOBOX name="presetCombo" id="94d77976c2b2f37" memberName="presetCombo"
             virtualName="" explicitFocusOrder="7" pos="512 36 176 24" editable="1"
@@ -516,22 +518,19 @@ BEGIN_JUCER_METADATA
                resourceOver="confighover_png" opacityOver="1" colourOver="0"
                resourceDown="configpushed_png" opacityDown="1" colourDown="0"/>
   <TEXTBUTTON name="saveButton" id="b669a1abab5602e9" memberName="saveButton"
-              virtualName="" explicitFocusOrder="9" pos="188 36 64 24" buttonText="Save"
+              virtualName="" explicitFocusOrder="9" pos="156 36 64 24" buttonText="Save"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="newButton" id="693a3f523732acb3" memberName="newButton"
-              virtualName="" explicitFocusOrder="10" pos="276 36 64 24" buttonText="New"
+              virtualName="" explicitFocusOrder="10" pos="244 36 64 24" buttonText="New"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="deleteButton" id="846aa62a47585ee2" memberName="deleteButton"
-              virtualName="" explicitFocusOrder="11" pos="364 36 64 24" buttonText="Delete"
+              virtualName="" explicitFocusOrder="11" pos="332 36 64 24" buttonText="Delete"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="presetLabel" id="3a60504146c5134" memberName="presetLabel"
-         virtualName="" explicitFocusOrder="0" pos="440 36 80 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="412 36 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Preset:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <GROUPCOMPONENT name="previewGroup" id="6607ba656d5c8919" memberName="previewGroup"
-                  virtualName="" explicitFocusOrder="0" pos="16 84 32M 100M" outlinecol="ffffffff"
-                  textcol="ffffffff" title="Preview"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

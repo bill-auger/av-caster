@@ -1,0 +1,8 @@
+#!/bin/bash
+
+APP_ROOT_DIR=`pwd`
+
+
+cd Builds/GnuMakefile && make clean
+cd $APP_ROOT_DIR
+./mk

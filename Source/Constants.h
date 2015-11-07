@@ -21,14 +21,18 @@
 #define CONSTANTS_H_INCLUDED
 
 // enable standard features
-// #  define DISPLAY_ALERTS
+// #  define SUPRESS_ALERTS
 #  define CONFIGURE_TEXT_BIN         0
 #  define CONFIGURE_INTERSTITIAL_BIN 0
-#  define CONFIGURE_OUTPUT_BIN       1
+#  define DISABLE_CONTROLS_NYI
 
 // debugging tweaks and kludges
 #  define INJECT_DEFAULT_CAMERA_DEVICE_INFO
 #  define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
+#  define RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
+// #  define DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
+// #  define DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
+#  define STATIC_PIPELINE
 // #  define FAUX_SCREEN                   // replace sceen-real-source with fakesrc
 // #  define FAUX_CAMERA                   // replace camera-real-source with fakesrc
 // #  define FAUX_AUDIO                    // replace audio-real-source with fakesrc
@@ -53,6 +57,7 @@
 #define DEBUG_TRACE        DEBUG_DEFINED && 1
 #define DEBUG_TRACE_EVENTS DEBUG_DEFINED && 1
 #define DEBUG_TRACE_GUI    DEBUG_DEFINED && 1
+#define DEBUG_TRACE_MEDIA  DEBUG_DEFINED && 1
 #define DEBUG_TRACE_CONFIG DEBUG_DEFINED && 1
 #define DEBUG_TRACE_STATE  DEBUG_DEFINED && 1
 #define DEBUG_TRACE_VB     DEBUG_DEFINED && 0
@@ -69,6 +74,7 @@ namespace APP
   static const String APP_NAME         = "AvCaster" ;
   static const String JACK_CLIENT_NAME = APP_NAME ;
   static const String VALID_ID_CHARS   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_- " ;
+  static const String VALID_URI_CHARS  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.:/ " ;
   static const String DIGITS           = "0123456789" ;
 
   // timers
@@ -108,9 +114,8 @@ namespace GUI
 {
   // common
   static const int    PAD                 = 4 ;
-  static const int    PAD2                = PAD * 2 ;
-  static const int    PAD3                = PAD * 3 ;
-  static const int    PAD4                = PAD * 4 ;
+  static const int    PAD4                = (PAD * 4) ;
+  static const int    PAD8                = (PAD * 8) ;
   static const Colour TEXT_BG_COLOR       = Colour(0xFF000000) ;
   static const Colour TEXT_FG_COLOR       = Colour(0xFFBBBBFF) ;
   static const Colour TEXT_CARET_COLOR    = Colour(0xFFFFFFFF) ;
@@ -118,40 +123,25 @@ namespace GUI
   static const Colour TEXT_HILITE_COLOR   = Colour(0xFFFFFFFF) ;
   static const Colour TEXT_DISABLED_COLOR = Colour(0xFF808080) ;
 
-  // Main
-  static const int BORDERS_W  = 2 ;
-  static const int TITLEBAR_H = 24 ;
-  static const int WINDOW_W   = 760 - BORDERS_W ;
-  static const int WINDOW_H   = 720 - BORDERS_W - TITLEBAR_H ;
+  // MainWindow
+  static const int TITLEBAR_H  = 24 ;
 
   // Background
   static const String BACKGROUND_GUI_ID = "statusbar-gui" ;
 
-  // StatusBar
-  static const String STATUSBAR_GUI_ID  = "statusbar-gui" ;
-  static const String INIT_STATUS_TEXT  = "Initializing" ;
-  static const String READY_STATUS_TEXT = "Ready" ;
-  static const int    STATUSBAR_H       = 24 ;
-  static const int    STATUSBAR_Y       = WINDOW_H - STATUSBAR_H - PAD ;
-
   // MainContent
   static const String CONTENT_GUI_ID = "main-content-gui" ;
-  static const int    CONTENT_W      = WINDOW_W - PAD2 ;
-  static const int    CONTENT_H      = WINDOW_H - STATUSBAR_H - PAD3 ;
 
   // Controls
   static const String CONTROLS_GUI_ID = "controls-gui" ;
   static const String CONTROLS_TEXT   = "Controls" ;
   static const String PRESETS_TEXT    = "Presets" ;
-  static const int    PREVIEW_X       = PAD4 + PAD4 ;
-  static const int    PREVIEW_Y       = TITLEBAR_H + 64  + PAD4 + PAD2 ;
-  static const int    PREVIEW_W       = CONTENT_W  - 32  - PAD4 - PAD2 ;
-  static const int    PREVIEW_H       = CONTENT_H  - 100 + PAD2 ;
+
+  // Preview
+  static const String PREVIEW_GUI_ID = "preview-gui" ;
 
   // Config
   static const String CONFIG_GUI_ID          = "config-gui" ;
-  static const int    CONFIG_H               = CONTENT_H - 80 ;
-  static const int    CONFIG_Y               = WINDOW_H - CONFIG_H - STATUSBAR_H - PAD2 ;
   static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
   static const String DELETE_BTN_DELETE_TEXT = "Delete" ;
   static const String DELETE_BTN_RESET_TEXT  = "Reset" ;
@@ -163,13 +153,19 @@ namespace GUI
   static const String DEST_RTMP_TEXT         = "URI:" ;
   static const String DEST_LCTV_TEXT         = "Stream Key:" ;
 
+  // StatusBar
+  static const String STATUSBAR_GUI_ID  = "statusbar-gui" ;
+  static const String INIT_STATUS_TEXT  = "Initializing" ;
+  static const String READY_STATUS_TEXT = "Ready" ;
+
   // alerts
   enum         AlertType { ALERT_TYPE_WARNING , ALERT_TYPE_ERROR } ;
   static const String    MODAL_WARNING_TITLE = APP::APP_NAME + " Warning" ;
   static const String    MODAL_ERROR_TITLE   = APP::APP_NAME + " Error" ;
 
   // user error messages
-  static const String GST_INIT_ERROR_MSG          = "Error creating static GstElements." ;
+  static const String GST_INIT_ERROR_MSG          = "Error initializing gStreamer." ;
+  static const String GST_PIPELINE_INIT_ERROR_MSG = "Error creating static GstElements." ;
   static const String GST_ADD_ERROR_MSG           = "Error adding static GstElements to the pipeline." ;
   static const String GST_CONFIG_ERROR_MSG        = "Error configuring dynamic GstElements." ;
   static const String GST_XWIN_ERROR_MSG          = "Error attaching gStreamer to native x-window." ;
@@ -237,9 +233,9 @@ namespace CONFIG
 |*|   IS_SCREENCAP_ON_ID:    a_bool   ,
 |*|   IS_CAMERA_ON_ID:       a_bool   ,
 |*|   IS_TEXT_ON_ID:         a_bool   ,
+|*|   IS_AUDIO_ON_ID:        a_bool   ,
 |*|   IS_INTERSTITIAL_ON_ID: a_bool   ,
 |*|   IS_PREVIEW_ON_ID:      a_bool   ,
-|*|   IS_AUDIO_ON_ID:        a_bool   ,
 |*|   IS_OUTPUT_ON_ID:       a_bool   ,
 |*|   // screen IDs
 |*|   DISPLAY_N_ID:          an_int   ,
@@ -263,7 +259,7 @@ namespace CONFIG
 |*|   TEXT_STYLE_ID:         an_int   ,
 |*|   TEXT_POSITION_ID:      an_int   ,
 |*|   // interstitial IDs
-|*|   INTERSTITIAL_TEXT_ID:  a_string ,
+|*|   INTERSTITIAL_ID:       a_string ,
 |*|   // output IDs
 |*|   OUTPUT_SINK_ID:        an_int   ,
 |*|   OUTPUT_MUXER_ID:       an_int   ,
@@ -341,7 +337,7 @@ namespace CONFIG
   static const Identifier TEXT_STYLE_ID         = "text-style-idx" ;
   static const Identifier TEXT_POSITION_ID      = "text-pos-idx" ;
   // interstitial IDs
-  static const Identifier INTERSTITIAL_LOC_ID   = "interstitial-img" ;
+  static const Identifier INTERSTITIAL_ID       = "interstitial-img" ;
   // output IDs
   static const Identifier OUTPUT_SINK_ID        = "output-sink-idx" ;
   static const Identifier OUTPUT_MUXER_ID       = "output-muxer-idx" ;
@@ -369,7 +365,11 @@ namespace CONFIG
   static const String     LCTV_PRESET_NAME           = "livecoding.tv" ;
   static const String     DEFAULT_PRESET_NAME        = FILE_PRESET_NAME ;
   static const Identifier DEFAULT_PRESET_ID          = FilterId(DEFAULT_PRESET_NAME) ;
+#ifdef DISABLE_CONTROLS_NYI
+  static const bool       DEFAULT_IS_SCREENCAP_ON    = true ;
+#else // DISABLE_CONTROLS_NYI
   static const bool       DEFAULT_IS_SCREENCAP_ON    = false ;
+#endif // DISABLE_CONTROLS_NYI
   static const bool       DEFAULT_IS_CAMERA_ON       = false ;
   static const bool       DEFAULT_IS_TEXT_ON         = false ;
   static const bool       DEFAULT_IS_INTERSTITIAL_ON = true ;

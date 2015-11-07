@@ -138,6 +138,7 @@
     <ClCompile Include="..\..\Source\Main.cpp"/>
     <ClCompile Include="..\..\Source\MainContent.cpp"/>
     <ClCompile Include="..\..\Source\PresetSeed.cpp"/>
+    <ClCompile Include="..\..\Source\Preview.cpp"/>
     <ClCompile Include="..\..\Source\Statusbar.cpp"/>
     <ClCompile Include="..\..\Source\Trace\Trace.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_Base64.cpp">
@@ -918,6 +919,7 @@
     <ClInclude Include="..\..\Source\Gstreamer.h"/>
     <ClInclude Include="..\..\Source\MainContent.h"/>
     <ClInclude Include="..\..\Source\PresetSeed.h"/>
+    <ClInclude Include="..\..\Source\Preview.h"/>
     <ClInclude Include="..\..\Source\Statusbar.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_Base64.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharacterFunctions.h"/>

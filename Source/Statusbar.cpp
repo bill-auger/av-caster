@@ -16,7 +16,6 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
 //[Headers] You can add your own extra header files here...
 //[/Headers]
 
@@ -78,7 +77,7 @@ Statusbar::Statusbar ()
 
     //[/UserPreSize]
 
-    setSize (622, 24);
+    setSize (1, 1);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -173,7 +172,7 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="Statusbar" componentName="Statusbar"
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="622" initialHeight="24">
+                 fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
     <ROUNDRECT pos="0 0 0M 0M" cornerSize="10" fill="solid: ff181818" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffffffff"/>

@@ -24,6 +24,7 @@
       <FILE id="o1VbMJ" name="Gstreamer.h" compile="0" resource="0" file="Source/Gstreamer.h"/>
       <FILE id="U6Fm4Z" name="MainContent.h" compile="0" resource="0" file="Source/MainContent.h"/>
       <FILE id="Fz2IkW" name="PresetSeed.h" compile="0" resource="0" file="Source/PresetSeed.h"/>
+      <FILE id="Ks1yxc" name="Preview.h" compile="0" resource="0" file="Source/Preview.h"/>
       <FILE id="X0O50Z" name="Statusbar.h" compile="0" resource="0" file="Source/Statusbar.h"/>
     </GROUP>
     <GROUP id="{B76039D2-8BDF-7740-0816-1A69395E900D}" name="Source">
@@ -37,6 +38,7 @@
       <FILE id="CQoHWx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="eLauah" name="MainContent.cpp" compile="1" resource="0" file="Source/MainContent.cpp"/>
       <FILE id="yA08dL" name="PresetSeed.cpp" compile="1" resource="0" file="Source/PresetSeed.cpp"/>
+      <FILE id="LaU84G" name="Preview.cpp" compile="1" resource="0" file="Source/Preview.cpp"/>
       <FILE id="XuwkKa" name="Statusbar.cpp" compile="1" resource="0" file="Source/Statusbar.cpp"/>
       <FILE id="iZf5Wa" name="Trace.cpp" compile="1" resource="0" file="Source/Trace/Trace.cpp"/>
     </GROUP>

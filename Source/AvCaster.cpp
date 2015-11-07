@@ -37,6 +37,8 @@ bool          AvCaster::IsAlertModal = false ;   // Warning() , Error()
 
 /* AvCaster public class methods */
 
+void AvCaster::SetStatusL(String status_text) { Gui->statusbar->setStatusL(status_text) ; }
+
 void AvCaster::Warning(String message_text)
 {
   Alerts.add(new Alert(GUI::ALERT_TYPE_WARNING , message_text)) ;
@@ -56,11 +58,19 @@ ModalComponentManager::Callback* AvCaster::GetModalCb()
 
 void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
+Rectangle<int> AvCaster::GetPreviewBounds() { return Gui->getPreviewBounds() ; }
+
+void AvCaster::GuiChanged(Identifier a_key , var a_value)
+{
+DEBUG_TRACE_GUI_CHANGED
+
+  SetConfig(a_key , a_value) ;
+}
+
 void AvCaster::SetConfig(Identifier a_key , var a_value)
 {
-  ValueTree storage_node = (a_key == CONFIG::PRESET_ID          ||
-                            a_key == CONFIG::IS_CONFIG_PENDING_ID) ? Store->configRoot  :
-                                                                     Store->configStore ;
+  ValueTree storage_node = Store->getKeyNode(a_key) ;
+
 DEBUG_TRACE_SET_CONFIG
 
   if (a_key.isValid()) storage_node.setProperty(a_key , a_value , nullptr) ;
@@ -74,20 +84,20 @@ void AvCaster::DeletePreset() { Store->deletePreset() ; }
 
 void AvCaster::ResetPreset() { Store->resetPreset() ; }
 
-ValueTree AvCaster::GetConfigStore() { return Store->configStore ; }
+ValueTree AvCaster::GetConfigStore() { return Store->config ; }
 
 bool AvCaster::IsStaticPreset() { return AvCaster::GetPresetIdx() < CONFIG::N_STATIC_PRESETS ; }
 
-int AvCaster::GetPresetIdx() { return int(Store->configRoot[CONFIG::PRESET_ID]) ; }
+int AvCaster::GetPresetIdx() { return int(Store->root[CONFIG::PRESET_ID]) ; }
 
 String AvCaster::GetPresetName()
 {
-  ValueTree current_preset = Store->configPresets.getChild(GetPresetIdx()) ;
+  ValueTree current_preset = Store->presets.getChild(GetPresetIdx()) ;
 
   return STRING(current_preset[CONFIG::PRESET_NAME_ID]) ;
 }
 
-bool AvCaster::GetIsConfigPending() { return bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ; }
+bool AvCaster::GetIsConfigPending() { return bool(Store->root[CONFIG::IS_CONFIG_PENDING_ID]) ; }
 
 StringArray AvCaster::GetPresetsNames() { return Store->presetsNames() ; }
 
@@ -99,7 +109,7 @@ StringArray AvCaster::GetCameraResolutions() { return Store->getCameraResolution
 
 String AvCaster::GetCameraResolution()
 {
-  int         resolution_n = int(Store->configStore[CONFIG::CAMERA_RES_ID]) ;
+  int         resolution_n = int(Store->config[CONFIG::CAMERA_RES_ID]) ;
   StringArray resolutions  = Store->getCameraResolutions() ;
 
   return resolutions[resolution_n] ;
@@ -139,9 +149,7 @@ DEBUG_TRACE_INIT_PHASE_2
 DEBUG_TRACE_INIT_PHASE_3
 
   // instantiate GUI
-  Gui->instantiate(Store->configRoot    , Store->configStore ,
-                   Store->cameraDevices , Store->audioDevices) ;
-  RefreshGui() ;
+  Gui->instantiate() ; RefreshGui() ;
 
 DEBUG_TRACE_INIT_PHASE_4
 
@@ -150,9 +158,12 @@ DEBUG_TRACE_INIT_PHASE_4
 
 DEBUG_TRACE_INIT_PHASE_5
 
-  Gui->statusbar->setStatusL(GUI::READY_STATUS_TEXT) ;
-
   if (!HandleCliParams()) return false ;
+
+  SetStatusL(GUI::READY_STATUS_TEXT) ;
+
+  // subscribe to model change events
+  Store->listen(true) ;
 
   return true ;
 }
@@ -191,23 +202,32 @@ void AvCaster::UpdateStatusGUI()
 
 void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
-  if      (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
-           a_key == CONFIG::PRESET_ID             ) RefreshGui() ;
-  else if (Gstreamer::Reconfigure(a_key))           StorePreset(GetPresetName()) ;
-  else                                              Store->toogleControl(a_key) ;
+  if (!Store->isControlKey(a_key)) return ;
+
+  bool is_config_pending = bool(Store->root[CONFIG::IS_CONFIG_PENDING_ID]) ;
+
+  if (Gstreamer::Reconfigure(a_key , is_config_pending))
+  {
+    StorePreset(GetPresetName()) ;
+
+    if (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
+        a_key == CONFIG::PRESET_ID             ) RefreshGui() ;
+  }
+  else
+  {
+    Store->toogleControl(a_key) ; return ;
+  }
 }
 
 void AvCaster::RefreshGui()
 {
 DEBUG_TRACE_REFRESH_GUI
 
-  bool is_config_pending = bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ;
+  bool is_config_pending = bool(Store->root[CONFIG::IS_CONFIG_PENDING_ID]) ;
 
-  Gui->background->toFront(true) ;
-  if (is_config_pending) { Gui->controls->toFront(true) ; Gui->config  ->toFront(true) ; }
-  else                   { Gui->config  ->toFront(true) ; Gui->controls->toFront(true) ; }
-
-  if (!is_config_pending) Gstreamer::ConfigurePipeline() ;
+  Gui->background->toFront(true) ; Gui->controls->toFront(true) ;
+  if (is_config_pending) { Gui->preview->toFront(true) ; Gui->config ->toFront(true) ; }
+  else                   { Gui->config ->toFront(true) ; Gui->preview->toFront(true) ; }
 }
 
 bool AvCaster::HandleCliParams()
@@ -219,13 +239,13 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
   { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG)) ; return false ; }
   else if (CliParams.contains(APP::CLI_PRESETS_TOKEN))
   {
-    int n_presets = Store->configPresets.getNumChildren() ; if (n_presets == 0) return false ;
+    int n_presets = Store->presets.getNumChildren() ; if (n_presets == 0) return false ;
 
     // dump preset indices and names then quit
     printf("Presets:\n") ;
-    for (int preset_n = 0  ; preset_n < n_presets ; ++preset_n)
+    for (int preset_n = 0 ; preset_n < n_presets ; ++preset_n)
     {
-      ValueTree preset      = Store->configPresets.getChild(preset_n) ;
+      ValueTree preset      = Store->presets.getChild(preset_n) ;
       String    preset_name = STRING(preset[CONFIG::PRESET_NAME_ID]) ;
       printf("\t%d: \"%s\"\n" , preset_n , CHARSTAR(preset_name)) ;
     }
@@ -237,7 +257,7 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
     // set initial preset from cli param
     int token_idx  = CliParams.indexOf(APP::CLI_PRESET_TOKEN) ;
     int preset_idx = CliParams[token_idx + 1].getIntValue() ;
-DBG("preloading preset_n=" + preset_idx) ;
+
     if (~preset_idx) SetConfig(CONFIG::PRESET_ID , preset_idx) ;
   }
 
@@ -248,19 +268,25 @@ bool AvCaster::ValidateEnvironment()
 {
 DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
-  return APP::HOME_DIR   .isDirectory()           &&
-         APP::APPDATA_DIR.isDirectory()           &&
-         APP::VIDEOS_DIR .isDirectory()            ;
+  return APP::HOME_DIR   .isDirectory() &&
+         APP::APPDATA_DIR.isDirectory() &&
+         APP::VIDEOS_DIR .isDirectory()  ;
 }
 
 void AvCaster::DisplayAlert()
 {
+if (Alerts.size()) DBG("AvCaster::DisplayAlert() Alerts.size()=" + String(Alerts.size())) ;
+
   if (IsAlertModal || Alerts.size() == 0) return ;
 
   GUI::AlertType message_type = Alerts[0]->messageType ;
   String         message_text = Alerts[0]->messageText ;
 
-DISPLAY_ALERT
+DEBUG_TRACE_DISPLAY_ALERT
+
+#ifdef SUPRESS_ALERTS
+Alerts.remove(0) ; return ;
+#endif // SUPRESS_ALERTS
 
   switch (message_type)
   {

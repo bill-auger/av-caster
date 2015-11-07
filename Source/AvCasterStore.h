@@ -73,6 +73,7 @@ private:
   void resetPreset                () ;
 
   // event handlers
+  void listen                  (bool should_listen) ;
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
   // unused ValueTree::Listener interface implementations
@@ -89,6 +90,8 @@ private:
 //   void valueTreeRedirected       (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
 
   // getters/setters
+  ValueTree   getKeyNode          (const Identifier& a_key) ;
+  bool        isControlKey        (const Identifier& a_key) ;
   StringArray presetsNames        () ;
   StringArray devicesNames        (Identifier a_node_id) ;
   StringArray cameraNames         () ;
@@ -99,11 +102,11 @@ private:
 
 
   // configuration/persistence
-  ValueTree configRoot ;    // config root           (STORAGE_ID node)
-  ValueTree configPresets ; // persistent GUI config (PRESETS_ID node)
-  ValueTree configStore ;   // volatile GUI config   (VOLATILE_CONFIG_ID node)
-  ValueTree cameraDevices ; // video devices info    (CAMERA_DEVICES_ID node)
-  ValueTree audioDevices ;  // audio devices info    (AUDIO_DEVICES_ID node)
+  ValueTree root ;    // config root           (STORAGE_ID node)
+  ValueTree presets ; // persistent GUI config (PRESETS_ID node)
+  ValueTree config ;  // volatile GUI config   (VOLATILE_CONFIG_ID node)
+  ValueTree cameras ; // video devices info    (CAMERA_DEVICES_ID node)
+  ValueTree audios ;  // audio devices info    (AUDIO_DEVICES_ID node)
   File      configDir ;
   File      configFile ;
 } ;

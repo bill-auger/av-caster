@@ -78,6 +78,7 @@ OBJECTS := \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainContent_6313eee1.o \
   $(OBJDIR)/PresetSeed_7897bb79.o \
+  $(OBJDIR)/Preview_b7601029.o \
   $(OBJDIR)/Statusbar_a0c28bc2.o \
   $(OBJDIR)/Trace_fd3024bc.o \
   $(OBJDIR)/juce_core_aff681cc.o \
@@ -146,6 +147,11 @@ $(OBJDIR)/MainContent_6313eee1.o: ../../Source/MainContent.cpp
 $(OBJDIR)/PresetSeed_7897bb79.o: ../../Source/PresetSeed.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling PresetSeed.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/Preview_b7601029.o: ../../Source/Preview.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Preview.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Statusbar_a0c28bc2.o: ../../Source/Statusbar.cpp

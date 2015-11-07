@@ -48,23 +48,27 @@
   if (is_err) Trace::TraceError(dbg) ; else Trace::TraceState("environment is sane")       ;
 
 #  define DEBUG_TRACE_REFRESH_GUI                                                   \
-  bool should_show_config = bool(Store->configRoot[CONFIG::IS_CONFIG_PENDING_ID]) ; \
+  bool should_show_config = bool(Store->root[CONFIG::IS_CONFIG_PENDING_ID]) ; \
   String gui = (should_show_config) ? "Config" : "Controls" ;                       \
   Trace::TraceState("showing " + gui + " GUI") ;
 
 
 /* helpers */
 
-#  define DEBUG_TRACE_SET_CONFIG                                                     \
-  String key = (a_key.isValid()) ? String(a_key) : String("NULL") ;                  \
-  Trace::TraceVerbose("SetConfig() event: " + key                         + " => " + \
-                                              STRING(storage_node[a_key]) + " => " + \
-                                              STRING(a_value)                      ) ;
+#  define DEBUG_CONFIG_CHANGE_MSG                                             \
+  String    key        = (a_key.isValid()) ? String(a_key) : String("NULL") ; \
+  ValueTree node       = Store->getKeyNode(a_key) ;                           \
+  String    change_msg = "key '"             + key                 +          \
+                         "' changing from '" + STRING(node[a_key]) +          \
+                         "' to '"            + STRING(a_value    ) + "'"      ;
 
-#  define DISPLAY_ALERT                                                                  \
+#  define DEBUG_TRACE_GUI_CHANGED DEBUG_CONFIG_CHANGE_MSG Trace::TraceGui("gui " + change_msg) ;
+
+#  define DEBUG_TRACE_SET_CONFIG DEBUG_CONFIG_CHANGE_MSG Trace::TraceVerbose("config " + change_msg) ;
+
+#  define DEBUG_TRACE_DISPLAY_ALERT                                                     \
   if      (message_type == GUI::ALERT_TYPE_WARNING) Trace::TraceWarning(message_text) ; \
-  else if (message_type == GUI::ALERT_TYPE_ERROR  ) Trace::TraceError  (message_text) ; \
-  Alerts.remove(0) ; return ;
+  else if (message_type == GUI::ALERT_TYPE_ERROR  ) Trace::TraceError  (message_text)   ;
 
 #else // DEBUG
 
@@ -76,8 +80,9 @@
 #  define DEBUG_TRACE_HANDLE_CLI_PARAMS    ;
 #  define DEBUG_TRACE_VALIDATE_ENVIRONMENT ;
 #  define DEBUG_TRACE_REFRESH_GUI          ;
+#  define DEBUG_TRACE_GUI_CHANGED          ;
 #  define DEBUG_TRACE_SET_CONFIG           ;
-#  define DISPLAY_ALERT                    ;
+#  define DEBUG_TRACE_DISPLAY_ALERT        ;
 
 #endif // DEBUG
 #endif  // TRACEAVCASTER_H_INCLUDED
