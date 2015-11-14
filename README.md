@@ -58,26 +58,26 @@ If AvCaster refuses to launch after changing some parameters in the GUI you can 
 Feel free to to post any questions or comments to the [AvCaster issue tracker](https://github.com/bill-auger/av-caster/issues) and you can visit the home page of the [AvCaster wiki](https://github.com/bill-auger/av-caster/wiki) for updates.
 
 
-### Building from source
+### Building from Source
 \* ArchLinux:
 a [PKGBUILD file][pkgbuild] is included in Builds/Packaging
-#### build dependencies
+#### Build Dependencies
 \* Debian/Ubuntu:
 ```
 # NOTE: AvCaster builds against gStreamer1.0 base libraries
 #           and requires gStreamer version 1.4 or greater to run.
 
-  sudo apt-get install libfreetype6-dev libgstreamer-plugins-base1.0-dev libx11-dev \
-                       libxcursor-dev libxinerama-dev
+  sudo apt-get install build-essential libfreetype6-dev libgstreamer-plugins-base1.0-dev \
+                       libx11-dev libxcursor-dev libxinerama-dev
 ```
 \* Other GNU/Linux: install the corresponding libraries as above for your system
-#### compile
+#### Compile
 ```
   cd Builds/GnuMakefile
   make CONFIG=Release
   ./build/av-caster
 ```
-#### runtime dependencies
+#### Runtime Dependencies
 \* Debian/Ubuntu:
 ```
   sudo apt-get install freeglut3 gstreamer1.0-plugins-bad gstreamer1.0-plugins-good    \
@@ -85,8 +85,17 @@ a [PKGBUILD file][pkgbuild] is included in Builds/Packaging
                        libxcomposite1 libxcursor1 libxext6 libxinerama1 libxrender1
 ```
 \* Other GNU/Linux: install the corresponding libraries as above for your system
-#### developers
-  You will find in the Builds/Scripts directory some helpful helper scripts to aid in building and debugging.
+#### Developers and Designers
+You will find in the Builds/Scripts directory some helper scripts to aid in building and debugging this application. Note that we are currently locked at JUCE v3.1.1 until [an issue affecting scaled monitor resolutions](http://www.juce.com/forum/topic/juce-v320-and-v401-apps-window-not-visible-scaled-monitor-resolutions) is resolved. This is not relevant to most development tasks, but if you must use the Introjucer GUI builder for design or project maintenance, please compile it from [this branch](https://github.com/bill-auger/JUCE/tree/v3-1-1).
+```
+# To build the Introjucer GUI builder and project manager:
+
+  $ git clone --depth 1 https://github.com/bill-auger/JUCE.git
+  $ git checkout v3-1-1
+  $ cd JUCE/extras/Introjucer/Builds/Linux/
+  $ make
+  $ ./build/Introjucer
+```
 
 ### Similar Projects
 There were several similar projects considered for expansion before this project was launched fresh.  They all can capture and mux in audio but they capture screen only (no webcam/text/logo) and only two of them feature a real-time preview.  They are ordered roughly by feature-set from most to least capable in terms of the AvCaster project's feature requirements.
