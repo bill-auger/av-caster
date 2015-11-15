@@ -19,9 +19,9 @@ backup=()
 options=()
 install=
 changelog=
-source=("https://github.com/bill-auger/av-caster/archive/master.zip")
+source=('https://github.com/bill-auger/av-caster/archive/av-caster-0.15.tar.gz')
 noextract=()
-md5sums=('6f117e3d28a3cfdb6632c10da86ea59a')
+md5sums=('ddc79b743aa9a23e65ae92872d7f2a36')
 validpgpkeys=()
 
 #prepare() {}
