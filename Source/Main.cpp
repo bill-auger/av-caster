@@ -30,10 +30,9 @@ public:
 
   void initialise(const String& command_line) override
   {
-    this->mainWindow          = new MainWindow(this) ;
-    MainContent* main_content = (MainContent*)this->mainWindow->mainContent ;
+    this->mainWindow = new MainWindow() ;
 
-    if (AvCaster::Initialize(main_content))
+    if (AvCaster::Initialize(this->mainWindow->mainContent))
     {
       // start GUI update timers
 //       startTimer(APP::GUI_TIMER_HI_ID  , APP::GUI_UPDATE_HI_IVL ) ;
@@ -79,15 +78,10 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
   public:
 
-    MainWindow(AvCasterApplication* app) : DocumentWindow(APP::APP_NAME             ,
-                                                          Colour(0xff202020)        ,
-                                                          DocumentWindow::allButtons)
+    MainWindow() : DocumentWindow(APP::APP_NAME , Colour(0xff202020) , GUI::TITLEBAR_BTNS)
     {
-      this->app = app ;
-
       // main content
-      this->mainContent = new MainContent(this) ;
-      this->mainContent->setComponentID(GUI::CONTENT_GUI_ID) ;
+      this->mainContent = new MainContent() ;
       setContentOwned(this->mainContent , true) ;
 
       // this main desktop window
@@ -102,12 +96,14 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
     ~MainWindow() { this->mainContent = nullptr ; }
 
-    void closeButtonPressed() override { this->app->systemRequestedQuit() ; }
+    void closeButtonPressed() override
+    {
+      JUCEApplicationBase::getInstance()->systemRequestedQuit() ;
+    }
 
 
   private:
 
-    AvCasterApplication*       app ;
     ScopedPointer<MainContent> mainContent ;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)

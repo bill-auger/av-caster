@@ -43,6 +43,12 @@ String GstPadId(GstPad* a_pad)
   return pad_id ;
 }
 
+#  define DEBUG_RTMP_DEST_ERROR_MSG "AVCASTER_RTMP_DEST must be defined in the environment " \
+                                    "in order to use RTMP output with the debug build\n\n"   \
+                                    "the \"Destination\" textbox is overridden so that "     \
+                                    "the developer's stream key is not broadcasted\n\n"      \
+                                    "falling back on file output"
+
 
 /* state */
 

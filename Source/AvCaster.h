@@ -103,6 +103,7 @@ private:
   static void UpdateStatusGUI    () ;
   static void HandleConfigChanged(const Identifier& a_key) ;
   static void RefreshGui         () ;
+  static void SetWindowTitle     () ;
 
   // helpers
   static bool HandleCliParams    () ;

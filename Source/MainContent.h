@@ -41,7 +41,7 @@ class MainContent  : public Component
 {
 public:
     //==============================================================================
-    MainContent (DocumentWindow* main_window);
+    MainContent ();
     ~MainContent();
 
     //==============================================================================
@@ -59,11 +59,6 @@ private:
   friend class AvCaster ;
 
 
-  DocumentWindow* mainWindow ;
-
-
-  void           instantiate     () ;
-  void           setTitle        (String title_text) ;
   void           warning         (String message_text) ;
   void           error           (String message_text) ;
   Rectangle<int> getPreviewBounds() ;

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+
+echo "running cppcheck --enable=all on ./Source/ with filters"
+
+# supress warnings for 'unused' event handlers
+#     so that we can exclude the JUCE library from cppcheck
+cppcheck --enable=all --template=gcc --quiet Source/ 2>                                >(
+  grep -v "Cppcheck cannot find all the include files"                                  |
+  grep -v "The function 'initialise' is never used."                                    |
+  grep -v "The function 'anotherInstanceStarted' is never used."                        |
+  grep -v "The function 'moreThanOneInstanceAllowed' is never used."                    |
+  grep -v "The function 'closeButtonPressed' is never used."                            |
+  grep -v "The function 'timerCallback' is never used."                                 |
+  grep -v "The function 'getApplicationName' is never used."                            |
+  grep -v "The function 'getApplicationVersion' is never used."                         |
+  grep -v "The function 'resized' is never used."                                       |
+  grep -v "The function 'paint' is never used."                                         |
+  grep -v "The function 'broughtToFront' is never used."                                |
+  grep -v "The function 'buttonClicked' is never used."                                 |
+  grep -v "The function 'comboBoxChanged' is never used."                               |
+  grep -v "The function 'sliderValueChanged' is never used."                            |
+  grep -v "The function 'textEditorFocusLost' is never used."                           |
+  grep -v "The function 'valueTreePropertyChanged' is never used."                      )

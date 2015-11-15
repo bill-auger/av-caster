@@ -57,7 +57,7 @@
 #define DEBUG_TRACE        DEBUG_DEFINED && 1
 #define DEBUG_TRACE_EVENTS DEBUG_DEFINED && 1
 #define DEBUG_TRACE_GUI    DEBUG_DEFINED && 1
-#define DEBUG_TRACE_MEDIA  DEBUG_DEFINED && 1
+#define DEBUG_TRACE_MEDIA  DEBUG_DEFINED && 0
 #define DEBUG_TRACE_CONFIG DEBUG_DEFINED && 1
 #define DEBUG_TRACE_STATE  DEBUG_DEFINED && 1
 #define DEBUG_TRACE_VB     DEBUG_DEFINED && 0
@@ -74,7 +74,7 @@ namespace APP
   static const String APP_NAME         = "AvCaster" ;
   static const String JACK_CLIENT_NAME = APP_NAME ;
   static const String VALID_ID_CHARS   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_- " ;
-  static const String VALID_URI_CHARS  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.:/ " ;
+  static const String VALID_URI_CHARS  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.:/?= " ;
   static const String DIGITS           = "0123456789" ;
 
   // timers
@@ -124,24 +124,17 @@ namespace GUI
   static const Colour TEXT_DISABLED_COLOR = Colour(0xFF808080) ;
 
   // MainWindow
-  static const int TITLEBAR_H  = 24 ;
-
-  // Background
-  static const String BACKGROUND_GUI_ID = "statusbar-gui" ;
-
-  // MainContent
-  static const String CONTENT_GUI_ID = "main-content-gui" ;
+  static const int    TITLEBAR_H      = 24 ;
+  static const int    TITLEBAR_BTNS   = DocumentWindow::minimiseButton | DocumentWindow::closeButton ;
+  static const String IDLE_TITLE_TEXT = "(Idle)" ;
+  static const String FILE_TITLE_TEXT = "(Recording)" ;
+  static const String RTMP_TITLE_TEXT = "(Broadcasting)" ;
 
   // Controls
-  static const String CONTROLS_GUI_ID = "controls-gui" ;
-  static const String CONTROLS_TEXT   = "Controls" ;
-  static const String PRESETS_TEXT    = "Presets" ;
-
-  // Preview
-  static const String PREVIEW_GUI_ID = "preview-gui" ;
+  static const String CONTROLS_TEXT = "Controls" ;
+  static const String PRESETS_TEXT  = "Presets" ;
 
   // Config
-  static const String CONFIG_GUI_ID          = "config-gui" ;
   static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
   static const String DELETE_BTN_DELETE_TEXT = "Delete" ;
   static const String DELETE_BTN_RESET_TEXT  = "Reset" ;
@@ -154,7 +147,6 @@ namespace GUI
   static const String DEST_LCTV_TEXT         = "Stream Key:" ;
 
   // StatusBar
-  static const String STATUSBAR_GUI_ID  = "statusbar-gui" ;
   static const String INIT_STATUS_TEXT  = "Initializing" ;
   static const String READY_STATUS_TEXT = "Ready" ;
 
@@ -348,12 +340,13 @@ namespace CONFIG
   static const Identifier OUTPUT_DEST_ID        = "output-dest" ;
 
   // root defaults
-#ifdef _WIN32
+#ifdef JUCE_WINDOWS
   static const String     STORAGE_DIRNAME            = "AvCaster\\" ;
-#else // _WIN32
-  static const String     STORAGE_DIRNAME            = ".av-caster/" ;
-#endif // _WIN32
   static const String     STORAGE_FILENAME           = "AvCaster.bin" ;
+#else // JUCE_WINDOWS
+  static const String     STORAGE_DIRNAME            = ".av-caster/" ;
+  static const String     STORAGE_FILENAME           = "av-caster.bin" ;
+#endif // JUCE_WINDOWS
   static const double     CONFIG_VERSION             = 0.3 ;
   static const int        DEFAULT_PRESET_IDX         = 0 ; // ASSERT: must be 0
   static const int        N_STATIC_PRESETS           = 3 ; // ASSERT: num PresetSeed subclasses

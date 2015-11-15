@@ -51,6 +51,13 @@ PresetSeed::PresetSeed()
   outputH             = CONFIG::DEFAULT_OUTPUT_H ;
   framerate           = CONFIG::DEFAULT_FRAMERATE_IDX ;
   videoBitrate        = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
+
+  // subclass responsibility
+  preset     = ValueTree::invalid ;
+  presetId   = Identifier::null ;
+  presetName = String::empty ;
+  sinkIdx    = -1 ;
+  outputDest = String::empty ;
 }
 
 void PresetSeed::createPreset()
@@ -92,8 +99,8 @@ void PresetSeed::createPreset()
 
 FilePresetSeed::FilePresetSeed()
 {
+  presetId   = CONFIG::FilterId(CONFIG::FILE_PRESET_NAME) ;
   presetName = CONFIG::FILE_PRESET_NAME ;
-  presetId   = CONFIG::FilterId(presetName) ;
   sinkIdx    = CONFIG::FILE_STREAM_IDX ;
   outputDest = CONFIG::DEFAULT_OUTPUT_DEST ;
   createPreset() ;
@@ -101,8 +108,8 @@ FilePresetSeed::FilePresetSeed()
 
 RtmpPresetSeed::RtmpPresetSeed()
 {
+  presetId   = CONFIG::FilterId(CONFIG::RTMP_PRESET_NAME) ;
   presetName = CONFIG::RTMP_PRESET_NAME ;
-  presetId   = CONFIG::FilterId(presetName) ;
   sinkIdx    = CONFIG::RTMP_STREAM_IDX ;
   outputDest = String::empty ;
   createPreset() ;
@@ -110,8 +117,8 @@ RtmpPresetSeed::RtmpPresetSeed()
 
 LctvPresetSeed::LctvPresetSeed()
 {
+  presetId   = CONFIG::FilterId(CONFIG::LCTV_PRESET_NAME) ;
   presetName = CONFIG::LCTV_PRESET_NAME ;
-  presetId   = CONFIG::FilterId(presetName) ;
   sinkIdx    = CONFIG::RTMP_STREAM_IDX ;
   outputDest = String::empty ;
   createPreset() ;

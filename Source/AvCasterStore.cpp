@@ -74,6 +74,8 @@ DEBUG_TRACE_VERIFY_CONFIG
 
 ValueTree AvCasterStore::verifyPresets()
 {
+DEBUG_TRACE_VERIFY_PRESETS
+
   ValueTree   presets   = this->root.getOrCreateChildWithName(CONFIG::PRESETS_ID , nullptr) ;
   PresetSeed* file_seed = new FilePresetSeed() ; ValueTree file_preset = file_seed->preset ;
   PresetSeed* rtmp_seed = new RtmpPresetSeed() ; ValueTree rtmp_preset = rtmp_seed->preset ;

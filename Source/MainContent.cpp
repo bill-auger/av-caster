@@ -30,12 +30,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-MainContent::MainContent (DocumentWindow* main_window)
-    : mainWindow(main_window)
+MainContent::MainContent ()
 {
-    //[Constructor_pre] You can add your own custom stuff here..
-    //[/Constructor_pre]
-
     addAndMakeVisible (background = new Background());
     background->setName ("background");
 
@@ -59,6 +55,10 @@ MainContent::MainContent (DocumentWindow* main_window)
 
 
     //[Constructor] You can add your own custom stuff here..
+
+  this->statusbar->setAlwaysOnTop(true) ;
+  this->statusbar->setStatusL(GUI::INIT_STATUS_TEXT) ;
+
     //[/Constructor]
 }
 
@@ -108,38 +108,6 @@ void MainContent::resized()
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void MainContent::instantiate()
-{
-  // Background
-  this->background = new Background() ;
-  this->addChildAndSetID(this->background , GUI::BACKGROUND_GUI_ID) ;
-
-  // Controls
-  this->controls = new Controls() ;
-  this->addChildAndSetID(this->controls , GUI::CONTROLS_GUI_ID) ;
-
-  // Preview
-  this->preview = new Preview() ;
-  this->addChildAndSetID(this->preview , GUI::PREVIEW_GUI_ID) ;
-
-  // Config
-  this->config = new Config() ;
-  this->addChildAndSetID(this->config , GUI::CONFIG_GUI_ID) ;
-
-  // Statusbar
-  this->statusbar = new Statusbar() ;
-  this->addChildAndSetID(this->statusbar , GUI::STATUSBAR_GUI_ID) ;
-  this->statusbar->setAlwaysOnTop(true) ;
-  this->statusbar->setStatusL(GUI::INIT_STATUS_TEXT) ;
-
-  resized() ;
-}
-
-void MainContent::setTitle(String title_text)
-{
-  this->mainWindow->setName(APP::APP_NAME + " - " + title_text) ;
-}
-
 void MainContent::warning(String message_text)
 {
   if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
@@ -184,10 +152,9 @@ Rectangle<int> MainContent::getPreviewBounds()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MainContent" componentName=""
-                 parentClasses="public Component" constructorParams="DocumentWindow* main_window"
-                 variableInitialisers="mainWindow(main_window)" snapPixels="8"
-                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="0"
-                 initialWidth="758" initialHeight="694">
+                 parentClasses="public Component" constructorParams="" variableInitialisers=""
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="0" initialWidth="758" initialHeight="694">
   <BACKGROUND backgroundColour="ff101010"/>
   <GENERICCOMPONENT name="background" id="4d43eef09b00fdf4" memberName="background"
                     virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" class="Background"

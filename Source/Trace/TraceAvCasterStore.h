@@ -38,6 +38,9 @@
                      ((!do_versions_match                  ) ? outdated_msg  :              \
                                                                success_msg))))              ;
 
+#  define DEBUG_TRACE_VERIFY_PRESETS                       \
+  Trace::TraceMissingNode(this->root , CONFIG::PRESETS_ID) ;
+
 #  define DEBUG_TRACE_VALIDATE_CONFIG                                   \
   if (!this->root.isValid()) Trace::TraceError("invalid config root") ; \
   else                       { DEBUG_TRACE_DUMP_CONFIG_ROOT             \
@@ -101,6 +104,7 @@
 #else // DEBUG
 
 #  define DEBUG_TRACE_VERIFY_CONFIG            ;
+#  define DEBUG_TRACE_VERIFY_PRESETS           ;
 #  define DEBUG_TRACE_VALIDATE_CONFIG          ;
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PRESET   ;
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PROPERTY ;

@@ -26,7 +26,7 @@
 #include "Trace/TraceGstreamer.h"
 
 
-/* AvCaster private class variables */
+/* GstElement private class variables */
 
 GstElement* Gstreamer::Pipeline        = nullptr ;
 GstElement* Gstreamer::ScreencapBin    = nullptr ;
@@ -42,7 +42,8 @@ GstElement* Gstreamer::OutputBin       = nullptr ;
 ValueTree   Gstreamer::ConfigStore ;               // Configure()
 guintptr    Gstreamer::WindowHandle ;              // Initialize()
 
-/* AvCaster private class methods */
+
+/* GstElement private class methods */
 
 bool Gstreamer::Initialize(void* x_window_handle)
 {
@@ -155,7 +156,7 @@ bool Gstreamer::ConfigureScreencapBin()
 #endif // JUCE_LINUX
 
 #ifdef FAUX_SCREEN
-is_enabled = false ;
+UNUSED(is_enabled) ; is_enabled = false ;
 #endif // FAUX_SCREEN
 
   if (!is_enabled)
@@ -211,10 +212,12 @@ bool Gstreamer::ConfigureCameraBin()
 #if JUCE_LINUX
   String      plugin_id   = GST::V4L2_PLUGIN_ID ;
   String      caps_str    = MakeCameraCapsString(camera_w , camera_h , framerate) ;
+#else // JUCE_LINUX
+  UNUSED(camera_w) ; UNUSED(camera_h) ; UNUSED(framerate) ;
 #endif // JUCE_LINUX
 
 #ifdef FAUX_CAMERA
-is_enabled = false ; // TODO: GUI support
+UNUSED(is_enabled) ; is_enabled = false ; // TODO: GUI support
 #endif // FAUX_CAMERA
 
   if (!is_enabled)
@@ -315,56 +318,71 @@ bool Gstreamer::ConfigureInterstitialBin()
 //#define STATIC_INTERSTITIAL
 #  ifdef STATIC_INTERSTITIAL
 
-  GstElement *source , *decoder , *capsfilter , *converter , *scaler , *freezer , *queue ;
-  GstCaps    *caps ;
+  GstElement *source  , *decoder        , *converter ,
+             *scaler  , *scaler_filter  ,
+             *freezer , *freezer_filter , *queue ;
+  GstCaps    *scaler_caps , *freezer_caps ;
 
-  bool is_enabled = bool(ConfigStore[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
-  int    interstitial_w = int(ConfigStore[CONFIG::SCREENCAP_W_ID]) ;
-  int    interstitial_h = int(ConfigStore[CONFIG::SCREENCAP_H_ID]) ;
-  int    framerate_n    = int(ConfigStore[CONFIG::FRAMERATE_ID  ]) ;
-  int    framerate      = CONFIG::FRAMERATES[framerate_n].getIntValue() ;
-  String image_filename = "/home/bill/img/tech-diff.png" ;
-interstitial_w = 1280 ;
-interstitial_h = 720 ;
-  String caps_str       = String("video/x-raw, ")                                  +
-                          "width=(int)"          + String(interstitial_w) + ", "   +
-                          "height=(int)"         + String(interstitial_h) + ", "   +
-                          "framerate=(fraction)" + String(framerate     ) + "/1, " +
-                          "format=I420"                                            ;
+  bool   is_enabled       = bool(ConfigStore[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
+  int    interstitial_w   = int (ConfigStore[CONFIG::SCREENCAP_W_ID]) ;
+  int    interstitial_h   = int (ConfigStore[CONFIG::SCREENCAP_H_ID]) ;
+  int    framerate_n      = int (ConfigStore[CONFIG::FRAMERATE_ID  ]) ;
+  int    framerate        = CONFIG::FRAMERATES[framerate_n].getIntValue() ;
+  String image_filename   = "/home/bill/img/tech-diff.png" ;
+  String scaler_caps_str  = String("video/x-raw, ")                                  +
+                            "width=(int)"          + String(interstitial_w) + ", "   +
+                            "height=(int)"         + String(interstitial_h) + ", "   +
+                            "framerate=(fraction)0/1, "                              +
+                            "format=(string)YUY2,"                                   +
+                            "interlace-mode=(string)progressive, "                   +
+                            "pixel-aspect-ratio=(fraction)1/1"                       ;
+  String freezer_caps_str = String("video/x-raw, ")                                  +
+                            "width=(int)"          + String(interstitial_w) + ", "   +
+                            "height=(int)"         + String(interstitial_h) + ", "   +
+                            "framerate=(fraction)" + String(framerate     ) + "/1, " +
+                            "format=(string)YUY2,"                                   +
+                            "interlace-mode=(string)progressive, "                   +
+                            "pixel-aspect-ratio=(fraction)1/1"                       ;
 
 DEBUG_TRACE_CONFIGURE_INTERSTITIAL_BIN
 
   // instantiate elements
-  if (!(source     = NewElement("filesrc"      , "interstitial-real-source")) ||
-      !(decoder    = NewElement("pngdec"       , "interstitial-decoder"    )) ||
-      !(capsfilter = NewElement("capsfilter"   , "interstitial-capsfilter" )) ||
-      !(converter  = NewElement("videoconvert" , "interstitial-converter"  )) ||
-      !(scaler     = NewElement("videoscale"   , "interstitial-scaler"     )) ||
-      !(freezer    = NewElement("imagefreeze"  , "interstitial-freezer"    )) ||
-      !(queue      = NewElement("queue"        , "interstitial-queue"      )) ||
-      !(caps       = NewCaps   (caps_str)                                   )  )
+  if (!(source         = NewElement("filesrc"      , "interstitial-real-source" )) ||
+      !(decoder        = NewElement("pngdec"       , "interstitial-decoder"     )) ||
+      !(converter      = NewElement("videoconvert" , "interstitial-converter"   )) ||
+      !(scaler         = NewElement("videoscale"   , "interstitial-scaler"      )) ||
+      !(scaler_filter  = NewElement("capsfilter"   , "interstitial-scaler-caps" )) ||
+      !(freezer        = NewElement("imagefreeze"  , "interstitial-freezer"     )) ||
+      !(freezer_filter = NewElement("capsfilter"   , "interstitial-freezer-caps")) ||
+      !(queue          = NewElement("queue"        , "interstitial-queue"       )) ||
+      !(scaler_caps    = NewCaps   (scaler_caps_str)                             ) ||
+      !(freezer_caps   = NewCaps   (freezer_caps_str)                            )  )
   { AvCaster::Error(GUI::INTERSTITIAL_INIT_ERROR_MSG) ; return false ; }
 
   // configure elements
-  ConfigureFile(source     , image_filename) ;
-  ConfigureCaps(capsfilter , caps          ) ;
+  ConfigureFile (source         , image_filename        ) ;
+  ConfigureCaps (scaler_filter  , scaler_caps           ) ;
+  ConfigureCaps (freezer_filter , freezer_caps          ) ;
+  ConfigureQueue(queue          , 0              , 0 , 0) ;
 
   // link elements
-  if (!AddElement    (InterstitialBin , source   )                     ||
-      !AddElement    (InterstitialBin , decoder  )                     ||
-      !AddElement    (InterstitialBin , capsfilter)                    ||
-      !AddElement    (InterstitialBin , converter)                     ||
-      !AddElement    (InterstitialBin , scaler   )                     ||
-      !AddElement    (InterstitialBin , freezer  )                     ||
-      !AddElement    (InterstitialBin , queue    )                     ||
-      !LinkElements  (source     , decoder   )                         ||
-      !LinkElements  (decoder    , converter )                         ||
-      !LinkElements  (converter  , capsfilter)                         ||
-      !LinkElements  (capsfilter , scaler    )                         ||
-      !LinkElements  (scaler     , freezer   )                         ||
-      !LinkElements  (freezer    , queue     )                         ||
-      !NewGhostSrcPad(InterstitialBin   , queue , "interstitial-source"))
-// !LinkElements(InterstitialBin  , CompositorBin)
+  if (!AddElement    (CameraBin , source        )                ||
+      !AddElement    (CameraBin , decoder       )                ||
+      !AddElement    (CameraBin , converter     )                ||
+      !AddElement    (CameraBin , scaler        )                ||
+      !AddElement    (CameraBin , scaler_filter )                ||
+      !AddElement    (CameraBin , freezer       )                ||
+      !AddElement    (CameraBin , freezer_filter)                ||
+      !AddElement    (CameraBin , queue         )                ||
+      !LinkElements  (source         , decoder       )           ||
+      !LinkElements  (decoder        , converter     )           ||
+      !LinkElements  (converter      , scaler        )           ||
+      !LinkElements  (scaler         , scaler_filter )           ||
+      !LinkElements  (scaler_filter  , freezer       )           ||
+      !LinkElements  (freezer        , freezer_filter)           ||
+      !LinkElements  (freezer_filter , queue         )           ||
+      !NewGhostSrcPad(CameraBin , queue , "interstitial-source") ||
+      !LinkElements  (CameraBin      , CompositorBin )            )
   { AvCaster::Error(GUI::INTERSTITIAL_LINK_ERROR_MSG) ; return false ; }
 
 #  else // STATIC_INTERSTITIAL
@@ -528,15 +546,14 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
 bool Gstreamer::ConfigurePreviewBin()
 {
 #ifndef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  bool           is_enabled = bool(ConfigStore[CONFIG::IS_PREVIEW_ON_ID]) &&
-                              !AvCaster::GetIsConfigPending()              ;
-  String         plugin_id  = (is_enabled) ? GST::NIX_PREVIEW_PLUGIN_ID :
-                                             GST::FAUX_SINK_PLUGIN_ID   ;
+  bool   is_enabled = bool(ConfigStore[CONFIG::IS_PREVIEW_ON_ID]) &&
+                      !AvCaster::GetIsConfigPending()              ;
+  String plugin_id  = (is_enabled) ? GST::NIX_PREVIEW_PLUGIN_ID : GST::FAUX_SINK_PLUGIN_ID ;
 #  ifdef FAUX_PREVIEW
-is_enabled = false ; plugin_id = GST::FAUX_SINK_PLUGIN_ID ;
+UNUSED(is_enabled) ; is_enabled = false ; plugin_id = GST::FAUX_SINK_PLUGIN_ID ;
 #  endif // FAUX_PREVIEW
 #  ifdef DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-is_enabled = true ; plugin_id  = GST::NIX_PREVIEW_PLUGIN_ID ; // FIXME: no fake sink needed ?
+UNUSED(is_enabled) ; is_enabled = true ; plugin_id  = GST::NIX_PREVIEW_PLUGIN_ID ; // FIXME: no fake sink needed ?
 #  endif // DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
 #else // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
 #  if JUCE_LINUX
@@ -582,9 +599,9 @@ bool Gstreamer::ConfigureAudioBin()
   String audio32_caps_str = MakeAudioCapsString("F32LE" , samplerate , n_channels) ;
   String plugin_id , caps_str ;
 
-is_enabled = true ; // TODO: GUI support
+UNUSED(is_enabled) ; is_enabled = true ; // TODO: GUI support
 #ifdef FAUX_AUDIO
-is_enabled = false ;
+UNUSED(is_enabled) ; is_enabled = false ;
 #endif // FAUX_AUDIO
 
   switch ((AvCasterStore::AudioApi)audio_api)
@@ -746,10 +763,10 @@ bool Gstreamer::ConfigureOutputBin()
   String rtmp_url    = (is_lctv) ? MakeLctvUrl(dest) : dest ;
 
 #ifdef FAUX_OUTPUT
-is_enabled = false ;
+UNUSED(is_enabled) ; is_enabled = false ;
 #endif // FAUX_OUTPUT
 #ifdef DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
-is_enabled = true ; // FIXME: no fake sink needed ?
+UNUSED(is_enabled) ; is_enabled = true ; // FIXME: no fake sink needed ?
 #endif // DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
 
   if (!is_enabled) sink_idx = -1 ; String plugin_id , output_url ;
@@ -763,15 +780,15 @@ is_enabled = true ; // FIXME: no fake sink needed ?
 DEBUG_TRACE_CONFIGURE_OUTPUT_BIN
 
 #ifdef DEBUG
-if (sink_idx == CONFIG::RTMP_STREAM_IDX) output_url = std::getenv("AVCASTER_RTMP_DEXXXST") ;
-if (sink_idx == CONFIG::RTMP_STREAM_IDX && output_url.isEmpty())
+if (sink_idx == CONFIG::RTMP_STREAM_IDX)
 {
-  AvCaster::Warning(String("AVCASTER_RTMP_DEST must be defined in the environment ") +
-                    String("in order to use RTMP output with the debug build - )"  ) +
-                    String("the \"Destination\" textbox is overridden so that "    ) +
-                    String("the developer's stream key is not broadcasted - "      ) +
-                    String("falling back on file output"                           ) ) ;
-  plugin_id = GST::FILE_SINK_PLUGIN_ID ; output_url = file_url ;
+  String env_url = std::getenv("AVCASTER_RTMP_DEST") ;
+  if (env_url.isNotEmpty()) output_url = (is_lctv) ? MakeLctvUrl(env_url) : env_url ;
+  else
+  {
+    AvCaster::Error(DEBUG_RTMP_DEST_ERROR_MSG) ;
+    plugin_id = GST::FILE_SINK_PLUGIN_ID ; output_url = file_url ;
+  }
 }
 #endif // DEBUG
 
@@ -1030,18 +1047,17 @@ GstPad* Gstreamer::NewGhostPad(GstElement* a_bin       , GstElement* an_element 
 
 DEBUG_TRACE_MAKE_GHOST_PAD
 
-  if (is_err) return nullptr ;
+  is_err = is_err || !AddGhostPad(a_bin , public_pad) ;
+  if (is_err) gst_object_unref(public_pad) ;
 
-  if (a_bin != nullptr) is_err = !AddGhostPad(a_bin , public_pad) ;
-
-  return public_pad ;
+  return (!is_err) ? public_pad : nullptr ;
 }
 
 bool Gstreamer::AddGhostPad(GstElement* a_bin , GstPad* public_pad)
 {
-  bool is_err = !gst_element_add_pad(a_bin , public_pad) ;
+  bool is_err = a_bin == nullptr || !gst_element_add_pad(a_bin , public_pad) ;
 
-DEBUG_TRACE_ADD_GHOST_PAD
+DEBUG_TRACE_ADD_GHOST_PAD ; UNUSED(is_err) ;
 
   return !is_err ;
 }
@@ -1063,7 +1079,7 @@ GstPad* Gstreamer::NewStaticPad(GstElement* an_element , String template_id)
 
   bool is_err = !(private_pad = gst_element_get_static_pad(an_element , private_id)) ;
 
-DEBUG_TRACE_GET_STATIC_PAD
+DEBUG_TRACE_GET_STATIC_PAD ; UNUSED(is_err) ;
 
   return private_pad ;
 }
@@ -1085,7 +1101,7 @@ GstPad* Gstreamer::NewRequestPad(GstElement* an_element , String template_id)
 
   bool is_err = !(private_pad = gst_element_get_request_pad(an_element , private_id)) ;
 
-DEBUG_TRACE_GET_REQUEST_PAD
+DEBUG_TRACE_GET_REQUEST_PAD ; UNUSED(is_err) ;
 
   return private_pad ;
 }

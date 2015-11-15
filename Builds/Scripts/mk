@@ -10,8 +10,14 @@ export GST_DEBUG_NO_COLOR=1 && export GST_DEBUG_FILE=debug.log # log to file
 export DOT_DIR=/code/dot
 export GST_DEBUG_DUMP_DOT_DIR=$DOT_DIR
 
+# validate specified build configuration
+[ "$CONFIG" == "Release" ] || [ "$CONFIG" == "Release32" ] && BINARY=./build/av-caster
+[ "$CONFIG" == "Debug"   ] || [ "$CONFIG" == ""          ] && BINARY=./build/av-caster-dbg
+[ "$CONFIG" == "Release" ] || [ "$CONFIG" == "Release32" ] ||
+[ "$CONFIG" == "Debug"   ] || [ "$CONFIG" == ""          ] || (echo "invlaid CONFIG" && exit)
+
 # build project
-cd Builds/GnuMakefile && make && ./build/av-caster-dbg $*
+cd Builds/GnuMakefile && make && $BINARY $*
 
 # convert dot graphs to images
 cd $DOT_DIR

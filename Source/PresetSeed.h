@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef AVCASTERPRESETSEED_H_INCLUDED
-#define AVCASTERPRESETSEED_H_INCLUDED
+#ifndef PRESETSEED_H_INCLUDED
+#define PRESETSEED_H_INCLUDED
 
 #include "Constants.h"
 
@@ -97,4 +97,4 @@ class RtmpPresetSeed : public PresetSeed { public: RtmpPresetSeed() ; } ;
 
 class LctvPresetSeed : public PresetSeed { public: LctvPresetSeed() ; } ;
 
-#endif // AVCASTERPRESETSEED_H_INCLUDED
+#endif // PRESETSEED_H_INCLUDED

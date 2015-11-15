@@ -1,6 +1,9 @@
 # links
-mk*
+mk
+mk-clean
+mk-reset
 dbg
+cppcheck-filtered
 
 # builds
 Builds/*

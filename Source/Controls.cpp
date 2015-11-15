@@ -389,7 +389,7 @@ DEBUG_TRACE_HANDLE_PRESETCOMBO
 void Controls::toggleControls()
 {
   bool   is_config_pending = AvCaster::GetIsConfigPending() ;
-  String group_text        = (is_config_pending) ? GUI::CONTROLS_TEXT : GUI::PRESETS_TEXT ;
+  String group_text        = (is_config_pending) ? GUI::PRESETS_TEXT : GUI::CONTROLS_TEXT ;
 
   this->controlsGroup     ->setText(group_text) ;
   this->screencapToggle   ->setVisible(!is_config_pending) ;

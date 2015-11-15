@@ -148,8 +148,8 @@ DEBUG_TRACE_INIT_PHASE_2
 
 DEBUG_TRACE_INIT_PHASE_3
 
-  // instantiate GUI
-  Gui->instantiate() ; RefreshGui() ;
+  // initialze GUI
+  SetWindowTitle() ; RefreshGui() ;
 
 DEBUG_TRACE_INIT_PHASE_4
 
@@ -210,8 +210,9 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
   {
     StorePreset(GetPresetName()) ;
 
-    if (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
-        a_key == CONFIG::PRESET_ID             ) RefreshGui() ;
+    if      (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
+             a_key == CONFIG::PRESET_ID             ) RefreshGui() ;
+    else if (a_key == CONFIG::IS_OUTPUT_ON_ID       ) SetWindowTitle() ;
   }
   else
   {
@@ -228,6 +229,20 @@ DEBUG_TRACE_REFRESH_GUI
   Gui->background->toFront(true) ; Gui->controls->toFront(true) ;
   if (is_config_pending) { Gui->preview->toFront(true) ; Gui->config ->toFront(true) ; }
   else                   { Gui->config ->toFront(true) ; Gui->preview->toFront(true) ; }
+}
+
+void AvCaster::SetWindowTitle()
+{
+  bool   is_output_enabled = bool(Store->config[CONFIG::IS_OUTPUT_ON_ID]) ;
+  int    sink_idx          = int (Store->config[CONFIG::OUTPUT_SINK_ID ]) ;
+  String title_text ;
+
+  if      (!is_output_enabled                 ) title_text = GUI::IDLE_TITLE_TEXT ;
+  else if (sink_idx == CONFIG::FILE_STREAM_IDX) title_text = GUI::FILE_TITLE_TEXT ;
+  else if (sink_idx == CONFIG::RTMP_STREAM_IDX) title_text = GUI::RTMP_TITLE_TEXT ;
+  else                                          return ;
+
+  Gui->getTopLevelComponent()->setName(APP::APP_NAME + " - " + title_text) ;
 }
 
 bool AvCaster::HandleCliParams()
@@ -275,8 +290,6 @@ DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
 void AvCaster::DisplayAlert()
 {
-if (Alerts.size()) DBG("AvCaster::DisplayAlert() Alerts.size()=" + String(Alerts.size())) ;
-
   if (IsAlertModal || Alerts.size() == 0) return ;
 
   GUI::AlertType message_type = Alerts[0]->messageType ;
