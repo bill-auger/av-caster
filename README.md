@@ -1,5 +1,7 @@
 ## AvCaster - *A simple native gStreamer GUI for screencast, webcam, and audio streaming*
 
+[![Join the chat at https://gitter.im/bill-auger/av-caster](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/bill-auger/av-caster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 | build       | status                                         |
 | ----------- | ---------------------------------------------- |
 | Release     | [![release build status][master-img]][travis]  |
