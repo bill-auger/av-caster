@@ -1,5 +1,4 @@
-## AvCaster - *A simple native gStreamer GUI for screencast, webcam, and audio streaming*
-
+## AvCaster - *A simple native gStreamer GUI for screencast, webcam, and audio streaming* - [![Gitter][gitter-img]][gitter]
 | build       | status                                         |
 | ----------- | ---------------------------------------------- |
 | Release     | [![release build status][master-img]][travis]  |
@@ -9,12 +8,15 @@
 [travis]:     https://travis-ci.org/bill-auger/av-caster
 [pkgbuild]:   https://raw.githubusercontent.com/bill-auger/av-caster/master/Builds/Packaging/PKGBUILD
 [deb]:        https://packagecloud.io/ninjam/av-caster
+[gitter-img]: https://badges.gitter.im/Join%20Chat.svg
+[gitter]:     https://gitter.im/bill-auger/av-caster
 
-AvCaster is a native GNU/linux appliction built with the [JUCE](http://juce.com/) framework and using [gStreamer](http://gstreamer.freedesktop.org/) as the media backend.  It is currently capable of recording to file and streaming to an RTMP server with screen capture, webcam, and stereo audio.  This initial implementation is specialized for full-screen screencast with webcam overlay and is hard-coded to stream only to [livecoding.tv](https://www.livecoding.tv/) but other servers may be added in the future.  If one is handy with bits it could be easily customized for webcam-only, screencap-only, audio-only, or for any RTMP server as it is now.  All of these and more indeed may be upcoming standard features.
+
+AvCaster is a native GNU/linux appliction built with the [JUCE](http://juce.com/) framework and using [gStreamer](http://gstreamer.freedesktop.org/) as the media backend.  It is currently capable of recording to file and streaming to an RTMP server with screen capture, webcam, and stereo audio.  This initial implementation is specialized for full-screen screencast with webcam overlay.  It is moderately configurable, with a preset configuration for streaming via [livecoding.tv](https://www.livecoding.tv/), and allows custom user-defined configurations to be stored as additional presets.  If one is handy with bits it could be easily customized for webcam-only, screencap-only, audio-only, or for any streaming server as it is now.  These and more are planned become standard features along with presets for other hosts.
 
 
 ### Motivation
-The motivation behind this project is that streaming with a feature-rich, bleeding-edge client such as OBS and FMLE is very CPU intensive even on reasonably capable machines.  In situations such as live code streaming where the broadcast is an auxiliary concern, there is more utility in reserving those extra cycles for primary development tasks.
+The motivation behind this project is that streaming with a feature-rich, bleeding-edge client such as OBS and FMLE is very CPU intensive even on reasonably capable machines.  In situations such as live code streaming, where the broadcast is an auxiliary concern, there is more utility in reserving those extra cycles for primary development tasks.
 
 A command-line solution is the obvious choice for such scenarios but obviously lacks real-time control and preview.  This project was created to mark a reasonable balance between headless performance and a graphical feature set.  Initially a simple ffmpeg command-line launcher GUI; it has since become a gStreamer native library implementation.
 
@@ -47,20 +49,30 @@ $ sudo echo $AVCASTER_APT_SOURCE > /etc/apt/sources.list.d/ninjam_av-caster.list
 $ sudo apt-get update
 $ sudo apt-get install av-caster
 ```
-\* Other GNU/Linux: Refer to "Building from source" below
+\* Other GNU/Linux: Refer to "Building from Source" below
 
 
 ### Community Support
-AvCaster is still very much in beta so testers comments and suggestions are appreciated. Also, this project is open-source and pull requests are quite welcomed.
+AvCaster is a free and open-source community project and is still very much in its infancy; so testers, comments, and suggestions are appreciated.  Pull requests are quite welcomed and any submissions that advance the project toward is proposed milestones will be accepted.  If there is significant community support for this project, it could be transfered to a github organization, an IRC and/or gitter chat could be established, a website could be created, an so on.  Let us hear your ideas.  If you would like to help to improve AvCaster, we could especially use your help in the following areas:
+  * developers/consultants (especially with gStreamer expertise)
+  * designers (logo , website , GUI graphics/layout)
+  * beta testers (anyone who streams regularly)
+  * HOWTO documentation and screencasts
 
+In any case you can "Star" this repo above if you like this project or "Watch" the repo or visit the home page of the [AvCaster Wiki](https://github.com/bill-auger/av-caster/wiki) for updates.
+
+
+### Getting Help / Bug Reporting
 If AvCaster refuses to launch after changing some parameters in the GUI you can try deleting the persistent configuration file in your AppData dir (e.g. ~/.av-caster/AvCaster.bin).
 
-Feel free to to post any questions or comments to the [AvCaster issue tracker](https://github.com/bill-auger/av-caster/issues) and you can visit the home page of the [AvCaster wiki](https://github.com/bill-auger/av-caster/wiki) for updates.
+Please report any problems on the [AvCaster Issue Tracker](https://github.com/bill-auger/av-caster/issues).
+
+Feel free join the [gitter chat][gitter] to post any questions or comments or, well ... just chat.
 
 
 ### Building from Source
 \* ArchLinux:
-a [PKGBUILD file][pkgbuild] is included in Builds/Packaging
+A [PKGBUILD file][pkgbuild] for the current stable release is included in Builds/Packaging.
 #### Build Dependencies
 \* Debian/Ubuntu:
 ```
@@ -95,7 +107,10 @@ You will find in the Builds/Scripts directory some helper scripts to aid in buil
   $ cd JUCE/extras/Introjucer/Builds/Linux/
   $ make
   $ ./build/Introjucer
+
+# Then select "Open" from the Introjucer "File" menu and browse to the AvCaster.jucer file in this project root directory.
 ```
+
 
 ### Similar Projects
 There were several similar projects considered for expansion before this project was launched fresh.  They all can capture and mux in audio but they capture screen only (no webcam/text/logo) and only two of them feature a real-time preview.  They are ordered roughly by feature-set from most to least capable in terms of the AvCaster project's feature requirements.
@@ -105,6 +120,5 @@ There were several similar projects considered for expansion before this project
   * [kazam](https://launchpad.net/kazam) - similar features as vokoscreen
   * [ffmpeg-gui](http://sourceforge.net/projects/ffmpegfrontend/) - cross-platform QT basic ffmpeg launcher
   * [ffmpeggui](http://sourceforge.net/projects/ffmpeg-gui/) - Win32 basic ffmpeg launcher
-
 
 Also, the original ffmpeg bash script with all of the features that this project has since re-implemented is in [this gist](https://gist.github.com/bill-auger/9480205a38d9d00d2fa3) if anyone is interested in a command-line webcasting tool.
