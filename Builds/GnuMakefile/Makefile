@@ -22,7 +22,8 @@ ifeq ($(CONFIG),Debug)
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
-
+  LDDEPS :=
+  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := av-caster-dbg
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -42,7 +43,8 @@ ifeq ($(CONFIG),Release)
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -O3 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
-
+  LDDEPS :=
+  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := av-caster
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -62,7 +64,8 @@ ifeq ($(CONFIG),Release32)
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -O3 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
-
+  LDDEPS :=
+  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := av-caster
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -89,7 +92,7 @@ OBJECTS := \
 
 .PHONY: clean
 
-$(OUTDIR)/$(TARGET): $(OBJECTS) $(RESOURCES)
+$(OUTDIR)/$(TARGET): $(OBJECTS) $(LDDEPS) $(RESOURCES)
 	@echo Linking AvCaster
 	-@mkdir -p $(BINDIR)
 	-@mkdir -p $(LIBDIR)

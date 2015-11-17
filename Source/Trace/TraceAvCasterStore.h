@@ -27,16 +27,17 @@
 
 /* persistence */
 
-#  define DEBUG_TRACE_VERIFY_CONFIG                                                         \
-  String success_msg   = "stored config parsed successfully v" + String(stored_version) ;   \
-  String not_found_msg = "stored config not found - restoring defaults" ;                   \
-  String invalid_msg   = "stored config invalid - restoring defaults" ;                     \
-  String upgraded_msg  = "upgrading config version to v" + String(CONFIG::CONFIG_VERSION) ; \
-  String outdated_msg  = "stored config backed up - schema changed - restoring defaults" ;  \
-  Trace::TraceConfig(((!stored_config.isValid()            ) ? not_found_msg :              \
-                     ((!stored_config.hasType(root_node_id)) ? invalid_msg   :              \
-                     ((!do_versions_match                  ) ? outdated_msg  :              \
-                                                               success_msg))))              ;
+#  define DEBUG_TRACE_VERIFY_CONFIG                                                             \
+  String success_msg   = "stored config parsed successfully v" + String(stored_version) ;    \
+  String not_found_msg = "stored config not found - restoring defaults" ;                    \
+  String invalid_msg   = "stored config invalid - restoring defaults" ;                      \
+  String upgraded_msg  = "upgrading config version to v" + String(CONFIG::CONFIG_VERSION) ;  \
+  String outdated_msg  = "stored config backed up - schema changed - restoring defaults" ;   \
+  Trace::TraceConfig("looking for stored config at " + this->configFile.getFullPathName()) ; \
+  Trace::TraceConfig(((!stored_config.isValid()            ) ? not_found_msg :               \
+                     ((!stored_config.hasType(root_node_id)) ? invalid_msg   :               \
+                     ((!do_versions_match                  ) ? outdated_msg  :               \
+                                                               success_msg))))               ;
 
 #  define DEBUG_TRACE_VERIFY_PRESETS                       \
   Trace::TraceMissingNode(this->root , CONFIG::PRESETS_ID) ;
@@ -52,14 +53,15 @@
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PROPERTY                        \
   Trace::TraceMissingProperty(config_store , a_key , a_default_value) ;
 
-#  define DEBUG_TRACE_DUMP_STORE_CONFIG                                  \
-  if (!this->root.isValid()) Trace::TraceError("error storing config") ; \
-  else {                     Trace::TraceConfig("storing config") ;      \
-         DEBUG_TRACE_DUMP_CONFIG_ROOT                                    \
-         DEBUG_TRACE_DUMP_CONFIG_PRESETS                                 \
-         DEBUG_TRACE_DUMP_CONFIG_VOLATILE                                \
-         DEBUG_TRACE_DUMP_CONFIG_CAMERAS                                 \
-         DEBUG_TRACE_DUMP_CONFIG_AUDIOS                                  }
+#  define DEBUG_TRACE_STORE_CONFIG                                                  \
+  String file_path = this->configFile.getFullPathName() ;                           \
+  if (!this->root.isValid()) Trace::TraceError("error storing config") ;            \
+  else {                     Trace::TraceConfig("storing config to " + file_path) ; \
+         DEBUG_TRACE_DUMP_CONFIG_ROOT                                               \
+         DEBUG_TRACE_DUMP_CONFIG_PRESETS                                            \
+         DEBUG_TRACE_DUMP_CONFIG_VOLATILE                                           \
+         DEBUG_TRACE_DUMP_CONFIG_CAMERAS                                            \
+         DEBUG_TRACE_DUMP_CONFIG_AUDIOS                                             }
 
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT     if (DEBUG_TRACE_VB) Trace::DumpConfig(this->root    , "root"    ) ;
 #  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE if (DEBUG_TRACE_VB) Trace::DumpConfig(this->config  , "volatile") ;
@@ -108,7 +110,7 @@
 #  define DEBUG_TRACE_VALIDATE_CONFIG          ;
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PRESET   ;
 #  define DEBUG_TRACE_VALIDATE_CONFIG_PROPERTY ;
-#  define DEBUG_TRACE_DUMP_STORE_CONFIG        ;
+#  define DEBUG_TRACE_STORE_CONFIG             ;
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT         ;
 #  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE     ;
 #  define DEBUG_TRACE_DUMP_CONFIG_CAMERAS      ;

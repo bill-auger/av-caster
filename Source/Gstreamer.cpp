@@ -816,7 +816,7 @@ DEBUG_TRACE_RECONFIGURE
 /*
   if      (config_key == CONFIG::PRESET_ID             )
   { if (!ConfigurePipeline())                                     return false ; }
-  else if (config_key == CONFIG::IS_CONFIG_PENDING_ID  )
+  else if (config_key == CONFIG::IS_PENDING_ID         )
   { if (!is_config_pending && !ConfigurePipeline())               return false ; }
   else if (config_key == CONFIG::IS_SCREENCAP_ON_ID    )
   { ScreencapBin    = RecreateBin(ScreencapBin    , GST::SCREENCAP_BIN_ID   ) ;
@@ -839,13 +839,13 @@ DEBUG_TRACE_RECONFIGURE
 //        or ReconfigureBin()
 //        or simply detaching/re-attaching bins
 #ifdef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  if (config_key == CONFIG::IS_CONFIG_PENDING_ID ||
-      config_key == CONFIG::IS_PREVIEW_ON_ID      )
+  if (config_key == CONFIG::IS_PENDING_ID    ||
+      config_key == CONFIG::IS_PREVIEW_ON_ID  )
   { if (!ConfigurePreview()) return false ; }
 #else // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
 #  ifdef DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  if (config_key == CONFIG::IS_CONFIG_PENDING_ID ||
-      config_key == CONFIG::IS_PREVIEW_ON_ID      )
+  if (config_key == CONFIG::IS_PENDING_ID    ||
+      config_key == CONFIG::IS_PREVIEW_ON_ID  )
   {
     if (!is_on &&  !RemoveBin(PreviewBin) ||
          is_on && (!AddBin   (PreviewBin) || !LinkElements(CompositorBin , PreviewBin)))
@@ -1299,6 +1299,24 @@ String Gstreamer::MakeLctvUrl(String dest)
          dest.fromFirstOccurrenceOf(GST::LCTV_RTMP_URL , false , true) +
          dest.upToLastOccurrenceOf (" live=1"          , false , true) +
          " live=1"                                                     ;
+}
+
+unsigned int Gstreamer::GetVersionMajor()
+{
+  guint major_version , minor_version , micro_version , nano_version ;
+
+  gst_version(&major_version , &minor_version , &micro_version , &nano_version) ;
+
+  return major_version ;
+}
+
+unsigned int Gstreamer::GetVersionMinor()
+{
+  guint major_version , minor_version , micro_version , nano_version ;
+
+  gst_version(&major_version , &minor_version , &micro_version , &nano_version) ;
+
+  return minor_version ;
 }
 
 bool Gstreamer::IsInitialized() { return gst_is_initialized() ; }

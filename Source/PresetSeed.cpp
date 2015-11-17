@@ -22,12 +22,13 @@
 
 PresetSeed::PresetSeed()
 {
-  isOutputOn          = CONFIG::DEFAULT_IS_OUTPUT_ON ;
-  isInterstitialOn    = CONFIG::DEFAULT_IS_INTERSTITIAL_ON ;
   isScreencapOn       = CONFIG::DEFAULT_IS_SCREENCAP_ON ;
   isCameraOn          = CONFIG::DEFAULT_IS_CAMERA_ON ;
   isTextOn            = CONFIG::DEFAULT_IS_TEXT_ON ;
+  isInterstitialOn    = CONFIG::DEFAULT_IS_INTERSTITIAL_ON ;
   isPreviewOn         = CONFIG::DEFAULT_IS_PREVIEW_ON ;
+  isAudioOn           = CONFIG::DEFAULT_IS_AUDIO_ON ;
+  isOutputOn          = CONFIG::DEFAULT_IS_OUTPUT_ON ;
   displayN            = CONFIG::DEFAULT_DISPLAY_N ;
   screenN             = CONFIG::DEFAULT_SCREEN_N ;
   screencapW          = CONFIG::DEFAULT_SCREENCAP_W ;
@@ -64,12 +65,13 @@ void PresetSeed::createPreset()
 {
   preset = ValueTree(presetId) ;
   preset.setProperty(CONFIG::PRESET_NAME_ID        , var(presetName         ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_OUTPUT_ON_ID       , var(isOutputOn         ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_INTERSTITIAL_ON_ID , var(isInterstitialOn   ) , nullptr) ;
   preset.setProperty(CONFIG::IS_SCREENCAP_ON_ID    , var(isScreencapOn      ) , nullptr) ;
   preset.setProperty(CONFIG::IS_CAMERA_ON_ID       , var(isCameraOn         ) , nullptr) ;
   preset.setProperty(CONFIG::IS_TEXT_ON_ID         , var(isTextOn           ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_INTERSTITIAL_ON_ID , var(isInterstitialOn   ) , nullptr) ;
   preset.setProperty(CONFIG::IS_PREVIEW_ON_ID      , var(isPreviewOn        ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_AUDIO_ON_ID        , var(isAudioOn          ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_OUTPUT_ON_ID       , var(isOutputOn         ) , nullptr) ;
   preset.setProperty(CONFIG::DISPLAY_N_ID          , var(displayN           ) , nullptr) ;
   preset.setProperty(CONFIG::SCREEN_N_ID           , var(screenN            ) , nullptr) ;
   preset.setProperty(CONFIG::SCREENCAP_W_ID        , var(screencapW         ) , nullptr) ;

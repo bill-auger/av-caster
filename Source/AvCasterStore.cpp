@@ -54,7 +54,7 @@ AvCasterStore::~AvCasterStore() {}
 ValueTree AvCasterStore::verifyConfig(ValueTree stored_config , Identifier root_node_id)
 {
   bool      is_config_valid = stored_config.isValid() && stored_config.hasType(root_node_id) ;
-  ValueTree config_store    = (is_config_valid) ? stored_config : ValueTree(CONFIG::STORAGE_ID) ;
+  ValueTree config_store    = (is_config_valid) ? stored_config : CONFIG::DefaultStore() ;
 
   // verify config version
   double stored_version    = double(config_store[CONFIG::CONFIG_VERSION_ID]) ;
@@ -89,6 +89,7 @@ DEBUG_TRACE_VERIFY_PRESETS
     presets.addChild(lctv_preset , CONFIG::LCTV_PRESET_IDX , nullptr) ;
   delete file_seed ; delete rtmp_seed ; delete lctv_seed ;
 
+  // remove presets from runtime store (to ignore events)
   this->root.removeChild(presets , nullptr) ;
 
   return presets ;
@@ -101,9 +102,9 @@ DEBUG_TRACE_VALIDATE_CONFIG
   if (!this->root.isValid()) return ;
 
   // transfer missing properties
-  validateRootProperty(CONFIG::CONFIG_VERSION_ID    , var(CONFIG::CONFIG_VERSION           )) ;
-  validateRootProperty(CONFIG::IS_CONFIG_PENDING_ID , var(CONFIG::DEFAULT_IS_CONFIG_PENDING)) ;
-  validateRootProperty(CONFIG::PRESET_ID            , var(CONFIG::DEFAULT_PRESET_IDX       )) ;
+  validateRootProperty(CONFIG::CONFIG_VERSION_ID , var(CONFIG::CONFIG_VERSION    )) ;
+  validateRootProperty(CONFIG::IS_PENDING_ID     , var(CONFIG::DEFAULT_IS_PENDING)) ;
+  validateRootProperty(CONFIG::PRESET_ID         , var(CONFIG::DEFAULT_PRESET_IDX)) ;
 
   // validate user preset nodes
   int n_presets = this->presets.getNumChildren() ;
@@ -184,7 +185,7 @@ void AvCasterStore::sanitizeConfig() // TODO: more
 
 void AvCasterStore::storeConfig()
 {
-DEBUG_TRACE_DUMP_STORE_CONFIG
+DEBUG_TRACE_STORE_CONFIG
 
   if (!this->root.isValid()) return ;
 
@@ -196,10 +197,10 @@ DEBUG_TRACE_DUMP_STORE_CONFIG
   listen(false) ;
 
   // filter transient data
-  var is_config_pending = this->root  [CONFIG::IS_CONFIG_PENDING_ID] ;
-  var is_output_on      = this->config[CONFIG::IS_OUTPUT_ON_ID     ] ;
-  this->root  .removeProperty(CONFIG::IS_CONFIG_PENDING_ID , nullptr) ;
-  this->config.removeProperty(CONFIG::IS_OUTPUT_ON_ID      , nullptr) ;
+  var is_config_pending = this->root  [CONFIG::IS_PENDING_ID  ] ;
+  var is_output_on      = this->config[CONFIG::IS_OUTPUT_ON_ID] ;
+  this->root  .removeProperty(CONFIG::IS_PENDING_ID   , nullptr) ;
+  this->config.removeProperty(CONFIG::IS_OUTPUT_ON_ID , nullptr) ;
 
   // append presets to persistent storage
   this->root.addChild(this->presets , -1 , nullptr) ;
@@ -210,12 +211,12 @@ DEBUG_TRACE_DUMP_STORE_CONFIG
   else AvCaster::Error(GUI::STORAGE_WRITE_ERROR_MSG) ;
   delete config_stream ;
 
-  // remove presets from runtime store
+  // remove presets from runtime store (to ignore events)
   this->root.removeChild(this->presets , nullptr) ;
 
   // restore transient data
-  this->root  .setProperty(CONFIG::IS_CONFIG_PENDING_ID , is_config_pending , nullptr) ;
-  this->config.setProperty(CONFIG::IS_OUTPUT_ON_ID      , is_output_on      , nullptr) ;
+  this->root  .setProperty(CONFIG::IS_PENDING_ID   , is_config_pending , nullptr) ;
+  this->config.setProperty(CONFIG::IS_OUTPUT_ON_ID , is_output_on      , nullptr) ;
 
   // re-subscribe to model change events
   listen(true) ;
@@ -453,8 +454,8 @@ DEBUG_TRACE_CONFIG_TREE_CHANGED
 
 ValueTree AvCasterStore::getKeyNode(const Identifier& a_key)
 {
-  return (a_key == CONFIG::PRESET_ID          ||
-          a_key == CONFIG::IS_CONFIG_PENDING_ID) ? this->root : this->config ;
+  return (a_key == CONFIG::PRESET_ID   ||
+          a_key == CONFIG::IS_PENDING_ID) ? this->root : this->config ;
 }
 
 bool AvCasterStore::isControlKey(const Identifier& a_key)
@@ -467,7 +468,7 @@ bool AvCasterStore::isControlKey(const Identifier& a_key)
          a_key == CONFIG::IS_PREVIEW_ON_ID      ||
          a_key == CONFIG::IS_AUDIO_ON_ID        ||
          a_key == CONFIG::IS_OUTPUT_ON_ID       ||
-         a_key == CONFIG::IS_CONFIG_PENDING_ID  ||
+         a_key == CONFIG::IS_PENDING_ID         ||
          a_key == CONFIG::PRESET_ID              ;
 }
 

@@ -27,6 +27,8 @@
 
 /* state */
 
+#  define DEBUG_TRACE_INIT_VERSION printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ;
+
 #  define DEBUG_TRACE_INIT_PHASE_1 Trace::TraceState("validating environment") ;
 
 #  define DEBUG_TRACE_INIT_PHASE_2 Trace::TraceState("instantiating model") ;
@@ -37,7 +39,7 @@
 
 #  define DEBUG_TRACE_INIT_PHASE_5 Trace::TraceState("AvCaster ready") ;
 
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS                                         \
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT                                \
   if (CliParams.contains(APP::CLI_QUIT_TOKEN)) Trace::TraceState("forced quit") ;
 
 #  define DEBUG_TRACE_VALIDATE_ENVIRONMENT                                                 \
@@ -47,9 +49,9 @@
   if (!APP::VIDEOS_DIR .isDirectory()) { is_err = true ; dbg += " invlaid VIDEOS_DIR" ;  } \
   if (is_err) Trace::TraceError(dbg) ; else Trace::TraceState("environment is sane")       ;
 
-#  define DEBUG_TRACE_REFRESH_GUI                                                   \
-  bool should_show_config = bool(Store->root[CONFIG::IS_CONFIG_PENDING_ID]) ; \
-  String gui = (should_show_config) ? "Config" : "Controls" ;                       \
+#  define DEBUG_TRACE_REFRESH_GUI                                      \
+  bool should_show_config = bool(Store->root[CONFIG::IS_PENDING_ID]) ; \
+  String gui = (should_show_config) ? "Config" : "Controls" ;          \
   Trace::TraceState("showing " + gui + " GUI") ;
 
 
@@ -72,17 +74,18 @@
 
 #else // DEBUG
 
-#  define DEBUG_TRACE_INIT_PHASE_1         ;
-#  define DEBUG_TRACE_INIT_PHASE_2         ;
-#  define DEBUG_TRACE_INIT_PHASE_3         ;
-#  define DEBUG_TRACE_INIT_PHASE_4         ;
-#  define DEBUG_TRACE_INIT_PHASE_5         ;
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS    ;
-#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT ;
-#  define DEBUG_TRACE_REFRESH_GUI          ;
-#  define DEBUG_TRACE_GUI_CHANGED          ;
-#  define DEBUG_TRACE_SET_CONFIG           ;
-#  define DEBUG_TRACE_DISPLAY_ALERT        ;
+#  define DEBUG_TRACE_INIT_VERSION               ;
+#  define DEBUG_TRACE_INIT_PHASE_1               ;
+#  define DEBUG_TRACE_INIT_PHASE_2               ;
+#  define DEBUG_TRACE_INIT_PHASE_3               ;
+#  define DEBUG_TRACE_INIT_PHASE_4               ;
+#  define DEBUG_TRACE_INIT_PHASE_5               ;
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT ;
+#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT       ;
+#  define DEBUG_TRACE_REFRESH_GUI                ;
+#  define DEBUG_TRACE_GUI_CHANGED                ;
+#  define DEBUG_TRACE_SET_CONFIG                 ;
+#  define DEBUG_TRACE_DISPLAY_ALERT              ;
 
 #endif // DEBUG
 #endif  // TRACEAVCASTER_H_INCLUDED

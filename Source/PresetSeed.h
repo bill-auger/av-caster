@@ -37,12 +37,13 @@ protected:
 
   // control params
   String     presetName ;
-  bool       isOutputOn ;
-  bool       isInterstitialOn ;
   bool       isScreencapOn ;
   bool       isCameraOn ;
   bool       isTextOn ;
+  bool       isInterstitialOn ;
   bool       isPreviewOn ;
+  bool       isAudioOn ;
+  bool       isOutputOn ;
 
   // screencap params
   int        displayN ;

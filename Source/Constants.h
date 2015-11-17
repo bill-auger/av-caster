@@ -87,6 +87,8 @@ namespace APP
   static const String CLI_PRESETS_TOKEN = "--presets" ;
   static const String CLI_PRESET_TOKEN  = "--preset" ;
   static const String CLI_QUIT_TOKEN    = "--quit" ;
+  static const String CLI_VERSION_TOKEN = "--version" ;
+  static const String CLI_VERSION_MSG   = "AvCaster v" + String(ProjectInfo::versionString) ;
   static const String CLI_USAGE_MSG     = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN    + "     ] |"                                              +
                                                            "\n\t          [ " + CLI_PRESETS_TOKEN + "  ] |"                                                 +
                                                            "\n\t          [ " + CLI_PRESET_TOKEN  + " n ] |"                                                +
@@ -197,23 +199,24 @@ namespace CONFIG
 {
 /*\ CAVEATS:
 |*|  when defining new nodes or properties be sure to:
+|*|    * if new property        - define *_ID and DEFAULT_* below
 |*|    * if new node            - verify schema in AvCasterStore::validateConfig()
 |*|    * if new root property   - verify schema in AvCasterStore::validateConfig()
 |*|                             - sanitize data in AvCasterStore::sanitizeConfig()
 |*|    * if new preset property - verify schema in AvCasterStore::validatePreset()
+|*|                             - add instance var and definition in PresetSeed class
 |*|    * update the SCHEMA below
 \*/
-
 /*\ SCHEMA:
 |*|
 |*| // AvCasterStore->configRoot
 |*| STORAGE_ID:
 |*| {
 |*|   // config root IDs
-|*|   CONFIG_VERSION_ID:    a_double                              ,
-|*|   IS_CONFIG_PENDING_ID: a_bool                                ,
-|*|   PRESET_ID:            an_int                                ,
-|*|   PRESETS_ID:           [ a-config-id: a_config_node , .... ] // config nodes as below
+|*|   CONFIG_VERSION_ID: a_double                              ,
+|*|   IS_PENDING_ID:     a_bool                                ,
+|*|   PRESET_ID:         an_int                                ,
+|*|   PRESETS_ID:        [ a-config-id: a_config_node , .... ] // config nodes as below
 |*| }
 |*|
 |*| // AvCasterStore->configStore
@@ -225,9 +228,9 @@ namespace CONFIG
 |*|   IS_SCREENCAP_ON_ID:    a_bool   ,
 |*|   IS_CAMERA_ON_ID:       a_bool   ,
 |*|   IS_TEXT_ON_ID:         a_bool   ,
-|*|   IS_AUDIO_ON_ID:        a_bool   ,
 |*|   IS_INTERSTITIAL_ON_ID: a_bool   ,
 |*|   IS_PREVIEW_ON_ID:      a_bool   ,
+|*|   IS_AUDIO_ON_ID:        a_bool   ,
 |*|   IS_OUTPUT_ON_ID:       a_bool   ,
 |*|   // screen IDs
 |*|   DISPLAY_N_ID:          an_int   ,
@@ -284,6 +287,7 @@ namespace CONFIG
                    .replaceCharacter(' ', '-') ;
   }
 
+
   // nodes
   static const Identifier STORAGE_ID            = "av-caster-config" ;
   static const Identifier PRESETS_ID            = "presets" ;
@@ -293,7 +297,7 @@ namespace CONFIG
   // config root IDs
   static const Identifier CONFIG_VERSION_ID     = "config-version" ;
   static const Identifier PRESET_ID             = "preset-idx" ;
-  static const Identifier IS_CONFIG_PENDING_ID  = "is-config-pending" ;
+  static const Identifier IS_PENDING_ID         = "is-config-pending" ;
   // control IDs
   static const Identifier PRESET_NAME_ID        = "preset-name" ;
   static const Identifier IS_SCREENCAP_ON_ID    = "is-screencap-on" ;
@@ -350,7 +354,7 @@ namespace CONFIG
   static const double     CONFIG_VERSION             = 0.3 ;
   static const int        DEFAULT_PRESET_IDX         = 0 ; // ASSERT: must be 0
   static const int        N_STATIC_PRESETS           = 3 ; // ASSERT: num PresetSeed subclasses
-  static const bool       DEFAULT_IS_CONFIG_PENDING  = false ;
+  static const bool       DEFAULT_IS_PENDING         = false ;
 
   // control defaults
   static const String     FILE_PRESET_NAME           = "Local File" ;
@@ -437,6 +441,18 @@ namespace CONFIG
                                                                       "30"                  ) ;
   static const StringArray VIDEO_BITRATES    = StringArray::fromLines("800k"      + newLine +
                                                                       "1200k"               ) ;
+
+
+  static ValueTree DefaultStore()
+  {
+    ValueTree default_store = ValueTree(STORAGE_ID) ;
+    default_store.setProperty(CONFIG_VERSION_ID , CONFIG_VERSION     , nullptr) ;
+    default_store.setProperty(IS_PENDING_ID     , DEFAULT_IS_PENDING , nullptr) ;
+    default_store.setProperty(PRESET_ID         , DEFAULT_PRESET_IDX , nullptr) ;
+    default_store.addChild   (ValueTree(PRESETS_ID) , -1 , nullptr) ;
+
+    return default_store ;
+  }
 }
 
 
@@ -444,6 +460,9 @@ namespace CONFIG
         pertaining to the gStreamer media backend                 */
 namespace GST
 {
+  static const unsigned int MIN_MAJOR_VERSION = 1 ;
+  static const unsigned int MIN_MINOR_VERSION = 4 ;
+
   static const String PIPELINE_ID           = "pipeline" ;
   static const String SCREENCAP_BIN_ID      = "screencap-bin" ;
   static const String CAMERA_BIN_ID         = "camera-bin" ;

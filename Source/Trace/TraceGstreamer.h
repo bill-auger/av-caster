@@ -75,8 +75,9 @@ String GstPadId(GstPad* a_pad)
 #  define DEBUG_TRACE_SET_GST_STATE                              \
   String dbg = " '" + GstElementId(an_element) + "' to state " + \
                DEBUG_GST_STATE(next_state)                     ; \
-  if (is_err) Trace::TraceError("error setting" + dbg) ;         \
-  else        Trace::TraceState("set"           + dbg)           ;
+  if (IsInitialized())                                           \
+    if (is_err) Trace::TraceError("error setting" + dbg) ;       \
+    else        Trace::TraceState("set"           + dbg)         ;
 
 
 /* configuration */

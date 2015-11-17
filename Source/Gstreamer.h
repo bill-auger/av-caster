@@ -103,7 +103,7 @@ private:
   static void ConfigureLameEncoder   (GstElement* a_lame_encoder , guint bitrate) ;
   static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
 
-  // helpers
+  // string helpers
   static String MakeVideoCapsString (int width , int height , int framerate) ;
   static String MakeScreenCapsString(int screencap_w , int screencap_h , int framerate) ;
   static String MakeCameraCapsString(int camera_w , int camera_h , int framerate) ;
@@ -111,9 +111,13 @@ private:
   static String MakeH264CapsString  (int output_w , int output_h , int framerate) ;
   static String MakeMp3CapsString   (int samplerate , int n_channels) ;
   static String MakeLctvUrl         (String dest) ;
-  static bool   IsInitialized       () ;
-  static bool   IsPlaying           () ;
-  static bool   IsInPipeline        (GstElement* an_element) ;
+
+  // state helpers
+  static unsigned int GetVersionMajor() ;
+  static unsigned int GetVersionMinor() ;
+  static bool         IsInitialized  () ;
+  static bool         IsPlaying      () ;
+  static bool         IsInPipeline   (GstElement* an_element) ;
 
 
   // pipeline

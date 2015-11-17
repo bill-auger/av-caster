@@ -3,12 +3,25 @@ compiler:       clang
 sudo:           required
 dist:           trusty
 group:          edge
+notifications:
+  email: false
+  irc:
+    channels:
+    on_success: always
+    on_failure: always
+    on_start:   never
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/1fcf27221a4243f787d8
+    on_success: always
+    on_failure: always
+    on_start:   never
 before_install:
   - # per app config
   - VERSION=0.15.000
   - SOURCE_REPO_NAME='bill-auger'
   - PACKAGE_REPO_NAME='ninjam'
-  - PROJECT_NAME='av-caster' # ASSERT: matches dev repo name, binary filename, deb repo name, etc.
+  - PROJECT_NAME='av-caster' # ASSERT: matches names of dev repo, deb repo, binary file, etc.
   - DEPS_64='libfreetype6-dev libgstreamer-plugins-base1.0-dev libx11-dev libxcursor-dev
              libxinerama-dev'
   - DEPS_32='gir1.2-glib-2.0:i386 gir1.2-gstreamer-1.0:i386 libfreetype6-dev:i386

@@ -106,9 +106,10 @@ private:
   static void SetWindowTitle     () ;
 
   // helpers
-  static bool HandleCliParams    () ;
-  static bool ValidateEnvironment() ;
-  static void DisplayAlert       () ;
+  static bool HandleCliParamsPreInit () ;
+  static bool HandleCliParamsPostInit() ;
+  static bool ValidateEnvironment    () ;
+  static void DisplayAlert           () ;
 
 
   static MainContent*  Gui ;

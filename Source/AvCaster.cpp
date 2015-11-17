@@ -97,7 +97,7 @@ String AvCaster::GetPresetName()
   return STRING(current_preset[CONFIG::PRESET_NAME_ID]) ;
 }
 
-bool AvCaster::GetIsConfigPending() { return bool(Store->root[CONFIG::IS_CONFIG_PENDING_ID]) ; }
+bool AvCaster::GetIsConfigPending() { return bool(Store->root[CONFIG::IS_PENDING_ID]) ; }
 
 StringArray AvCaster::GetPresetsNames() { return Store->presetsNames() ; }
 
@@ -137,6 +137,10 @@ bool AvCaster::Initialize(MainContent* main_content)
   Gui       = main_content ;
   CliParams = JUCEApplicationBase::getCommandLineParameterArray() ;
 
+DEBUG_TRACE_INIT_VERSION
+
+  if (!HandleCliParamsPreInit()) return false ;
+
 DEBUG_TRACE_INIT_PHASE_1
 
   if (!ValidateEnvironment()) return false ;
@@ -158,7 +162,7 @@ DEBUG_TRACE_INIT_PHASE_4
 
 DEBUG_TRACE_INIT_PHASE_5
 
-  if (!HandleCliParams()) return false ;
+  if (!HandleCliParamsPostInit()) return false ;
 
   SetStatusL(GUI::READY_STATUS_TEXT) ;
 
@@ -204,15 +208,15 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
   if (!Store->isControlKey(a_key)) return ;
 
-  bool is_config_pending = bool(Store->root[CONFIG::IS_CONFIG_PENDING_ID]) ;
+  bool is_config_pending = bool(Store->root[CONFIG::IS_PENDING_ID]) ;
 
   if (Gstreamer::Reconfigure(a_key , is_config_pending))
   {
     StorePreset(GetPresetName()) ;
 
-    if      (a_key == CONFIG::IS_CONFIG_PENDING_ID ||
-             a_key == CONFIG::PRESET_ID             ) RefreshGui() ;
-    else if (a_key == CONFIG::IS_OUTPUT_ON_ID       ) SetWindowTitle() ;
+    if      (a_key == CONFIG::IS_PENDING_ID ||
+             a_key == CONFIG::PRESET_ID      ) RefreshGui() ;
+    else if (a_key == CONFIG::IS_OUTPUT_ON_ID) SetWindowTitle() ;
   }
   else
   {
@@ -224,7 +228,7 @@ void AvCaster::RefreshGui()
 {
 DEBUG_TRACE_REFRESH_GUI
 
-  bool is_config_pending = bool(Store->root[CONFIG::IS_CONFIG_PENDING_ID]) ;
+  bool is_config_pending = bool(Store->root[CONFIG::IS_PENDING_ID]) ;
 
   Gui->background->toFront(true) ; Gui->controls->toFront(true) ;
   if (is_config_pending) { Gui->preview->toFront(true) ; Gui->config ->toFront(true) ; }
@@ -245,13 +249,15 @@ void AvCaster::SetWindowTitle()
   Gui->getTopLevelComponent()->setName(APP::APP_NAME + " - " + title_text) ;
 }
 
-bool AvCaster::HandleCliParams()
+bool AvCaster::HandleCliParamsPreInit()
 {
-DEBUG_TRACE_HANDLE_CLI_PARAMS
+DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT
 
   if      (CliParams.contains(APP::CLI_QUIT_TOKEN   )) return false ;
-  if      (CliParams.contains(APP::CLI_HELP_TOKEN   ))
-  { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG)) ; return false ; }
+  else if (CliParams.contains(APP::CLI_VERSION_TOKEN))
+  { printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ; return false ; }
+  else if (CliParams.contains(APP::CLI_HELP_TOKEN   ))
+  { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG  )) ; return false ; }
   else if (CliParams.contains(APP::CLI_PRESETS_TOKEN))
   {
     int n_presets = Store->presets.getNumChildren() ; if (n_presets == 0) return false ;
@@ -267,7 +273,13 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
 
     return false ;
   }
-  else if (CliParams.contains(APP::CLI_PRESET_TOKEN))
+
+  return true ;
+}
+
+bool AvCaster::HandleCliParamsPostInit()
+{
+  if (CliParams.contains(APP::CLI_PRESET_TOKEN))
   {
     // set initial preset from cli param
     int token_idx  = CliParams.indexOf(APP::CLI_PRESET_TOKEN) ;
@@ -283,9 +295,11 @@ bool AvCaster::ValidateEnvironment()
 {
 DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
-  return APP::HOME_DIR   .isDirectory() &&
-         APP::APPDATA_DIR.isDirectory() &&
-         APP::VIDEOS_DIR .isDirectory()  ;
+  return Gstreamer::GetVersionMajor() >= GST::MIN_MAJOR_VERSION &&
+         Gstreamer::GetVersionMinor() >= GST::MIN_MINOR_VERSION &&
+         APP::HOME_DIR   .isDirectory()                         &&
+         APP::APPDATA_DIR.isDirectory()                         &&
+         APP::VIDEOS_DIR .isDirectory()                          ;
 }
 
 void AvCaster::DisplayAlert()

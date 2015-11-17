@@ -63,7 +63,7 @@ In any case you can "Star" this repo above if you like this project or "Watch" t
 
 
 ### Getting Help / Bug Reporting
-If AvCaster refuses to launch after changing some parameters in the GUI you can try deleting the persistent configuration file in your AppData dir (e.g. ~/.av-caster/AvCaster.bin).
+If AvCaster refuses to launch after changing some parameters in the GUI you can try deleting the persistent configuration file in your AppData dir (e.g. ~/.av-caster/av-caster.bin).
 
 Please report any problems on the [AvCaster Issue Tracker](https://github.com/bill-auger/av-caster/issues).
 

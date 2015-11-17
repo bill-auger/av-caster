@@ -251,7 +251,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
       if (rejectPresetChange()) return ;
 
-      key   = CONFIG::IS_CONFIG_PENDING_ID ;
+      key   = CONFIG::IS_PENDING_ID ;
       value = var(!AvCaster::GetIsConfigPending()) ;
 
         //[/UserButtonCode_configButton]

@@ -13,7 +13,7 @@ DEB_DESC="A simple native gStreamer GUI for screencast, webcam, and audio stream
     --package       ./"$PROJECT_NAME"_"$VERSION"_"$ARCH".deb             \
     --architecture  "$ARCH"                                              \
     --license       'LGPLv3'                                             \
-    --maintainer    'bill-auger@programmer.net'                          \
+    --maintainer    'bill-auger <bill-auger@programmer.net>'             \
     --vendor        "https://github.com/$SOURCE_REPO_NAME/$PROJECT_NAME" \
     --url           "https://github.com/$SOURCE_REPO_NAME/$PROJECT_NAME" \
     --depends       'freeglut3'                                          \
