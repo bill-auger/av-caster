@@ -17,8 +17,8 @@
 \*/
 
 
-#include "AvCaster.h"
 #include "Gstreamer.h"
+#include "AvCaster.h"
 #include "Trace/TraceAvCaster.h"
 
 
@@ -29,10 +29,11 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 /* AvCaster private class variables */
 
-MainContent*  AvCaster::Gui          = nullptr ; // Initialize()
-StringArray   AvCaster::CliParams ;              // initialize()
-Array<Alert*> AvCaster::Alerts ;
-bool          AvCaster::IsAlertModal = false ;   // Warning() , Error()
+MainContent*             AvCaster::Gui          = nullptr ; // Initialize()
+ScopedPointer<IrcClient> AvCaster::Irc          = nullptr ; // Initialize()
+StringArray              AvCaster::CliParams ;              // initialize()
+Array<Alert*>            AvCaster::Alerts ;
+bool                     AvCaster::IsAlertModal = false ;   // Warning() , Error()
 
 
 /* AvCaster public class methods */
@@ -49,6 +50,13 @@ void AvCaster::Error(String message_text)
   Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
 }
 
+void AvCaster::AddChatLine(String nick , String message)
+{
+  Gui->chat->addChatLine(nick , message) ;
+}
+
+void AvCaster::SendChat(String chat_message) { Irc->sendChat(chat_message) ; }
+
 ModalComponentManager::Callback* AvCaster::GetModalCb()
 {
   IsAlertModal = true ;
@@ -58,22 +66,15 @@ ModalComponentManager::Callback* AvCaster::GetModalCb()
 
 void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
+void* AvCaster::GetGuiXwinHandle() { return Gui->getWindowHandle() ; }
+
 Rectangle<int> AvCaster::GetPreviewBounds() { return Gui->getPreviewBounds() ; }
 
-void AvCaster::GuiChanged(Identifier a_key , var a_value)
+void AvCaster::SetConfig(const Identifier& a_key , var a_value)
 {
-DEBUG_TRACE_GUI_CHANGED
-
-  SetConfig(a_key , a_value) ;
-}
-
-void AvCaster::SetConfig(Identifier a_key , var a_value)
-{
-  ValueTree storage_node = Store->getKeyNode(a_key) ;
-
 DEBUG_TRACE_SET_CONFIG
 
-  if (a_key.isValid()) storage_node.setProperty(a_key , a_value , nullptr) ;
+  Store->setConfig(a_key , a_value) ;
 }
 
 void AvCaster::StorePreset(String preset_name) { Store->storePreset(preset_name) ; }
@@ -95,6 +96,11 @@ String AvCaster::GetPresetName()
   ValueTree current_preset = Store->presets.getChild(GetPresetIdx()) ;
 
   return STRING(current_preset[CONFIG::PRESET_NAME_ID]) ;
+}
+
+bool AvCaster::GetIsPreviewOn()
+{
+  return bool(Store->config[CONFIG::IS_PREVIEW_ON_ID]) && !GetIsConfigPending() ;
 }
 
 bool AvCaster::GetIsConfigPending() { return bool(Store->root[CONFIG::IS_PENDING_ID]) ; }
@@ -129,6 +135,46 @@ int AvCaster::GetCameraRate()
   return int(camera_store[CONFIG::CAMERA_RATE_ID]) ;
 }
 
+String AvCaster::GetVersionString()
+{
+  return APP::APP_NAME + " v" + ProjectInfo::versionString ;
+}
+
+void AvCaster::UpdateChatNicks(StringArray nicks)
+{
+  for (String* nick = nicks.begin() ; nick != nicks.end() ; ++nick)
+  {
+    Identifier user_id       = CONFIG::FilterId(*nick , APP::VALID_NICK_CHARS) ;
+    ValueTree  chatter_store = Store->chatters.getChildWithName(user_id) ;
+
+DEBUG_TRACE_ADD_CHAT_NICK
+
+    if (!chatter_store.isValid())
+    {
+      chatter_store = ValueTree(user_id) ;
+      chatter_store.setProperty(CONFIG::CHAT_NICK_ID , var(*nick) , nullptr) ;
+      Store->chatters.addChild(chatter_store , -1 , nullptr) ;
+    }
+  }
+
+  for (int chatter_n = 0 ; chatter_n < Store->chatters.getNumChildren() ; ++chatter_n)
+  {
+    ValueTree chatter_store = Store->chatters.getChild(chatter_n) ;
+
+DEBUG_TRACE_REMOVE_CHAT_NICK
+
+    if (!nicks.contains(STRING(chatter_store[CONFIG::CHAT_NICK_ID])))
+      Store->chatters.removeChild(chatter_store , nullptr) ;
+  }
+
+  Gui->chat->updateVisiblilty() ;
+}
+
+StringArray AvCaster::GetChatNicks()
+{
+  return AvCasterStore::PropertyValues(Store->chatters , CONFIG::CHAT_NICK_ID) ;
+}
+
 
 /* AvCaster private class methods */
 
@@ -153,14 +199,23 @@ DEBUG_TRACE_INIT_PHASE_2
 DEBUG_TRACE_INIT_PHASE_3
 
   // initialze GUI
-  SetWindowTitle() ; RefreshGui() ;
+  Gui->initialize(Store->chatters) ; SetWindowTitle() ; RefreshGui() ;
 
+#ifndef NO_INITIALIZE_MEDIA
 DEBUG_TRACE_INIT_PHASE_4
 
   // initialize gStreamer
-  if (!Gstreamer::Initialize(Gui->getWindowHandle())) return false ;
+  if (!Gstreamer::Initialize()) return false ;
+#endif // NO_INITIALIZE_MEDIA
 
+#ifndef NO_INITIALIZE_NETWORK
 DEBUG_TRACE_INIT_PHASE_5
+
+  // initialize libircclient
+  if ((Irc = new IrcClient(APP::IRC_THREAD_NAME)) == nullptr) return false ;
+#endif // NO_INITIALIZE_NETWORK
+
+DEBUG_TRACE_INIT_PHASE_6
 
   if (!HandleCliParamsPostInit()) return false ;
 
@@ -176,8 +231,28 @@ void AvCaster::Shutdown()
 {
   DisplayAlert() ;
 
-  Gstreamer::Shutdown() ;
+#ifndef NO_INITIALIZE_NETWORK
+DEBUG_TRACE_SHUTDOWN_PHASE_1
+#ifdef RUN_NETWORK_AS_THREAD
 
+  // shutdown network
+  if (Irc->isThreadRunning()) Irc->stopThread(5000) ; delete Irc ; Irc = nullptr ;
+#else // RUN_NETWORK_AS_THREAD
+//   delete Irc ;
+  Irc = nullptr ;
+#endif // RUN_NETWORK_AS_THREAD
+#endif // NO_INITIALIZE_NETWORK
+
+#ifndef NO_INITIALIZE_MEDIA
+DEBUG_TRACE_SHUTDOWN_PHASE_2
+
+  // shutdown media
+  Gstreamer::Shutdown() ;
+#endif // NO_INITIALIZE_MEDIA
+
+DEBUG_TRACE_SHUTDOWN_PHASE_3
+
+  // shutdown storage
   if (Store != nullptr) Store->storeConfig() ; Store = nullptr ;
 }
 
@@ -186,8 +261,17 @@ void AvCaster::HandleTimer(int timer_id)
   switch (timer_id)
   {
     case APP::GUI_TIMER_HI_ID:                                       break ;
+#ifdef NO_INITIALIZE_NETWORK
     case APP::GUI_TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ; break ;
-    case APP::GUI_TIMER_LO_ID:                                       break ;
+#else // NO_INITIALIZE_NETWORK
+#  ifdef RUN_NETWORK_AS_THREAD
+    case APP::GUI_TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ; break ;
+    case APP::GUI_TIMER_LO_ID:  Irc->startThread() ;                 break ;
+#  else // RUN_NETWORK_AS_THREAD
+    case APP::GUI_TIMER_MED_ID: UpdateStatusGUI() ; Irc->run() ; DisplayAlert() ; break ;
+    case APP::GUI_TIMER_LO_ID:                                                    break ;
+#  endif // RUN_NETWORK_AS_THREAD
+#endif // NO_INITIALIZE_NETWORK
     default:                                                         break ;
   }
 }
@@ -208,8 +292,12 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
   if (!Store->isControlKey(a_key)) return ;
 
-  bool is_config_pending = bool(Store->root[CONFIG::IS_PENDING_ID]) ;
+  // update chat visibility
+  if (a_key == CONFIG::IS_PREVIEW_ON_ID || a_key == CONFIG::IS_PENDING_ID)
+    Gui->chat->updateVisiblilty() ;
 
+  // reconfigure gStreamer element
+  bool is_config_pending = bool(Store->root[CONFIG::IS_PENDING_ID   ]) ;
   if (Gstreamer::Reconfigure(a_key , is_config_pending))
   {
     StorePreset(GetPresetName()) ;
@@ -220,19 +308,23 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
   }
   else
   {
-    Store->toogleControl(a_key) ; return ;
+    Store->toogleControl(a_key) ; RefreshGui() ; return ;
   }
 }
 
 void AvCaster::RefreshGui()
 {
+  bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID   ]) ;
+  bool       is_preview_on     = bool(Store->config[CONFIG::IS_PREVIEW_ON_ID]) ;
+  Component* front_component   = (is_config_pending) ? static_cast<Component*>(Gui->config ) :
+                                 (is_preview_on    ) ? static_cast<Component*>(Gui->preview) :
+                                                       static_cast<Component*>(Gui->chat   ) ;
+
 DEBUG_TRACE_REFRESH_GUI
 
-  bool is_config_pending = bool(Store->root[CONFIG::IS_PENDING_ID]) ;
-
-  Gui->background->toFront(true) ; Gui->controls->toFront(true) ;
-  if (is_config_pending) { Gui->preview->toFront(true) ; Gui->config ->toFront(true) ; }
-  else                   { Gui->config ->toFront(true) ; Gui->preview->toFront(true) ; }
+  Gui->background->toFront(true) ;
+  Gui->controls  ->toFront(true) ;
+  front_component->toFront(true) ;
 }
 
 void AvCaster::SetWindowTitle()
@@ -253,8 +345,7 @@ bool AvCaster::HandleCliParamsPreInit()
 {
 DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT
 
-  if      (CliParams.contains(APP::CLI_QUIT_TOKEN   )) return false ;
-  else if (CliParams.contains(APP::CLI_VERSION_TOKEN))
+  if      (CliParams.contains(APP::CLI_VERSION_TOKEN))
   { printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ; return false ; }
   else if (CliParams.contains(APP::CLI_HELP_TOKEN   ))
   { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG  )) ; return false ; }
@@ -279,13 +370,15 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT
 
 bool AvCaster::HandleCliParamsPostInit()
 {
+DEBUG_TRACE_HANDLE_CLI_PARAMS_POST_INIT
+
   if (CliParams.contains(APP::CLI_PRESET_TOKEN))
   {
     // set initial preset from cli param
     int token_idx  = CliParams.indexOf(APP::CLI_PRESET_TOKEN) ;
     int preset_idx = CliParams[token_idx + 1].getIntValue() ;
 
-    if (~preset_idx) SetConfig(CONFIG::PRESET_ID , preset_idx) ;
+    if (~preset_idx) Store->setConfig(CONFIG::PRESET_ID , preset_idx) ;
   }
 
    return true ;
@@ -295,11 +388,11 @@ bool AvCaster::ValidateEnvironment()
 {
 DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
-  return Gstreamer::GetVersionMajor() >= GST::MIN_MAJOR_VERSION &&
-         Gstreamer::GetVersionMinor() >= GST::MIN_MINOR_VERSION &&
-         APP::HOME_DIR   .isDirectory()                         &&
-         APP::APPDATA_DIR.isDirectory()                         &&
-         APP::VIDEOS_DIR .isDirectory()                          ;
+  return Gstreamer::IsSufficientVersion() &&
+         IrcClient::IsSufficientVersion() &&
+         APP::HOME_DIR   .isDirectory()   &&
+         APP::APPDATA_DIR.isDirectory()   &&
+         APP::VIDEOS_DIR .isDirectory()    ;
 }
 
 void AvCaster::DisplayAlert()

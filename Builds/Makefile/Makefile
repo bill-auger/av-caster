@@ -18,12 +18,12 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := -march=native
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
-  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
+  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt -lircclient `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := av-caster-dbg
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -39,33 +39,12 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := -march=native
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -O3 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
-  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
+  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt -lircclient `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  TARGET := av-caster
-  BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
-  CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
-endif
-
-ifeq ($(CONFIG),Release32)
-  BINDIR := build
-  LIBDIR := build
-  OBJDIR := build/intermediate/Release32
-  OUTDIR := build
-
-  ifeq ($(TARGET_ARCH),)
-    TARGET_ARCH := -m32
-  endif
-
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -O3 `pkg-config --cflags gstreamer-1.0`
-  CXXFLAGS += $(CFLAGS)
-  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
-  LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_CE4F43AE=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.0" -D "JUCE_APP_VERSION_HEX=0xf00" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := av-caster
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -75,9 +54,13 @@ OBJECTS := \
   $(OBJDIR)/AvCaster_86a5e2ca.o \
   $(OBJDIR)/AvCasterStore_6b7801.o \
   $(OBJDIR)/Background_ba4a3b7.o \
+  $(OBJDIR)/Chat_e7196be1.o \
+  $(OBJDIR)/ChatList_12048b9f.o \
+  $(OBJDIR)/ChatListItem_84b82452.o \
   $(OBJDIR)/Config_5aed31cb.o \
   $(OBJDIR)/Controls_28d2363f.o \
   $(OBJDIR)/Gstreamer_49eed0f5.o \
+  $(OBJDIR)/IrcClient_17c5f7a6.o \
   $(OBJDIR)/Main_90ebc5c2.o \
   $(OBJDIR)/MainContent_6313eee1.o \
   $(OBJDIR)/PresetSeed_7897bb79.o \
@@ -122,6 +105,21 @@ $(OBJDIR)/Background_ba4a3b7.o: ../../Source/Background.cpp
 	@echo "Compiling Background.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/Chat_e7196be1.o: ../../Source/Chat.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling Chat.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ChatList_12048b9f.o: ../../Source/ChatList.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ChatList.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ChatListItem_84b82452.o: ../../Source/ChatListItem.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ChatListItem.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/Config_5aed31cb.o: ../../Source/Config.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Config.cpp"
@@ -135,6 +133,11 @@ $(OBJDIR)/Controls_28d2363f.o: ../../Source/Controls.cpp
 $(OBJDIR)/Gstreamer_49eed0f5.o: ../../Source/Gstreamer.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Gstreamer.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/IrcClient_17c5f7a6.o: ../../Source/IrcClient.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling IrcClient.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp

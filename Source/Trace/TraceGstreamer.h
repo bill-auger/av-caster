@@ -82,6 +82,9 @@ String GstPadId(GstPad* a_pad)
 
 /* configuration */
 
+#  define DEBUG_TRACE_INITIALIZE_PIPELINE                     \
+  if (IsPlaying()) Trace::TraceState("initializing pipeline") ;
+
 #  define DEBUG_TRACE_CONFIGURE_PIPELINE                        \
   if (IsPlaying()) Trace::TraceState("re-configuring pipeline") ;
 
@@ -271,6 +274,7 @@ String GstPadId(GstPad* a_pad)
 #  define DEBUG_TRACE_GST_INIT_PHASE_5           ;
 #  define DEBUG_TRACE_GST_INIT_PHASE_6           ;
 #  define DEBUG_TRACE_SET_GST_STATE              ;
+#  define DEBUG_TRACE_INITIALIZE_PIPELINE        ;
 #  define DEBUG_TRACE_CONFIGURE_PIPELINE         ;
 #  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN    ;
 #  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN       ;

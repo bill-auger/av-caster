@@ -22,20 +22,20 @@ changelog=
 rootdir="$pkgname"-"$pkgver"
 source=('https://github.com/bill-auger/av-caster/archive/v'"$pkgver"'.tar.gz')
 noextract=()
-md5sums=('ddc79b743aa9a23e65ae92872d7f2a36')
+md5sums=('178042649e8e4737dc9f3efce4607993')
 validpgpkeys=()
 
 #prepare() {}
 
 build() {
-  cd "$rootdir"/Builds/GnuMakefile/
+  cd "$rootdir"/Builds/Makefile/
   CONFIG=Release make
 }
 
-#check() { [ -f "$rootdir"/Builds/GnuMakefile/build/av-caster ] }
+#check() { [ -f "$rootdir"/Builds/Makefile/build/av-caster ] }
 
 package() {
   mkdir -p $pkgdir/usr/bin/
   cd "$rootdir"
-  cp Builds/GnuMakefile/build/av-caster $pkgdir/usr/bin/
+  cp Builds/Makefile/build/av-caster $pkgdir/usr/bin/
 }

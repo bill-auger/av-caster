@@ -16,18 +16,12 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
-#ifndef MAINCONTENT_H_INCLUDED
-#define MAINCONTENT_H_INCLUDED
+#ifndef CHAT_H_INCLUDED
+#define CHAT_H_INCLUDED
 
 //[Headers]     -- You can add your own extra header files here --
 
-#include "Background.h"
-#include "Chat.h"
-#include "Config.h"
-#include "Controls.h"
-#include "Preview.h"
-#include "Statusbar.h"
+#include "ChatList.h"
 
 //[/Headers]
 
@@ -36,18 +30,24 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-  MainContent is the main GUI container class for the AvCaster application.
+  Chat is a the chat GUI container for the AvCaster application.
+  It hosts the chat history, message entry, and users list components.
                                                                     //[/Comments]
 */
-class MainContent  : public Component
+class Chat  : public Component,
+              public TextEditor::Listener
 {
 public:
     //==============================================================================
-    MainContent ();
-    ~MainContent();
+    Chat ();
+    ~Chat();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+
+  void updateVisiblilty() ;
+  void addChatLine     (String chat_user , String chat_text) ;
+
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -58,30 +58,30 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  friend class AvCaster ;
+  friend class MainContent ;
+
+  void initialize                (ValueTree chatters_store) ;
+  void textEditorReturnKeyPressed(TextEditor& a_text_editor) ;
 
 
-  void           initialize      (ValueTree chatters_store) ;
-  void           warning         (String message_text) ;
-  void           error           (String message_text) ;
-  Rectangle<int> getPreviewBounds() ;
+  ValueTree chattersStore ;
 
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Background> background;
-    ScopedPointer<Controls> controls;
-    ScopedPointer<Chat> chat;
-    ScopedPointer<Preview> preview;
-    ScopedPointer<Statusbar> statusbar;
-    ScopedPointer<Config> config;
+    ScopedPointer<GroupComponent> chatGroup;
+    ScopedPointer<GroupComponent> chatHistoryGroup;
+    ScopedPointer<TextEditor> chatHistoryText;
+    ScopedPointer<GroupComponent> chatEntryGroup;
+    ScopedPointer<TextEditor> chatEntryText;
+    ScopedPointer<ChatList> chatList;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chat)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // MAINCONTENT_H_INCLUDED
+#endif // CHAT_H_INCLUDED

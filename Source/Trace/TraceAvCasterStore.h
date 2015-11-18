@@ -103,6 +103,14 @@
 #  define DEBUG_TRACE_TOGGLE_CONTROL                                          \
   Trace::TraceConfig("error re-configuring media - reverting control toggle") ;
 
+#  define DEBUG_TRACE_SET_CONFIG                                              \
+  String    key        = (a_key.isValid()) ? String(a_key) : String("NULL") ; \
+  ValueTree node       = getKeyNode(a_key) ;                                  \
+  String    change_msg = "key '"             + key                 +          \
+                         "' changing from '" + STRING(node[a_key]) +          \
+                         "' to '"            + STRING(a_value    ) + "'" ;    \
+  Trace::TraceVerbose("config " + change_msg) ;
+
 #else // DEBUG
 
 #  define DEBUG_TRACE_VERIFY_CONFIG            ;
@@ -122,6 +130,7 @@
 #  define DEBUG_TRACE_RENAME_PRESET            ;
 #  define DEBUG_TRACE_DELETE_PRESET            ;
 #  define DEBUG_TRACE_TOGGLE_CONTROL           ;
+#  define DEBUG_TRACE_SET_CONFIG               ;
 
 #endif // DEBUG
 #endif  // TRACEAVCASTERSTORE_H_INCLUDED

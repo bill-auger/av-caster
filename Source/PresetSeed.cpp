@@ -101,7 +101,7 @@ void PresetSeed::createPreset()
 
 FilePresetSeed::FilePresetSeed()
 {
-  presetId   = CONFIG::FilterId(CONFIG::FILE_PRESET_NAME) ;
+  presetId   = CONFIG::FilterId(CONFIG::FILE_PRESET_NAME , APP::VALID_ID_CHARS) ;
   presetName = CONFIG::FILE_PRESET_NAME ;
   sinkIdx    = CONFIG::FILE_STREAM_IDX ;
   outputDest = CONFIG::DEFAULT_OUTPUT_DEST ;
@@ -110,7 +110,7 @@ FilePresetSeed::FilePresetSeed()
 
 RtmpPresetSeed::RtmpPresetSeed()
 {
-  presetId   = CONFIG::FilterId(CONFIG::RTMP_PRESET_NAME) ;
+  presetId   = CONFIG::FilterId(CONFIG::RTMP_PRESET_NAME , APP::VALID_ID_CHARS) ;
   presetName = CONFIG::RTMP_PRESET_NAME ;
   sinkIdx    = CONFIG::RTMP_STREAM_IDX ;
   outputDest = String::empty ;
@@ -119,7 +119,7 @@ RtmpPresetSeed::RtmpPresetSeed()
 
 LctvPresetSeed::LctvPresetSeed()
 {
-  presetId   = CONFIG::FilterId(CONFIG::LCTV_PRESET_NAME) ;
+  presetId   = CONFIG::FilterId(CONFIG::LCTV_PRESET_NAME , APP::VALID_ID_CHARS) ;
   presetName = CONFIG::LCTV_PRESET_NAME ;
   sinkIdx    = CONFIG::RTMP_STREAM_IDX ;
   outputDest = String::empty ;

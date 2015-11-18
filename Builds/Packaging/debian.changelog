@@ -2,21 +2,21 @@ av-caster (0.15.000) whatever; urgency=medium
 
   * toggle preview and output at runtime
 
- -- bill-auger@programmer.net  Sat, 07 Nov 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Sat, 07 Nov 2015 04:20:42 -0400
 
 
 av-caster (0.14.000) whatever; urgency=medium
 
   * handle command line arguments
 
- -- bill-auger@programmer.net  Tue, 03 Nov 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Tue, 03 Nov 2015 04:20:42 -0400
 
 
 av-caster (0.13.000) whatever; urgency=medium
 
   * implement saving confgurations as presets
 
- -- bill-auger@programmer.net  Mon, 02 Nov 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Mon, 02 Nov 2015 04:20:42 -0400
 
 
 av-caster (0.12.000) whatever; urgency=medium
@@ -25,4 +25,4 @@ av-caster (0.12.000) whatever; urgency=medium
   * milestone 'first usable version'
   * package created with FPM
 
- -- bill-auger@programmer.net  Wed, 21 Oct 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Wed, 21 Oct 2015 04:20:42 -0400

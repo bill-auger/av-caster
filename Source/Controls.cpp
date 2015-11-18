@@ -283,7 +283,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
     //[UserbuttonClicked_Post]
 
-  AvCaster::GuiChanged(key , value) ;
+  AvCaster::SetConfig(key , value) ;
 
     //[/UserbuttonClicked_Post]
 }
@@ -323,8 +323,8 @@ void Controls::broughtToFront() { toggleControls() ; loadConfig() ; }
 
 void Controls::configureCombobox(ComboBox* a_combobox)
 {
-  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_FG_COLOR) ;
-  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR) ;
+  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_NORMAL_COLOR) ;
+  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR    ) ;
 }
 
 void Controls::handleSaveButton()
@@ -382,7 +382,7 @@ DEBUG_TRACE_HANDLE_PRESETCOMBO
 
   // rename preset , restore selection , or commit preset change
   if (should_rename_preset) AvCaster::RenamePreset(preset_name) ;
-  if (!should_reset_option) AvCaster::GuiChanged(key , value) ;
+  if (!should_reset_option) AvCaster::SetConfig(key , value) ;
   else                      loadConfig() ;
 }
 

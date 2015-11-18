@@ -17,17 +17,12 @@
 \*/
 
 
-#ifndef MAINCONTENT_H_INCLUDED
-#define MAINCONTENT_H_INCLUDED
+#ifndef CHATLIST_H_INCLUDED
+#define CHATLIST_H_INCLUDED
 
 //[Headers]     -- You can add your own extra header files here --
 
-#include "Background.h"
-#include "Chat.h"
-#include "Config.h"
-#include "Controls.h"
-#include "Preview.h"
-#include "Statusbar.h"
+#include "ChatListItem.h"
 
 //[/Headers]
 
@@ -36,15 +31,16 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-  MainContent is the main GUI container class for the AvCaster application.
+  ChatList is the GUI container for ChatListItem instances
                                                                     //[/Comments]
 */
-class MainContent  : public Component
+class ChatList  : public Component,
+                  public ValueTree::Listener
 {
 public:
     //==============================================================================
-    MainContent ();
-    ~MainContent();
+    ChatList ();
+    ~ChatList();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -58,30 +54,35 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  friend class AvCaster ;
+  friend class Chat ;
+  friend class ChatListItem ;
 
 
-  void           initialize      (ValueTree chatters_store) ;
-  void           warning         (String message_text) ;
-  void           error           (String message_text) ;
-  Rectangle<int> getPreviewBounds() ;
+  ValueTree   chattersStore ;
+  StringArray nicks ;
+
+  void reloadNicks          () ;
+  void refresh              () ;
+  int  sortedChildIdx       (ValueTree& a_node) ;
+  void valueTreeChildAdded  (ValueTree& a_parent_node , ValueTree& a_node) override ;
+  void valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node) override ;
+
+  // unused ValueTree::Listener interface implementations
+  void valueTreePropertyChanged(  ValueTree& a_node , const Identifier& a_key)  override { UNUSED(a_node) ; UNUSED(a_key) ;  } ;
+  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ;           } ;
+  void valueTreeParentChanged(    ValueTree& a_node)                            override { UNUSED(a_node) ;                  } ;
+  void valueTreeRedirected(       ValueTree& a_node)                            override { UNUSED(a_node) ;                  } ;
 
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Background> background;
-    ScopedPointer<Controls> controls;
-    ScopedPointer<Chat> chat;
-    ScopedPointer<Preview> preview;
-    ScopedPointer<Statusbar> statusbar;
-    ScopedPointer<Config> config;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChatList)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // MAINCONTENT_H_INCLUDED
+#endif // CHATLIST_H_INCLUDED

@@ -1,9 +1,9 @@
 # links
+cppcheck-filtered
+dbg
 mk
 mk-clean
 mk-reset
-dbg
-cppcheck-filtered
 
 # builds
 Builds/*
@@ -11,17 +11,24 @@ Builds/*
 Builds/*/*
 !Builds/CodeBlocksLinux/AvCaster.cbp
 !Builds/CodeBlocksWindows/AvCaster.cbp
-!Builds/GnuMakefile/Makefile
+!Builds/Makefile/Makefile
 !Builds/MacOSX/AvCaster.xcodeproj
 !Builds/MacOSX/Info.plist
 !Builds/MacOSX/RecentFilesMenuTemplate.nib
-!Builds/Packaging/changelog
-!Builds/Packaging/fpm-build.sh
+!Builds/Packaging/av-caster.dsc
+!Builds/Packaging/av-caster.spec
+!Builds/Packaging/debian.changelog
+!Builds/Packaging/debian.control
+!Builds/Packaging/debian.rules
 !Builds/Packaging/PKGBUILD
-!Builds/Packaging/push-package.sh
 !Builds/Packaging/README.md
-!Builds/Scripts/*
-!Builds/Scripts/setup-build-helpers.sh
+!Builds/Scripts/cppcheck-filtered
+!Builds/Scripts/dbg
+!Builds/Scripts/mk
+!Builds/Scripts/mk-clean
+!Builds/Scripts/mk-reset
+!Builds/Scripts/README.md
+!Builds/Scripts/setup-build-helpers
 !Builds/VisualStudio2008/AvCaster.sln
 !Builds/VisualStudio2008/AvCaster.vcproj
 !Builds/VisualStudio2008/resources.rc

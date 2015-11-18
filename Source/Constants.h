@@ -21,24 +21,29 @@
 #define CONSTANTS_H_INCLUDED
 
 // enable standard features
-// #  define SUPRESS_ALERTS
-#  define CONFIGURE_TEXT_BIN         0
-#  define CONFIGURE_INTERSTITIAL_BIN 0
-#  define DISABLE_CONTROLS_NYI
+// #define NO_INITIALIZE_MEDIA
+// #define NO_INITIALIZE_NETWORK
+// #define SUPRESS_ALERTS
+#define CONFIGURE_TEXT_BIN         0
+#define CONFIGURE_INTERSTITIAL_BIN 0
+# define DISABLE_CONTROLS_NYI
 
 // debugging tweaks and kludges
-#  define INJECT_DEFAULT_CAMERA_DEVICE_INFO
-#  define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
-#  define RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-// #  define DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-// #  define DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
-#  define STATIC_PIPELINE
-// #  define FAUX_SCREEN                   // replace sceen-real-source with fakesrc
-// #  define FAUX_CAMERA                   // replace camera-real-source with fakesrc
-// #  define FAUX_AUDIO                    // replace audio-real-source with fakesrc
-// #  define FAUX_PREVIEW                  // replace composite-sink with fakesink
-// #  define FAUX_OUTPUT                   // replace filesink or rtmpsink
-// #  define FAKE_MUX_ENCODER_SRC_AND_SINK // isolate compositor from encoder and muxer from output
+#define INJECT_DEFAULT_CAMERA_DEVICE_INFO
+#define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
+#define RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
+// #define DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
+// #define DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
+#define NATIVE_CAMERA_RESOLUTION_ONLY
+// #define SHOW_DISABLED_PREVIEW_TINY
+// #define RUN_NETWORK_AS_THREAD
+#define STATIC_PIPELINE
+// #define FAUX_SCREEN                   // replace sceen-real-source with fakesrc
+// #define FAUX_CAMERA                   // replace camera-real-source with fakesrc
+// #define FAUX_AUDIO                    // replace audio-real-source with fakesrc
+#define FAUX_PREVIEW (! JUCE_LINUX)      // replace composite-sink with fakesink
+// #define FAUX_OUTPUT                   // replace filesink or rtmpsink
+// #define FAKE_MUX_ENCODER_SRC_AND_SINK // isolate compositor from encoder and muxer from output
 
 
 // enable debug features
@@ -59,6 +64,7 @@
 #define DEBUG_TRACE_GUI    DEBUG_DEFINED && 1
 #define DEBUG_TRACE_MEDIA  DEBUG_DEFINED && 0
 #define DEBUG_TRACE_CONFIG DEBUG_DEFINED && 1
+#define DEBUG_TRACE_CHAT   DEBUG_DEFINED && 1
 #define DEBUG_TRACE_STATE  DEBUG_DEFINED && 1
 #define DEBUG_TRACE_VB     DEBUG_DEFINED && 0
 
@@ -73,9 +79,13 @@ namespace APP
   // names and IDs
   static const String APP_NAME         = "AvCaster" ;
   static const String JACK_CLIENT_NAME = APP_NAME ;
-  static const String VALID_ID_CHARS   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_- " ;
-  static const String VALID_URI_CHARS  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.:/?= " ;
+  static const String IRC_THREAD_NAME  = "irc-thread" ;
   static const String DIGITS           = "0123456789" ;
+  static const String LETTERS          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ;
+  static const String ALPHANUMERIC     = DIGITS + LETTERS ;
+  static const String VALID_ID_CHARS   = ALPHANUMERIC + "_- " ;
+  static const String VALID_URI_CHARS  = ALPHANUMERIC + "_-.:/?= " ;
+  static const String VALID_NICK_CHARS = ALPHANUMERIC + "_-@#&[] " ;
 
   // timers
   static const int GUI_TIMER_HI_ID  = 1 ; static const int GUI_UPDATE_HI_IVL  = 125 ;
@@ -86,27 +96,22 @@ namespace APP
   static const String CLI_HELP_TOKEN    = "--help" ;
   static const String CLI_PRESETS_TOKEN = "--presets" ;
   static const String CLI_PRESET_TOKEN  = "--preset" ;
-  static const String CLI_QUIT_TOKEN    = "--quit" ;
   static const String CLI_VERSION_TOKEN = "--version" ;
   static const String CLI_VERSION_MSG   = "AvCaster v" + String(ProjectInfo::versionString) ;
   static const String CLI_USAGE_MSG     = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN    + "     ] |"                                              +
                                                            "\n\t          [ " + CLI_PRESETS_TOKEN + "  ] |"                                                 +
                                                            "\n\t          [ " + CLI_PRESET_TOKEN  + " n ] |"                                                +
-                                                           "\n\t          [ " + CLI_QUIT_TOKEN    + "     ]  "                                              +
                                                            "\n\n\t"           + CLI_HELP_TOKEN    + "\n\t\t\tprints this message"                           +
                                                            "\n\n\t"           + CLI_PRESETS_TOKEN + "\n\t\t\tlist stored presets"                           +
-                                                           "\n\n\t"           + CLI_PRESET_TOKEN  + "\n\t\t\tstart with initial preset number n"            +
-                                                           "\n\n\t"           + CLI_QUIT_TOKEN    + "\n\t\t\tquits the application immediately upon launch" ;
+                                                           "\n\n\t"           + CLI_PRESET_TOKEN  + "\n\t\t\tstart with initial preset number n"            ;
 
-  // files
-  static const File   HOME_DIR      = File::getSpecialLocation(File::userHomeDirectory           ) ;
-  static const File   APPDATA_DIR   = File::getSpecialLocation(File::userApplicationDataDirectory) ;
-  static const File   VIDEOS_DIR    = File::getSpecialLocation(File::userMoviesDirectory         ) ;
-  static const String PNG_FILE_EXT  = ".png" ;
-  static const String IMG_FILE_EXTS = "*" + APP::PNG_FILE_EXT + ",*" + APP::PNG_FILE_EXT ;
-
-  // get device info
-  static const String CAMERA_DEVICES_DIR = "/sys/class/video4linux" ;
+  // filesystem
+  static const File   HOME_DIR        = File::getSpecialLocation(File::userHomeDirectory           ) ;
+  static const File   APPDATA_DIR     = File::getSpecialLocation(File::userApplicationDataDirectory) ;
+  static const File   VIDEOS_DIR      = File::getSpecialLocation(File::userMoviesDirectory         ) ;
+  static const File   CAMERAS_DEV_DIR = File("/sys/class/video4linux") ;
+  static const String PNG_FILE_EXT    = ".png" ;
+  static const String IMG_FILE_EXTS   = "*" + APP::PNG_FILE_EXT + ",*" + APP::PNG_FILE_EXT ;
 }
 
 
@@ -119,11 +124,13 @@ namespace GUI
   static const int    PAD4                = (PAD * 4) ;
   static const int    PAD8                = (PAD * 8) ;
   static const Colour TEXT_BG_COLOR       = Colour(0xFF000000) ;
-  static const Colour TEXT_FG_COLOR       = Colour(0xFFBBBBFF) ;
-  static const Colour TEXT_CARET_COLOR    = Colour(0xFFFFFFFF) ;
-  static const Colour TEXT_HILITEBG_COLOR = Colour(0xFF000040) ;
+  static const Colour TEXT_EMPTY_COLOR    = Colour(0x80808080) ;
+  static const Colour TEXT_NORMAL_COLOR   = Colour(0xFFC0C0C0) ;
   static const Colour TEXT_HILITE_COLOR   = Colour(0xFFFFFFFF) ;
-  static const Colour TEXT_DISABLED_COLOR = Colour(0xFF808080) ;
+  static const Colour TEXT_HILITEBG_COLOR = Colour(0xFF000040) ;
+  static const Colour TEXT_CARET_COLOR    = Colour(0xFFFFFFFF) ;
+  static const Colour TEXT_FOCUS_COLOR    = Colour(0xFF000000) ;
+  static const Colour TEXT_SHADOW_COLOR   = Colour(0xFF000000) ;
 
   // MainWindow
   static const int    TITLEBAR_H      = 24 ;
@@ -135,6 +142,18 @@ namespace GUI
   // Controls
   static const String CONTROLS_TEXT = "Controls" ;
   static const String PRESETS_TEXT  = "Presets" ;
+
+  // Chat
+  static const int    LIST_W           = 160 ;
+  static const int    LIST_H           = 256 ;
+  static const int    LIST_X           = LIST_W + PAD8 + PAD ;
+  static const int    LIST_Y           = PAD8 + PAD ;
+  static const int    LIST_ITEM_H      = 24 ;
+  static const int    SCROLLBAR_W      = 12 ;
+  static const int    SCROLLING_LIST_W = LIST_W - SCROLLBAR_W - PAD ;
+  static const String CHAT_GROUP_TITLE = "Chat" ;
+  static const String CHAT_PROMPT_TEXT = "<type some chat here - then press ENTER key to send>" ;
+  static const String SERVER_NICK      = "SERVER" ;
 
   // Config
   static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
@@ -159,8 +178,9 @@ namespace GUI
 
   // user error messages
   static const String GST_INIT_ERROR_MSG          = "Error initializing gStreamer." ;
-  static const String GST_PIPELINE_INIT_ERROR_MSG = "Error creating static GstElements." ;
+  static const String GST_PIPELINE_INST_ERROR_MSG = "Error creating static GstElements." ;
   static const String GST_ADD_ERROR_MSG           = "Error adding static GstElements to the pipeline." ;
+  static const String GST_PIPELINE_INIT_ERROR_MSG = "Error initializing dynamic GstElements." ;
   static const String GST_CONFIG_ERROR_MSG        = "Error configuring dynamic GstElements." ;
   static const String GST_XWIN_ERROR_MSG          = "Error attaching gStreamer to native x-window." ;
   static const String SCREENCAP_INIT_ERROR_MSG    = "Error creating ScreencapBin GstElements." ;
@@ -200,16 +220,16 @@ namespace CONFIG
 /*\ CAVEATS:
 |*|  when defining new nodes or properties be sure to:
 |*|    * if new property        - define *_ID and DEFAULT_* below
-|*|    * if new node            - verify schema in AvCasterStore::validateConfig()
 |*|    * if new root property   - verify schema in AvCasterStore::validateConfig()
 |*|                             - sanitize data in AvCasterStore::sanitizeConfig()
 |*|    * if new preset property - verify schema in AvCasterStore::validatePreset()
 |*|                             - add instance var and definition in PresetSeed class
 |*|    * update the SCHEMA below
 \*/
+
 /*\ SCHEMA:
 |*|
-|*| // AvCasterStore->configRoot
+|*| // AvCasterStore->root
 |*| STORAGE_ID:
 |*| {
 |*|   // config root IDs
@@ -219,8 +239,8 @@ namespace CONFIG
 |*|   PRESETS_ID:        [ a-config-id: a_config_node , .... ] // config nodes as below
 |*| }
 |*|
-|*| // AvCasterStore->configStore
-|*| // AvCasterStore->configPresets (each child)
+|*| // AvCasterStore->config
+|*| // AvCasterStore->presets (each child)
 |*| VOLATILE_CONFIG_ID:
 |*| {
 |*|   // control IDs
@@ -265,8 +285,11 @@ namespace CONFIG
 |*|   OUTPUT_DEST_ID:        a_string
 |*| }
 |*|
-|*| // AvCasterStore->cameraDevices
-|*| CAMERA_DEVICES_ID:
+|*| // AvCasterStore->cameras
+|*| CAMERA_DEVICES_ID: [ device_id: a_camera_device_info , ... ] // camera_device_info as below
+
+|*| // camera_device_info
+|*| device_id:                          // e.g. "video0"
 |*| {
 |*|   CAMERA_PATH_ID:        a_string , // e.g. "/dev/video0"
 |*|   CAMERA_NAME_ID:        a_string , // e.g "USB Video Cam"
@@ -274,16 +297,30 @@ namespace CONFIG
 |*|   CAMERA_RESOLUTIONS_ID: a_string
 |*| }
 |*|
-|*| // AvCasterStore->audioDevices
+|*| // AvCasterStore->audios
 |*| AUDIO_DEVICES_ID: { nyi }
+|*|
+|*| // AvCasterStore->chatters
+|*| CHATTERS_ID: [ a_chatter , ... ] // chatter as below
+|*|
+|*| // chatter
+|*| user_id:                 // e.g. "-fred-stone" via FilterId("@fred stone")
+|*| {
+|*|   CHAT_NICK_ID: a_string // e.g. "@fred stone"
+|*| }
 \*/
 
 
-  static Identifier FilterId(String a_string)
+  static Identifier FilterId(String a_string , String filter_chars)
   {
-    return a_string.retainCharacters(APP::VALID_ID_CHARS)
+    return String("-") + a_string.retainCharacters(filter_chars)
                    .toLowerCase()
                    .replaceCharacter('_', '-')
+                   .replaceCharacter('@', '-')
+                   .replaceCharacter('#', '-')
+                   .replaceCharacter('&', '-')
+                   .replaceCharacter('[', '-')
+                   .replaceCharacter(']', '-')
                    .replaceCharacter(' ', '-') ;
   }
 
@@ -294,6 +331,7 @@ namespace CONFIG
   static const Identifier VOLATILE_CONFIG_ID    = "volatile-config" ;
   static const Identifier CAMERA_DEVICES_ID     = "camera-devices" ;
   static const Identifier AUDIO_DEVICES_ID      = "audio-devices" ;
+  static const Identifier CHATTERS_ID           = "active-chatters" ;
   // config root IDs
   static const Identifier CONFIG_VERSION_ID     = "config-version" ;
   static const Identifier PRESET_ID             = "preset-idx" ;
@@ -342,6 +380,8 @@ namespace CONFIG
   static const Identifier FRAMERATE_ID          = "framerate-idx" ;
   static const Identifier VIDEO_BITRATE_ID      = "video-bitrate-idx" ;
   static const Identifier OUTPUT_DEST_ID        = "output-dest" ;
+  // output IDs
+  static const Identifier CHAT_NICK_ID          = "chat-nick" ;
 
   // root defaults
 #ifdef JUCE_WINDOWS
@@ -361,7 +401,7 @@ namespace CONFIG
   static const String     RTMP_PRESET_NAME           = "RTMP Server" ;
   static const String     LCTV_PRESET_NAME           = "livecoding.tv" ;
   static const String     DEFAULT_PRESET_NAME        = FILE_PRESET_NAME ;
-  static const Identifier DEFAULT_PRESET_ID          = FilterId(DEFAULT_PRESET_NAME) ;
+  static const Identifier DEFAULT_PRESET_ID          = FilterId(DEFAULT_PRESET_NAME , APP::VALID_ID_CHARS) ;
 #ifdef DISABLE_CONTROLS_NYI
   static const bool       DEFAULT_IS_SCREENCAP_ON    = true ;
 #else // DISABLE_CONTROLS_NYI
@@ -487,6 +527,30 @@ namespace GST
   static const String FAUX_AUDIO_CAPS       = "audio/x-raw, format=(string)S16LE, endianness=(int)1234, signed=(boolean)true, width=(int)16, depth=(int)16, rate=(int)44100, channels=(int)2" ;
 
   static const String LCTV_RTMP_URL = "rtmp://usmedia3.livecoding.tv:1935/livecodingtv/" ;
+}
+
+/** the IRC namespace defines configuration constants
+        pertaining to the libircclient network backend */
+namespace IRC
+{
+  static const unsigned int MIN_MAJOR_VERSION = 1 ;
+  static const unsigned int MIN_MINOR_VERSION = 8 ;
+
+  static const String BITLBEE_WELCOME_MSG   = "Welcome to the BitlBee gateway, " ;
+  static const char*  ROOT_CHANNEL          = "&bitlbee" ;
+  static const String IDENTIFY_CMD          = "identify " ;
+  static const char*  ROOT_NICK             = "@root" ;
+  static const String ROOT_USER             = "root!root@localhost" ;
+  static const char*  LOGGED_IN_MSG         = "Logging in: Logged in" ;
+  static const char*  ALREADY_LOGGED_IN_MSG = "New request: You're already connected to this server. Would you like to take over this session?" ;
+  static const String SESSION_BLOCKED_MSG   = "It appeaers that you are already connected to BitlBee with another client.  This chat will not be connected to LCTV." ;
+  static const char*  KICKED_SELF_MSG       = "You've successfully taken over your old session" ;
+  static const char*  MY_CHANNEL            = "#mychat" ;
+  static const String LOGGING_IN_MSG        = "Logging into chat server: " ;
+  static const char*  LOGIN_MSG             = CHARSTAR(String(APP::APP_NAME + " starting up")) ;
+  static const char*  LOGOOUT_MSG           = CHARSTAR(String(APP::APP_NAME + " shutting down")) ;
+
+  static const String LCTV_URL = "https://www.livecoding.tv/" ;
 }
 
 #endif // CONSTANTS_H_INCLUDED

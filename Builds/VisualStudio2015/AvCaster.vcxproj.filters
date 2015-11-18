@@ -199,6 +199,15 @@
     <ClCompile Include="..\..\Source\Background.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Chat.cpp">
+      <Filter>AvCaster\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ChatList.cpp">
+      <Filter>AvCaster\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ChatListItem.cpp">
+      <Filter>AvCaster\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Config.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
@@ -206,6 +215,9 @@
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Gstreamer.cpp">
+      <Filter>AvCaster\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\IrcClient.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
@@ -1047,10 +1059,19 @@
     <ClInclude Include="..\..\Source\Trace\TraceAvCasterStore.h">
       <Filter>AvCaster\Headers\Trace</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Trace\TraceChat.h">
+      <Filter>AvCaster\Headers\Trace</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Trace\TraceConfig.h">
       <Filter>AvCaster\Headers\Trace</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Trace\TraceControls.h">
+      <Filter>AvCaster\Headers\Trace</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Trace\TraceGstreamer.h">
+      <Filter>AvCaster\Headers\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Trace\TraceIrcClient.h">
       <Filter>AvCaster\Headers\Trace</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Trace\TraceMain.h">
@@ -1065,6 +1086,15 @@
     <ClInclude Include="..\..\Source\Background.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Chat.h">
+      <Filter>AvCaster\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ChatList.h">
+      <Filter>AvCaster\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ChatListItem.h">
+      <Filter>AvCaster\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Config.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
@@ -1075,6 +1105,9 @@
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Gstreamer.h">
+      <Filter>AvCaster\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\IrcClient.h">
       <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\MainContent.h">

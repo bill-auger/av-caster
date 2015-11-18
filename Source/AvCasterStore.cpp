@@ -23,30 +23,51 @@
 #include "Trace/TraceAvCasterStore.h"
 
 
+
+AvCasterStore::~AvCasterStore() {}
+
+
+/* AvCasterStore private class methods */
+
 AvCasterStore::AvCasterStore()
 {
   // load stored configs
-  ValueTree stored_config        = ValueTree::invalid ;
   this->configDir                = APP::APPDATA_DIR.getChildFile(CONFIG::STORAGE_DIRNAME ) ;
   this->configFile               = this->configDir .getChildFile(CONFIG::STORAGE_FILENAME) ;
   FileInputStream* config_stream = new FileInputStream(this->configFile) ;
+  ValueTree        stored_config = ValueTree::invalid ;
 
   if (config_stream->openedOk()) stored_config = ValueTree::readFromStream(*config_stream) ;
   delete config_stream ;
 
   // create shared config ValueTree from persistent storage or defaults
-  this->root    = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
-  this->presets = verifyPresets() ;
-  this->config  = ValueTree(CONFIG::VOLATILE_CONFIG_ID) ;
-  this->cameras = ValueTree(CONFIG::CAMERA_DEVICES_ID ) ;
-  this->audios  = ValueTree(CONFIG::AUDIO_DEVICES_ID  ) ;
+  this->root     = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
+  this->presets  = verifyPresets() ;
+  this->config   = ValueTree(CONFIG::VOLATILE_CONFIG_ID) ;
+  this->cameras  = ValueTree(CONFIG::CAMERA_DEVICES_ID ) ;
+  this->audios   = ValueTree(CONFIG::AUDIO_DEVICES_ID  ) ;
+  this->chatters = ValueTree(CONFIG::CHATTERS_ID       ) ;
 
   // detect hardware and sanitize config
-  detectDisplayDimensions() ; detectCaptureDevices() ;
+  detectCaptureDevices() ; // detectDisplayDimensions() ; // TODO: (issue #2 issue #4)
   validateConfig() ; sanitizeConfig() ; storeConfig() ;
 }
 
-AvCasterStore::~AvCasterStore() {}
+StringArray AvCasterStore::PropertyValues(ValueTree root_node , Identifier property_id)
+{
+  int         n_children      = root_node.getNumChildren() ;
+  StringArray property_values ;
+
+  for (int child_n = 0 ; child_n < n_children ; ++child_n)
+  {
+    ValueTree child_node     = root_node.getChild(child_n) ;
+    String    property_value = STRING(child_node[property_id]) ;
+
+    property_values.add(property_value) ;
+  }
+
+  return property_values ;
+}
 
 
 /* AvCasterStore private instance methods */
@@ -115,7 +136,7 @@ DEBUG_TRACE_VALIDATE_CONFIG
   }
   loadPreset() ;
 
-  // TODO: validae/sanitize device nodes
+  // TODO: validae/sanitize device nodes ? perhaps these should not be stored
 }
 
 void AvCasterStore::validatePreset()
@@ -265,20 +286,20 @@ void AvCasterStore::sanitizePresetComboProperty(Identifier a_key , StringArray o
   sanitizeIntProperty(this->config , a_key , 0 , options.size() - 1) ;
 }
 
+/*
 void AvCasterStore::detectDisplayDimensions()
 {
-/* TODO: the JUCE way - does not reflect resolution changes (issue #2 issue #4)
+// TODO: the JUCE way - does not reflect resolution changes (issue #2 issue #4)
                        (see ComponentPeer::handleScreenSizeChange and/or Component::getParentMonitorArea)
-                       gStreamer handles resolution changes gracefully so this  may not be strictly necessary */
-/*
+                       gStreamer handles resolution changes gracefully so this  may not be strictly necessary
   Rectangle<int> area = Desktop::getInstance().getDisplays().getMainDisplay().totalArea ;
 
   this->desktopW      = area.getWidth() ;
   this->desktopH      = area.getHeight() ;
 
   Trace::TraceState("detected desktop dimensions " + String(this->desktopW) + "x" + String(this->desktopH)) ;
-*/
 }
+*/
 
 void AvCasterStore::detectCaptureDevices()
 {
@@ -306,38 +327,41 @@ static CameraDevice* CameraDevice::openDevice   (
 */
 #endif // JUCE_WINDOWS || JUCE_MAC
 #if JUCE_LINUX
+  if (!APP::CAMERAS_DEV_DIR.isDirectory()) return ;
 
   // TODO: query device for framerates and resolutions
-  String      resolutions        = String("160x120" + newLine + "320x240" + newLine + "640x480") ;
-  File*       camera_devices_dir = new File(APP::CAMERA_DEVICES_DIR) ;
+  String      resolutions      = String("160x120" + newLine + "320x240" + newLine + "640x480") ;
   Array<File> device_info_dirs ;
-  this->cameras.removeAllChildren(nullptr) ;
-  if (camera_devices_dir->containsSubDirectories()                                       &&
-    !!camera_devices_dir->findChildFiles(device_info_dirs , File::findDirectories , false))
-  {
-    File* device_info_dir = device_info_dirs.begin() ;
-    while (device_info_dir != device_info_dirs.end())
-    {
-      String    device_id     = device_info_dir->getFileName() ;
-      String    friendly_name = device_info_dir->getChildFile("name").loadFileAsString().trim() ;
-      String    device_path   = "/dev/" + device_id ;
-      ValueTree device_info   = ValueTree(Identifier(device_id)) ;
 
-      device_info.setProperty(CONFIG::CAMERA_PATH_ID        , var(device_path  ) , nullptr) ;
-      device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var(friendly_name) , nullptr) ;
-      device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(30           ) , nullptr) ;
-      device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions  ) , nullptr) ;
-      this->cameras.addChild(device_info , -1 , nullptr) ;
-      ++device_info_dir ;
-    }
+  this->cameras.removeAllChildren(nullptr) ;
+  if (APP::CAMERAS_DEV_DIR.containsSubDirectories())
+    APP::CAMERAS_DEV_DIR.findChildFiles(device_info_dirs , File::findDirectories , false) ;
+
+  File* device_info_dir = device_info_dirs.begin() ;
+  while (device_info_dir != device_info_dirs.end())
+  {
+    String    device_id     = device_info_dir->getFileName() ;
+    String    friendly_name = device_info_dir->getChildFile("name").loadFileAsString().trim() ;
+    String    device_path   = "/dev/" + device_id ;
+    ValueTree device_info   = ValueTree(Identifier(device_id)) ;
+
+    device_info.setProperty(CONFIG::CAMERA_PATH_ID        , var(device_path  ) , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var(friendly_name) , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(30           ) , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions  ) , nullptr) ;
+    this->cameras.addChild(device_info , -1 , nullptr) ;
+    ++device_info_dir ;
   }
 #ifdef INJECT_DEFAULT_CAMERA_DEVICE_INFO
-else { ValueTree device_info = ValueTree(Identifier("bogus-cam")) ;
-       device_info.setProperty(CONFIG::CAMERA_PATH_ID        , var(String::empty ) , nullptr) ;
-       device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var("bogus-camera") , nullptr) ;
-       device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(8             ) , nullptr) ;
-       device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions   ) , nullptr) ;
-       this->cameras.addChild(device_info , -1 , nullptr) ; }
+  if (device_info_dirs.size() == 0)
+  {
+    ValueTree device_info = ValueTree(Identifier("bogus-cam")) ;
+    device_info.setProperty(CONFIG::CAMERA_PATH_ID        , var(String::empty ) , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var("bogus-camera") , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(8             ) , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions   ) , nullptr) ;
+    this->cameras.addChild(device_info , -1 , nullptr) ;
+  }
 #endif // INJECT_DEFAULT_CAMERA_DEVICE_INFO
 
 #endif // JUCE_LINUX
@@ -354,7 +378,7 @@ void AvCasterStore::loadPreset()
 
 void AvCasterStore::storePreset(String preset_name)
 {
-  Identifier preset_id    = CONFIG::FilterId(preset_name) ;
+  Identifier preset_id    = CONFIG::FilterId(preset_name , APP::VALID_ID_CHARS) ;
   ValueTree  preset_store = this->presets.getOrCreateChildWithName(preset_id , nullptr) ;
   int        preset_idx   = this->presets.indexOf(preset_store) ;
 
@@ -370,19 +394,19 @@ DEBUG_TRACE_STORE_PRESET
   int         camera_w        = res_tokens[0].getIntValue() ;
   int         camera_h        = res_tokens[1].getIntValue() ;
   bool        has_idx_changed = preset_idx != AvCaster::GetPresetIdx() ;
-  AvCaster::SetConfig(CONFIG::OUTPUT_W_ID , var(jmax(fullscreen_w , camera_w , output_w))) ;
-  AvCaster::SetConfig(CONFIG::OUTPUT_H_ID , var(jmax(fullscreen_h , camera_h , output_h))) ;
+  setConfig(CONFIG::OUTPUT_W_ID , var(jmax(fullscreen_w , camera_w , output_w))) ;
+  setConfig(CONFIG::OUTPUT_H_ID , var(jmax(fullscreen_h , camera_h , output_h))) ;
   if (!has_idx_changed) AvCaster::RefreshGui() ;
 #endif // FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
 
-  AvCaster::SetConfig(CONFIG::PRESET_NAME_ID , preset_name) ;
+  setConfig(CONFIG::PRESET_NAME_ID , preset_name) ;
   preset_store.copyPropertiesFrom(this->config , nullptr) ;
-  AvCaster::SetConfig(CONFIG::PRESET_ID      , preset_idx) ;
+  setConfig(CONFIG::PRESET_ID      , preset_idx) ;
 }
 
 void AvCasterStore::renamePreset(String preset_name)
 {
-  Identifier preset_id      = CONFIG::FilterId(preset_name) ;
+  Identifier preset_id      = CONFIG::FilterId(preset_name , APP::VALID_ID_CHARS) ;
   ValueTree  conflict_store = this->presets.getChildWithName(preset_id) ;
 
   if (conflict_store.isValid()) { AvCaster::Error(GUI::PRESET_RENAME_ERROR_MSG) ; return ; }
@@ -393,7 +417,7 @@ void AvCasterStore::renamePreset(String preset_name)
 DEBUG_TRACE_RENAME_PRESET
 
   preset_store.setProperty(CONFIG::PRESET_NAME_ID , preset_name , nullptr) ;
-  AvCaster::SetConfig     (CONFIG::PRESET_NAME_ID , preset_name) ;
+  setConfig               (CONFIG::PRESET_NAME_ID , preset_name) ;
 }
 
 void AvCasterStore::deletePreset()
@@ -405,7 +429,7 @@ void AvCasterStore::deletePreset()
 DEBUG_TRACE_DELETE_PRESET
 
   this->presets.removeChild(preset_idx , nullptr) ;
-  AvCaster::SetConfig(CONFIG::PRESET_ID , CONFIG::DEFAULT_PRESET_IDX) ;
+  setConfig(CONFIG::PRESET_ID , CONFIG::DEFAULT_PRESET_IDX) ;
   AvCaster::RefreshGui() ;
 }
 
@@ -474,42 +498,18 @@ bool AvCasterStore::isControlKey(const Identifier& a_key)
 
 StringArray AvCasterStore::presetsNames()
 {
-  int         n_presets    = this->presets.getNumChildren() ;
-  StringArray preset_names ;
-
-  for (int preset_n = 0 ; preset_n < n_presets ; ++preset_n)
-  {
-    ValueTree preset_store = this->presets.getChild(preset_n) ;
-    String    preset_name  = STRING(preset_store[CONFIG::PRESET_NAME_ID]) ;
-
-    preset_names.add(preset_name) ;
-  }
-
-  return preset_names ;
+  return PropertyValues(this->presets , CONFIG::PRESET_NAME_ID) ;
 }
 
-StringArray AvCasterStore::devicesNames(Identifier a_node_id)
+StringArray AvCasterStore::cameraNames()
 {
-  ValueTree devices_node = (a_node_id == CONFIG::CAMERA_DEVICES_ID) ? this->cameras       :
-                           (a_node_id == CONFIG::AUDIO_DEVICES_ID ) ? this->audios        :
-                                                                      ValueTree::invalid  ;
-
-  int n_devices = devices_node.getNumChildren() ; StringArray device_names ;
-
-  for (int device_n = 0 ; device_n < n_devices ; ++device_n)
-  {
-    ValueTree a_device    = devices_node.getChild(device_n) ;
-    String    device_name = STRING(a_device[CONFIG::CAMERA_NAME_ID]) ;
-
-    device_names.add(device_name) ;
-  }
-
-  return device_names ;
+  return PropertyValues(this->cameras , CONFIG::CAMERA_NAME_ID) ;
 }
 
-StringArray AvCasterStore::cameraNames() { return devicesNames(CONFIG::CAMERA_DEVICES_ID) ; }
-
-StringArray AvCasterStore::audioNames() { return devicesNames(CONFIG::CAMERA_DEVICES_ID) ; }
+StringArray AvCasterStore::audioNames()
+{
+  return PropertyValues(this->audios  , Identifier("TODO")) ;
+}
 
 ValueTree AvCasterStore::getCameraConfig()
 {
@@ -530,6 +530,15 @@ void AvCasterStore::toogleControl(const Identifier& a_key)
 DEBUG_TRACE_TOGGLE_CONTROL
 
   listen(false) ;
-  AvCaster::SetConfig(a_key , !bool(this->config[a_key])) ; AvCaster::RefreshGui() ;
+  setConfig(a_key , !bool(this->config[a_key])) ;
   listen(true) ;
+}
+
+void AvCasterStore::setConfig(const Identifier& a_key , var a_value)
+{
+  ValueTree storage_node = getKeyNode(a_key) ;
+
+DEBUG_TRACE_SET_CONFIG
+
+  if (a_key.isValid()) storage_node.setProperty(a_key , a_value , nullptr) ;
 }

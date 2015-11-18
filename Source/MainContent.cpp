@@ -38,14 +38,17 @@ MainContent::MainContent ()
     addAndMakeVisible (controls = new Controls());
     controls->setName ("controls");
 
+    addAndMakeVisible (chat = new Chat());
+    chat->setName ("chat");
+
     addAndMakeVisible (preview = new Preview());
     preview->setName ("preview");
 
-    addAndMakeVisible (config = new Config());
-    config->setName ("config");
-
     addAndMakeVisible (statusbar = new Statusbar());
     statusbar->setName ("statusbar");
+
+    addAndMakeVisible (config = new Config());
+    config->setName ("config");
 
 
     //[UserPreSize]
@@ -69,9 +72,10 @@ MainContent::~MainContent()
 
     background = nullptr;
     controls = nullptr;
+    chat = nullptr;
     preview = nullptr;
-    config = nullptr;
     statusbar = nullptr;
+    config = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -97,9 +101,10 @@ void MainContent::resized()
 
     background->setBounds (0, 0, getWidth() - 0, getHeight() - 0);
     controls->setBounds (0, 0, getWidth() - 0, 76);
+    chat->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
     preview->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
-    config->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
     statusbar->setBounds (0, getHeight() - 24, getWidth() - 0, 24);
+    config->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -107,6 +112,11 @@ void MainContent::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void MainContent::initialize(ValueTree chatters_store)
+{
+  this->chat->initialize(chatters_store) ;
+}
 
 void MainContent::warning(String message_text)
 {
@@ -161,13 +171,15 @@ BEGIN_JUCER_METADATA
                     params=""/>
   <GENERICCOMPONENT name="controls" id="7a0ffc87dbd1f2a3" memberName="controls" virtualName=""
                     explicitFocusOrder="0" pos="0 0 0M 76" class="Controls" params=""/>
-  <GENERICCOMPONENT name="preview" id="ac9a4042c98734e2" memberName="preview" virtualName=""
+  <GENERICCOMPONENT name="chat" id="ac9a4042c98734e2" memberName="chat" virtualName=""
+                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Chat" params=""/>
+  <GENERICCOMPONENT name="preview" id="75e8b11c95e2efaf" memberName="preview" virtualName=""
                     explicitFocusOrder="0" pos="0 76 0M 100M" class="Preview" params=""/>
-  <GENERICCOMPONENT name="config" id="75e8b11c95e2efaf" memberName="config" virtualName=""
-                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Config" params=""/>
   <GENERICCOMPONENT name="statusbar" id="2dc0514b582b96cb" memberName="statusbar"
                     virtualName="" explicitFocusOrder="0" pos="0 0Rr 0M 24" class="Statusbar"
                     params=""/>
+  <GENERICCOMPONENT name="config" id="4f3cab5613666ef6" memberName="config" virtualName=""
+                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Config" params=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

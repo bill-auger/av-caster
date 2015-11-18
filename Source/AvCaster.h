@@ -23,6 +23,7 @@
 #include "Constants.h"
 #include "AvCasterStore.h"
 #include "MainContent.h"
+#include "IrcClient.h"
 
 
 /**
@@ -58,18 +59,20 @@ class AvCaster
 public:
 
   // GUI dispatchers
-  static void SetStatusL(String status_text) ;
-  static void Warning   (String message_text) ;
-  static void Error     (String message_text) ;
+  static void SetStatusL (String status_text) ;
+  static void Warning    (String message_text) ;
+  static void Error      (String message_text) ;
+  static void AddChatLine(String nick , String message) ;
+  static void SendChat   (String chat_message) ;
 
   // callbacks and event handlers
   static ModalComponentManager::Callback* GetModalCb() ;
   static void                             OnModalDismissed(int result , int unused) ;
 
   // getters/setters
-  static Rectangle<int> GetPreviewBounds() ;
-  static void           GuiChanged          (Identifier a_key , var a_value) ;
-  static void           SetConfig           (Identifier a_key , var a_value) ;
+  static void*          GetGuiXwinHandle    () ;
+  static Rectangle<int> GetPreviewBounds    () ;
+  static void           SetConfig           (const Identifier& a_key , var a_value) ;
   static void           StorePreset         (String preset_name) ;
   static void           RenamePreset        (String preset_name) ;
   static void           DeletePreset        () ;
@@ -78,6 +81,7 @@ public:
   static bool           IsStaticPreset      () ;
   static int            GetPresetIdx        () ;
   static String         GetPresetName       () ;
+  static bool           GetIsPreviewOn      () ;
   static bool           GetIsConfigPending  () ;
   static StringArray    GetPresetsNames     () ;
   static StringArray    GetCameraNames      () ;
@@ -86,6 +90,9 @@ public:
   static String         GetCameraResolution () ;
   static String         GetCameraPath       () ;
   static int            GetCameraRate       () ;
+  static String         GetVersionString    () ;
+  static void           UpdateChatNicks     (StringArray nicks) ;
+  static StringArray    GetChatNicks        () ;
 
 
   // persistence
@@ -112,10 +119,11 @@ private:
   static void DisplayAlert           () ;
 
 
-  static MainContent*  Gui ;
-  static StringArray   CliParams ;
-  static Array<Alert*> Alerts ;
-  static bool          IsAlertModal ;
+  static MainContent*             Gui ;
+  static ScopedPointer<IrcClient> Irc ;
+  static StringArray              CliParams ;
+  static Array<Alert*>            Alerts ;
+  static bool                     IsAlertModal ;
 } ;
 
 #endif // AVCASTER_H_INCLUDED

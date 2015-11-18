@@ -17,18 +17,11 @@
 \*/
 
 
-#ifndef MAINCONTENT_H_INCLUDED
-#define MAINCONTENT_H_INCLUDED
+#ifndef CHATLISTITEM_H_INCLUDED
+#define CHATLISTITEM_H_INCLUDED
 
 //[Headers]     -- You can add your own extra header files here --
-
-#include "Background.h"
-#include "Chat.h"
-#include "Config.h"
-#include "Controls.h"
-#include "Preview.h"
-#include "Statusbar.h"
-
+#include "JuceHeader.h"
 //[/Headers]
 
 
@@ -36,15 +29,17 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-  MainContent is the main GUI container class for the AvCaster application.
+  Instances of ChatListItem are subcomponents of the ChatList container
+  They each represent an individual chat user.
                                                                     //[/Comments]
 */
-class MainContent  : public Component
+class ChatListItem  : public Component,
+                      public ButtonListener
 {
 public:
     //==============================================================================
-    MainContent ();
-    ~MainContent();
+    ChatListItem (ValueTree chatter_store);
+    ~ChatListItem();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -52,36 +47,27 @@ public:
 
     void paint (Graphics& g);
     void resized();
+    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  friend class AvCaster ;
-
-
-  void           initialize      (ValueTree chatters_store) ;
-  void           warning         (String message_text) ;
-  void           error           (String message_text) ;
-  Rectangle<int> getPreviewBounds() ;
+  ValueTree chatterStore ;
 
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Background> background;
-    ScopedPointer<Controls> controls;
-    ScopedPointer<Chat> chat;
-    ScopedPointer<Preview> preview;
-    ScopedPointer<Statusbar> statusbar;
-    ScopedPointer<Config> config;
+    ScopedPointer<TextButton> banButton;
+    ScopedPointer<Label> nickLabel;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChatListItem)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // MAINCONTENT_H_INCLUDED
+#endif // CHATLISTITEM_H_INCLUDED

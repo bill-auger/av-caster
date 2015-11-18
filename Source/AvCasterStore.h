@@ -47,6 +47,10 @@ private:
 
   AvCasterStore() ;
 
+  // class helpers
+  static StringArray PropertyValues(ValueTree root_node , Identifier property_id) ;
+
+
   // persistence
   ValueTree verifyConfig  (ValueTree config_store , Identifier root_node_id) ;
   ValueTree verifyPresets () ;
@@ -64,7 +68,7 @@ private:
                                    int       min_value    , int max_value    ) ;
   void sanitizeRootComboProperty  (Identifier a_key , StringArray options) ;
   void sanitizePresetComboProperty(Identifier a_key , StringArray options) ;
-  void detectDisplayDimensions    () ;
+//   void detectDisplayDimensions    () ;
   void detectCaptureDevices       () ;
   void loadPreset                 () ;
   void storePreset                (String preset_name) ;
@@ -82,7 +86,7 @@ private:
   void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ;                  }
   void valueTreeParentChanged    (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
   void valueTreeRedirected       (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
-//   after upgrade to v >= 3.2.0
+//   TODO: API change after upgrade to v >= 3.2.0
 //   void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node)           override { UNUSED(a_parent_node) , UNUSED(a_node) ;                      }
 //   void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node , int idx) override { UNUSED(a_parent_node) , UNUSED(a_node) ; UNUSED(idx) ;        }
 //   void valueTreeChildOrderChanged(ValueTree& a_parent_node , int prev_idx , int curr_idx) override { UNUSED(a_parent_node) ; UNUSED(prev_idx) ; UNUSED(curr_idx) ; }
@@ -93,20 +97,20 @@ private:
   ValueTree   getKeyNode          (const Identifier& a_key) ;
   bool        isControlKey        (const Identifier& a_key) ;
   StringArray presetsNames        () ;
-  StringArray devicesNames        (Identifier a_node_id) ;
   StringArray cameraNames         () ;
   StringArray audioNames          () ;
   ValueTree   getCameraConfig     () ;
   StringArray getCameraResolutions() ;
   void        toogleControl       (const Identifier& a_key) ;
-
+  void        setConfig           (const Identifier& a_key , var a_value) ;
 
   // configuration/persistence
-  ValueTree root ;    // config root           (STORAGE_ID node)
-  ValueTree presets ; // persistent GUI config (PRESETS_ID node)
-  ValueTree config ;  // volatile GUI config   (VOLATILE_CONFIG_ID node)
-  ValueTree cameras ; // video devices info    (CAMERA_DEVICES_ID node)
-  ValueTree audios ;  // audio devices info    (AUDIO_DEVICES_ID node)
+  ValueTree root ;      // config root           (STORAGE_ID node)
+  ValueTree presets ;   // persistent GUI config (PRESETS_ID node)
+  ValueTree config ;    // volatile GUI config   (VOLATILE_CONFIG_ID node)
+  ValueTree cameras ;   // video devices info    (CAMERA_DEVICES_ID node)
+  ValueTree audios ;    // audio devices info    (AUDIO_DEVICES_ID node)
+  ValueTree chatters ;  // audio devices info    (CHATTERS_ID node)
   File      configDir ;
   File      configFile ;
 } ;

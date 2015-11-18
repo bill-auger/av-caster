@@ -10,18 +10,26 @@
         <FILE id="VpzAMB" name="TraceAvCaster.h" compile="0" resource="0" file="Source/Trace/TraceAvCaster.h"/>
         <FILE id="XY5wkX" name="TraceAvCasterStore.h" compile="0" resource="0"
               file="Source/Trace/TraceAvCasterStore.h"/>
+        <FILE id="h9pAwt" name="TraceChat.h" compile="0" resource="0" file="Source/Trace/TraceChat.h"/>
         <FILE id="NyIKTu" name="TraceConfig.h" compile="0" resource="0" file="Source/Trace/TraceConfig.h"/>
+        <FILE id="CTNFj1" name="TraceControls.h" compile="0" resource="0" file="Source/Trace/TraceControls.h"/>
         <FILE id="dToFg4" name="TraceGstreamer.h" compile="0" resource="0"
               file="Source/Trace/TraceGstreamer.h"/>
+        <FILE id="hB9rdH" name="TraceIrcClient.h" compile="0" resource="0"
+              file="Source/Trace/TraceIrcClient.h"/>
         <FILE id="ltIPwf" name="TraceMain.h" compile="0" resource="0" file="Source/Trace/TraceMain.h"/>
       </GROUP>
       <FILE id="IHfl77" name="AvCaster.h" compile="0" resource="0" file="Source/AvCaster.h"/>
       <FILE id="y9Co3C" name="AvCasterStore.h" compile="0" resource="0" file="Source/AvCasterStore.h"/>
       <FILE id="DrBwb8" name="Background.h" compile="0" resource="0" file="Source/Background.h"/>
+      <FILE id="qFUIyX" name="Chat.h" compile="0" resource="0" file="Source/Chat.h"/>
+      <FILE id="u48sjw" name="ChatList.h" compile="0" resource="0" file="Source/ChatList.h"/>
+      <FILE id="DJ4nMG" name="ChatListItem.h" compile="0" resource="0" file="Source/ChatListItem.h"/>
       <FILE id="uoYh4l" name="Config.h" compile="0" resource="0" file="Source/Config.h"/>
       <FILE id="zCkODj" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
       <FILE id="mkIaLi" name="Controls.h" compile="0" resource="0" file="Source/Controls.h"/>
       <FILE id="o1VbMJ" name="Gstreamer.h" compile="0" resource="0" file="Source/Gstreamer.h"/>
+      <FILE id="O1cSgN" name="IrcClient.h" compile="0" resource="0" file="Source/IrcClient.h"/>
       <FILE id="U6Fm4Z" name="MainContent.h" compile="0" resource="0" file="Source/MainContent.h"/>
       <FILE id="Fz2IkW" name="PresetSeed.h" compile="0" resource="0" file="Source/PresetSeed.h"/>
       <FILE id="Ks1yxc" name="Preview.h" compile="0" resource="0" file="Source/Preview.h"/>
@@ -32,9 +40,14 @@
       <FILE id="zF9KTX" name="AvCasterStore.cpp" compile="1" resource="0"
             file="Source/AvCasterStore.cpp"/>
       <FILE id="j4Ctdm" name="Background.cpp" compile="1" resource="0" file="Source/Background.cpp"/>
+      <FILE id="pLt0m5" name="Chat.cpp" compile="1" resource="0" file="Source/Chat.cpp"/>
+      <FILE id="OcodLB" name="ChatList.cpp" compile="1" resource="0" file="Source/ChatList.cpp"/>
+      <FILE id="ZeuPdR" name="ChatListItem.cpp" compile="1" resource="0"
+            file="Source/ChatListItem.cpp"/>
       <FILE id="nRcwV3" name="Config.cpp" compile="1" resource="0" file="Source/Config.cpp"/>
       <FILE id="hx0s0h" name="Controls.cpp" compile="1" resource="0" file="Source/Controls.cpp"/>
       <FILE id="z1biaf" name="Gstreamer.cpp" compile="1" resource="0" file="Source/Gstreamer.cpp"/>
+      <FILE id="V586WS" name="IrcClient.cpp" compile="1" resource="0" file="Source/IrcClient.cpp"/>
       <FILE id="CQoHWx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="eLauah" name="MainContent.cpp" compile="1" resource="0" file="Source/MainContent.cpp"/>
       <FILE id="yA08dL" name="PresetSeed.cpp" compile="1" resource="0" file="Source/PresetSeed.cpp"/>
@@ -89,13 +102,12 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </VS2008>
-    <LINUX_MAKE targetFolder="Builds/GnuMakefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-1.0&#96;"
-                extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;">
+    <LINUX_MAKE targetFolder="Builds/Makefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-1.0&#96;"
+                extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;"
+                externalLibraries="ircclient">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="" isDebug="1" optimisation="1" targetName="av-caster-dbg"/>
         <CONFIGURATION name="Release" libraryPath="" isDebug="0" optimisation="3" targetName="av-caster"/>
-        <CONFIGURATION name="Release32" libraryPath="" isDebug="0" optimisation="3"
-                       targetName="av-caster" linuxArchitecture="-m32"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../juce/modules"/>

@@ -3,5 +3,5 @@
 APP_ROOT_DIR=`pwd`
 export GST_DEBUG=2
 
-cd Builds/GnuMakefile && make && gdb
+cd Builds/Makefile && make && gdb
 cd $APP_ROOT_DIR

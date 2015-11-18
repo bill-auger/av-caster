@@ -713,7 +713,7 @@ void Config::sliderValueChanged (Slider* sliderThatWasMoved)
 
     //[UsersliderValueChanged_Post]
 
-  AvCaster::GuiChanged(key , value) ;
+  AvCaster::SetConfig(key , value) ;
 
     //[/UsersliderValueChanged_Post]
 }
@@ -840,9 +840,11 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
     //[UsercomboBoxChanged_Post]
 
+  else return ;
+
   value = var((~option_n) ? option_n : default_idx) ;
   comboBoxThatHasChanged->setSelectedItemIndex(int(value) , juce::dontSendNotification) ;
-  AvCaster::GuiChanged(key , value) ;
+  AvCaster::SetConfig(key , value) ;
 
     //[/UsercomboBoxChanged_Post]
 }
@@ -871,7 +873,7 @@ void Config::buttonClicked (Button* buttonThatWasClicked)
 
     //[UserbuttonClicked_Post]
 
-  AvCaster::GuiChanged(key , value) ;
+  AvCaster::SetConfig(key , value) ;
 
     //[/UserbuttonClicked_Post]
 }
@@ -901,16 +903,16 @@ void Config::textEditorFocusLost(TextEditor& a_text_editor)
   else if (ed == this->outputDestText  ) { key = CONFIG::OUTPUT_DEST_ID ;  value = str_var ; }
   else                                   return ;
 
-  AvCaster::GuiChanged(key , value) ;
+  AvCaster::SetConfig(key , value) ;
 }
 
 void Config::configureSlider(Slider* a_slider)
 {
-  a_slider->setColour(Slider::textBoxBackgroundColourId   , GUI::TEXT_BG_COLOR   ) ;
-  a_slider->setColour(Slider::textBoxTextColourId         , GUI::TEXT_FG_COLOR   ) ;
-  a_slider->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR) ;
+  a_slider->setColour(Slider::textBoxBackgroundColourId   , GUI::TEXT_BG_COLOR      ) ;
+  a_slider->setColour(Slider::textBoxTextColourId         , GUI::TEXT_NORMAL_COLOR  ) ;
+  a_slider->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
   a_slider->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
-  a_slider->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR) ;
+  a_slider->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
 }
 
 void Config::configureTextEditor(TextEditor*  a_text_editor , int max_n_chars ,
@@ -919,7 +921,7 @@ void Config::configureTextEditor(TextEditor*  a_text_editor , int max_n_chars ,
   a_text_editor->setSelectAllWhenFocused(true) ;
   a_text_editor->setInputRestrictions(max_n_chars , allowed_chars) ;
   a_text_editor->setColour(TextEditor::backgroundColourId      , GUI::TEXT_BG_COLOR      ) ;
-  a_text_editor->setColour(TextEditor::textColourId            , GUI::TEXT_FG_COLOR      ) ;
+  a_text_editor->setColour(TextEditor::textColourId            , GUI::TEXT_NORMAL_COLOR  ) ;
   a_text_editor->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
   a_text_editor->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
   a_text_editor->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
@@ -929,8 +931,8 @@ void Config::configureTextEditor(TextEditor*  a_text_editor , int max_n_chars ,
 
 void Config::configureCombobox(ComboBox* a_combobox)
 {
-  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_FG_COLOR) ;
-  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR) ;
+  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_NORMAL_COLOR) ;
+  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR    ) ;
 }
 
 void Config::loadConfig()

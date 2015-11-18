@@ -24,19 +24,20 @@
 
 /* Trace class public class methods */
 
-bool Trace::TraceEvent  (String msg) { if (DEBUG_TRACE_EVENTS) DBG(          "[EVENT]:   " + msg) ; return true ; }
-bool Trace::TraceGui    (String msg) { if (DEBUG_TRACE_GUI   ) DBG(          "[GUI]:     " + msg) ; return true ; }
-bool Trace::TraceMedia  (String msg) { if (DEBUG_TRACE_MEDIA ) DBG(          "[MEDIA]:   " + msg) ; return true ; }
-bool Trace::TraceConfig (String msg) { if (DEBUG_TRACE_CONFIG) DBG(          "[CONFIG]:  " + msg) ; return true ; }
-bool Trace::TraceVerbose(String msg) { if (DEBUG_TRACE_VB    ) DBG(          "[DEBUG]:   " + msg) ; return true ; }
+void Trace::TraceEvent  (String msg) { if (DEBUG_TRACE_EVENTS) DBG(          "[EVENT]:   " + msg) ;               }
+void Trace::TraceGui    (String msg) { if (DEBUG_TRACE_GUI   ) DBG(          "[GUI]:     " + msg) ;               }
+void Trace::TraceMedia  (String msg) { if (DEBUG_TRACE_MEDIA ) DBG(          "[MEDIA]:   " + msg) ;               }
+void Trace::TraceConfig (String msg) { if (DEBUG_TRACE_CONFIG) DBG(          "[CONFIG]:  " + msg) ;               }
+void Trace::TraceChat   (String msg) { if (DEBUG_TRACE_CHAT  ) DBG(          "[CHAT]:    " + msg) ;               }
+void Trace::TraceVerbose(String msg) { if (DEBUG_TRACE_VB    ) DBG(          "[DEBUG]:   " + msg) ;               }
 #  if ! DEBUG_ANSI_COLORS
-bool Trace::TraceState  (String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[STATE]:   " + msg) ; return true ; }
-bool Trace::TraceWarning(String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[WARNING]: " + msg) ; return true ; }
-bool Trace::TraceError  (String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[ERROR]:   " + msg) ; return true ; }
+void Trace::TraceState  (String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[STATE]:   " + msg) ;               }
+void Trace::TraceWarning(String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[WARNING]: " + msg) ;               }
+void Trace::TraceError  (String msg) { if (DEBUG_TRACE_STATE)  DBG(          "[ERROR]:   " + msg) ;               }
 #  else // DEBUG_ANSI_COLORS
-bool Trace::TraceState  (String msg) { if (DEBUG_TRACE_STATE)  DBG("\033[1;32m[STATE]:   " + msg + "\033[0m") ; return true ; }
-bool Trace::TraceWarning(String msg) { if (DEBUG_TRACE_STATE)  DBG("\033[1;33m[WARNING]: " + msg + "\033[0m") ; return true ; }
-bool Trace::TraceError  (String msg) { if (DEBUG_TRACE_STATE)  DBG("\033[0;31m[ERROR]:   " + msg + "\033[0m") ; return true ; }
+void Trace::TraceState  (String msg) { if (DEBUG_TRACE_STATE)  DBG("\033[1;32m[STATE]:   " + msg + "\033[0m") ;   }
+void Trace::TraceWarning(String msg) { if (DEBUG_TRACE_STATE)  DBG("\033[1;33m[WARNING]: " + msg + "\033[0m") ;   }
+void Trace::TraceError  (String msg) { if (DEBUG_TRACE_STATE)  DBG("\033[0;31m[ERROR]:   " + msg + "\033[0m") ;   }
 #  endif // DEBUG_ANSI_COLORS
 
 void Trace::TraceMissingNode(ValueTree config_store , Identifier a_node_id)

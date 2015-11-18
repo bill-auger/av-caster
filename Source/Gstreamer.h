@@ -36,11 +36,12 @@ class Gstreamer
 private:
 
   // setup
-  static bool Initialize(void* x_window_handle) ;
+  static bool Initialize() ;
   static void Shutdown  () ;
 
   // pipeline configuration
-  static bool ConfigurePipeline       () ;
+  static bool InitializePipeline      () ;
+//   static bool ConfigurePipeline       () ;
   static bool ConfigureScreencapBin   () ;
   static bool ConfigureCameraBin      () ;
   static bool ConfigureTextBin        () ;
@@ -50,7 +51,7 @@ private:
   static bool ConfigureAudioBin       () ;
   static bool ConfigureMuxerBin       () ;
   static bool ConfigureOutputBin      () ;
-  static bool Reconfigure          (const Identifier& config_key , bool is_config_pending) ;
+  static bool Reconfigure             (const Identifier& config_key , bool is_config_pending) ;
 //   static bool ReconfigureBin       (String      bin_id       , GstElement* a_bin) ;
 
   // state
@@ -113,11 +114,12 @@ private:
   static String MakeLctvUrl         (String dest) ;
 
   // state helpers
-  static unsigned int GetVersionMajor() ;
-  static unsigned int GetVersionMinor() ;
-  static bool         IsInitialized  () ;
-  static bool         IsPlaying      () ;
-  static bool         IsInPipeline   (GstElement* an_element) ;
+  static unsigned int GetVersionMajor    () ;
+  static unsigned int GetVersionMinor    () ;
+  static bool         IsSufficientVersion() ;
+  static bool         IsInitialized      () ;
+  static bool         IsPlaying          () ;
+  static bool         IsInPipeline       (GstElement* an_element) ;
 
 
   // pipeline
@@ -135,7 +137,6 @@ private:
 
   // configuration
   static ValueTree ConfigStore ;
-  static guintptr  WindowHandle ;
 } ;
 
 #endif // GSTREAMER_H_INCLUDED

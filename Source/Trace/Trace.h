@@ -30,14 +30,15 @@ class Trace
 {
 public:
 
-  static bool TraceEvent          (String msg) ;
-  static bool TraceGui            (String msg) ;
-  static bool TraceMedia          (String msg) ;
-  static bool TraceConfig         (String msg) ;
-  static bool TraceVerbose        (String msg) ;
-  static bool TraceState          (String msg) ;
-  static bool TraceWarning        (String msg) ;
-  static bool TraceError          (String msg) ;
+  static void TraceEvent          (String msg) ;
+  static void TraceGui            (String msg) ;
+  static void TraceMedia          (String msg) ;
+  static void TraceConfig         (String msg) ;
+  static void TraceChat           (String msg) ;
+  static void TraceVerbose        (String msg) ;
+  static void TraceState          (String msg) ;
+  static void TraceWarning        (String msg) ;
+  static void TraceError          (String msg) ;
   static void TraceMissingNode    (ValueTree config_store , Identifier a_node_id) ;
   static void TraceMissingProperty(ValueTree config_store    , Identifier a_property_id ,
                                    var       a_default_value                            ) ;
