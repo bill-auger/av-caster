@@ -15,6 +15,7 @@ Builds/*/*
 !Builds/MacOSX/AvCaster.xcodeproj
 !Builds/MacOSX/Info.plist
 !Builds/MacOSX/RecentFilesMenuTemplate.nib
+!Builds/Packaging/_service
 !Builds/Packaging/av-caster.dsc
 !Builds/Packaging/av-caster.spec
 !Builds/Packaging/debian.changelog

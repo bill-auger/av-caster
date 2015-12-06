@@ -19,7 +19,6 @@ notifications:
     on_start:   never
 
 before_install:
-  - VERSION=0.15.000
   - PROJECT_NAME='av-caster'
   - DEPS='libfreetype6-dev libgstreamer-plugins-base1.0-dev libx11-dev
           libxcursor-dev libxinerama-dev'
