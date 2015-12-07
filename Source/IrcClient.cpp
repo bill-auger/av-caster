@@ -29,7 +29,11 @@
 
 /* IrcClient class methods */
 
+#ifdef RUN_NETWORK_AS_THREAD
 IrcClient::IrcClient(const String& thread_name) : Thread(thread_name)
+#else // RUN_NETWORK_AS_THREAD
+IrcClient::IrcClient()
+#endif // RUN_NETWORK_AS_THREAD
 {
   memset(&this->callbacks , 0 , sizeof(this->callbacks)) ;
 
@@ -40,20 +44,26 @@ IrcClient::IrcClient(const String& thread_name) : Thread(thread_name)
   this->callbacks.event_numeric = OnNumeric ;
 
 // TODO: servers_store.each -> sessions or multiple AVCaster::IrcCLients
-  IrcServerInfo server = {NULL , "localhost" , 6667 , 0 , CHARSTAR(my_nick) , 0 , 0} ;
+  IrcServerInfo server = { NULL , "localhost" , 6667 , 0 , CHARSTAR(my_nick) , 0 , 0 } ;
   createSession(server) ;
+IrcServerInfo server2 = { NULL , "irc.debian.org" , 6667 , "" , CHARSTAR(my_nick) , "username" , "realname" } ;
+createSession(server2) ;
 }
 
 IrcClient::~IrcClient()
 {
+#ifdef IRCCLIENT_HAS_MULTIPLE_SESSIONS
   IrcServerInfo* server = this->servers.begin() ;
   while (server != this->servers.end())
   {
+#endif // IRCCLIENT_HAS_MULTIPLE_SESSIONS
     irc_cmd_quit       (server->session , IRC::LOGOOUT_MSG) ;
     irc_disconnect     (server->session) ;
     irc_destroy_session(server->session) ;
+#ifdef IRCCLIENT_HAS_MULTIPLE_SESSIONS
     ++server ;
   }
+#endif // IRCCLIENT_HAS_MULTIPLE_SESSIONS
 }
 
 void IrcClient::createSession(IrcServerInfo a_server)
@@ -65,8 +75,11 @@ if (a_server.session == 0) DBG("Could not create this->session") ;
 //See LIBIRC_OPTION_SSL_NO_VERIFY for servers which use self-signed SSL certificates
 
   if (a_server.session == 0) return ;
-
+#ifdef IRCCLIENT_HAS_MULTIPLE_SESSIONS
   this->servers.add(a_server) ; login(a_server) ;
+#else // IRCCLIENT_HAS_MULTIPLE_SESSIONS
+  login(a_server) ;
+#endif // IRCCLIENT_HAS_MULTIPLE_SESSIONS
 }
 
 bool IrcClient::IsSufficientVersion()
@@ -84,8 +97,14 @@ void IrcClient::OnConnect(irc_session_t* session , const char*  event , const ch
 {
 DEBUG_TRACE_IRC_CONNECTED
 
-  bool is_bitlbee = String(origin)    == "localhost"                       &&
-                    String(params[1]) == IRC::BITLBEE_WELCOME_MSG + my_nick ;
+  String host       = origin ;
+  String message    = params[1] ;
+  bool   is_bitlbee = host    == "localhost"                       &&
+                      message == IRC::BITLBEE_WELCOME_MSG + my_nick ;
+
+  // display connected message
+  String logged_in_msg = CHARSTAR(String(IRC::LOGGED_IN_MSG + host)) ;
+  AvCaster::AddChatLine(GUI::SERVER_NICK , logged_in_msg) ;
 
   if (is_bitlbee)
   {
@@ -133,23 +152,23 @@ DEBUG_TRACE_IRC_CHAT_MSG_VB
 
   char nickbuf[128] ; irc_target_get_nick(origin , nickbuf , sizeof(nickbuf)) ;
 
-  String user_id                  = String(origin) ;
-  String nick                     = nickbuf ;
-  String channel                  = params[0] ;
-  String message                  = params[1] ;
-  bool   is_root_user             = user_id.startsWith(IRC::ROOT_USER            ) ;
-  bool   is_root_channel          = channel == String (IRC::ROOT_CHANNEL         ) ;
-  bool   is_my_channel            = channel == String (IRC::MY_CHANNEL           ) ;
-  bool   is_already_logged_in_msg = message.endsWith  (IRC::ALREADY_LOGGED_IN_MSG) ;
-  bool   is_logged_in_msg         = message.endsWith  (IRC::LOGGED_IN_MSG        ) ||
-                                    message.endsWith  (IRC::KICKED_SELF_MSG      )  ;
+  String user_id          = String(origin) ;
+  String nick             = nickbuf ;
+  String channel          = CharPointer_UTF8(params[0]) ;
+  String message          = CharPointer_UTF8(params[1]) ;
+  bool   is_root_user     = user_id.startsWith(IRC::ROOT_USER        ) ;
+  bool   is_root_channel  = channel == String (IRC::ROOT_CHANNEL     ) ;
+  bool   is_my_channel    = channel == String (IRC::MY_CHANNEL       ) ;
+  bool   is_login_blocked = message.endsWith  (IRC::LOGIN_BLOCKED_MSG) ;
+  bool   is_logged_in     = message.endsWith  (IRC::CONNECTED_MSG    ) ||
+                            message.endsWith  (IRC::KICKED_SELF_MSG  )  ;
 
 DEBUG_TRACE_IRC_CHAT_MSG
 
   // handle message from the bee
   if (is_root_user && is_root_channel)
-    if      (is_already_logged_in_msg) AvCaster::AddChatLine(GUI::SERVER_NICK , IRC::SESSION_BLOCKED_MSG) ;
-    else if (is_logged_in_msg        ) irc_cmd_join(session , IRC::MY_CHANNEL   , 0) ; //0=>NULL
+    if      (is_login_blocked) AvCaster::AddChatLine(GUI::SERVER_NICK , IRC::SESSION_BLOCKED_MSG) ;
+    else if (is_logged_in    ) irc_cmd_join(session , IRC::MY_CHANNEL , 0) ; //0=>NULL
   if (is_root_user || is_root_channel) return ;
 
   // handle peer messages
@@ -234,8 +253,9 @@ DEBUG_TRACE_IRC_NICKS
 
 bool IrcClient::login(IrcServerInfo a_server)
 {
+  // display login message
   String logging_in_msg = CHARSTAR(String(IRC::LOGGING_IN_MSG + a_server.host)) ;
-  AvCaster::AddChatLine(my_nick , logging_in_msg) ;
+  AvCaster::AddChatLine(GUI::SERVER_NICK , logging_in_msg) ;
 
   //  NOTE: prefix 'server' with # for SSL
   bool is_err = irc_connect(a_server.session  , a_server.host     , a_server.port ,
@@ -252,20 +272,23 @@ void IrcClient::run()
 #ifdef RUN_NETWORK_AS_PROC
 DEBUG_TRACE_IRC_THREAD_RUN_IN
   bool is_err = irc_run(this->session) ;
+
 if (is_err) DBG("Could not connect or I/O error: " + String(irc_strerror(irc_errno(this->session)))) ;
 #else // RUN_NETWORK_AS_PROC
 #  ifdef RUN_NETWORK_AS_THREAD
 DEBUG_TRACE_IRC_THREAD_RUN_IN
+
   while (!threadShouldExit())
   {
 #  endif // RUN_NETWORK_AS_THREAD
 #endif // RUN_NETWORK_AS_PROC
-// Make sure that all the IRC sessions are connected
-
+#ifdef IRCCLIENT_HAS_MULTIPLE_SESSIONS
   IrcServerInfo* server = this->servers.begin() ;
   while (server != this->servers.end())
   {
-    if (!irc_is_connected(server->session)) { login(*server) ; continue ; }
+#endif // IRCCLIENT_HAS_MULTIPLE_SESSIONS
+// Make sure that all the IRC sessions are connected
+    if (!irc_is_connected(server->session)) { login(*server) ; ++server ; continue ; }
 
 // Create the structures for select()
 struct timeval tv;
@@ -297,8 +320,11 @@ if (select(maxfd + 1 , &in_set , &out_set , 0 , &tv) < 0) return ;// Error
 // Call irc_process_select_descriptors() for each session with the descriptor set
 if (irc_process_select_descriptors(server->session , &in_set , &out_set)) return ;// The connection failed, or the server disconnected. Handle it.
 
+#ifdef IRCCLIENT_HAS_MULTIPLE_SESSIONS
     ++server ;
   }
+#endif // IRCCLIENT_HAS_MULTIPLE_SESSIONS
+
 #ifdef RUN_NETWORK_AS_PROC
 DEBUG_TRACE_IRC_THREAD_RUN_OUT
 #else // RUN_NETWORK_AS_PROC
@@ -313,11 +339,15 @@ DEBUG_TRACE_IRC_THREAD_RUN_OUT
 
 void IrcClient::sendChat(String chat_msg)
 {
+#ifdef IRCCLIENT_HAS_MULTIPLE_SESSIONS
   IrcServerInfo* server = this->servers.begin() ;
   while (server != this->servers.end())
   {
+#endif // IRCCLIENT_HAS_MULTIPLE_SESSIONS
     irc_cmd_msg(server->session , IRC::MY_CHANNEL , CHARSTAR(chat_msg)) ; // TODO: get channel from irc_get_ctx()
+#ifdef IRCCLIENT_HAS_MULTIPLE_SESSIONS
     ++server ;
   }
+#endif // IRCCLIENT_HAS_MULTIPLE_SESSIONS
   AvCaster::AddChatLine(my_nick , chat_msg) ;
 }

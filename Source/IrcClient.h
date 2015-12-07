@@ -31,7 +31,11 @@
   It encapsulates interactions with the libircclient C library
       and provides cross-network channel bridging.
 */
+#ifdef RUN_NETWORK_AS_THREAD
 class IrcClient : public Thread
+#else // RUN_NETWORK_AS_THREAD
+class IrcClient
+#endif // RUN_NETWORK_AS_THREAD
 {
   friend class AvCaster ;
 
@@ -54,9 +58,11 @@ public:
 
 
 private:
-
+#ifdef RUN_NETWORK_AS_THREAD
   IrcClient(const String& thread_name) ;
-
+#else // RUN_NETWORK_AS_THREAD
+  IrcClient() ;
+#endif // RUN_NETWORK_AS_THREAD
   static bool IsSufficientVersion() ;
 
   // libircclient callbacks
@@ -75,7 +81,11 @@ private:
   // session management
   void createSession(IrcServerInfo a_server) ;
   bool login        (IrcServerInfo a_server) ;
+#ifdef RUN_NETWORK_AS_THREAD
   void run          () override ;
+#else // RUN_NETWORK_AS_THREAD
+  void run          () ;
+#endif // RUN_NETWORK_AS_THREAD
 
   void sendChat(String chat_msg) ;
 

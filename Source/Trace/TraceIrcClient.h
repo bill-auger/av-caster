@@ -33,17 +33,17 @@
     Trace::TraceChat("'" + String((!!origin) ? origin : "someone") + "' said in channel " + \
                      String(params[0]) + ": " + String(params[1]) + "")                     ;
 
-#  define DEBUG_TRACE_IRC_CHAT_MSG                                                           \
-  bool is_kicked_self_msg = message.endsWith(IRC::KICKED_SELF_MSG) ;                         \
-  if (is_root_channel         ) Trace::TraceVerbose("is_root_channel"         ) ;            \
-  if (is_root_user            ) Trace::TraceVerbose("is_root_user"            ) ;            \
-  if (is_my_channel           ) Trace::TraceVerbose("is_my_channel"           ) ;            \
-  if (is_already_logged_in_msg) Trace::TraceVerbose("is_already_logged_in_msg") ;            \
-  if (is_logged_in_msg        ) Trace::TraceVerbose("is_logged_in_msg"        ) ;            \
-  if (is_kicked_self_msg      ) Trace::TraceVerbose("is_kicked_self_msg"      ) ;            \
+#  define DEBUG_TRACE_IRC_CHAT_MSG                                \
+  bool has_kicked_self = message.endsWith(IRC::KICKED_SELF_MSG) ; \
+  if (is_root_channel ) Trace::TraceVerbose("is_root_channel" ) ; \
+  if (is_root_user    ) Trace::TraceVerbose("is_root_user"    ) ; \
+  if (is_my_channel   ) Trace::TraceVerbose("is_my_channel"   ) ; \
+  if (is_login_blocked) Trace::TraceVerbose("is_login_blocked") ; \
+  if (is_logged_in    ) Trace::TraceVerbose("is_logged_in"    ) ; \
+  if (has_kicked_self ) Trace::TraceVerbose("has_kicked_self" ) ; \
   String dbg = ((is_root_user && is_root_channel  ) ?                                        \
-               ((is_logged_in_msg                 ) ? "logged into bitlbee"              :   \
-               ((is_already_logged_in_msg         ) ? "already logged into bitlbee" : "")) : \
+               ((is_logged_in                     ) ? "logged into bitlbee"              :   \
+               ((is_login_blocked                 ) ? "already logged into bitlbee" : "")) : \
                ((!is_root_user && !is_root_channel) ? nick + " said: " + message :           \
                ((DEBUG_TRACE_VB                   ) ? "unhandled msg" : "")      )      ) ;  \
   if (dbg.isNotEmpty()) Trace::TraceChat(dbg)                                                ;

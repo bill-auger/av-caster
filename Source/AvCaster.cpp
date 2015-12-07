@@ -167,7 +167,7 @@ DEBUG_TRACE_REMOVE_CHAT_NICK
       Store->chatters.removeChild(chatter_store , nullptr) ;
   }
 
-  Gui->chat->updateVisiblilty() ;
+  const MessageManagerLock mmLock ; Gui->chat->updateVisiblilty() ;
 }
 
 StringArray AvCaster::GetChatNicks()
@@ -212,7 +212,11 @@ DEBUG_TRACE_INIT_PHASE_4
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libircclient
+#  ifdef RUN_NETWORK_AS_THREAD
   if ((Irc = new IrcClient(APP::IRC_THREAD_NAME)) == nullptr) return false ;
+#  else // RUN_NETWORK_AS_THREAD
+  if ((Irc = new IrcClient()) == nullptr) return false ;
+#  endif // RUN_NETWORK_AS_THREAD
 #endif // NO_INITIALIZE_NETWORK
 
 DEBUG_TRACE_INIT_PHASE_6
@@ -236,7 +240,8 @@ DEBUG_TRACE_SHUTDOWN_PHASE_1
 #ifdef RUN_NETWORK_AS_THREAD
 
   // shutdown network
-  if (Irc->isThreadRunning()) Irc->stopThread(5000) ; delete Irc ; Irc = nullptr ;
+  if (Irc->isThreadRunning()) Irc->stopThread(5000) ; Irc = nullptr ;
+
 #else // RUN_NETWORK_AS_THREAD
 //   delete Irc ;
   Irc = nullptr ;

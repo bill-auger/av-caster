@@ -131,7 +131,8 @@ DEBUG_TRACE_ADD_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
   ChatListItem* a_list_item = new ChatListItem(a_node) ;
   int           child_idx   = sortedChildIdx(a_node) ;
 
-  addAndMakeVisible(a_list_item , child_idx) ; refresh() ;
+  const MessageManagerLock mmLock ; addAndMakeVisible(a_list_item , child_idx) ;
+  refresh() ;
 }
 
 void ChatList::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)

@@ -23,11 +23,31 @@
 #include "Trace/TraceAvCasterStore.h"
 
 
-
-AvCasterStore::~AvCasterStore() {}
-
-
 /* AvCasterStore private class methods */
+
+StringArray AvCasterStore::PropertyValues(ValueTree root_node , Identifier property_id)
+{
+  int         n_children      = root_node.getNumChildren() ;
+  StringArray property_values ;
+
+  for (int child_n = 0 ; child_n < n_children ; ++child_n)
+  {
+    ValueTree child_node     = root_node.getChild(child_n) ;
+    String    property_value = STRING(child_node[property_id]) ;
+
+    property_values.add(property_value) ;
+  }
+
+  return property_values ;
+}
+
+
+/* AvCasterStore public instance methods */
+
+AvCasterStore::~AvCasterStore() { }
+
+
+/* AvCasterStore private instance methods */
 
 AvCasterStore::AvCasterStore()
 {
@@ -51,26 +71,9 @@ AvCasterStore::AvCasterStore()
   // detect hardware and sanitize config
   detectCaptureDevices() ; // detectDisplayDimensions() ; // TODO: (issue #2 issue #4)
   validateConfig() ; sanitizeConfig() ; storeConfig() ;
+
+  this->chatters.addListener(this) ;
 }
-
-StringArray AvCasterStore::PropertyValues(ValueTree root_node , Identifier property_id)
-{
-  int         n_children      = root_node.getNumChildren() ;
-  StringArray property_values ;
-
-  for (int child_n = 0 ; child_n < n_children ; ++child_n)
-  {
-    ValueTree child_node     = root_node.getChild(child_n) ;
-    String    property_value = STRING(child_node[property_id]) ;
-
-    property_values.add(property_value) ;
-  }
-
-  return property_values ;
-}
-
-
-/* AvCasterStore private instance methods */
 
 ValueTree AvCasterStore::verifyConfig(ValueTree stored_config , Identifier root_node_id)
 {

@@ -36,7 +36,8 @@
 // #define DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
 #define NATIVE_CAMERA_RESOLUTION_ONLY
 // #define SHOW_DISABLED_PREVIEW_TINY
-// #define RUN_NETWORK_AS_THREAD
+#define RUN_NETWORK_AS_THREAD
+#define IRCCLIENT_HAS_MULTIPLE_SESSIONS
 #define STATIC_PIPELINE
 // #define FAUX_SCREEN                   // replace sceen-real-source with fakesrc
 // #define FAUX_CAMERA                   // replace camera-real-source with fakesrc
@@ -79,7 +80,7 @@ namespace APP
   // names and IDs
   static const String APP_NAME         = "AvCaster" ;
   static const String JACK_CLIENT_NAME = APP_NAME ;
-  static const String IRC_THREAD_NAME  = "irc-thread" ;
+  static const String IRC_THREAD_NAME  = "av-caster-irc" ;
   static const String DIGITS           = "0123456789" ;
   static const String LETTERS          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ;
   static const String ALPHANUMERIC     = DIGITS + LETTERS ;
@@ -536,19 +537,25 @@ namespace IRC
   static const unsigned int MIN_MAJOR_VERSION = 1 ;
   static const unsigned int MIN_MINOR_VERSION = 8 ;
 
-  static const String BITLBEE_WELCOME_MSG   = "Welcome to the BitlBee gateway, " ;
-  static const char*  ROOT_CHANNEL          = "&bitlbee" ;
-  static const String IDENTIFY_CMD          = "identify " ;
-  static const char*  ROOT_NICK             = "@root" ;
-  static const String ROOT_USER             = "root!root@localhost" ;
-  static const char*  LOGGED_IN_MSG         = "Logging in: Logged in" ;
-  static const char*  ALREADY_LOGGED_IN_MSG = "New request: You're already connected to this server. Would you like to take over this session?" ;
-  static const String SESSION_BLOCKED_MSG   = "It appeaers that you are already connected to BitlBee with another client.  This chat will not be connected to LCTV." ;
-  static const char*  KICKED_SELF_MSG       = "You've successfully taken over your old session" ;
-  static const char*  MY_CHANNEL            = "#mychat" ;
-  static const String LOGGING_IN_MSG        = "Logging into chat server: " ;
-  static const char*  LOGIN_MSG             = CHARSTAR(String(APP::APP_NAME + " starting up")) ;
-  static const char*  LOGOOUT_MSG           = CHARSTAR(String(APP::APP_NAME + " shutting down")) ;
+  // IDs
+  static const char*  ROOT_CHANNEL = "&bitlbee" ;
+  static const String IDENTIFY_CMD = "identify " ;
+  static const char*  ROOT_NICK    = "@root" ;
+  static const String ROOT_USER    = "root!root@localhost" ;
+  static const char*  MY_CHANNEL   = "#mychat" ;
+
+  // incoming server messages
+  static const char*  CONNECTED_MSG       = "Logging in: Logged in" ;
+  static const String BITLBEE_WELCOME_MSG = "Welcome to the BitlBee gateway, " ;
+  static const char*  LOGIN_BLOCKED_MSG   = "New request: You're already connected to this server. Would you like to take over this session?" ;
+  static const char*  KICKED_SELF_MSG     = "You've successfully taken over your old session" ;
+
+  // GUI display messages
+  static const String SESSION_BLOCKED_MSG = "It appeaers that you are already connected to BitlBee with another client.  This chat will not be connected to LCTV." ;
+  static const String LOGGING_IN_MSG      = "Logging into chat server: " ;
+  static const String LOGGED_IN_MSG       = "Logged into chat server: " ;
+  static const char*  LOGIN_MSG           = CHARSTAR(String(APP::APP_NAME + " starting up")) ;
+  static const char*  LOGOOUT_MSG         = CHARSTAR(String(APP::APP_NAME + " shutting down")) ;
 
   static const String LCTV_URL = "https://www.livecoding.tv/" ;
 }
