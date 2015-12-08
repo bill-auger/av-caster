@@ -57,13 +57,9 @@ private:
   friend class Chat ;
   friend class ChatListItem ;
 
-
-  ValueTree   chattersStore ;
-  StringArray nicks ;
-
   void reloadNicks          () ;
   void refresh              () ;
-  int  sortedChildIdx       (ValueTree& a_node) ;
+  int  sortedChildIdx       (ValueTree& a_parent_node , ValueTree& a_node) ;
   void valueTreeChildAdded  (ValueTree& a_parent_node , ValueTree& a_node) override ;
   void valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node) override ;
 
@@ -72,6 +68,10 @@ private:
   void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ;           } ;
   void valueTreeParentChanged(    ValueTree& a_node)                            override { UNUSED(a_node) ;                  } ;
   void valueTreeRedirected(       ValueTree& a_node)                            override { UNUSED(a_node) ;                  } ;
+
+
+  ValueTree          serversStore ;
+  Array<StringArray> nicks ;
 
     //[/UserVariables]
 

@@ -27,7 +27,7 @@
 
 #  define DEBUG_TRACE_CONFIG_LOAD_CONFIG                                                        \
   Trace::TraceConfig("loading preset '" + STRING(config_store[CONFIG::PRESET_NAME_ID]) + "'") ; \
-  if (DEBUG_TRACE_VB) Trace::DumpConfig(config_store , "volatile") ;
+  Trace::DumpConfig(config_store , "volatile") ;
 
 #else // DEBUG
 

@@ -23,6 +23,11 @@
 #include "Trace/TraceAvCasterStore.h"
 
 
+String bitlbee_host = "localhost" ;      String bitlbee_port = "6667" ;// TODO: GUI support
+String debian_host  = "irc.debian.org" ; String debian_port = "6667" ; // TODO: GUI support
+String xmpp_chat    = "#mychat" ;                                      // TODO: GUI support
+
+
 /* AvCasterStore private class methods */
 
 StringArray AvCasterStore::PropertyValues(ValueTree root_node , Identifier property_id)
@@ -61,18 +66,23 @@ AvCasterStore::AvCasterStore()
   delete config_stream ;
 
   // create shared config ValueTree from persistent storage or defaults
-  this->root     = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
-  this->presets  = verifyPresets() ;
-  this->config   = ValueTree(CONFIG::VOLATILE_CONFIG_ID) ;
-  this->cameras  = ValueTree(CONFIG::CAMERA_DEVICES_ID ) ;
-  this->audios   = ValueTree(CONFIG::AUDIO_DEVICES_ID  ) ;
-  this->chatters = ValueTree(CONFIG::CHATTERS_ID       ) ;
+  this->root    = verifyConfig(stored_config , CONFIG::STORAGE_ID) ;
+  this->presets = getOrCreatePresets() ;
+  this->servers = getOrCreateServers() ;
+  this->config  = ValueTree(CONFIG::VOLATILE_CONFIG_ID) ;
+  this->cameras = ValueTree(CONFIG::CAMERA_DEVICES_ID ) ;
+  this->audios  = ValueTree(CONFIG::AUDIO_DEVICES_ID  ) ;
+
+DEBUG_TRACE_DUMP_CONFIG("AvCasterStore::AvCasterStore()")
 
   // detect hardware and sanitize config
   detectCaptureDevices() ; // detectDisplayDimensions() ; // TODO: (issue #2 issue #4)
-  validateConfig() ; sanitizeConfig() ; storeConfig() ;
+  verifyRoot() ;    sanitizeRoot() ;    verifyRoot() ;
+  verifyPresets() ; sanitizePresets() ; verifyPresets() ; loadPreset() ;
+  storeConfig() ;
 
-  this->chatters.addListener(this) ;
+storeServer(bitlbee_host , bitlbee_port) ;
+// storeServer(debian_host  , debian_port) ; // TODO: GUI support
 }
 
 ValueTree AvCasterStore::verifyConfig(ValueTree stored_config , Identifier root_node_id)
@@ -96,7 +106,7 @@ DEBUG_TRACE_VERIFY_CONFIG
   return config_store ;
 }
 
-ValueTree AvCasterStore::verifyPresets()
+ValueTree AvCasterStore::getOrCreatePresets()
 {
 DEBUG_TRACE_VERIFY_PRESETS
 
@@ -119,79 +129,108 @@ DEBUG_TRACE_VERIFY_PRESETS
   return presets ;
 }
 
-void AvCasterStore::validateConfig()
+ValueTree AvCasterStore::getOrCreateServers()
 {
-DEBUG_TRACE_VALIDATE_CONFIG
+DEBUG_TRACE_VERIFY_SERVERS
+
+  ValueTree servers = this->root.getOrCreateChildWithName(CONFIG::SERVERS_ID , nullptr) ;
+
+  for (int server_n = 0 ; server_n < servers.getNumChildren() ; ++server_n)
+    servers.getChild(server_n).addChild(ValueTree(CONFIG::CHATTERS_ID) , -1 , nullptr) ;
+
+  // remove servers from runtime store (to ignore events)
+  this->root.removeChild(servers , nullptr) ;
+
+  return servers ;
+}
+
+void AvCasterStore::verifyRoot()
+{
+DEBUG_TRACE_VERIFY_CONFIG_ROOT
 
   if (!this->root.isValid()) return ;
 
   // transfer missing properties
-  validateRootProperty(CONFIG::CONFIG_VERSION_ID , var(CONFIG::CONFIG_VERSION    )) ;
-  validateRootProperty(CONFIG::IS_PENDING_ID     , var(CONFIG::DEFAULT_IS_PENDING)) ;
-  validateRootProperty(CONFIG::PRESET_ID         , var(CONFIG::DEFAULT_PRESET_IDX)) ;
+  verifyRootProperty(CONFIG::CONFIG_VERSION_ID , var(CONFIG::CONFIG_VERSION    )) ;
+  verifyRootProperty(CONFIG::IS_PENDING_ID     , var(CONFIG::DEFAULT_IS_PENDING)) ;
+  verifyRootProperty(CONFIG::PRESET_ID         , var(CONFIG::DEFAULT_PRESET_IDX)) ;
+}
 
-  // validate user preset nodes
+void AvCasterStore::verifyPresets()
+{
+DEBUG_TRACE_VERIFY_CONFIG_PRESETS
+
+  if (!this->presets.isValid()) return ;
+
+  // verify user preset nodes
   int n_presets = this->presets.getNumChildren() ;
   for (int preset_n = 0 ; preset_n < n_presets ; ++preset_n)
   {
-    this->config = this->presets.getChild(preset_n) ;
-    validatePreset() ;
+    this->config = this->presets.getChild(preset_n) ; verifyPreset() ;
   }
-  loadPreset() ;
-
-  // TODO: validae/sanitize device nodes ? perhaps these should not be stored
 }
 
-void AvCasterStore::validatePreset()
+void AvCasterStore::verifyPreset()
 {
-DEBUG_TRACE_VALIDATE_CONFIG_PRESET
+DEBUG_TRACE_VERIFY_CONFIG_PRESET
 
   if (!this->config.isValid()) return ;
 
   // transfer missing properties
-  validatePresetProperty(CONFIG::PRESET_NAME_ID        , var(CONFIG::DEFAULT_PRESET_NAME       )) ;
-  validatePresetProperty(CONFIG::IS_SCREENCAP_ON_ID    , var(CONFIG::DEFAULT_IS_SCREENCAP_ON   )) ;
-  validatePresetProperty(CONFIG::IS_CAMERA_ON_ID       , var(CONFIG::DEFAULT_IS_CAMERA_ON      )) ;
-  validatePresetProperty(CONFIG::IS_TEXT_ON_ID         , var(CONFIG::DEFAULT_IS_TEXT_ON        )) ;
-  validatePresetProperty(CONFIG::IS_INTERSTITIAL_ON_ID , var(CONFIG::DEFAULT_IS_INTERSTITIAL_ON)) ;
-  validatePresetProperty(CONFIG::IS_PREVIEW_ON_ID      , var(CONFIG::DEFAULT_IS_PREVIEW_ON     )) ;
-  validatePresetProperty(CONFIG::IS_AUDIO_ON_ID        , var(CONFIG::DEFAULT_IS_AUDIO_ON       )) ;
-  validatePresetProperty(CONFIG::IS_OUTPUT_ON_ID       , var(CONFIG::DEFAULT_IS_OUTPUT_ON      )) ;
-  validatePresetProperty(CONFIG::DISPLAY_N_ID          , var(CONFIG::DEFAULT_DISPLAY_N         )) ;
-  validatePresetProperty(CONFIG::SCREEN_N_ID           , var(CONFIG::DEFAULT_SCREEN_N          )) ;
-  validatePresetProperty(CONFIG::SCREENCAP_W_ID        , var(CONFIG::DEFAULT_SCREENCAP_W       )) ;
-  validatePresetProperty(CONFIG::SCREENCAP_H_ID        , var(CONFIG::DEFAULT_SCREENCAP_H       )) ;
-  validatePresetProperty(CONFIG::OFFSET_X_ID           , var(CONFIG::DEFAULT_OFFSET_X          )) ;
-  validatePresetProperty(CONFIG::OFFSET_Y_ID           , var(CONFIG::DEFAULT_OFFSET_Y          )) ;
-  validatePresetProperty(CONFIG::CAMERA_DEV_ID         , var(CONFIG::DEFAULT_CAMERA_DEV_IDX    )) ;
-  validatePresetProperty(CONFIG::CAMERA_RES_ID         , var(CONFIG::DEFAULT_CAMERA_RES_IDX    )) ;
-  validatePresetProperty(CONFIG::AUDIO_API_ID          , var(CONFIG::DEFAULT_AUDIO_API_IDX     )) ;
-  validatePresetProperty(CONFIG::AUDIO_DEVICE_ID       , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX  )) ;
-  validatePresetProperty(CONFIG::AUDIO_CODEC_ID        , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX   )) ;
-  validatePresetProperty(CONFIG::N_CHANNELS_ID         , var(CONFIG::DEFAULT_N_CHANNELS        )) ;
-  validatePresetProperty(CONFIG::SAMPLERATE_ID         , var(CONFIG::DEFAULT_SAMPLERATE_IDX    )) ;
-  validatePresetProperty(CONFIG::AUDIO_BITRATE_ID      , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX )) ;
-  validatePresetProperty(CONFIG::MOTD_TEXT_ID          , var(CONFIG::DEFAULT_MOTD_TEXT         )) ;
-  validatePresetProperty(CONFIG::TEXT_STYLE_ID         , var(CONFIG::DEFAULT_TEXT_STYLE_IDX    )) ;
-  validatePresetProperty(CONFIG::TEXT_POSITION_ID      , var(CONFIG::DEFAULT_TEXT_POSITION_IDX )) ;
-  validatePresetProperty(CONFIG::INTERSTITIAL_ID       , var(CONFIG::DEFAULT_INTERSTITIAL_LOC  )) ;
-  validatePresetProperty(CONFIG::OUTPUT_SINK_ID        , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX   )) ;
-  validatePresetProperty(CONFIG::OUTPUT_MUXER_ID       , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX  )) ;
-  validatePresetProperty(CONFIG::OUTPUT_W_ID           , var(CONFIG::DEFAULT_OUTPUT_W          )) ;
-  validatePresetProperty(CONFIG::OUTPUT_H_ID           , var(CONFIG::DEFAULT_OUTPUT_H          )) ;
-  validatePresetProperty(CONFIG::FRAMERATE_ID          , var(CONFIG::DEFAULT_FRAMERATE_IDX     )) ;
-  validatePresetProperty(CONFIG::VIDEO_BITRATE_ID      , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX )) ;
-  validatePresetProperty(CONFIG::OUTPUT_DEST_ID        , var(CONFIG::DEFAULT_OUTPUT_DEST       )) ;
+  verifyPresetProperty(CONFIG::PRESET_NAME_ID        , var(CONFIG::DEFAULT_PRESET_NAME       )) ;
+  verifyPresetProperty(CONFIG::IS_SCREENCAP_ON_ID    , var(CONFIG::DEFAULT_IS_SCREENCAP_ON   )) ;
+  verifyPresetProperty(CONFIG::IS_CAMERA_ON_ID       , var(CONFIG::DEFAULT_IS_CAMERA_ON      )) ;
+  verifyPresetProperty(CONFIG::IS_TEXT_ON_ID         , var(CONFIG::DEFAULT_IS_TEXT_ON        )) ;
+  verifyPresetProperty(CONFIG::IS_INTERSTITIAL_ON_ID , var(CONFIG::DEFAULT_IS_INTERSTITIAL_ON)) ;
+  verifyPresetProperty(CONFIG::IS_PREVIEW_ON_ID      , var(CONFIG::DEFAULT_IS_PREVIEW_ON     )) ;
+  verifyPresetProperty(CONFIG::IS_AUDIO_ON_ID        , var(CONFIG::DEFAULT_IS_AUDIO_ON       )) ;
+  verifyPresetProperty(CONFIG::IS_OUTPUT_ON_ID       , var(CONFIG::DEFAULT_IS_OUTPUT_ON      )) ;
+  verifyPresetProperty(CONFIG::DISPLAY_N_ID          , var(CONFIG::DEFAULT_DISPLAY_N         )) ;
+  verifyPresetProperty(CONFIG::SCREEN_N_ID           , var(CONFIG::DEFAULT_SCREEN_N          )) ;
+  verifyPresetProperty(CONFIG::SCREENCAP_W_ID        , var(CONFIG::DEFAULT_SCREENCAP_W       )) ;
+  verifyPresetProperty(CONFIG::SCREENCAP_H_ID        , var(CONFIG::DEFAULT_SCREENCAP_H       )) ;
+  verifyPresetProperty(CONFIG::OFFSET_X_ID           , var(CONFIG::DEFAULT_OFFSET_X          )) ;
+  verifyPresetProperty(CONFIG::OFFSET_Y_ID           , var(CONFIG::DEFAULT_OFFSET_Y          )) ;
+  verifyPresetProperty(CONFIG::CAMERA_DEVICE_ID      , var(CONFIG::DEFAULT_CAMERA_DEVICE_IDX )) ;
+  verifyPresetProperty(CONFIG::CAMERA_RES_ID         , var(CONFIG::DEFAULT_CAMERA_RES_IDX    )) ;
+  verifyPresetProperty(CONFIG::AUDIO_API_ID          , var(CONFIG::DEFAULT_AUDIO_API_IDX     )) ;
+  verifyPresetProperty(CONFIG::AUDIO_DEVICE_ID       , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX  )) ;
+  verifyPresetProperty(CONFIG::AUDIO_CODEC_ID        , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX   )) ;
+  verifyPresetProperty(CONFIG::N_CHANNELS_ID         , var(CONFIG::DEFAULT_N_CHANNELS        )) ;
+  verifyPresetProperty(CONFIG::SAMPLERATE_ID         , var(CONFIG::DEFAULT_SAMPLERATE_IDX    )) ;
+  verifyPresetProperty(CONFIG::AUDIO_BITRATE_ID      , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX )) ;
+  verifyPresetProperty(CONFIG::MOTD_TEXT_ID          , var(CONFIG::DEFAULT_MOTD_TEXT         )) ;
+  verifyPresetProperty(CONFIG::TEXT_STYLE_ID         , var(CONFIG::DEFAULT_TEXT_STYLE_IDX    )) ;
+  verifyPresetProperty(CONFIG::TEXT_POSITION_ID      , var(CONFIG::DEFAULT_TEXT_POSITION_IDX )) ;
+  verifyPresetProperty(CONFIG::INTERSTITIAL_ID       , var(CONFIG::DEFAULT_INTERSTITIAL_LOC  )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_SINK_ID        , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX   )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_MUXER_ID       , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX  )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_W_ID           , var(CONFIG::DEFAULT_OUTPUT_W          )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_H_ID           , var(CONFIG::DEFAULT_OUTPUT_H          )) ;
+  verifyPresetProperty(CONFIG::FRAMERATE_ID          , var(CONFIG::DEFAULT_FRAMERATE_IDX     )) ;
+  verifyPresetProperty(CONFIG::VIDEO_BITRATE_ID      , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_DEST_ID        , var(CONFIG::DEFAULT_OUTPUT_DEST       )) ;
 }
 
-void AvCasterStore::sanitizeConfig() // TODO: more
+void AvCasterStore::sanitizeRoot()
 {
-  if (!this->root   .isValid() || !this->config.isValid() ||
-      !this->cameras.isValid() || !this->audios.isValid()  ) return ;
+  sanitizeRootComboProperty(CONFIG::PRESET_ID , presetsNames()) ;
+}
 
-  sanitizeRootComboProperty  (CONFIG::PRESET_ID        , presetsNames()           ) ;
-  sanitizePresetComboProperty(CONFIG::CAMERA_DEV_ID    , getCameraResolutions()   ) ;
-  sanitizePresetComboProperty(CONFIG::CAMERA_DEV_ID    , cameraNames()            ) ;
+void AvCasterStore::sanitizePresets()
+{
+  // sanitize user preset nodes
+  int n_presets = this->presets.getNumChildren() ;
+  for (int preset_n = 0 ; preset_n < n_presets ; ++preset_n)
+  {
+    this->config = this->presets.getChild(preset_n) ; sanitizePreset() ;
+  }
+}
+
+void AvCasterStore::sanitizePreset()
+{
+  sanitizePresetComboProperty(CONFIG::CAMERA_RES_ID    , getCameraResolutions()   ) ;
+  sanitizePresetComboProperty(CONFIG::CAMERA_DEVICE_ID , cameraNames()            ) ;
   sanitizePresetComboProperty(CONFIG::AUDIO_API_ID     , CONFIG::AUDIO_APIS       ) ;
   sanitizePresetComboProperty(CONFIG::AUDIO_DEVICE_ID  , audioNames()             ) ;
   sanitizePresetComboProperty(CONFIG::AUDIO_CODEC_ID   , CONFIG::AUDIO_CODECS     ) ;
@@ -203,8 +242,6 @@ void AvCasterStore::sanitizeConfig() // TODO: more
   sanitizePresetComboProperty(CONFIG::OUTPUT_MUXER_ID  , CONFIG::OUTPUT_MUXERS    ) ;
   sanitizePresetComboProperty(CONFIG::FRAMERATE_ID     , CONFIG::FRAMERATES       ) ;
   sanitizePresetComboProperty(CONFIG::VIDEO_BITRATE_ID , CONFIG::VIDEO_BITRATES   ) ;
-
-  validateConfig() ;
 }
 
 void AvCasterStore::storeConfig()
@@ -226,8 +263,12 @@ DEBUG_TRACE_STORE_CONFIG
   this->root  .removeProperty(CONFIG::IS_PENDING_ID   , nullptr) ;
   this->config.removeProperty(CONFIG::IS_OUTPUT_ON_ID , nullptr) ;
 
-  // append presets to persistent storage
+  // append presets and servers to persistent storage (ignoring chatters)
+  int n_servers = this->servers.getNumChildren() ; UndoManager um ;
+  for (int server_n = 0 ; server_n < n_servers ; ++server_n)
+    this->servers.getChild(server_n).removeAllChildren(&um) ;
   this->root.addChild(this->presets , -1 , nullptr) ;
+  this->root.addChild(this->servers , -1 , nullptr) ;
 
   // marshall configuration out to persistent binary storage
   FileOutputStream* config_stream = new FileOutputStream(this->configFile) ;
@@ -235,8 +276,10 @@ DEBUG_TRACE_STORE_CONFIG
   else AvCaster::Error(GUI::STORAGE_WRITE_ERROR_MSG) ;
   delete config_stream ;
 
-  // remove presets from runtime store (to ignore events)
+  // remove presets and servers from runtime store (restoring chatters)
   this->root.removeChild(this->presets , nullptr) ;
+  this->root.removeChild(this->servers , nullptr) ;
+  while (um.canUndo()) um.undo() ;
 
   // restore transient data
   this->root  .setProperty(CONFIG::IS_PENDING_ID   , is_config_pending , nullptr) ;
@@ -249,34 +292,34 @@ DEBUG_TRACE_STORE_CONFIG
 
 /* runtime params */
 
-void AvCasterStore::validateProperty(ValueTree config_store    , Identifier a_key ,
+void AvCasterStore::verifyProperty(ValueTree config_store    , Identifier a_key ,
                                      var       a_default_value                    )
 {
-DEBUG_TRACE_VALIDATE_CONFIG_PROPERTY
+DEBUG_TRACE_VERIFY_CONFIG_PROPERTY
 
   if (!config_store.hasProperty(a_key))
     config_store.setProperty(a_key , a_default_value , nullptr) ;
 }
 
-void AvCasterStore::validateRootProperty(Identifier a_key , var a_default_value)
+void AvCasterStore::verifyRootProperty(Identifier a_key , var a_default_value)
 {
-  validateProperty(this->root , a_key , a_default_value) ;
+  verifyProperty(this->root , a_key , a_default_value) ;
 }
 
-void AvCasterStore::validatePresetProperty(Identifier a_key , var a_default_value)
+void AvCasterStore::verifyPresetProperty(Identifier a_key , var a_default_value)
 {
-  validateProperty(this->config , a_key , a_default_value) ;
+  verifyProperty(this->config , a_key , a_default_value) ;
 }
 
 void AvCasterStore::sanitizeIntProperty(ValueTree config_store , Identifier a_key ,
                                          int       min_value    , int max_value    )
 {
-// DEBUG_TRACE_SANITIZE_CONFIG_INT_PROPERTY
-
   int a_value = int(config_store[a_key]) ;
 
   if (a_value < min_value || a_value > max_value)
     config_store.removeProperty(a_key , nullptr) ;
+
+DEBUG_TRACE_SANITIZE_CONFIG_INT_PROPERTY
 }
 
 void AvCasterStore::sanitizeRootComboProperty(Identifier a_key , StringArray options)
@@ -286,7 +329,7 @@ void AvCasterStore::sanitizeRootComboProperty(Identifier a_key , StringArray opt
 
 void AvCasterStore::sanitizePresetComboProperty(Identifier a_key , StringArray options)
 {
-  sanitizeIntProperty(this->config , a_key , 0 , options.size() - 1) ;
+  sanitizeIntProperty(this->config , a_key , -1 , options.size() - 1) ;
 }
 
 /*
@@ -458,6 +501,21 @@ void AvCasterStore::resetPreset()
   AvCaster::RefreshGui() ;
 }
 
+void AvCasterStore::storeServer(String host , String port)
+{
+String channel = xmpp_chat ;
+
+  Identifier server_id    = CONFIG::FilterId(host , APP::VALID_URI_CHARS) ;
+  ValueTree  server_store = this->servers.getOrCreateChildWithName(server_id , nullptr) ;
+
+  if (!server_store.hasProperty(CONFIG::HOST_ID))
+    server_store.addChild(ValueTree(CONFIG::CHATTERS_ID) , -1 , nullptr) ;
+
+  server_store.setProperty(CONFIG::HOST_ID    , host    , nullptr) ;
+  server_store.setProperty(CONFIG::PORT_ID    , port    , nullptr) ;
+  server_store.setProperty(CONFIG::CHANNEL_ID , channel , nullptr) ;
+}
+
 
 /* event handlers */
 
@@ -516,7 +574,7 @@ StringArray AvCasterStore::audioNames()
 
 ValueTree AvCasterStore::getCameraConfig()
 {
-  int camera_n = int(this->config[CONFIG::CAMERA_DEV_ID]) ;
+  int camera_n = int(this->config[CONFIG::CAMERA_DEVICE_ID]) ;
 
   return this->cameras.getChild(camera_n) ;
 }
@@ -544,4 +602,48 @@ void AvCasterStore::setConfig(const Identifier& a_key , var a_value)
 DEBUG_TRACE_SET_CONFIG
 
   if (a_key.isValid()) storage_node.setProperty(a_key , a_value , nullptr) ;
+}
+
+void AvCasterStore::updateChatNicks(String host , String channel , StringArray nicks)
+{
+  bool   is_lctv  = host == bitlbee_host && channel == xmpp_chat ;
+  String network  = (is_lctv) ? GUI::LCTV_USER_PREFIX : GUI::IRC_USER_PREFIX ;
+#ifdef PREFIX_CHAT_NICKS
+  String prefixed = network + "["  + nicks.joinIntoString("] " +
+                    network + "[") +                      "]"  ;
+  nicks           = StringArray::fromTokens(prefixed , false) ;
+#endif // PREFIX_CHAT_NICKS
+
+  Identifier server_id      = CONFIG::FilterId(host , APP::VALID_URI_CHARS) ;
+  ValueTree  server_store   = this->servers.getChildWithName(server_id) ;
+  ValueTree  chatters_store = server_store.getChildWithName(CONFIG::CHATTERS_ID) ;
+
+DEBUG_TRACE_UPDATE_CHAT_NICKS
+
+  // add joining chatters
+  for (String* nick = nicks.begin() ; nick != nicks.end() ; ++nick)
+  {
+    Identifier user_id       = CONFIG::FilterId(*nick , APP::VALID_NICK_CHARS) ;
+    ValueTree  chatter_store = chatters_store.getChildWithName(user_id) ;
+
+DEBUG_TRACE_ADD_CHAT_NICK
+
+    if (!chatter_store.isValid())
+    {
+      chatter_store = ValueTree(user_id) ;
+      chatter_store.setProperty(CONFIG::CHAT_NICK_ID , var(*nick) , nullptr) ;
+      chatters_store.addChild(chatter_store , -1 , nullptr) ;
+    }
+  }
+
+  // remove parting chatters
+  for (int chatter_n = 0 ; chatter_n < chatters_store.getNumChildren() ; ++chatter_n)
+  {
+    ValueTree chatter_store = chatters_store.getChild(chatter_n) ;
+
+DEBUG_TRACE_REMOVE_CHAT_NICK
+
+    if (!nicks.contains(STRING(chatter_store[CONFIG::CHAT_NICK_ID])))
+      chatters_store.removeChild(chatter_store , nullptr) ;
+  }
 }

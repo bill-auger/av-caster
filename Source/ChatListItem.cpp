@@ -59,9 +59,7 @@ ChatListItem::ChatListItem (ValueTree chatter_store)
 
     //[Constructor] You can add your own custom stuff here..
 
-  String nick = STRING(this->chatterStore[CONFIG::CHAT_NICK_ID])
-                .fromFirstOccurrenceOf("[" , false , false)
-                .upToLastOccurrenceOf ("]" , false , false) ;
+  String nick = STRING(this->chatterStore[CONFIG::CHAT_NICK_ID]) ;
 
   nickLabel->setText(nick , juce::dontSendNotification) ;
 

@@ -38,6 +38,7 @@
 // #define SHOW_DISABLED_PREVIEW_TINY
 #define RUN_NETWORK_AS_THREAD
 #define IRCCLIENT_HAS_MULTIPLE_SESSIONS
+// #define PREFIX_CHAT_NICKS
 #define STATIC_PIPELINE
 // #define FAUX_SCREEN                   // replace sceen-real-source with fakesrc
 // #define FAUX_CAMERA                   // replace camera-real-source with fakesrc
@@ -60,14 +61,14 @@
 #else // DEBUG
 #  define DEBUG_DEFINED 0
 #endif // DEBUG
-#define DEBUG_TRACE        DEBUG_DEFINED && 1
-#define DEBUG_TRACE_EVENTS DEBUG_DEFINED && 1
-#define DEBUG_TRACE_GUI    DEBUG_DEFINED && 1
-#define DEBUG_TRACE_MEDIA  DEBUG_DEFINED && 0
-#define DEBUG_TRACE_CONFIG DEBUG_DEFINED && 1
-#define DEBUG_TRACE_CHAT   DEBUG_DEFINED && 1
-#define DEBUG_TRACE_STATE  DEBUG_DEFINED && 1
-#define DEBUG_TRACE_VB     DEBUG_DEFINED && 0
+#define DEBUG_TRACE        (DEBUG_DEFINED && 1)
+#define DEBUG_TRACE_EVENTS (DEBUG_DEFINED && 1)
+#define DEBUG_TRACE_GUI    (DEBUG_DEFINED && 1)
+#define DEBUG_TRACE_MEDIA  (DEBUG_DEFINED && 0)
+#define DEBUG_TRACE_CONFIG (DEBUG_DEFINED && 1)
+#define DEBUG_TRACE_CHAT   (DEBUG_DEFINED && 1)
+#define DEBUG_TRACE_STATE  (DEBUG_DEFINED && 1)
+#define DEBUG_TRACE_VB     (DEBUG_DEFINED && 0)
 
 
 #include "JuceHeader.h"
@@ -87,6 +88,8 @@ namespace APP
   static const String VALID_ID_CHARS   = ALPHANUMERIC + "_- " ;
   static const String VALID_URI_CHARS  = ALPHANUMERIC + "_-.:/?= " ;
   static const String VALID_NICK_CHARS = ALPHANUMERIC + "_-@#&[] " ;
+  static const String FILTER_CHARS     = "_-.:/?=@#&[] " ;
+  static const String REPLACE_CHARS    = String::repeatedString("-" , FILTER_CHARS.length()) ;
 
   // timers
   static const int GUI_TIMER_HI_ID  = 1 ; static const int GUI_UPDATE_HI_IVL  = 125 ;
@@ -154,7 +157,10 @@ namespace GUI
   static const int    SCROLLING_LIST_W = LIST_W - SCROLLBAR_W - PAD ;
   static const String CHAT_GROUP_TITLE = "Chat" ;
   static const String CHAT_PROMPT_TEXT = "<type some chat here - then press ENTER key to send>" ;
+  static const String CLIENT_NICK      = "AvCaster" ;
   static const String SERVER_NICK      = "SERVER" ;
+  static const String IRC_USER_PREFIX  = "IRC" ;
+  static const String LCTV_USER_PREFIX = "LCTV" ;
 
   // Config
   static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
@@ -220,12 +226,16 @@ namespace CONFIG
 {
 /*\ CAVEATS:
 |*|  when defining new nodes or properties be sure to:
-|*|    * if new property        - define *_ID and DEFAULT_* below
-|*|    * if new root property   - verify schema in AvCasterStore::validateConfig()
-|*|                             - sanitize data in AvCasterStore::sanitizeConfig()
-|*|    * if new preset property - verify schema in AvCasterStore::validatePreset()
-|*|                             - add instance var and definition in PresetSeed class
 |*|    * update the SCHEMA below
+|*|    * if new property        -> define *_ID and DEFAULT_* below
+|*|                             -> add default property to DefaultStore
+|*|                             -> sanitize data in AvCasterStore::sanitize*ParentNode*()
+|*|    * if new node            -> add default node to DefaultStore
+|*|                             -> verify schema in new method AvCasterStore::verifyNewNode()
+|*|                             -> sanitize data in AvCasterStore::sanitize*NewNode*()
+|*|    * if new root property   -> verify schema in AvCasterStore::verifyRoot()
+|*|    * if new preset property -> verify schema in AvCasterStore::verifyPreset()
+|*|                             -> add instance var and definition in PresetSeed class
 \*/
 
 /*\ SCHEMA:
@@ -287,10 +297,10 @@ namespace CONFIG
 |*| }
 |*|
 |*| // AvCasterStore->cameras
-|*| CAMERA_DEVICES_ID: [ device_id: a_camera_device_info , ... ] // camera_device_info as below
+|*| CAMERA_DEVICES_ID: [ device_id: a_camera_device_info , ... ] // a_camera_device_info as below
 
-|*| // camera_device_info
-|*| device_id:                          // e.g. "video0"
+|*| // a_camera_device_info
+|*| device-id:                          // e.g. "video0"
 |*| {
 |*|   CAMERA_PATH_ID:        a_string , // e.g. "/dev/video0"
 |*|   CAMERA_NAME_ID:        a_string , // e.g "USB Video Cam"
@@ -301,11 +311,20 @@ namespace CONFIG
 |*| // AvCasterStore->audios
 |*| AUDIO_DEVICES_ID: { nyi }
 |*|
-|*| // AvCasterStore->chatters
-|*| CHATTERS_ID: [ a_chatter , ... ] // chatter as below
+|*| // AvCasterStore->servers
+|*| SERVERS_ID: [ a_server  , ... ] // a_server as below
 |*|
-|*| // chatter
-|*| user_id:                 // e.g. "-fred-stone" via FilterId("@fred stone")
+|*| // a_server
+|*| server-id:
+|*| {
+|*|   HOST_ID:     a_string
+|*|   PORT_ID:     an_int
+|*|   CHANNEL_ID:  a_string
+|*|   CHATTERS_ID: [ a_chatter , ... ] // a_chatter as below
+|*| }
+|*|
+|*| // a_chatter
+|*| user-id:                 // e.g. "-fred-stone" via FilterId("@fred stone")
 |*| {
 |*|   CHAT_NICK_ID: a_string // e.g. "@fred stone"
 |*| }
@@ -314,15 +333,9 @@ namespace CONFIG
 
   static Identifier FilterId(String a_string , String filter_chars)
   {
-    return String("-") + a_string.retainCharacters(filter_chars)
+    return a_string.retainCharacters(filter_chars)
                    .toLowerCase()
-                   .replaceCharacter('_', '-')
-                   .replaceCharacter('@', '-')
-                   .replaceCharacter('#', '-')
-                   .replaceCharacter('&', '-')
-                   .replaceCharacter('[', '-')
-                   .replaceCharacter(']', '-')
-                   .replaceCharacter(' ', '-') ;
+                   .replaceCharacters(APP::FILTER_CHARS , APP::REPLACE_CHARS) ;
   }
 
 
@@ -332,6 +345,10 @@ namespace CONFIG
   static const Identifier VOLATILE_CONFIG_ID    = "volatile-config" ;
   static const Identifier CAMERA_DEVICES_ID     = "camera-devices" ;
   static const Identifier AUDIO_DEVICES_ID      = "audio-devices" ;
+  static const Identifier SERVERS_ID            = "irc-servers" ;
+  static const Identifier HOST_ID               = "irc-host" ;
+  static const Identifier PORT_ID               = "irc-port" ;
+  static const Identifier CHANNEL_ID            = "irc-channel" ;
   static const Identifier CHATTERS_ID           = "active-chatters" ;
   // config root IDs
   static const Identifier CONFIG_VERSION_ID     = "config-version" ;
@@ -354,7 +371,7 @@ namespace CONFIG
   static const Identifier OFFSET_X_ID           = "offset-x" ;
   static const Identifier OFFSET_Y_ID           = "offset-y" ;
   // camera IDs
-  static const Identifier CAMERA_DEV_ID         = "camera-dev-idx" ;
+  static const Identifier CAMERA_DEVICE_ID      = "camera-dev-idx" ;
   static const Identifier CAMERA_RES_ID         = "camera-res-idx" ;
   static const Identifier CAMERA_PATH_ID        = "camera-dev-path" ;
   static const Identifier CAMERA_NAME_ID        = "camera-dev-name" ;
@@ -362,7 +379,7 @@ namespace CONFIG
   static const Identifier CAMERA_RESOLUTIONS_ID = "camera-resolutions" ;
   // audio IDs
   static const Identifier AUDIO_API_ID          = "audio-api-idx" ;
-  static const Identifier AUDIO_DEVICE_ID       = "audio-device-idx" ;
+  static const Identifier AUDIO_DEVICE_ID       = "audio-dev-idx" ;
   static const Identifier AUDIO_CODEC_ID        = "audio-codec-idx" ;
   static const Identifier N_CHANNELS_ID         = "n-channels" ;
   static const Identifier SAMPLERATE_ID         = "samplerate-idx" ;
@@ -422,11 +439,11 @@ namespace CONFIG
   static const int        DEFAULT_OFFSET_X           = 0 ;
   static const int        DEFAULT_OFFSET_Y           = 0 ;
   // camera defaults
-  static const int        DEFAULT_CAMERA_DEV_IDX     = 0 ;
-  static const int        DEFAULT_CAMERA_RES_IDX     = 0 ;
+  static const int        DEFAULT_CAMERA_DEVICE_IDX  = -1 ;
+  static const int        DEFAULT_CAMERA_RES_IDX     = -1 ;
   // audio defaults
   static const int        DEFAULT_AUDIO_API_IDX      = 0 ;
-  static const int        DEFAULT_AUDIO_DEVICE_IDX   = 0 ;
+  static const int        DEFAULT_AUDIO_DEVICE_IDX   = -1 ;
   static const int        DEFAULT_AUDIO_CODEC_IDX    = 0 ;
   static const int        DEFAULT_N_CHANNELS         = 2 ;
   static const int        DEFAULT_SAMPLERATE_IDX     = 0 ;
@@ -491,6 +508,7 @@ namespace CONFIG
     default_store.setProperty(IS_PENDING_ID     , DEFAULT_IS_PENDING , nullptr) ;
     default_store.setProperty(PRESET_ID         , DEFAULT_PRESET_IDX , nullptr) ;
     default_store.addChild   (ValueTree(PRESETS_ID) , -1 , nullptr) ;
+    default_store.addChild   (ValueTree(SERVERS_ID) , -1 , nullptr) ;
 
     return default_store ;
   }
@@ -539,10 +557,8 @@ namespace IRC
 
   // IDs
   static const char*  ROOT_CHANNEL = "&bitlbee" ;
+  static const String ROOT_USER    = "root!root@" ;
   static const String IDENTIFY_CMD = "identify " ;
-  static const char*  ROOT_NICK    = "@root" ;
-  static const String ROOT_USER    = "root!root@localhost" ;
-  static const char*  MY_CHANNEL   = "#mychat" ;
 
   // incoming server messages
   static const char*  CONNECTED_MSG       = "Logging in: Logged in" ;

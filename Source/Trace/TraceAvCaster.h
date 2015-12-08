@@ -83,16 +83,6 @@
                          "' to '"            + STRING(a_value    ) + "'" ;    \
   Trace::TraceGui("gui " + change_msg) ;
 
-#  define DEBUG_TRACE_ADD_CHAT_NICK                                                \
-  if (!Store->chatters.getChildWithName(user_id).isValid())                        \
-    Trace::TraceConfig("adding chatter '" + String(user_id) + "' (" + *nick + ")") ;
-
-#  define DEBUG_TRACE_REMOVE_CHAT_NICK                                     \
-  String userid = String(chatter_store.getType()) ;                        \
-  String nick   = STRING(chatter_store[CONFIG::CHAT_NICK_ID]) ;            \
-  if (!nicks.contains(nick))                                               \
-    Trace::TraceConfig("removing chatter '" + userid + "' (" + nick + ")") ;
-
 
 /* helpers */
 
@@ -117,8 +107,6 @@
 #  define DEBUG_TRACE_SHUTDOWN_PHASE_2            ;
 #  define DEBUG_TRACE_SHUTDOWN_PHASE_3            ;
 #  define DEBUG_TRACE_SET_CONFIG                  ;
-#  define DEBUG_TRACE_ADD_CHAT_NICK               ;
-#  define DEBUG_TRACE_REMOVE_CHAT_NICK            ;
 #  define DEBUG_TRACE_DISPLAY_ALERT               ;
 
 #endif // DEBUG

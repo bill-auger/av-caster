@@ -170,7 +170,15 @@ void Chat::resized()
 
 void Chat::updateVisiblilty()
 {
-  bool   is_visible  = this->chattersStore.getNumChildren() > 0 ;
+  int n_chatters = 0 ; int n_servers = this->serversStore.getNumChildren() ;
+  for (int server_n = 0 ; server_n < n_servers ; ++server_n)
+  {
+    ValueTree  server   = this->serversStore.getChild(server_n) ;
+    ValueTree  chatters = server.getChildWithName(CONFIG::CHATTERS_ID) ;
+    n_chatters         += chatters.getNumChildren() ;
+  }
+
+  bool   is_visible  = n_chatters > 0 ;
   String group_title = (is_visible) ? GUI::CHAT_GROUP_TITLE : AvCaster::GetVersionString() ;
 
 DEBUG_TRACE_CHAT_VISIBILITY
@@ -185,7 +193,7 @@ DEBUG_TRACE_CHAT_VISIBILITY
 
 void Chat::addChatLine(String nick , String message_text)
 {
-  String message_header = (nick == GUI::SERVER_NICK) ? "" : nick + ": " ;
+  String message_header = (nick == GUI::CLIENT_NICK) ? "" : nick + ": " ;
 
   const MessageManagerLock mmLock ;
   this->chatHistoryText->moveCaretToEnd() ;
@@ -195,9 +203,9 @@ void Chat::addChatLine(String nick , String message_text)
 
 /* Chat private instance methods */
 
-void Chat::initialize(ValueTree chatters_store)
+void Chat::initialize(ValueTree servers_store)
 {
-  this->chatList->chattersStore = this->chattersStore = chatters_store ;
+  this->chatList->serversStore = this->serversStore = servers_store ;
 }
 
 void Chat::textEditorReturnKeyPressed(TextEditor& a_text_editor)

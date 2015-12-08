@@ -41,7 +41,7 @@ ChatList::ChatList ()
 
     //[Constructor] You can add your own custom stuff here..
 
-  this->chattersStore.addListener(this) ;
+  this->serversStore.addListener(this) ;
 
   refresh() ;
 
@@ -87,7 +87,11 @@ void ChatList::resized()
 
 void ChatList::reloadNicks()
 {
-  this->nicks = AvCaster::GetChatNicks() ; this->nicks.sort(true) ;
+  for (int server_n = 0 ; server_n < this->serversStore.getNumChildren() ; ++server_n)
+  {
+    Identifier server_id  = this->serversStore.getChild(server_n).getType() ;
+    this->nicks[server_n] = AvCaster::GetChatNicks(server_id) ;
+  }
 }
 
 void ChatList::refresh()
@@ -114,12 +118,18 @@ void ChatList::refresh()
   }
 }
 
-int ChatList::sortedChildIdx(ValueTree& a_node)
+int ChatList::sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node)
 {
-  String nick      = STRING(a_node[CONFIG::CHAT_NICK_ID]) ;
-  int    child_idx = this->nicks.indexOf(nick) ;
+/*
+  String     nick         = STRING(a_node[CONFIG::CHAT_NICK_ID]) ;
+  Identifier server_id    = a_parent_node.getParent().getType() ;
+  ValueTree  server_store = this->serversStore.getChildWithName(server_id) ;
+  int        server_idx   = this->serversStore.indexOf(server_store) ;
+  int        child_idx    = this->nicks[server_idx].indexOf(nick) ;
 
   return child_idx ;
+*/
+  return 0 ;
 }
 
 void ChatList::valueTreeChildAdded(ValueTree& a_parent_node , ValueTree& a_node)
@@ -129,7 +139,7 @@ DEBUG_TRACE_ADD_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
   reloadNicks() ;
 
   ChatListItem* a_list_item = new ChatListItem(a_node) ;
-  int           child_idx   = sortedChildIdx(a_node) ;
+  int           child_idx   = sortedChildIdx(a_parent_node , a_node) ;
 
   const MessageManagerLock mmLock ; addAndMakeVisible(a_list_item , child_idx) ;
   refresh() ;
@@ -139,10 +149,11 @@ void ChatList::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_nod
 {
 DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
 
-  int        child_idx   = sortedChildIdx(a_node) ;
+  int        child_idx   = sortedChildIdx(a_parent_node , a_node) ;
   Component* a_list_item = getChildComponent(child_idx) ;
 
-  delete a_list_item ; refresh() ; reloadNicks() ;
+  const MessageManagerLock mmLock ; delete a_list_item ;
+  refresh() ; reloadNicks() ;
 }
 
 //[/MiscUserCode]

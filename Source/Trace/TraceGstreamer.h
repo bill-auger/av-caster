@@ -123,12 +123,13 @@ String GstPadId(GstPad* a_pad)
                     String(samplerate)      + "hz x "                            + \
                     String(n_channels)      + " channels" + " using " + plugin_id) ;
 
-#  define DEBUG_TRACE_CONFIGURE_MUXER_BIN                                               \
-  Trace::TraceState(String("configuring MuxerBin - ")                                 + \
-      "h264 video -> "     + String(output_w)      + "x"      + String(output_h)      + \
-                 " @ "     + String(video_bitrate) + "kbps - "                        + \
-      "mp3 audio 16bit @ " + String(samplerate)    + "hz -> " + String(audio_bitrate) + \
-                 "kbps x " + String(n_channels)    + " channels"                      ) ;
+#  define DEBUG_TRACE_CONFIGURE_MUXER_BIN                                                 \
+  Trace::TraceState(String("configuring MuxerBin video - ")                           +   \
+      "h264 video -> "     + String(output_w)      + "x"      + String(output_h)      +   \
+                 " @ "     + String(video_bitrate) + "kbps - "                        ) ; \
+  Trace::TraceState(String("configuring MuxerBin audio - ")                           +   \
+      "mp3 audio 16bit @ " + String(samplerate)    + "hz -> " + String(audio_bitrate) +   \
+                 "kbps x " + String(n_channels)    + " channels"                      )   ;
 
 #  define DEBUG_TRACE_CONFIGURE_OUTPUT_BIN                                    \
   String server = String((is_lctv) ? "LCTV " : "") ;                          \

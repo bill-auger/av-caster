@@ -119,6 +119,8 @@ Install the corresponding libraries as above for your system.
 
 #### Developers and Designers
 You will find in the Builds/Scripts directory some helper scripts to aid in building and debugging this application. Note that we are currently locked at JUCE v3.1.1 until [an issue affecting scaled monitor resolutions](http://www.juce.com/forum/topic/juce-v320-and-v401-apps-window-not-visible-scaled-monitor-resolutions) is resolved. This is not relevant to most development tasks, but if you must use the Introjucer GUI builder for design or project maintenance, please compile it from [this branch](https://github.com/bill-auger/JUCE/tree/v3-1-1).
+
+Note that branches other than 'master' tend to be rebased often so you may need to force pull those.
 ```
 ### Build the Introjucer GUI builder and project manager ###
 $ git clone --depth 1 https://github.com/bill-auger/JUCE.git

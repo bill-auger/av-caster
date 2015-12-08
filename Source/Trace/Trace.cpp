@@ -50,37 +50,47 @@ void Trace::TraceMissingProperty(ValueTree config_store    , Identifier a_proper
                                  var       a_default_value                            )
 {
   // supress transient nodes
-  if (a_property_id == CONFIG::IS_PENDING_ID) return ;
+  if (a_property_id == CONFIG::IS_PENDING_ID  ||
+      a_property_id == CONFIG::IS_OUTPUT_ON_ID ) return ;
 
   if (!config_store.hasProperty(a_property_id))
+  {
     Trace::TraceConfig("missing property of '"       + String(config_store.getType())     +
                        "' - restoring default for '" + String(a_property_id)   + "' => '" +
                                                        STRING(a_default_value) + "'"      ) ;
+    DumpConfig(config_store , "missing property ") ;
+  }
 }
 
 void Trace::DumpConfig(ValueTree config_store , String node_desc)
 {
-  if (config_store.isValid())
+  if (!DEBUG_TRACE_VB) return ;
+
+  if (!config_store.isValid())
+  { Trace::TraceError("Trace::DumpConfig() - invalid node") ; return ; }
+
+  String node_name    = String(config_store.getType()) ;
+  int    n_properties =        config_store.getNumProperties() ;
+  int    n_children   =        config_store.getNumChildren() ;
+
+  String pad = "  " ;
+  String dbg = String("dump node '" + node_desc            + "' =>\n") + pad +
+                "node => "           + node_name                              +
+                " (properties: "     + String(n_properties) + ")"             +
+                " (children: "       + String(n_children)   + ")"             ;
+
+  for (int property_n = 0 ; property_n < n_properties ; ++property_n)
   {
-    Identifier node_name    = config_store.getType() ;
-    int        n_properties = config_store.getNumProperties() ;
-
-    String pad = "  " ;
-    String dbg = String("config dump " + node_desc + " =>\n") + pad  +
-                 "node => "            + String(node_name)           +
-                 " (properties: "      + String(n_properties) + ")"  ;
-
-    for (int property_n = 0 ; property_n < n_properties ; ++property_n)
-    {
-      Identifier key          = config_store.getPropertyName(property_n) ;
-      var        stored_value = config_store.getProperty(key , "n/a") ;
-      dbg += "\n" + pad + "  key => "             + String(key)             +
-             "\n" + pad + "    stored_value  => " + stored_value.toString() ;
-    }
-
-    Trace::TraceConfig(dbg) ;
+    Identifier key          = config_store.getPropertyName(property_n) ;
+    var        stored_value = config_store.getProperty(key , "n/a") ;
+    dbg += "\n" + pad + "  key => "             + String(key)             +
+            "\n" + pad + "    stored_value  => " + stored_value.toString() ;
   }
-  else Trace::TraceError("stored config invalid - will not store") ;
+
+  Trace::TraceConfig(dbg) ;
+
+  for (int child_n = 0 ; child_n < n_children ; ++child_n)
+    DumpConfig(config_store.getChild(child_n) , node_name + "[" + String(child_n) +"]") ;
 }
 
 #endif // DEBUG

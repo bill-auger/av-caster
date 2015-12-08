@@ -52,18 +52,22 @@ private:
 
 
   // persistence
-  ValueTree verifyConfig  (ValueTree config_store , Identifier root_node_id) ;
-  ValueTree verifyPresets () ;
-  void      validateConfig() ;
-  void      validatePreset() ;
-  void      sanitizeConfig() ;
-  void      storeConfig   () ;
+  ValueTree verifyConfig      (ValueTree config_store , Identifier root_node_id) ;
+  ValueTree getOrCreatePresets() ;
+  ValueTree getOrCreateServers() ;
+  void      verifyRoot        () ;
+  void      verifyPresets     () ;
+  void      verifyPreset      () ;
+  void      sanitizeRoot      () ;
+  void      sanitizePresets   () ;
+  void      sanitizePreset    () ;
+  void      storeConfig       () ;
 
   // runtime params
-  void validateProperty           (ValueTree config_store    , Identifier a_key ,
+  void verifyProperty              (ValueTree config_store    , Identifier a_key ,
                                    var       a_default_value                    ) ;
-  void validateRootProperty       (Identifier a_key , var a_default_value) ;
-  void validatePresetProperty     (Identifier a_key , var a_default_value) ;
+  void verifyRootProperty          (Identifier a_key , var a_default_value) ;
+  void verifyPresetProperty        (Identifier a_key , var a_default_value) ;
   void sanitizeIntProperty        (ValueTree config_store , Identifier a_key ,
                                    int       min_value    , int max_value    ) ;
   void sanitizeRootComboProperty  (Identifier a_key , StringArray options) ;
@@ -75,6 +79,7 @@ private:
   void renamePreset               (String preset_name) ;
   void deletePreset               () ;
   void resetPreset                () ;
+  void storeServer                (String host , String port) ;
 
   // event handlers
   void listen                  (bool should_listen) ;
@@ -103,14 +108,15 @@ private:
   StringArray getCameraResolutions() ;
   void        toogleControl       (const Identifier& a_key) ;
   void        setConfig           (const Identifier& a_key , var a_value) ;
+  void        updateChatNicks     (String host , String channel , StringArray nicks) ;
 
   // configuration/persistence
-  ValueTree root ;      // config root           (STORAGE_ID node)
-  ValueTree presets ;   // persistent GUI config (PRESETS_ID node)
-  ValueTree config ;    // volatile GUI config   (VOLATILE_CONFIG_ID node)
-  ValueTree cameras ;   // video devices info    (CAMERA_DEVICES_ID node)
-  ValueTree audios ;    // audio devices info    (AUDIO_DEVICES_ID node)
-  ValueTree chatters ;  // audio devices info    (CHATTERS_ID node)
+  ValueTree root ;      // config root            (STORAGE_ID node)
+  ValueTree presets ;   // persistent GUI config  (PRESETS_ID node)
+  ValueTree config ;    // volatile GUI config    (VOLATILE_CONFIG_ID node)
+  ValueTree cameras ;   // video devices info     (CAMERA_DEVICES_ID node)
+  ValueTree audios ;    // audio devices info     (AUDIO_DEVICES_ID node)
+  ValueTree servers ;   // chat servers and nicks (SERVERS_ID node)
   File      configDir ;
   File      configFile ;
 } ;

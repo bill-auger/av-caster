@@ -21,4 +21,8 @@ cppcheck --enable=all --template=gcc --quiet Source/ 2>                         
   grep -v "The function 'comboBoxChanged' is never used."                               |
   grep -v "The function 'sliderValueChanged' is never used."                            |
   grep -v "The function 'textEditorFocusLost' is never used."                           |
-  grep -v "The function 'valueTreePropertyChanged' is never used."                      )
+  grep -v "The function 'valueTreePropertyChanged' is never used."                      |
+  grep -v "The function 'run' is never used."                                           |
+  grep -v "The function 'textEditorReturnKeyPressed' is never used."                    |
+  grep -v "The function 'valueTreeChildAdded' is never used."                           |
+  grep -v "The function 'valueTreeChildRemoved' is never used."                         )

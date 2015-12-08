@@ -26,6 +26,18 @@
 #include "Constants.h"
 
 
+typedef struct IrcServerInfo
+{
+  irc_session_t* session  ;
+  String         host     ;
+  unsigned short port     ;
+  String         pass     ;
+  String         nick     ;
+  String         username ;
+  String         realname ;
+} IrcServerInfo ;
+
+
 /**
   IrcClient is the IRC network communications class for the AvCaster application.
   It encapsulates interactions with the libircclient C library
@@ -40,29 +52,16 @@ class IrcClient
   friend class AvCaster ;
 
 
-  typedef struct IrcServerInfo
-  {
-    irc_session_t* session  ;
-    const char*    host     ;
-    unsigned short port     ;
-    const char*    password ;
-    const char*    nick     ;
-    const char*    username ;
-    const char*    realname ;
-  } IrcServerInfo ;
-
-
 public:
 
   ~IrcClient() ;
 
 
 private:
-#ifdef RUN_NETWORK_AS_THREAD
-  IrcClient(const String& thread_name) ;
-#else // RUN_NETWORK_AS_THREAD
-  IrcClient() ;
-#endif // RUN_NETWORK_AS_THREAD
+
+  IrcClient(ValueTree servers_store) ;
+
+  static bool IsValidServerInfo  (IrcServerInfo a_server_info) ;
   static bool IsSufficientVersion() ;
 
   // libircclient callbacks
@@ -76,15 +75,15 @@ private:
                            const char**   params  , unsigned int count                      ) ;
   static void OnNumeric   (irc_session_t* session , unsigned int event , const char* origin ,
                            const char**   params  , unsigned int count                      ) ;
-  static void HandleNicks (const char** params) ;
+  static void HandleNicks (String host , String channel , StringArray nicks) ;
 
   // session management
-  void createSession(IrcServerInfo a_server) ;
-  bool login        (IrcServerInfo a_server) ;
+  IrcServerInfo createSession(ValueTree server_store) ;
+  bool                     login        (IrcServerInfo a_server_info) ;
 #ifdef RUN_NETWORK_AS_THREAD
-  void run          () override ;
+  void                     run          () override ;
 #else // RUN_NETWORK_AS_THREAD
-  void run          () ;
+  void                     run          () ;
 #endif // RUN_NETWORK_AS_THREAD
 
   void sendChat(String chat_msg) ;
@@ -92,6 +91,7 @@ private:
 
   irc_callbacks_t      callbacks ;
   Array<IrcServerInfo> servers ;
+  ValueTree            serversStore ; // TODO: replace servers?? replace IrcServerInfo
 } ;
 
 #endif // IRC_H_INCLUDED

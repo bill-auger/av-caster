@@ -23,7 +23,7 @@ cd Builds/Makefile && make && $BINARY $*
 # convert dot graphs to images
 cd $DOT_DIR
 rm $DOT_DIR/*.png 2> /dev/null
-for graph_dot_file in `ls *.dot`
+for graph_dot_file in `ls *.dot 2> /dev/null`
 do echo "found dot graph $graph_dot_file"
   graph_png_file=${graph_dot_file%%.dot}.png
   dot -Tpng $graph_dot_file > $graph_png_file && rm $DOT_DIR/$graph_dot_file

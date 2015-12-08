@@ -35,7 +35,7 @@ PresetSeed::PresetSeed()
   screencapH          = CONFIG::DEFAULT_SCREENCAP_H ;
   offsetX             = CONFIG::DEFAULT_OFFSET_X ;
   offsetY             = CONFIG::DEFAULT_OFFSET_Y ;
-  cameraDeviceIdx     = CONFIG::DEFAULT_CAMERA_DEV_IDX ;
+  cameraDeviceIdx     = CONFIG::DEFAULT_CAMERA_DEVICE_IDX ;
   cameraResolutionIdx = CONFIG::DEFAULT_CAMERA_RES_IDX ;
   audioApiIdx         = CONFIG::DEFAULT_AUDIO_API_IDX ;
   audioDeviceIdx      = CONFIG::DEFAULT_AUDIO_DEVICE_IDX ;
@@ -78,7 +78,7 @@ void PresetSeed::createPreset()
   preset.setProperty(CONFIG::SCREENCAP_H_ID        , var(screencapH         ) , nullptr) ;
   preset.setProperty(CONFIG::OFFSET_X_ID           , var(offsetX            ) , nullptr) ;
   preset.setProperty(CONFIG::OFFSET_Y_ID           , var(offsetY            ) , nullptr) ;
-  preset.setProperty(CONFIG::CAMERA_DEV_ID         , var(cameraDeviceIdx    ) , nullptr) ;
+  preset.setProperty(CONFIG::CAMERA_DEVICE_ID      , var(cameraDeviceIdx    ) , nullptr) ;
   preset.setProperty(CONFIG::CAMERA_RES_ID         , var(cameraResolutionIdx) , nullptr) ;
   preset.setProperty(CONFIG::AUDIO_API_ID          , var(audioApiIdx        ) , nullptr) ;
   preset.setProperty(CONFIG::AUDIO_DEVICE_ID       , var(audioDeviceIdx     ) , nullptr) ;

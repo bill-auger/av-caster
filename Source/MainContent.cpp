@@ -113,9 +113,9 @@ void MainContent::resized()
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void MainContent::initialize(ValueTree chatters_store)
+void MainContent::initialize(ValueTree servers_store)
 {
-  this->chat->initialize(chatters_store) ;
+  this->chat->initialize(servers_store) ;
 }
 
 void MainContent::warning(String message_text)

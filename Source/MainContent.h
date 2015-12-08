@@ -61,7 +61,7 @@ private:
   friend class AvCaster ;
 
 
-  void           initialize      (ValueTree chatters_store) ;
+  void           initialize      (ValueTree servers_store) ;
   void           warning         (String message_text) ;
   void           error           (String message_text) ;
   Rectangle<int> getPreviewBounds() ;

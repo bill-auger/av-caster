@@ -733,8 +733,8 @@ void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_cameraDevCombo] -- add your combo box handling code here..
 
-      key         = CONFIG::CAMERA_DEV_ID ;
-      default_idx = CONFIG::DEFAULT_CAMERA_DEV_IDX ;
+      key         = CONFIG::CAMERA_DEVICE_ID ;
+      default_idx = CONFIG::DEFAULT_CAMERA_DEVICE_IDX ;
 
         //[/UserComboBoxCode_cameraDevCombo]
     }
@@ -950,7 +950,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   String screencap_h       = STRING(config_store[CONFIG::SCREENCAP_H_ID  ]) ;
   String offset_x          = STRING(config_store[CONFIG::OFFSET_X_ID     ]) ;
   String offset_y          = STRING(config_store[CONFIG::OFFSET_Y_ID     ]) ;
-  int    camera_dev_idx    = int   (config_store[CONFIG::CAMERA_DEV_ID   ]) ;
+  int    camera_dev_idx    = int   (config_store[CONFIG::CAMERA_DEVICE_ID]) ;
   int    camera_res_idx    = int   (config_store[CONFIG::CAMERA_RES_ID   ]) ;
   int    audio_api_idx     = int   (config_store[CONFIG::AUDIO_API_ID    ]) ;
   int    audio_dev_idx     = int   (config_store[CONFIG::AUDIO_DEVICE_ID ]) ;

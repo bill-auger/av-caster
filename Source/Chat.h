@@ -60,11 +60,11 @@ private:
 
   friend class MainContent ;
 
-  void initialize                (ValueTree chatters_store) ;
+  void initialize                (ValueTree servers_store) ;
   void textEditorReturnKeyPressed(TextEditor& a_text_editor) ;
 
 
-  ValueTree chattersStore ;
+  ValueTree serversStore ;
 
     //[/UserVariables]
 

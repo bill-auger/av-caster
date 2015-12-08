@@ -895,7 +895,8 @@ DBG("detachingOutputBin") ;
 }
 
 void Gstreamer::DestroyBin(GstElement* a_bin) { RemoveBin(a_bin) ; DeleteElement(a_bin) ; }
-/* TODO: refactor with fn_pointer ?
+/* recreate then reconfigure bin
+ * TODO: refactor with fn_pointer ?
   if      (config_key == CONFIG::IS_SCREENCAP_ON_ID   )
     return ReconfigureBin(GST::SCREENCAP_BIN_ID    , ScreencapBin   , fn_pointer) ;
   else if (config_key == CONFIG::IS_CAMERA_ON_ID      )
@@ -1206,10 +1207,10 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK
 bool Gstreamer::ConfigurePreview()
 {
 DEBUG_TRACE_CONFIGURE_PREVIEW
-#ifdef DEBUG
+#if FAUX_PREVIEW
 // TODO: ensure this is never called with PreviewSink as FAUX_SINK_PLUGIN_ID
-if (GstElementId(PreviewSink) == GST::FAUX_SINK_PLUGIN_ID) return false ;
-#endif // DEBUG
+  return true ;
+#endif // FAUX_PREVIEW
 
   bool           is_enabled     = AvCaster::GetIsPreviewOn() ;
   Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
