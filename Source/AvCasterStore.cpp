@@ -23,9 +23,9 @@
 #include "Trace/TraceAvCasterStore.h"
 
 
-String bitlbee_host = "localhost" ;      String bitlbee_port = "6667" ;// TODO: GUI support
-String debian_host  = "irc.debian.org" ; String debian_port = "6667" ; // TODO: GUI support
-String xmpp_chat    = "#mychat" ;                                      // TODO: GUI support
+String bitlbee_host = "localhost" ;      String bitlbee_port = "6667" ; // TODO: GUI support
+String debian_host  = "irc.debian.org" ; String debian_port  = "6667" ; // TODO: GUI support
+String xmpp_chat    = "#mychat" ;                                       // TODO: GUI support
 
 
 /* AvCasterStore private class methods */
@@ -81,8 +81,8 @@ DEBUG_TRACE_DUMP_CONFIG("AvCasterStore::AvCasterStore()")
   verifyPresets() ; sanitizePresets() ; verifyPresets() ; loadPreset() ;
   storeConfig() ;
 
-storeServer(bitlbee_host , bitlbee_port) ;
-// storeServer(debian_host  , debian_port) ; // TODO: GUI support
+storeServer(bitlbee_host , bitlbee_port) ; // TODO: GUI support
+storeServer(debian_host  , debian_port) ;  // TODO: GUI support
 }
 
 ValueTree AvCasterStore::verifyConfig(ValueTree stored_config , Identifier root_node_id)
@@ -503,7 +503,8 @@ void AvCasterStore::resetPreset()
 
 void AvCasterStore::storeServer(String host , String port)
 {
-String channel = xmpp_chat ;
+String channel = xmpp_chat ; // TODOI: GUI support for host , port , channel
+DEBUG_TRACE_STORE_SERVER
 
   Identifier server_id    = CONFIG::FilterId(host , APP::VALID_URI_CHARS) ;
   ValueTree  server_store = this->servers.getOrCreateChildWithName(server_id , nullptr) ;
@@ -604,18 +605,36 @@ DEBUG_TRACE_SET_CONFIG
   if (a_key.isValid()) storage_node.setProperty(a_key , a_value , nullptr) ;
 }
 
+void AvCasterStore::updateIrcHost(StringArray alias_uris , String actual_host)
+{
+  // update current host for IRC network e.g. irc.debian.org => charm.oftc.org
+  for (int alias_n = 0 ; alias_n < alias_uris.size() ; ++alias_n)
+  {
+    Identifier server_id    = CONFIG::FilterId(alias_uris[alias_n] , APP::VALID_URI_CHARS) ;
+    ValueTree  server_store = this->servers.getChildWithName(server_id) ;
+
+DEBUG_TRACE_UPDATE_IRC_HOST
+
+    if (server_store.isValid())
+      server_store.setProperty(CONFIG::HOST_ID , actual_host , nullptr) ;
+  }
+}
+
+#ifdef PREFIX_CHAT_NICKS
 void AvCasterStore::updateChatNicks(String host , String channel , StringArray nicks)
 {
+// TODO: GUI support for bitlbee_host , xmpp_chat
   bool   is_lctv  = host == bitlbee_host && channel == xmpp_chat ;
   String network  = (is_lctv) ? GUI::LCTV_USER_PREFIX : GUI::IRC_USER_PREFIX ;
-#ifdef PREFIX_CHAT_NICKS
   String prefixed = network + "["  + nicks.joinIntoString("] " +
                     network + "[") +                      "]"  ;
   nicks           = StringArray::fromTokens(prefixed , false) ;
-#endif // PREFIX_CHAT_NICKS
 
-  Identifier server_id      = CONFIG::FilterId(host , APP::VALID_URI_CHARS) ;
-  ValueTree  server_store   = this->servers.getChildWithName(server_id) ;
+#else // PREFIX_CHAT_NICKS
+void AvCasterStore::updateChatNicks(String host , StringArray nicks)
+{
+#endif // PREFIX_CHAT_NICKS
+  ValueTree  server_store   = this->servers.getChildWithProperty(CONFIG::HOST_ID , host) ;
   ValueTree  chatters_store = server_store.getChildWithName(CONFIG::CHATTERS_ID) ;
 
 DEBUG_TRACE_UPDATE_CHAT_NICKS
@@ -640,10 +659,10 @@ DEBUG_TRACE_ADD_CHAT_NICK
   for (int chatter_n = 0 ; chatter_n < chatters_store.getNumChildren() ; ++chatter_n)
   {
     ValueTree chatter_store = chatters_store.getChild(chatter_n) ;
+    String    nick          = STRING(chatter_store[CONFIG::CHAT_NICK_ID]) ;
 
 DEBUG_TRACE_REMOVE_CHAT_NICK
 
-    if (!nicks.contains(STRING(chatter_store[CONFIG::CHAT_NICK_ID])))
-      chatters_store.removeChild(chatter_store , nullptr) ;
+    if (!nicks.contains(nick)) chatters_store.removeChild(chatter_store , nullptr) ;
   }
 }

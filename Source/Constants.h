@@ -94,7 +94,7 @@ namespace APP
   // timers
   static const int GUI_TIMER_HI_ID  = 1 ; static const int GUI_UPDATE_HI_IVL  = 125 ;
   static const int GUI_TIMER_MED_ID = 2 ; static const int GUI_UPDATE_MED_IVL = 500 ;
-  static const int GUI_TIMER_LO_ID  = 3 ; static const int GUI_UPDATE_LO_IVL  = 5000 ;
+  static const int GUI_TIMER_LO_ID  = 3 ; static const int GUI_UPDATE_LO_IVL  = 1000 ;
 
   // cli args
   static const String CLI_HELP_TOKEN    = "--help" ;
@@ -148,12 +148,12 @@ namespace GUI
   static const String PRESETS_TEXT  = "Presets" ;
 
   // Chat
+  static const int    SCROLLBAR_W      = 12 ;
+  static const int    LIST_ITEM_H      = 24 ;
   static const int    LIST_W           = 160 ;
   static const int    LIST_H           = 256 ;
-  static const int    LIST_X           = LIST_W + PAD8 + PAD ;
+  static const int    LIST_X           = LIST_W + SCROLLBAR_W + PAD8 + PAD ;
   static const int    LIST_Y           = PAD8 + PAD ;
-  static const int    LIST_ITEM_H      = 24 ;
-  static const int    SCROLLBAR_W      = 12 ;
   static const int    SCROLLING_LIST_W = LIST_W - SCROLLBAR_W - PAD ;
   static const String CHAT_GROUP_TITLE = "Chat" ;
   static const String CHAT_PROMPT_TEXT = "<type some chat here - then press ENTER key to send>" ;
@@ -558,6 +558,7 @@ namespace IRC
   // IDs
   static const char*  ROOT_CHANNEL = "&bitlbee" ;
   static const String ROOT_USER    = "root!root@" ;
+  static const char*  ROOT_NICK    = "@root" ;
   static const String IDENTIFY_CMD = "identify " ;
 
   // incoming server messages
@@ -573,7 +574,13 @@ namespace IRC
   static const char*  LOGIN_MSG           = CHARSTAR(String(APP::APP_NAME + " starting up")) ;
   static const char*  LOGOOUT_MSG         = CHARSTAR(String(APP::APP_NAME + " shutting down")) ;
 
-  static const String LCTV_URL = "https://www.livecoding.tv/" ;
+  // URIS
+  static const String      LCTV_URL        = "https://www.livecoding.tv/" ;
+  static const String      OFTC_TLD        = "oftc.net" ;
+  static const String      OFTC_URI        = "irc.oftc.net" ;
+  static const String      DEBIAN_URI      = "irc.debian.org" ;
+  static const StringArray OFTC_ALIAS_URIS = StringArray::fromLines(OFTC_URI   + newLine +
+                                                                    DEBIAN_URI           ) ;
 }
 
 #endif // CONSTANTS_H_INCLUDED

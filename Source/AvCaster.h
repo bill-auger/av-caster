@@ -91,8 +91,12 @@ public:
   static String         GetCameraPath       () ;
   static int            GetCameraRate       () ;
   static String         GetVersionString    () ;
-  static void           RenameServer        (String requested_host , String actual_host) ;
+  static void           UpdateIrcHost       (StringArray alias_uris , String actual_host) ;
+#ifdef PREFIX_CHAT_NICKS
   static void           UpdateChatNicks     (String host , String channel , StringArray nicks) ;
+#else // PREFIX_CHAT_NICKS
+  static void           UpdateChatNicks     (String host , StringArray nicks) ;
+#endif // PREFIX_CHAT_NICKS
   static StringArray    GetChatNicks        (const Identifier& server_id) ;
 
 

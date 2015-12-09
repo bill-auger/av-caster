@@ -140,6 +140,12 @@ String AvCaster::GetVersionString()
   return APP::APP_NAME + " v" + ProjectInfo::versionString ;
 }
 
+void AvCaster::UpdateIrcHost(StringArray alias_uris , String actual_host)
+{
+  Store->updateIrcHost(alias_uris , actual_host) ;
+}
+
+/*
 void AvCaster::RenameServer(String requested_host , String actual_host)
 {
   ValueTree  server_store   = Store->servers.getChildWithProperty(CONFIG::HOST_ID , requested_host) ;
@@ -148,17 +154,23 @@ void AvCaster::RenameServer(String requested_host , String actual_host)
   Identifier server_id      = CONFIG::FilterId(actual_host , APP::VALID_URI_CHARS) ;
   ValueTree  updated_store  = ValueTree(server_id) ;
 
-  Store->servers.removeChild(server_store   ,              nullptr) ;
-  Store->servers.addChild   (updated_store  , server_idx , nullptr) ;
-  server_store.removeChild  (chatters_store ,              nullptr) ;
-  updated_store.addChild    (chatters_store , -1         , nullptr) ;
-  updated_store.copyPropertiesFrom(server_store , nullptr) ;
-  server_store.setProperty(CONFIG::HOST_ID , actual_host , nullptr) ;
+  Store->servers.removeChild       (server_store    ,               nullptr) ;
+  Store->servers.addChild          (updated_store   , server_idx  , nullptr) ;
+  server_store  .removeChild       (chatters_store  ,               nullptr) ;
+  updated_store .addChild          (chatters_store  , -1          , nullptr) ;
+  updated_store .copyPropertiesFrom(server_store    ,               nullptr) ;
+  server_store  .setProperty       (CONFIG::HOST_ID , actual_host , nullptr) ;
 }
-
+*/
+#ifdef PREFIX_CHAT_NICKS
 void AvCaster::UpdateChatNicks(String host , String channel , StringArray nicks)
 {
   Store->updateChatNicks(host , channel , nicks) ;
+#else // PREFIX_CHAT_NICKS
+void AvCaster::UpdateChatNicks(String host , StringArray nicks)
+{
+  Store->updateChatNicks(host , nicks) ;
+#endif // PREFIX_CHAT_NICKS
 
   const MessageManagerLock mmLock ; Gui->chat->updateVisiblilty() ;
 }
@@ -169,6 +181,8 @@ StringArray AvCaster::GetChatNicks(const Identifier& server_id)
   ValueTree chatters = server.getChildWithName(CONFIG::CHATTERS_ID) ;
   StringArray nicks  = AvCasterStore::PropertyValues(chatters , CONFIG::CHAT_NICK_ID) ;
   nicks.sort(true) ;
+
+DEBUG_TRACE_DUMP_CHAT_NICKS
 
   return nicks ;
 }
@@ -231,14 +245,14 @@ void AvCaster::Shutdown()
 
 #ifndef NO_INITIALIZE_NETWORK
 DEBUG_TRACE_SHUTDOWN_PHASE_1
-#ifdef RUN_NETWORK_AS_THREAD
+#  ifdef RUN_NETWORK_AS_THREAD
 
   // shutdown network
   if (Irc != nullptr && Irc->isThreadRunning()) Irc->stopThread(5000) ; Irc = nullptr ;
 
-#else // RUN_NETWORK_AS_THREAD
+#  else // RUN_NETWORK_AS_THREAD
   Irc = nullptr ;
-#endif // RUN_NETWORK_AS_THREAD
+#  endif // RUN_NETWORK_AS_THREAD
 #endif // NO_INITIALIZE_NETWORK
 
 #ifndef NO_INITIALIZE_MEDIA

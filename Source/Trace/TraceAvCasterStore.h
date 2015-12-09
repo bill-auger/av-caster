@@ -90,6 +90,10 @@
                              Trace::TraceVerbose("DEBUG_TRACE_STORE_CONFIG") ;          \
                              DEBUG_TRACE_DUMP_CONFIG("AvCasterStore->StoreConfig()")    }
 
+#  define DEBUG_TRACE_STORE_SERVER                                              \
+  Trace::TraceConfig("creating storage for IRC server '" +                      \
+                     host + ":" + String(port) + "' channel '" + channel + "'") ;
+
 
 /* state */
 
@@ -100,7 +104,7 @@
   String val       = STRING(a_node[a_key]) ;                                             \
   Trace::TraceEvent("value changed for " + node_id + "['" + key + "'] => '" + val + "'") ;
 
-#define DEBUG_TRACE_DETECT_CAPTURE_DEVICES                                                             \
+#  define DEBUG_TRACE_DETECT_CAPTURE_DEVICES                                     \
   bool is_bogus_cam = cameras.getChild(0).getType() == Identifier("bogus-cam") ; \
   String n_devices = String((is_bogus_cam) ? 0                       :           \
                                              cameras.getNumChildren()) ;         \
@@ -130,6 +134,10 @@
                          "' to '"            + STRING(a_value    ) + "'" ;    \
   Trace::TraceVerbose("config " + change_msg) ;
 
+#  define DEBUG_TRACE_UPDATE_IRC_HOST                                                     \
+  if (server_store.isValid())                                                             \
+    Trace::TraceConfig("updating " + alias_uris[alias_n] + " host '" + actual_host + "'") ;
+
 #  define DEBUG_TRACE_UPDATE_CHAT_NICKS                                                        \
   String dbg = " invalid updating chatters" ;                                                  \
   if      (!server_store  .isValid())   Trace::TraceError("server_store " + dbg) ;             \
@@ -137,13 +145,13 @@
                                         Trace::DumpConfig(server_store , "chatters invalid") ; }
 
 #  define DEBUG_TRACE_ADD_CHAT_NICK                                                   \
+  Identifier server_id = server_store.getType() ;                                     \
   if (!chatters_store.getChildWithName(user_id).isValid())                            \
     Trace::TraceConfig("adding chatter '" + String(user_id)   + "' (" + *nick + ")" + \
                        " from '"          + String(server_id) + "' (" + host  + ")" ) ;
 
 #  define DEBUG_TRACE_REMOVE_CHAT_NICK                                     \
   String userid = String(chatter_store.getType()) ;                        \
-  String nick   = STRING(chatter_store[CONFIG::CHAT_NICK_ID]) ;            \
   if (!nicks.contains(nick))                                               \
     Trace::TraceConfig("removing chatter '" + userid + "' (" + nick + ")") ;
 
@@ -166,6 +174,7 @@
 #  define DEBUG_TRACE_DUMP_CONFIG_CAMERAS               ;
 #  define DEBUG_TRACE_DUMP_CONFIG_AUDIOS                ;
 #  define DEBUG_TRACE_STORE_CONFIG                      ;
+#  define DEBUG_TRACE_STORE_SERVER                      ;
 #  define DEBUG_TRACE_CONFIG_TREE_CHANGED               ;
 #  define DEBUG_TRACE_DETECT_CAPTURE_DEVICES            ;
 #  define DEBUG_TRACE_STORE_PRESET                      ;
@@ -173,6 +182,7 @@
 #  define DEBUG_TRACE_DELETE_PRESET                     ;
 #  define DEBUG_TRACE_TOGGLE_CONTROL                    ;
 #  define DEBUG_TRACE_SET_CONFIG                        ;
+#  define DEBUG_TRACE_UPDATE_IRC_HOST                   ;
 #  define DEBUG_TRACE_UPDATE_CHAT_NICKS                 ;
 #  define DEBUG_TRACE_ADD_CHAT_NICK                     ;
 #  define DEBUG_TRACE_REMOVE_CHAT_NICK                  ;

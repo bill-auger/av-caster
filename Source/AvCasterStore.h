@@ -108,7 +108,12 @@ private:
   StringArray getCameraResolutions() ;
   void        toogleControl       (const Identifier& a_key) ;
   void        setConfig           (const Identifier& a_key , var a_value) ;
+  void        updateIrcHost       (StringArray alias_uris , String actual_host) ;
+#ifdef PREFIX_CHAT_NICKS
   void        updateChatNicks     (String host , String channel , StringArray nicks) ;
+#else // PREFIX_CHAT_NICKS
+  void        updateChatNicks     (String host , StringArray nicks) ;
+#endif // PREFIX_CHAT_NICKS
 
   // configuration/persistence
   ValueTree root ;      // config root            (STORAGE_ID node)

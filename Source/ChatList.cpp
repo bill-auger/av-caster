@@ -87,10 +87,14 @@ void ChatList::resized()
 
 void ChatList::reloadNicks()
 {
+  this->nicks.clear() ;
   for (int server_n = 0 ; server_n < this->serversStore.getNumChildren() ; ++server_n)
   {
-    Identifier server_id  = this->serversStore.getChild(server_n).getType() ;
-    this->nicks[server_n] = AvCaster::GetChatNicks(server_id) ;
+    Identifier server_id = this->serversStore.getChild(server_n).getType() ;
+
+    this->nicks.add(AvCaster::GetChatNicks(server_id)) ;
+
+DEBUG_TRACE_RELOAD_NICKS
   }
 }
 
@@ -120,16 +124,15 @@ void ChatList::refresh()
 
 int ChatList::sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node)
 {
-/*
   String     nick         = STRING(a_node[CONFIG::CHAT_NICK_ID]) ;
   Identifier server_id    = a_parent_node.getParent().getType() ;
   ValueTree  server_store = this->serversStore.getChildWithName(server_id) ;
   int        server_idx   = this->serversStore.indexOf(server_store) ;
   int        child_idx    = this->nicks[server_idx].indexOf(nick) ;
 
+DEBUG_TRACE_LOCATE_SORTED_CHILD
+
   return child_idx ;
-*/
-  return 0 ;
 }
 
 void ChatList::valueTreeChildAdded(ValueTree& a_parent_node , ValueTree& a_node)
@@ -147,10 +150,14 @@ DEBUG_TRACE_ADD_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
 
 void ChatList::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)
 {
-DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
-
   int        child_idx   = sortedChildIdx(a_parent_node , a_node) ;
   Component* a_list_item = getChildComponent(child_idx) ;
+
+DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
+DBG("a_parent_node=" + String(a_parent_node.getType()) +
+    " a_node=" + String(a_node.getType()) +
+    " child_idx=" + String(child_idx) +
+    " a_list_item=" + String(!!a_list_item)) ;
 
   const MessageManagerLock mmLock ; delete a_list_item ;
   refresh() ; reloadNicks() ;

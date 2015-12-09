@@ -31,10 +31,7 @@ typedef struct IrcServerInfo
   irc_session_t* session  ;
   String         host     ;
   unsigned short port     ;
-  String         pass     ;
   String         nick     ;
-  String         username ;
-  String         realname ;
 } IrcServerInfo ;
 
 
@@ -61,8 +58,12 @@ private:
 
   IrcClient(ValueTree servers_store) ;
 
-  static bool IsValidServerInfo  (IrcServerInfo a_server_info) ;
+  // helpers
+  static bool IsValidServerInfo  (IrcServerInfo* a_server_info) ;
   static bool IsSufficientVersion() ;
+  static void AddServerChat      (String message) ;
+  static void AddClientChat      (String message) ;
+  static void AddUserChat        (String nick , String message) ;
 
   // libircclient callbacks
   static void OnConnect   (irc_session_t* session , const char*  event , const char* origin ,
@@ -79,11 +80,11 @@ private:
 
   // session management
   IrcServerInfo createSession(ValueTree server_store) ;
-  bool                     login        (IrcServerInfo a_server_info) ;
+  bool          login        (IrcServerInfo* a_server_info) ;
 #ifdef RUN_NETWORK_AS_THREAD
-  void                     run          () override ;
+  void          run          () override ;
 #else // RUN_NETWORK_AS_THREAD
-  void                     run          () ;
+  void          run          () ;
 #endif // RUN_NETWORK_AS_THREAD
 
   void sendChat(String chat_msg) ;

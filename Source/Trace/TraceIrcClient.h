@@ -17,15 +17,17 @@
   if (server_info.session == 0) Trace::TraceError("error creating" + dbg) ; \
   else                          Trace::TraceChat("created" + dbg)           ;
 
-#  define DEBUG_TRACE_IRC_LOGIN_IN                                                           \
-  if (!IsValidServerInfo(a_server_info))                                                     \
-    Trace::TraceError("IrcServerInfo invalid for host '" + String(a_server_info.host) + "'") ;
+#  define DEBUG_TRACE_IRC_LOGIN_IN                                                    \
+  if (!IsValidServerInfo(a_server_info))                                              \
+    Trace::TraceError("IrcServerInfo invalid for host '" + a_server_info->host + "'") ;
 
-#  define DEBUG_TRACE_IRC_LOGIN_OUT                                                     \
-  String dbg = "connecting to " + String(a_server_info.host) ;                          \
-  String err = (is_err) ? String(irc_strerror(irc_errno(a_server_info.session))) : "" ; \
-  if (is_err) Trace::TraceError("error " + dbg + " - " + err) ;                         \
-  else        Trace::TraceChat(dbg)                                                     ;
+#  define DEBUG_TRACE_IRC_LOGIN_OUT                                                      \
+  String dbg = "connecting to " + String(a_server_info->host) +                          \
+               ":"              + String(a_server_info->port) +                          \
+               " as '"          + String(a_server_info->nick) + "'" ;                    \
+  String err = (is_err) ? String(irc_strerror(irc_errno(a_server_info->session))) : "" ; \
+  if (is_err) Trace::TraceError("error " + dbg + " - " + err) ;                          \
+  else        Trace::TraceChat(dbg)                                                      ;
 
 #  define DEBUG_TRACE_IRC_CONNECTED Trace::TraceState("connected to " + host) ;
 
