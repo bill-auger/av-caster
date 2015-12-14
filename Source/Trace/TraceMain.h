@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef TRACEMAIN_H_INCLUDED
-#define TRACEMAIN_H_INCLUDED
+#ifndef _TRACEMAIN_H_
+#define _TRACEMAIN_H_
 
 #ifdef DEBUG
 
@@ -36,4 +36,4 @@
 #  define DEBUG_TRACE_SHUTDOWN_OUT ;
 
 #endif // DEBUG
-#endif  // TRACEMAIN_H_INCLUDED
+#endif // _TRACEMAIN_H_

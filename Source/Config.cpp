@@ -32,9 +32,6 @@
 //==============================================================================
 Config::Config ()
 {
-    //[Constructor_pre] You can add your own custom stuff here..
-    //[/Constructor_pre]
-
     addAndMakeVisible (screenGroup = new GroupComponent ("screenGroup",
                                                          TRANS("Screen")));
     screenGroup->setColour (GroupComponent::outlineColourId, Colours::white);
@@ -607,7 +604,23 @@ void Config::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff101010));
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 18.0f, static_cast<float> (getWidth() - 40), 86.0f, 4.000f);
+
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 126.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
+
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 198.0f, static_cast<float> (getWidth() - 40), 88.0f, 4.000f);
+
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 304.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
+
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 376.0f, static_cast<float> (getWidth() - 40), 54.0f, 4.000f);
+
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 450.0f, static_cast<float> (getWidth() - 40), 86.0f, 4.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -1068,7 +1081,14 @@ BEGIN_JUCER_METADATA
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
                  initialHeight="1">
-  <BACKGROUND backgroundColour="ff101010"/>
+  <BACKGROUND backgroundColour="0">
+    <ROUNDRECT pos="20 18 40M 86" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="20 126 40M 52" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="20 198 40M 88" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="20 304 40M 52" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="20 376 40M 54" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="20 450 40M 86" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+  </BACKGROUND>
   <GROUPCOMPONENT name="screenGroup" id="3d078232c622c691" memberName="screenGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 8 32M 100" outlinecol="ffffffff"
                   textcol="ffffffff" title="Screen"/>

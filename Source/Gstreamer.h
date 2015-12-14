@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef GSTREAMER_H_INCLUDED
-#define GSTREAMER_H_INCLUDED
+#ifndef _GSTREAMER_H_
+#define _GSTREAMER_H_
 
 #include <gst/gst.h>
 
@@ -139,7 +139,7 @@ private:
   static ValueTree ConfigStore ;
 } ;
 
-#endif // GSTREAMER_H_INCLUDED
+#endif // _GSTREAMER_H_
 
 
 /* CompositorBin topology

@@ -138,7 +138,8 @@ void Chat::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff101010));
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 18.0f, static_cast<float> (getWidth() - 40), static_cast<float> (getHeight() - 36), 4.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -232,7 +233,9 @@ BEGIN_JUCER_METADATA
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
                  initialHeight="1">
-  <BACKGROUND backgroundColour="ff101010"/>
+  <BACKGROUND backgroundColour="0">
+    <ROUNDRECT pos="20 18 40M 36M" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+  </BACKGROUND>
   <GROUPCOMPONENT name="chatGroup" id="6607ba656d5c8919" memberName="chatGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 8 32M 24M" outlinecol="ffffffff"
                   textcol="ffffffff" title="Chat"/>

@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef TRACEGSTREAMER_H_INCLUDED
-#define TRACEGSTREAMER_H_INCLUDED
+#ifndef _TRACEGSTREAMER_H_
+#define _TRACEGSTREAMER_H_
 
 #ifdef DEBUG
 
@@ -320,4 +320,4 @@ String GstPadId(GstPad* a_pad)
 #  define DEBUG_MAKE_GRAPHVIZ                    ;
 
 #endif // DEBUG
-#endif // TRACEGSTREAMER_H_INCLUDED
+#endif // _TRACEGSTREAMER_H_

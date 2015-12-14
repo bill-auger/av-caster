@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef IRC_H_INCLUDED
-#define IRC_H_INCLUDED
+#ifndef _IRC_H_
+#define _IRC_H_
 
 
 #include <libircclient.h>
@@ -95,4 +95,4 @@ private:
   ValueTree            serversStore ; // TODO: replace servers?? replace IrcServerInfo
 } ;
 
-#endif // IRC_H_INCLUDED
+#endif // _IRC_H_

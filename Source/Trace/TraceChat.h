@@ -1,6 +1,23 @@
+/*\
+|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|
+|*|  This file is part of the AvCaster program.
+|*|
+|*|  AvCaster is free software: you can redistribute it and/or modify
+|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  as published by the Free Software Foundation.
+|*|
+|*|  AvCaster is distributed in the hope that it will be useful,
+|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
+|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+|*|  GNU Lesser General Public License for more details.
+|*|
+|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
+\*/
 
-#ifndef TRACECHAT_H_INCLUDED
-#define TRACECHAT_H_INCLUDED
+#ifndef _TRACECHAT_H_
+#define _TRACECHAT_H_
 
 #ifdef DEBUG
 
@@ -47,4 +64,4 @@
 #  define DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM ;
 
 #endif // DEBUG
-#endif // TRACECHAT_H_INCLUDED
+#endif // _TRACECHAT_H_

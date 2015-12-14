@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef AVCASTER_H_INCLUDED
-#define AVCASTER_H_INCLUDED
+#ifndef _AVCASTER_H_
+#define _AVCASTER_H_
 
 #include "Constants.h"
 #include "AvCasterStore.h"
@@ -77,7 +77,9 @@ public:
   static void           RenamePreset        (String preset_name) ;
   static void           DeletePreset        () ;
   static void           ResetPreset         () ;
+  static bool           SetPreset           (String preset_name , int option_n) ;
   static ValueTree      GetConfigStore      () ;
+  static bool           RejectPresetChange  () ;
   static bool           IsStaticPreset      () ;
   static int            GetPresetIdx        () ;
   static String         GetPresetName       () ;
@@ -131,4 +133,4 @@ private:
   static bool                     IsAlertModal ;
 } ;
 
-#endif // AVCASTER_H_INCLUDED
+#endif // _AVCASTER_H_

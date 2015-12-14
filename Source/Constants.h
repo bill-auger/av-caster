@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef CONSTANTS_H_INCLUDED
-#define CONSTANTS_H_INCLUDED
+#ifndef _CONSTANTS_H_
+#define _CONSTANTS_H_
 
 // enable standard features
 // #define NO_INITIALIZE_MEDIA
@@ -142,10 +142,6 @@ namespace GUI
   static const String IDLE_TITLE_TEXT = "(Idle)" ;
   static const String FILE_TITLE_TEXT = "(Recording)" ;
   static const String RTMP_TITLE_TEXT = "(Broadcasting)" ;
-
-  // Controls
-  static const String CONTROLS_TEXT = "Controls" ;
-  static const String PRESETS_TEXT  = "Presets" ;
 
   // Chat
   static const int    SCROLLBAR_W      = 12 ;
@@ -583,4 +579,4 @@ namespace IRC
                                                                     DEBIAN_URI           ) ;
 }
 
-#endif // CONSTANTS_H_INCLUDED
+#endif // _CONSTANTS_H_

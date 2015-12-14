@@ -150,7 +150,7 @@ BEGIN_JUCER_METADATA
               bgColOn="ff800000" textCol="ffff0000" textColOn="ffff0000" buttonText="X"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="nickLabel" id="4316b113334d5ced" memberName="nickLabel"
-         virtualName="" explicitFocusOrder="0" pos="24 4 32M 16" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="24 4 1M 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>

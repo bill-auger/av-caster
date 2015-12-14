@@ -16,9 +16,8 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
-#ifndef MAINCONTENT_H_INCLUDED
-#define MAINCONTENT_H_INCLUDED
+#ifndef __JUCE_HEADER_262A4C4094138A40__
+#define __JUCE_HEADER_262A4C4094138A40__
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -27,6 +26,7 @@
 #include "Config.h"
 #include "Controls.h"
 #include "Preview.h"
+#include "Presets.h"
 #include "Statusbar.h"
 
 //[/Headers]
@@ -48,6 +48,10 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+
+  void configureCombobox(ComboBox* a_combobox) ;
+  void loadPresetsCombo (ComboBox* a_combobox) ;
+
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -73,8 +77,9 @@ private:
     ScopedPointer<Controls> controls;
     ScopedPointer<Chat> chat;
     ScopedPointer<Preview> preview;
-    ScopedPointer<Statusbar> statusbar;
+    ScopedPointer<Presets> presets;
     ScopedPointer<Config> config;
+    ScopedPointer<Statusbar> statusbar;
 
 
     //==============================================================================
@@ -84,4 +89,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // MAINCONTENT_H_INCLUDED
+#endif   // __JUCE_HEADER_262A4C4094138A40__

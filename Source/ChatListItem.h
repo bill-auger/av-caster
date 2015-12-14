@@ -16,9 +16,8 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
-#ifndef CHATLISTITEM_H_INCLUDED
-#define CHATLISTITEM_H_INCLUDED
+#ifndef __JUCE_HEADER_B5AA576BA216A776__
+#define __JUCE_HEADER_B5AA576BA216A776__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
@@ -70,4 +69,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // CHATLISTITEM_H_INCLUDED
+#endif   // __JUCE_HEADER_B5AA576BA216A776__

@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef AVCASTERSTORE_H_INCLUDED
-#define AVCASTERSTORE_H_INCLUDED
+#ifndef _AVCASTERSTORE_H_
+#define _AVCASTERSTORE_H_
 
 #include "Constants.h"
 
@@ -127,4 +127,4 @@ private:
 } ;
 
 
-#endif // AVCASTERSTORE_H_INCLUDED
+#endif // _AVCASTERSTORE_H_

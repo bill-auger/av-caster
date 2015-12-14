@@ -36,7 +36,7 @@ ChatList::ChatList ()
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (600, 400);
+    setSize (1, 1);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -130,6 +130,10 @@ int ChatList::sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node)
   int        server_idx   = this->serversStore.indexOf(server_store) ;
   int        child_idx    = this->nicks[server_idx].indexOf(nick) ;
 
+if (server_id == Identifier("irc-servers"))
+{
+  printf("this should not be so") ; // FIXME:
+}
 DEBUG_TRACE_LOCATE_SORTED_CHILD
 
   return child_idx ;
@@ -178,8 +182,8 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="ChatList" componentName=""
                  parentClasses="public Component, public ValueTree::Listener"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="600"
-                 initialHeight="400">
+                 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
+                 initialHeight="1">
   <BACKGROUND backgroundColour="0"/>
 </JUCER_COMPONENT>
 

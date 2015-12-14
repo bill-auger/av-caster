@@ -16,9 +16,8 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
-#ifndef CHATLIST_H_INCLUDED
-#define CHATLIST_H_INCLUDED
+#ifndef __JUCE_HEADER_CF0070E7070C0E60__
+#define __JUCE_HEADER_CF0070E7070C0E60__
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -85,4 +84,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // CHATLIST_H_INCLUDED
+#endif   // __JUCE_HEADER_CF0070E7070C0E60__

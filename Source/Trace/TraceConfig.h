@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef TRACECONFIG_H_INCLUDED
-#define TRACECONFIG_H_INCLUDED
+#ifndef _TRACECONFIG_H_
+#define _TRACECONFIG_H_
 
 #ifdef DEBUG
 
@@ -34,4 +34,4 @@
 #  define DEBUG_TRACE_CONFIG_LOAD_CONFIG   ;
 
 #endif // DEBUG
-#endif // TRACECONFIG_H_INCLUDED
+#endif // _TRACECONFIG_H_

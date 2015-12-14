@@ -19,7 +19,6 @@
 //[Headers] You can add your own extra header files here...
 
 #include "AvCaster.h"
-#include "Trace/TraceControls.h"
 
 //[/Headers]
 
@@ -32,9 +31,6 @@
 //==============================================================================
 Controls::Controls ()
 {
-    //[Constructor_pre] You can add your own custom stuff here..
-    //[/Constructor_pre]
-
     addAndMakeVisible (controlsGroup = new GroupComponent ("controlsGroup",
                                                            TRANS("Controls")));
     controlsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
@@ -76,13 +72,13 @@ Controls::Controls ()
     outputToggle->addListener (this);
     outputToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (presetCombo = new ComboBox ("presetCombo"));
-    presetCombo->setExplicitFocusOrder (7);
-    presetCombo->setEditableText (true);
-    presetCombo->setJustificationType (Justification::centredLeft);
-    presetCombo->setTextWhenNothingSelected (String::empty);
-    presetCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    presetCombo->addListener (this);
+    addAndMakeVisible (presetsCombo = new ComboBox ("presetsCombo"));
+    presetsCombo->setExplicitFocusOrder (7);
+    presetsCombo->setEditableText (true);
+    presetsCombo->setJustificationType (Justification::centredLeft);
+    presetsCombo->setTextWhenNothingSelected (String::empty);
+    presetsCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    presetsCombo->addListener (this);
 
     addAndMakeVisible (configButton = new ImageButton ("configButton"));
     configButton->setExplicitFocusOrder (8);
@@ -92,30 +88,6 @@ Controls::Controls ()
                              ImageCache::getFromMemory (preferencessystem_png, preferencessystem_pngSize), 1.000f, Colour (0x00000000),
                              ImageCache::getFromMemory (confighover_png, confighover_pngSize), 1.000f, Colour (0x00000000),
                              ImageCache::getFromMemory (configpushed_png, configpushed_pngSize), 1.000f, Colour (0x00000000));
-    addAndMakeVisible (saveButton = new TextButton ("saveButton"));
-    saveButton->setExplicitFocusOrder (9);
-    saveButton->setButtonText (TRANS("Save"));
-    saveButton->addListener (this);
-
-    addAndMakeVisible (newButton = new TextButton ("newButton"));
-    newButton->setExplicitFocusOrder (10);
-    newButton->setButtonText (TRANS("New"));
-    newButton->addListener (this);
-
-    addAndMakeVisible (deleteButton = new TextButton ("deleteButton"));
-    deleteButton->setExplicitFocusOrder (11);
-    deleteButton->setButtonText (TRANS("Delete"));
-    deleteButton->addListener (this);
-
-    addAndMakeVisible (presetLabel = new Label ("presetLabel",
-                                                TRANS("Preset:")));
-    presetLabel->setFont (Font (15.00f, Font::plain));
-    presetLabel->setJustificationType (Justification::centredLeft);
-    presetLabel->setEditable (false, false, false);
-    presetLabel->setColour (Label::textColourId, Colours::white);
-    presetLabel->setColour (TextEditor::textColourId, Colours::black);
-    presetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -125,7 +97,7 @@ Controls::Controls ()
 
     //[Constructor] You can add your own custom stuff here..
 
-  configureCombobox(this->presetCombo) ;
+  this->mainContent->configureCombobox(this->presetsCombo) ;
 
     //[/Constructor]
 }
@@ -142,12 +114,8 @@ Controls::~Controls()
     interstitialToggle = nullptr;
     previewToggle = nullptr;
     outputToggle = nullptr;
-    presetCombo = nullptr;
+    presetsCombo = nullptr;
     configButton = nullptr;
-    saveButton = nullptr;
-    newButton = nullptr;
-    deleteButton = nullptr;
-    presetLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -160,7 +128,8 @@ void Controls::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff101010));
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 22.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -178,12 +147,8 @@ void Controls::resized()
     interstitialToggle->setBounds (244, 36, 64, 24);
     previewToggle->setBounds (314, 36, 78, 24);
     outputToggle->setBounds (396, 36, 90, 24);
-    presetCombo->setBounds (512, 36, 176, 24);
+    presetsCombo->setBounds (512, 36, 176, 24);
     configButton->setBounds (696, 36, 24, 24);
-    saveButton->setBounds (156, 36, 64, 24);
-    newButton->setBounds (244, 36, 64, 24);
-    deleteButton->setBounds (332, 36, 64, 24);
-    presetLabel->setBounds (412, 36, 80, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -249,36 +214,12 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_configButton] -- add your button handler code here..
 
-      if (rejectPresetChange()) return ;
+      if (AvCaster::RejectPresetChange()) return ;
 
       key   = CONFIG::IS_PENDING_ID ;
       value = var(!AvCaster::GetIsConfigPending()) ;
 
         //[/UserButtonCode_configButton]
-    }
-    else if (buttonThatWasClicked == saveButton)
-    {
-        //[UserButtonCode_saveButton] -- add your button handler code here..
-
-      handleSaveButton() ; return ;
-
-        //[/UserButtonCode_saveButton]
-    }
-    else if (buttonThatWasClicked == newButton)
-    {
-        //[UserButtonCode_newButton] -- add your button handler code here..
-
-      handleNewButton() ; return ;
-
-        //[/UserButtonCode_newButton]
-    }
-    else if (buttonThatWasClicked == deleteButton)
-    {
-        //[UserButtonCode_deleteButton] -- add your button handler code here..
-
-      handleDeleteButton() ; return ;
-
-        //[/UserButtonCode_deleteButton]
     }
 
     //[UserbuttonClicked_Post]
@@ -293,22 +234,10 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == presetCombo)
+    if (comboBoxThatHasChanged == presetsCombo)
     {
-        //[UserComboBoxCode_presetCombo] -- add your combo box handling code here..
-
-      String preset_name = this->presetCombo->getText() ;
-      bool   is_saving   = this->saveButton  ->isDown() ; // defer to handleSaveButton()
-      bool   is_deleting = this->deleteButton->isDown() ; // defer to handleDeleteButton()
-
-      if (is_deleting) return ;
-
-      if      (isCreatePresetMode()) AvCaster::StorePreset(preset_name) ;
-      else if (!is_saving          ) handlePresetCombo() ;
-
-      return ;
-
-        //[/UserComboBoxCode_presetCombo]
+        //[UserComboBoxCode_presetsCombo] -- add your combo box handling code here..
+        //[/UserComboBoxCode_presetsCombo]
     }
 
     //[UsercomboBoxChanged_Post]
@@ -319,96 +248,11 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void Controls::broughtToFront() { toggleControls() ; loadConfig() ; }
-
-void Controls::configureCombobox(ComboBox* a_combobox)
-{
-  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_NORMAL_COLOR) ;
-  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR    ) ;
-}
-
-void Controls::handleSaveButton()
-{
-  String preset_name = this->presetCombo->getText() ;
-
-  if (preset_name.isEmpty()) AvCaster::Warning(GUI::PRESET_NAME_ERROR_MSG) ;
-  else
-  {
-    setCreatePresetMode(false) ; AvCaster::StorePreset(preset_name) ;
-
-#ifdef STATIC_PIPELINE
-  AvCaster::Warning("Changes will take effect after AvCaster is restarted.") ;
-#endif // STATIC_PIPELINE
-  }
-}
-
-void Controls::handleNewButton()
-{
-  this->presetCombo ->setText(String::empty , juce::dontSendNotification) ;
-  this->presetCombo ->grabKeyboardFocus() ;
-  setCreatePresetMode(true) ;
-}
-
-void Controls::handleDeleteButton()
-{
-  if (isCreatePresetMode())
-  {
-    setCreatePresetMode(false) ;
-    this->presetCombo ->setText(AvCaster::GetPresetName() , juce::dontSendNotification) ;
-  }
-  else if (AvCaster::IsStaticPreset()) AvCaster::ResetPreset() ;
-  else                                 AvCaster::DeletePreset() ;
-}
-
-void Controls::handlePresetCombo()
-{
-  Identifier key                  = CONFIG::PRESET_ID ;
-  String     preset_name          = this->presetCombo->getText() ;
-  int        option_n             = this->presetCombo->getSelectedItemIndex() ;
-  int        stored_option_n      = AvCaster::GetPresetIdx() ;
-  String     stored_preset_name   = AvCaster::GetPresetName() ;
-  bool       is_valid_option      = !!(~option_n) ;
-  bool       is_static_preset     = AvCaster::IsStaticPreset() ;
-  bool       is_empty             = preset_name.isEmpty() ;
-  bool       has_name_changed     = preset_name != stored_preset_name && !is_empty ;
-  bool       should_rename_preset = !is_valid_option && has_name_changed && !is_static_preset ;
-  bool       should_reset_option  = rejectPresetChange() || should_rename_preset ;
-  var        value                = var((is_valid_option) ? option_n : stored_option_n) ;
-
-DEBUG_TRACE_HANDLE_PRESETCOMBO
-
-  // reject empty preset name
-  if (!is_valid_option) if (!is_empty) setCreatePresetMode(false) ; else return ;
-
-  // rename preset , restore selection , or commit preset change
-  if (should_rename_preset) AvCaster::RenamePreset(preset_name) ;
-  if (!should_reset_option) AvCaster::SetConfig(key , value) ;
-  else                      loadConfig() ;
-}
-
-void Controls::toggleControls()
-{
-  bool   is_config_pending = AvCaster::GetIsConfigPending() ;
-  String group_text        = (is_config_pending) ? GUI::PRESETS_TEXT : GUI::CONTROLS_TEXT ;
-
-  this->controlsGroup     ->setText(group_text) ;
-  this->screencapToggle   ->setVisible(!is_config_pending) ;
-  this->cameraToggle      ->setVisible(!is_config_pending) ;
-  this->textToggle        ->setVisible(!is_config_pending) ;
-  this->interstitialToggle->setVisible(!is_config_pending) ;
-  this->previewToggle     ->setVisible(!is_config_pending) ;
-  this->outputToggle      ->setVisible(!is_config_pending) ;
-  this->saveButton        ->setVisible( is_config_pending) ;
-  this->newButton         ->setVisible( is_config_pending) ;
-  this->deleteButton      ->setVisible( is_config_pending) ;
-  this->presetLabel       ->setVisible( is_config_pending) ;
-}
+void Controls::broughtToFront() { loadConfig() ; }
 
 void Controls::loadConfig()
 {
-  ValueTree   config_store = AvCaster::GetConfigStore() ;
-  StringArray preset_names = AvCaster::GetPresetsNames() ;
-  int         preset_idx   = AvCaster::GetPresetIdx() ;
+  ValueTree config_store = AvCaster::GetConfigStore() ;
 
   bool is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ON_ID   ]) ;
   bool is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ON_ID      ]) ;
@@ -417,17 +261,13 @@ void Controls::loadConfig()
   bool is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ON_ID     ]) ;
   bool is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ON_ID      ]) ;
 
-  this->screencapToggle   ->setToggleState      (is_screencap_on    , juce::dontSendNotification) ;
-  this->cameraToggle      ->setToggleState      (is_camera_on       , juce::dontSendNotification) ;
-  this->textToggle        ->setToggleState      (is_text_on         , juce::dontSendNotification) ;
-  this->interstitialToggle->setToggleState      (is_interstitial_on , juce::dontSendNotification) ;
-  this->previewToggle     ->setToggleState      (is_preview_on      , juce::dontSendNotification) ;
-  this->outputToggle      ->setToggleState      (is_output_on       , juce::dontSendNotification) ;
-  this->presetCombo       ->clear               (juce::dontSendNotification) ;
-  this->presetCombo       ->addItemList         (preset_names , 1) ;
-  this->presetCombo       ->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
-
-  setCreatePresetMode(false) ;
+  this->screencapToggle   ->setToggleState  (is_screencap_on    , juce::dontSendNotification) ;
+  this->cameraToggle      ->setToggleState  (is_camera_on       , juce::dontSendNotification) ;
+  this->textToggle        ->setToggleState  (is_text_on         , juce::dontSendNotification) ;
+  this->interstitialToggle->setToggleState  (is_interstitial_on , juce::dontSendNotification) ;
+  this->previewToggle     ->setToggleState  (is_preview_on      , juce::dontSendNotification) ;
+  this->outputToggle      ->setToggleState  (is_output_on       , juce::dontSendNotification) ;
+  this->mainContent       ->loadPresetsCombo(this->presetsCombo) ;
 
 #ifdef DISABLE_CONTROLS_NYI
 this->screencapToggle   ->setEnabled(false) ;
@@ -435,33 +275,6 @@ this->cameraToggle      ->setEnabled(false) ;
 this->textToggle        ->setEnabled(false) ;
 this->interstitialToggle->setEnabled(false) ;
 #endif // DISABLE_CONTROLS_NYI
-}
-
-bool Controls::rejectPresetChange()
-{
-  bool is_output_active = this->outputToggle->getToggleState() ;
-
-DEBUG_TRACE_REJECT_CONFIG_CHANGE
-
-  if (is_output_active) AvCaster::Warning(GUI::CONFIG_CHANGE_ERROR_MSG) ;
-
-  return is_output_active ;
-}
-
-void Controls::setCreatePresetMode(bool is_pending_new_preset_name)
-{
-  bool   is_static_preset = AvCaster::IsStaticPreset() ;
-  String button_text      = (is_pending_new_preset_name) ? GUI::DELETE_BTN_CANCEL_TEXT :
-                            (is_static_preset          ) ? GUI::DELETE_BTN_RESET_TEXT  :
-                                                           GUI::DELETE_BTN_DELETE_TEXT ;
-
-  this->presetCombo ->setEditableText(is_pending_new_preset_name || !is_static_preset) ;
-  this->deleteButton->setButtonText  (button_text) ;
-}
-
-bool Controls::isCreatePresetMode()
-{
-  return this->deleteButton->getButtonText() == GUI::DELETE_BTN_CANCEL_TEXT ;
 }
 
 //[/MiscUserCode]
@@ -480,7 +293,9 @@ BEGIN_JUCER_METADATA
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1" initialHeight="1">
-  <BACKGROUND backgroundColour="ff101010"/>
+  <BACKGROUND backgroundColour="0">
+    <ROUNDRECT pos="20 22 40M 52" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+  </BACKGROUND>
   <GROUPCOMPONENT name="controlsGroup" id="5f4ffe47101cb73b" memberName="controlsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"
                   textcol="ffffffff" title="Controls"/>
@@ -508,7 +323,7 @@ BEGIN_JUCER_METADATA
                 virtualName="" explicitFocusOrder="6" pos="396 36 90 24" txtcol="ffffffff"
                 buttonText="Broadcast" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
-  <COMBOBOX name="presetCombo" id="94d77976c2b2f37" memberName="presetCombo"
+  <COMBOBOX name="presetsCombo" id="94d77976c2b2f37" memberName="presetsCombo"
             virtualName="" explicitFocusOrder="7" pos="512 36 176 24" editable="1"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
@@ -517,20 +332,6 @@ BEGIN_JUCER_METADATA
                resourceNormal="preferencessystem_png" opacityNormal="1" colourNormal="0"
                resourceOver="confighover_png" opacityOver="1" colourOver="0"
                resourceDown="configpushed_png" opacityDown="1" colourDown="0"/>
-  <TEXTBUTTON name="saveButton" id="b669a1abab5602e9" memberName="saveButton"
-              virtualName="" explicitFocusOrder="9" pos="156 36 64 24" buttonText="Save"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="newButton" id="693a3f523732acb3" memberName="newButton"
-              virtualName="" explicitFocusOrder="10" pos="244 36 64 24" buttonText="New"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="deleteButton" id="846aa62a47585ee2" memberName="deleteButton"
-              virtualName="" explicitFocusOrder="11" pos="332 36 64 24" buttonText="Delete"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="presetLabel" id="3a60504146c5134" memberName="presetLabel"
-         virtualName="" explicitFocusOrder="0" pos="412 36 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Preset:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -540,7 +341,7 @@ END_JUCER_METADATA
 //==============================================================================
 // Binary resources - be careful not to edit any of these sections!
 
-// JUCER_RESOURCE: preferencessystem_png, 2129, "../../../home/bill/dl/tango-icon-theme-0.8.90/32x32/categories/preferences-system.png"
+// JUCER_RESOURCE: preferencessystem_png, 2129, "../Assets/preferences-system.png"
 static const unsigned char resource_Controls_preferencessystem_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,4,115,66,73,84,8,8,8,8,124,8,100,
 136,0,0,8,8,73,68,65,84,88,133,237,150,107,80,84,231,25,199,255,231,186,247,93,129,101,193,101,65,46,106,21,144,155,58,136,241,66,172,162,226,68,99,106,173,237,76,167,173,218,241,139,83,149,96,65,116,
 82,167,41,176,98,117,180,214,100,72,140,153,100,58,109,194,180,90,13,70,136,134,161,157,198,154,78,210,40,226,133,5,21,185,45,236,194,194,46,44,123,238,167,31,194,102,86,5,177,147,15,253,210,103,230,153,
@@ -583,7 +384,7 @@ static const unsigned char resource_Controls_preferencessystem_png[] = { 137,80,
 const char* Controls::preferencessystem_png = (const char*) resource_Controls_preferencessystem_png;
 const int Controls::preferencessystem_pngSize = 2129;
 
-// JUCER_RESOURCE: confighover_png, 4254, "../../../home/bill/img/config-hover.png"
+// JUCER_RESOURCE: confighover_png, 4254, "../Assets/config-hover.png"
 static const unsigned char resource_Controls_confighover_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,6,98,75,71,68,0,0,0,0,0,0,249,67,187,
 127,0,0,0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,10,28,2,20,3,203,224,166,93,0,0,16,43,73,68,65,84,88,9,1,32,16,223,239,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,88,
 255,255,255,220,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
@@ -647,7 +448,7 @@ static const unsigned char resource_Controls_confighover_png[] = { 137,80,78,71,
 const char* Controls::confighover_png = (const char*) resource_Controls_confighover_png;
 const int Controls::confighover_pngSize = 4254;
 
-// JUCER_RESOURCE: configpushed_png, 4254, "../../../home/bill/img/config-pushed.png"
+// JUCER_RESOURCE: configpushed_png, 4254, "../Assets/config-pushed.png"
 static const unsigned char resource_Controls_configpushed_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,6,98,75,71,68,0,0,0,0,0,0,249,67,187,
 127,0,0,0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,10,28,2,22,54,175,101,0,252,0,0,16,43,73,68,65,84,88,9,1,32,16,223,239,1,0,0,0,0,0,0,0,0,0,0,0,0,181,181,181,88,
 203,203,203,132,0,0,0,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,242,

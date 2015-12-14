@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef TRACEAVCASTER_H_INCLUDED
-#define TRACEAVCASTER_H_INCLUDED
+#ifndef _TRACEAVCASTER_H_
+#define _TRACEAVCASTER_H_
 
 #ifdef DEBUG
 
@@ -83,6 +83,27 @@
                          "' to '"            + STRING(a_value    ) + "'" ;    \
   Trace::TraceGui("gui " + change_msg) ;
 
+#  define DEBUG_TRACE_REJECT_CONFIG_CHANGE                                           \
+  if (is_output_on) Trace::TraceConfig("rejecting config change - output is active") ;
+
+#  define DEBUG_TRACE_HANDLE_PRESETCOMBO                                              \
+  String pad = "\n                                       " ;                          \
+  Trace::TraceVerbose(String("Controls::handlePresetCombo()")         +               \
+           " preset_name          = '" + preset_name        + "'"     +               \
+      pad + "stored_preset_name   = '" + stored_preset_name + "'"     +               \
+      pad + "option_n             = "  + String(option_n            ) +               \
+      pad + "stored_option_n      = "  + String(stored_option_n     ) +               \
+      pad + "is_valid_option      = "  + String(is_valid_option     ) +               \
+      pad + "is_empty             = "  + String(is_empty            ) +               \
+      pad + "has_name_changed     = "  + String(has_name_changed    ) +               \
+      pad + "should_rename_preset = "  + String(should_rename_preset) +               \
+      pad + "should_reset_option  = "  + String(should_reset_option ) ) ;             \
+  Trace::TraceGui(String("presetsCombo selection changed - ")                       + \
+                  ((!is_valid_option && is_empty) ? "rejecting empty preset name" :   \
+                  (should_rename_preset         ) ? "renaming preset"             :   \
+                  (should_reset_option          ) ? "resetting selection"         :   \
+                                                    "accepting change"            ) ) ;
+
 
 /* helpers */
 
@@ -111,8 +132,10 @@
 #  define DEBUG_TRACE_SHUTDOWN_PHASE_2            ;
 #  define DEBUG_TRACE_SHUTDOWN_PHASE_3            ;
 #  define DEBUG_TRACE_SET_CONFIG                  ;
+#  define DEBUG_TRACE_REJECT_CONFIG_CHANGE        ;
+#  define DEBUG_TRACE_HANDLE_PRESETCOMBO          ;
 #  define DEBUG_TRACE_DUMP_CHAT_NICKS             ;
 #  define DEBUG_TRACE_DISPLAY_ALERT               ;
 
 #endif // DEBUG
-#endif  // TRACEAVCASTER_H_INCLUDED
+#endif // _TRACEAVCASTER_H_

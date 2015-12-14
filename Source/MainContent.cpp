@@ -44,11 +44,14 @@ MainContent::MainContent ()
     addAndMakeVisible (preview = new Preview());
     preview->setName ("preview");
 
-    addAndMakeVisible (statusbar = new Statusbar());
-    statusbar->setName ("statusbar");
+    addAndMakeVisible (presets = new Presets());
+    presets->setName ("presets");
 
     addAndMakeVisible (config = new Config());
     config->setName ("config");
+
+    addAndMakeVisible (statusbar = new Statusbar());
+    statusbar->setName ("statusbar");
 
 
     //[UserPreSize]
@@ -74,8 +77,9 @@ MainContent::~MainContent()
     controls = nullptr;
     chat = nullptr;
     preview = nullptr;
-    statusbar = nullptr;
+    presets = nullptr;
     config = nullptr;
+    statusbar = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -103,8 +107,9 @@ void MainContent::resized()
     controls->setBounds (0, 0, getWidth() - 0, 76);
     chat->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
     preview->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
-    statusbar->setBounds (0, getHeight() - 24, getWidth() - 0, 24);
+    presets->setBounds (0, 0, getWidth() - 0, 76);
     config->setBounds (0, 76, getWidth() - 0, getHeight() - 100);
+    statusbar->setBounds (0, getHeight() - 24, getWidth() - 0, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -112,6 +117,26 @@ void MainContent::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void MainContent::configureCombobox(ComboBox* a_combobox)
+{
+  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_NORMAL_COLOR) ;
+  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR    ) ;
+  a_combobox->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
+  a_combobox->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
+  a_combobox->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
+}
+
+void MainContent::loadPresetsCombo(ComboBox* a_combobox)
+{
+  ValueTree   config_store = AvCaster::GetConfigStore() ;
+  StringArray preset_names = AvCaster::GetPresetsNames() ;
+  int         preset_idx   = AvCaster::GetPresetIdx() ;
+
+  a_combobox->clear               (juce::dontSendNotification) ;
+  a_combobox->addItemList         (preset_names , 1) ;
+  a_combobox->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
+}
 
 void MainContent::initialize(ValueTree servers_store)
 {
@@ -175,11 +200,13 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="0 76 0M 100M" class="Chat" params=""/>
   <GENERICCOMPONENT name="preview" id="75e8b11c95e2efaf" memberName="preview" virtualName=""
                     explicitFocusOrder="0" pos="0 76 0M 100M" class="Preview" params=""/>
+  <GENERICCOMPONENT name="presets" id="c3256eaa517d34eb" memberName="presets" virtualName=""
+                    explicitFocusOrder="0" pos="0 0 0M 76" class="Presets" params=""/>
+  <GENERICCOMPONENT name="config" id="4f3cab5613666ef6" memberName="config" virtualName=""
+                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Config" params=""/>
   <GENERICCOMPONENT name="statusbar" id="2dc0514b582b96cb" memberName="statusbar"
                     virtualName="" explicitFocusOrder="0" pos="0 0Rr 0M 24" class="Statusbar"
                     params=""/>
-  <GENERICCOMPONENT name="config" id="4f3cab5613666ef6" memberName="config" virtualName=""
-                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Config" params=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

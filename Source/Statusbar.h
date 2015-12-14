@@ -16,8 +16,8 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef STATUSBAR_H_INCLUDED
-#define STATUSBAR_H_INCLUDED
+#ifndef _STATUSBAR_H_
+#define _STATUSBAR_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -72,4 +72,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // STATUSBAR_H_INCLUDED
+#endif // _STATUSBAR_H_

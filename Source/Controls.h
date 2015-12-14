@@ -16,12 +16,14 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef CONTROLS_H_INCLUDED
-#define CONTROLS_H_INCLUDED
+#ifndef __JUCE_HEADER_7E49606CC1E6A40__
+#define __JUCE_HEADER_7E49606CC1E6A40__
 
 //[Headers]     -- You can add your own extra header files here --
 
 #include "JuceHeader.h"
+
+class MainContent ;
 
 //[/Headers]
 
@@ -66,16 +68,10 @@ private:
 
   void broughtToFront() override ;
 
-  void configureCombobox  (ComboBox* a_combobox) ;
-  void handleSaveButton   () ;
-  void handleNewButton    () ;
-  void handleDeleteButton () ;
-  void handlePresetCombo  () ;
-  void toggleControls     () ;
-  void loadConfig         () ;
-  bool rejectPresetChange () ;
-  void setCreatePresetMode(bool is_pending_new_preset_name) ;
-  bool isCreatePresetMode () ;
+  void loadConfig() ;
+
+
+  MainContent* mainContent ;
 
     //[/UserVariables]
 
@@ -87,12 +83,8 @@ private:
     ScopedPointer<ToggleButton> interstitialToggle;
     ScopedPointer<ToggleButton> previewToggle;
     ScopedPointer<ToggleButton> outputToggle;
-    ScopedPointer<ComboBox> presetCombo;
+    ScopedPointer<ComboBox> presetsCombo;
     ScopedPointer<ImageButton> configButton;
-    ScopedPointer<TextButton> saveButton;
-    ScopedPointer<TextButton> newButton;
-    ScopedPointer<TextButton> deleteButton;
-    ScopedPointer<Label> presetLabel;
 
 
     //==============================================================================
@@ -102,4 +94,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // CONTROLS_H_INCLUDED
+#endif   // __JUCE_HEADER_7E49606CC1E6A40__

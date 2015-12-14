@@ -16,12 +16,12 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef __JUCE_HEADER_1288B153F353A5D8__
-#define __JUCE_HEADER_1288B153F353A5D8__
+#ifndef __JUCE_HEADER_E38720C00B5B6F26__
+#define __JUCE_HEADER_E38720C00B5B6F26__
 
 //[Headers]     -- You can add your own extra header files here --
 
-#include "JuceHeader.h"
+#include "MainContent.h"
 
 //[/Headers]
 
@@ -30,16 +30,18 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-  Background is an empty GUI for the AvCaster application.
-  It serves only as a consistent backdrop and/or interstitial.
+    An auto-generated component, created by the Introjucer.
+
+    Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Background  : public Component
+class Preset  : public Component,
+                public ButtonListener
 {
 public:
     //==============================================================================
-    Background ();
-    ~Background();
+    Preset (MainContent* main_content);
+    ~Preset();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -47,21 +49,44 @@ public:
 
     void paint (Graphics& g);
     void resized();
+    void buttonClicked (Button* buttonThatWasClicked);
 
+    // Binary resources:
+    static const char* configpushed_png;
+    static const int configpushed_pngSize;
+    static const char* confighover_png;
+    static const int confighover_pngSize;
+    static const char* preferencessystem_png;
+    static const int preferencessystem_pngSize;
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+
+  void broughtToFront     () override ;
+
+  void handleSaveButton   () ;
+  void handleNewButton    () ;
+  void handleDeleteButton () ;
+
+
+  MainContent* mainContent ;
+
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<GroupComponent> presetsGroup;
+    ScopedPointer<TextButton> saveButton;
+    ScopedPointer<TextButton> newButton;
+    ScopedPointer<TextButton> deleteButton;
+    ScopedPointer<Label> presetLabel;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Background)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Preset)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_1288B153F353A5D8__
+#endif   // __JUCE_HEADER_E38720C00B5B6F26__

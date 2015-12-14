@@ -28,9 +28,6 @@
 //==============================================================================
 Preview::Preview ()
 {
-    //[Constructor_pre] You can add your own custom stuff here..
-    //[/Constructor_pre]
-
     addAndMakeVisible (previewGroup = new GroupComponent ("previewGroup",
                                                           TRANS("Preview")));
     previewGroup->setColour (GroupComponent::outlineColourId, Colours::white);
@@ -64,8 +61,6 @@ void Preview::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
-
-    g.fillAll (Colour (0xff101010));
 
     g.setColour (Colours::black);
     g.fillRoundedRectangle (18.0f, 18.0f, static_cast<float> (getWidth() - 36), static_cast<float> (getHeight() - 36), 5.000f);
@@ -103,7 +98,7 @@ BEGIN_JUCER_METADATA
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1" initialHeight="1">
-  <BACKGROUND backgroundColour="ff101010">
+  <BACKGROUND backgroundColour="0">
     <ROUNDRECT pos="18 18 36M 36M" cornerSize="5" fill="solid: ff000000" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="previewGroup" id="6607ba656d5c8919" memberName="previewGroup"

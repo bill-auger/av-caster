@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef TRACE_H_INCLUDED
-#define TRACE_H_INCLUDED
+#ifndef _TRACE_H_
+#define _TRACE_H_
 
 #include "JuceHeader.h"
 #include "../Constants.h"
@@ -47,4 +47,4 @@ public:
 
 #endif // DEBUG
 
-#endif // TRACE_H_INCLUDED
+#endif // _TRACE_H_

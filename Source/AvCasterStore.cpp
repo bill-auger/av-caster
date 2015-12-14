@@ -24,7 +24,7 @@
 
 
 String bitlbee_host = "localhost" ;      String bitlbee_port = "6667" ; // TODO: GUI support
-String debian_host  = "irc.debian.org" ; String debian_port  = "6667" ; // TODO: GUI support
+String debian_host  = "irc.debian.org" ; String debian_port  = "6697" ; // TODO: GUI support
 String xmpp_chat    = "#mychat" ;                                       // TODO: GUI support
 
 

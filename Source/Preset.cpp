@@ -19,17 +19,19 @@
 //[Headers] You can add your own extra header files here...
 
 #include "AvCaster.h"
+#include "Trace/TracePresets.h"
 
 //[/Headers]
 
-#include "Presets.h"
+#include "Preset.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
 
 //==============================================================================
-Presets::Presets ()
+Preset::Preset (MainContent* main_content)
+    : mainContent(main_content)
 {
     addAndMakeVisible (presetsGroup = new GroupComponent ("presetsGroup",
                                                           TRANS("Presets")));
@@ -60,38 +62,21 @@ Presets::Presets ()
     presetLabel->setColour (TextEditor::textColourId, Colours::black);
     presetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (presetsCombo = new ComboBox ("presetsCombo"));
-    presetsCombo->setExplicitFocusOrder (4);
-    presetsCombo->setEditableText (true);
-    presetsCombo->setJustificationType (Justification::centredLeft);
-    presetsCombo->setTextWhenNothingSelected (String::empty);
-    presetsCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    presetsCombo->addListener (this);
-
-    addAndMakeVisible (configButton = new ImageButton ("configButton"));
-    configButton->setExplicitFocusOrder (5);
-    configButton->addListener (this);
-
-    configButton->setImages (false, true, true,
-                             ImageCache::getFromMemory (preferencessystem_png, preferencessystem_pngSize), 1.000f, Colour (0x00000000),
-                             ImageCache::getFromMemory (confighover_png, confighover_pngSize), 1.000f, Colour (0x00000000),
-                             ImageCache::getFromMemory (configpushed_png, configpushed_pngSize), 1.000f, Colour (0x00000000));
 
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (600, 400);
+    setSize (1, 1);
 
 
     //[Constructor] You can add your own custom stuff here..
 
-  MainContent* main_content = static_cast<MainContent*>(getParentComponent()) ;
-  main_content->configureCombobox(this->presetsCombo) ;
+  configureCombobox(this->presetCombo) ;
 
     //[/Constructor]
 }
 
-Presets::~Presets()
+Preset::~Preset()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -101,8 +86,6 @@ Presets::~Presets()
     newButton = nullptr;
     deleteButton = nullptr;
     presetLabel = nullptr;
-    presetsCombo = nullptr;
-    configButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -110,19 +93,18 @@ Presets::~Presets()
 }
 
 //==============================================================================
-void Presets::paint (Graphics& g)
+void Preset::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (20.0f, 22.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
+    g.fillAll (Colour (0xff101010));
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
 
-void Presets::resized()
+void Preset::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -132,13 +114,11 @@ void Presets::resized()
     newButton->setBounds (244, 35, 64, 24);
     deleteButton->setBounds (332, 35, 64, 24);
     presetLabel->setBounds (412, 36, 80, 24);
-    presetsCombo->setBounds (512, 36, 176, 24);
-    configButton->setBounds (696, 36, 24, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
 
-void Presets::buttonClicked (Button* buttonThatWasClicked)
+void Preset::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
 
@@ -171,17 +151,6 @@ void Presets::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_deleteButton]
     }
-    else if (buttonThatWasClicked == configButton)
-    {
-        //[UserButtonCode_configButton] -- add your button handler code here..
-
-      if (AvCaster::RejectPresetChange()) return ;
-
-      key   = CONFIG::IS_PENDING_ID ;
-      value = var(!AvCaster::GetIsConfigPending()) ;
-
-        //[/UserButtonCode_configButton]
-    }
 
     //[UserbuttonClicked_Post]
 
@@ -190,39 +159,20 @@ void Presets::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void Presets::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
-{
-    //[UsercomboBoxChanged_Pre]
-    //[/UsercomboBoxChanged_Pre]
-
-    if (comboBoxThatHasChanged == presetsCombo)
-    {
-        //[UserComboBoxCode_presetsCombo] -- add your combo box handling code here..
-        //[/UserComboBoxCode_presetsCombo]
-    }
-
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
-}
-
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void Presets::broughtToFront()
-{
-  toggleControls() ;
-  this->mainContent->loadPresetsCombo(this->presetsCombo) ; setCreatePresetMode(false) ;
-}
+void Presets::broughtToFront() { toggleControls() ; loadConfig() ; }
 
 void Presets::handleSaveButton()
 {
-  String preset_name = this->presetsCombo->getText() ;
+  String preset_name = this->presetCombo->getText() ;
 
   if (preset_name.isEmpty()) AvCaster::Warning(GUI::PRESET_NAME_ERROR_MSG) ;
   else
   {
-    setCreatePresetMode(false) ; AvCaster::StorePreset(preset_name) ;
+    this->mainContent->setCreatePresetMode(false) ; AvCaster::StorePreset(preset_name) ;
 
 #ifdef STATIC_PIPELINE
   AvCaster::Warning("Changes will take effect after AvCaster is restarted.") ;
@@ -232,47 +182,20 @@ void Presets::handleSaveButton()
 
 void Presets::handleNewButton()
 {
-  this->presetsCombo->setText(String::empty , juce::dontSendNotification) ;
-  this->presetsCombo->grabKeyboardFocus() ;
-  setCreatePresetMode(true) ;
+  this->presetCombo->setText(String::empty , juce::dontSendNotification) ;
+  this->presetCombo->grabKeyboardFocus() ;
+  this->mainContent->setCreatePresetMode(true) ;
 }
 
 void Presets::handleDeleteButton()
 {
-  if (isCreatePresetMode())
+  if (this->mainContent->isCreatePresetMode())
   {
-    setCreatePresetMode(false) ;
-    this->presetsCombo->setText(AvCaster::GetPresetName() , juce::dontSendNotification) ;
+    this->mainContent->setCreatePresetMode(false) ;
+    this->presetCombo->setText(AvCaster::GetPresetName() , juce::dontSendNotification) ;
   }
   else if (AvCaster::IsStaticPreset()) AvCaster::ResetPreset() ;
   else                                 AvCaster::DeletePreset() ;
-}
-
-void Presets::toggleControls()
-{
-  bool is_config_pending = AvCaster::GetIsConfigPending() ;
-
-  this->presetsGroup->setVisible(is_config_pending) ;
-  this->saveButton  ->setVisible(is_config_pending) ;
-  this->newButton   ->setVisible(is_config_pending) ;
-  this->deleteButton->setVisible(is_config_pending) ;
-  this->presetLabel ->setVisible(is_config_pending) ;
-}
-
-void Presets::setCreatePresetMode(bool is_pending_new_preset_name)
-{
-  bool   is_static_preset = AvCaster::IsStaticPreset() ;
-  String button_text      = (is_pending_new_preset_name) ? GUI::DELETE_BTN_CANCEL_TEXT :
-                            (is_static_preset          ) ? GUI::DELETE_BTN_RESET_TEXT  :
-                                                           GUI::DELETE_BTN_DELETE_TEXT ;
-
-  this->presetsCombo->setEditableText(is_pending_new_preset_name || !is_static_preset) ;
-  this->deleteButton->setButtonText  (button_text) ;
-}
-
-bool Presets::isCreatePresetMode()
-{
-  return this->deleteButton->getButtonText() == GUI::DELETE_BTN_CANCEL_TEXT ;
 }
 
 //[/MiscUserCode]
@@ -287,13 +210,12 @@ bool Presets::isCreatePresetMode()
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="Presets" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="600" initialHeight="400">
-  <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="20 22 40M 52" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
-  </BACKGROUND>
+<JUCER_COMPONENT documentType="Component" className="Preset" componentName=""
+                 parentClasses="public Component" constructorParams="MainContent* main_content"
+                 variableInitialisers="mainContent(main_content)" snapPixels="8"
+                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="0"
+                 initialWidth="1" initialHeight="1">
+  <BACKGROUND backgroundColour="ff101010"/>
   <GROUPCOMPONENT name="presetsGroup" id="5f4ffe47101cb73b" memberName="presetsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"
                   textcol="ffffffff" title="Presets"/>
@@ -311,15 +233,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="Preset:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="presetsCombo" id="94d77976c2b2f37" memberName="presetsCombo"
-            virtualName="" explicitFocusOrder="4" pos="512 36 176 24" editable="1"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
-               virtualName="" explicitFocusOrder="5" pos="696 36 24 24" buttonText="configButton"
-               connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="1"
-               resourceNormal="preferencessystem_png" opacityNormal="1" colourNormal="0"
-               resourceOver="confighover_png" opacityOver="1" colourOver="0"
-               resourceDown="configpushed_png" opacityDown="1" colourDown="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -330,18 +243,18 @@ END_JUCER_METADATA
 // Binary resources - be careful not to edit any of these sections!
 
 // JUCER_RESOURCE: configpushed_png, 4254, "../../../home/bill/img/config-pushed.png"
-static const unsigned char resource_Presets_configpushed_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,6,98,75,71,68,0,0,0,0,0,0,249,67,187,
-127,0,0,0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,10,28,2,22,54,175,101,0,252,0,0,16,43,73,68,65,84,88,9,1,32,16,223,239,1,0,0,0,0,0,0,0,0,0,0,0,0,181,181,181,88,
-203,203,203,132,0,0,0,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,242,
-53,53,53,120,75,75,75,151,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,168,168,168,154,216,216,216,231,0,0,0,170,128,128,128,213,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,128,128,8,0,0,0,99,40,40,40,54,88,88,88,95,0,0,0,0,0,0,0,0,0,168,168,168,132,128,128,128,120,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,128,128,
-49,168,168,168,161,0,0,0,0,1,181,181,181,49,203,203,203,154,0,0,0,55,128,128,128,254,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,103,103,100,61,3,5,3,162,0,0,2,9,0,0,0,221,254,252,251,169,248,248,252,154,160,160,
-160,248,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,101,106,117,70,5,0,0,204,150,150,139,238,0,0,0,0,0,0,0,0,128,128,128,131,53,53,53,208,3,38,38,38,171,0,0,0,135,128,
-128,128,216,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,102,102,102,13,0,1,254,218,24,24,25,16,48,47,50,12,19,19,19,29,248,250,249,65,253,255,252,95,47,45,47,168,207,207,207,245,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,102,108,119,117,0,0,255,162,0,3,3,90,48,51,57,174,207,204,198,241,0,0,0,0,64,64,64,241,230,230,230,145,2,0,0,0,42,0,0,0,182,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,154,154,
-154,243,3,2,3,63,234,235,233,246,245,246,245,254,21,20,21,0,53,51,54,8,35,33,35,30,9,10,7,175,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,127,127,127,3,104,110,120,158,5,6,5,127,40,43,43,0,
-22,25,24,26,3,3,2,206,99,108,116,46,0,0,0,0,0,0,0,210,0,0,0,30,2,0,0,0,18,128,128,128,252,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,151,151,154,194,250,252,253,66,204,204,201,2,255,255,255,249,253,
+static const unsigned char resource_Preset_configpushed_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,6,98,75,71,68,0,0,0,0,0,0,249,67,187,127,
+0,0,0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,10,28,2,22,54,175,101,0,252,0,0,16,43,73,68,65,84,88,9,1,32,16,223,239,1,0,0,0,0,0,0,0,0,0,0,0,0,181,181,181,88,203,
+203,203,132,0,0,0,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,242,53,
+53,53,120,75,75,75,151,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,168,168,168,154,216,216,216,231,0,0,0,170,128,128,128,213,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,128,128,8,0,0,0,99,40,40,40,54,88,88,88,95,0,0,0,0,0,0,0,0,0,168,168,168,132,128,128,128,120,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,128,128,128,49,
+168,168,168,161,0,0,0,0,1,181,181,181,49,203,203,203,154,0,0,0,55,128,128,128,254,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,103,103,100,61,3,5,3,162,0,0,2,9,0,0,0,221,254,252,251,169,248,248,252,154,160,160,160,
+248,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,101,106,117,70,5,0,0,204,150,150,139,238,0,0,0,0,0,0,0,0,128,128,128,131,53,53,53,208,3,38,38,38,171,0,0,0,135,128,128,
+128,216,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,102,102,102,13,0,1,254,218,24,24,25,16,48,47,50,12,19,19,19,29,248,250,249,65,253,255,252,95,47,45,47,168,207,207,207,245,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,102,108,119,117,0,0,255,162,0,3,3,90,48,51,57,174,207,204,198,241,0,0,0,0,64,64,64,241,230,230,230,145,2,0,0,0,42,0,0,0,182,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,154,154,154,
+243,3,2,3,63,234,235,233,246,245,246,245,254,21,20,21,0,53,51,54,8,35,33,35,30,9,10,7,175,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,127,127,127,3,104,110,120,158,5,6,5,127,40,43,43,0,22,
+25,24,26,3,3,2,206,99,108,116,46,0,0,0,0,0,0,0,210,0,0,0,30,2,0,0,0,18,128,128,128,252,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,151,151,154,194,250,252,253,66,204,204,201,2,255,255,255,249,253,
 253,253,0,34,33,35,3,8,8,8,45,101,104,98,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,102,102,117,13,231,239,249,190,10,10,11,86,36,38,39,11,4,5,5,0,20,21,21,3,20,21,21,18,2,255,1,209,114,114,114,5,128,
 128,128,252,0,0,0,14,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,100,100,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,156,152,156,201,0,0,0,241,253,253,253,229,0,0,0,0,251,251,251,0,25,25,27,11,4,3,5,84,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,3,207,18,18,18,55,34,37,36,11,2,3,2,0,0,0,0,0,254,254,254,0,240,241,239,245,1,1,1,93,142,142,142,251,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,102,102,99,71,2,3,255,236,110,
@@ -389,11 +302,11 @@ static const unsigned char resource_Presets_configpushed_png[] = { 137,80,78,71,
 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,240,53,53,53,116,75,75,75,157,0,0,0,0,0,0,0,0,22,82,238,110,38,194,229,141,0,0,
 0,0,73,69,78,68,174,66,96,130,0,0};
 
-const char* Presets::configpushed_png = (const char*) resource_Presets_configpushed_png;
-const int Presets::configpushed_pngSize = 4254;
+const char* Preset::configpushed_png = (const char*) resource_Preset_configpushed_png;
+const int Preset::configpushed_pngSize = 4254;
 
 // JUCER_RESOURCE: confighover_png, 4254, "../../../home/bill/img/config-hover.png"
-static const unsigned char resource_Presets_confighover_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,6,98,75,71,68,0,0,0,0,0,0,249,67,187,127,
+static const unsigned char resource_Preset_confighover_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,6,98,75,71,68,0,0,0,0,0,0,249,67,187,127,
 0,0,0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,10,28,2,20,3,203,224,166,93,0,0,16,43,73,68,65,84,88,9,1,32,16,223,239,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,88,255,
 255,255,220,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,241,255,255,255,105,0,0,
@@ -453,11 +366,11 @@ static const unsigned char resource_Presets_confighover_png[] = { 137,80,78,71,1
 255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 255,255,255,255,255,255,255,255,255,255,255,239,255,255,255,99,0,0,0,0,0,0,0,0,0,0,0,0,142,119,220,132,34,208,196,92,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
 
-const char* Presets::confighover_png = (const char*) resource_Presets_confighover_png;
-const int Presets::confighover_pngSize = 4254;
+const char* Preset::confighover_png = (const char*) resource_Preset_confighover_png;
+const int Preset::confighover_pngSize = 4254;
 
 // JUCER_RESOURCE: preferencessystem_png, 2129, "../../../home/bill/dl/tango-icon-theme-0.8.90/32x32/categories/preferences-system.png"
-static const unsigned char resource_Presets_preferencessystem_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,4,115,66,73,84,8,8,8,8,124,8,100,
+static const unsigned char resource_Preset_preferencessystem_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,32,0,0,0,32,8,6,0,0,0,115,122,122,244,0,0,0,4,115,66,73,84,8,8,8,8,124,8,100,
 136,0,0,8,8,73,68,65,84,88,133,237,150,107,80,84,231,25,199,255,231,186,247,93,129,101,193,101,65,46,106,21,144,155,58,136,241,66,172,162,226,68,99,106,173,237,76,167,173,218,241,139,83,149,96,65,116,
 82,167,41,176,98,117,180,214,100,72,140,153,100,58,109,194,180,90,13,70,136,134,161,157,198,154,78,210,40,226,133,5,21,185,45,236,194,194,46,44,123,238,167,31,194,102,86,5,177,147,15,253,210,103,230,153,
 247,125,207,121,159,231,255,123,158,247,157,51,7,248,191,253,143,141,152,110,67,77,77,213,114,154,165,223,7,72,29,8,220,151,5,225,195,96,80,120,235,240,225,195,220,243,138,84,31,127,167,72,3,245,139,146,
@@ -496,8 +409,8 @@ static const unsigned char resource_Presets_preferencessystem_png[] = { 137,80,7
 225,28,66,184,3,68,4,177,14,0,99,76,204,138,54,38,44,89,8,146,212,7,123,91,110,140,62,186,230,137,168,86,136,232,128,56,145,60,242,30,144,19,99,216,213,8,136,240,252,177,128,201,46,83,120,140,124,175,
 98,146,4,223,214,254,3,174,151,133,37,87,153,47,161,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
 
-const char* Presets::preferencessystem_png = (const char*) resource_Presets_preferencessystem_png;
-const int Presets::preferencessystem_pngSize = 2129;
+const char* Preset::preferencessystem_png = (const char*) resource_Preset_preferencessystem_png;
+const int Preset::preferencessystem_pngSize = 2129;
 
 
 //[EndFile] You can add extra defines here...

@@ -85,7 +85,43 @@ void AvCaster::DeletePreset() { Store->deletePreset() ; }
 
 void AvCaster::ResetPreset() { Store->resetPreset() ; }
 
+bool AvCaster::SetPreset(String preset_name , int option_n)
+{
+  int        stored_option_n      = GetPresetIdx() ;
+  String     stored_preset_name   = GetPresetName() ;
+  bool       is_valid_option      = !!(~option_n) ;
+  bool       is_static_preset     = IsStaticPreset() ;
+  bool       is_empty             = preset_name.isEmpty() ;
+  bool       has_name_changed     = preset_name != stored_preset_name && !is_empty ;
+  bool       should_rename_preset = !is_valid_option && has_name_changed && !is_static_preset ;
+  bool       should_reset_option  = RejectPresetChange() || should_rename_preset ;
+  var        value                = var((is_valid_option) ? option_n : stored_option_n) ;
+
+DEBUG_TRACE_HANDLE_PRESETCOMBO
+
+  // reject empty preset name
+  if (!is_valid_option) if (is_empty) return false ;
+
+  // rename preset , restore selection , or commit preset change
+  if (should_rename_preset) RenamePreset(preset_name) ;
+  if (!should_reset_option) SetConfig(CONFIG::PRESET_ID , value) ;
+  else                      RefreshGui() ;
+
+  return true ;
+}
+
 ValueTree AvCaster::GetConfigStore() { return Store->config ; }
+
+bool AvCaster::RejectPresetChange()
+{
+  bool is_output_on = bool(Store->config[CONFIG::IS_OUTPUT_ON_ID]) ;
+
+DEBUG_TRACE_REJECT_CONFIG_CHANGE
+
+  if (is_output_on) Warning(GUI::CONFIG_CHANGE_ERROR_MSG) ;
+
+  return is_output_on ;
+}
 
 bool AvCaster::IsStaticPreset() { return AvCaster::GetPresetIdx() < CONFIG::N_STATIC_PRESETS ; }
 
@@ -328,15 +364,17 @@ void AvCaster::RefreshGui()
 {
   bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID   ]) ;
   bool       is_preview_on     = bool(Store->config[CONFIG::IS_PREVIEW_ON_ID]) ;
-  Component* front_component   = (is_config_pending) ? static_cast<Component*>(Gui->config ) :
+  Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets ) :
+                                                       static_cast<Component*>(Gui->controls) ;
+  Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config ) :
                                  (is_preview_on    ) ? static_cast<Component*>(Gui->preview) :
                                                        static_cast<Component*>(Gui->chat   ) ;
 
 DEBUG_TRACE_REFRESH_GUI
 
-  Gui->background->toFront(true) ;
-  Gui->controls  ->toFront(true) ;
-  front_component->toFront(true) ;
+  Gui->background  ->toFront(true) ;
+  control_component->toFront(true) ;
+  view_component   ->toFront(true) ;
 }
 
 void AvCaster::SetWindowTitle()

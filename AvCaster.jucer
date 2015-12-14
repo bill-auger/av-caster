@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.000"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.001"
               bundleIdentifier="com.bill-auger.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
@@ -12,7 +12,6 @@
               file="Source/Trace/TraceAvCasterStore.h"/>
         <FILE id="h9pAwt" name="TraceChat.h" compile="0" resource="0" file="Source/Trace/TraceChat.h"/>
         <FILE id="NyIKTu" name="TraceConfig.h" compile="0" resource="0" file="Source/Trace/TraceConfig.h"/>
-        <FILE id="CTNFj1" name="TraceControls.h" compile="0" resource="0" file="Source/Trace/TraceControls.h"/>
         <FILE id="dToFg4" name="TraceGstreamer.h" compile="0" resource="0"
               file="Source/Trace/TraceGstreamer.h"/>
         <FILE id="hB9rdH" name="TraceIrcClient.h" compile="0" resource="0"
@@ -31,7 +30,7 @@
       <FILE id="o1VbMJ" name="Gstreamer.h" compile="0" resource="0" file="Source/Gstreamer.h"/>
       <FILE id="O1cSgN" name="IrcClient.h" compile="0" resource="0" file="Source/IrcClient.h"/>
       <FILE id="U6Fm4Z" name="MainContent.h" compile="0" resource="0" file="Source/MainContent.h"/>
-      <FILE id="NFs9mI" name="Presets.h" compile="0" resource="0" file="Source/Presets.h"/>
+      <FILE id="IxdH9Q" name="Presets.h" compile="0" resource="0" file="Source/Presets.h"/>
       <FILE id="Fz2IkW" name="PresetSeed.h" compile="0" resource="0" file="Source/PresetSeed.h"/>
       <FILE id="Ks1yxc" name="Preview.h" compile="0" resource="0" file="Source/Preview.h"/>
       <FILE id="X0O50Z" name="Statusbar.h" compile="0" resource="0" file="Source/Statusbar.h"/>
@@ -51,7 +50,7 @@
       <FILE id="V586WS" name="IrcClient.cpp" compile="1" resource="0" file="Source/IrcClient.cpp"/>
       <FILE id="CQoHWx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="eLauah" name="MainContent.cpp" compile="1" resource="0" file="Source/MainContent.cpp"/>
-      <FILE id="NwS3XN" name="Presets.cpp" compile="1" resource="0" file="Source/Presets.cpp"/>
+      <FILE id="XO1kq5" name="Presets.cpp" compile="1" resource="0" file="Source/Presets.cpp"/>
       <FILE id="yA08dL" name="PresetSeed.cpp" compile="1" resource="0" file="Source/PresetSeed.cpp"/>
       <FILE id="LaU84G" name="Preview.cpp" compile="1" resource="0" file="Source/Preview.cpp"/>
       <FILE id="XuwkKa" name="Statusbar.cpp" compile="1" resource="0" file="Source/Statusbar.cpp"/>
