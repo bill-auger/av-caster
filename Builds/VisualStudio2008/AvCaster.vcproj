@@ -32,7 +32,7 @@
             BufferSecurityCheck=""
             DebugInformationFormat="4"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.0;JUCE_APP_VERSION_HEX=0x1000"
+            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.000;JUCE_APP_VERSION_HEX=0x1000"
             RuntimeLibrary="1"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -88,7 +88,7 @@
             InlineFunctionExpansion="1"
             StringPooling="true"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.0;JUCE_APP_VERSION_HEX=0x1000"
+            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.000;JUCE_APP_VERSION_HEX=0x1000"
             RuntimeLibrary="0"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -151,6 +151,7 @@
         <File RelativePath="..\..\Source\Gstreamer.h"/>
         <File RelativePath="..\..\Source\IrcClient.h"/>
         <File RelativePath="..\..\Source\MainContent.h"/>
+        <File RelativePath="..\..\Source\Presets.h"/>
         <File RelativePath="..\..\Source\PresetSeed.h"/>
         <File RelativePath="..\..\Source\Preview.h"/>
         <File RelativePath="..\..\Source\Statusbar.h"/>
@@ -168,6 +169,7 @@
         <File RelativePath="..\..\Source\IrcClient.cpp"/>
         <File RelativePath="..\..\Source\Main.cpp"/>
         <File RelativePath="..\..\Source\MainContent.cpp"/>
+        <File RelativePath="..\..\Source\Presets.cpp"/>
         <File RelativePath="..\..\Source\PresetSeed.cpp"/>
         <File RelativePath="..\..\Source\Preview.cpp"/>
         <File RelativePath="..\..\Source\Statusbar.cpp"/>
