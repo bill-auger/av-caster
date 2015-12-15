@@ -24,7 +24,7 @@
 
 
 String bitlbee_host = "localhost" ;      String bitlbee_port = "6667" ; // TODO: GUI support
-String debian_host  = "irc.debian.org" ; String debian_port  = "6697" ; // TODO: GUI support
+String debian_host  = "irc.debian.org" ; String debian_port  = "6667" ; // TODO: GUI support
 String xmpp_chat    = "#mychat" ;                                       // TODO: GUI support
 
 
@@ -108,7 +108,7 @@ DEBUG_TRACE_VERIFY_CONFIG
 
 ValueTree AvCasterStore::getOrCreatePresets()
 {
-DEBUG_TRACE_VERIFY_PRESETS
+DEBUG_TRACE_VERIFY_PRESETS_NODE
 
   ValueTree   presets   = this->root.getOrCreateChildWithName(CONFIG::PRESETS_ID , nullptr) ;
   PresetSeed* file_seed = new FilePresetSeed() ; ValueTree file_preset = file_seed->preset ;
@@ -131,7 +131,7 @@ DEBUG_TRACE_VERIFY_PRESETS
 
 ValueTree AvCasterStore::getOrCreateServers()
 {
-DEBUG_TRACE_VERIFY_SERVERS
+DEBUG_TRACE_VERIFY_SERVERS_NODE
 
   ValueTree servers = this->root.getOrCreateChildWithName(CONFIG::SERVERS_ID , nullptr) ;
 
@@ -212,6 +212,33 @@ DEBUG_TRACE_VERIFY_CONFIG_PRESET
   verifyPresetProperty(CONFIG::OUTPUT_DEST_ID        , var(CONFIG::DEFAULT_OUTPUT_DEST       )) ;
 }
 
+void AvCasterStore::verifyServers()
+{
+DEBUG_TRACE_VERIFY_SERVERS
+
+  if (!this->servers.isValid()) return ;
+
+  // verify user preset nodes
+  int n_servers = this->servers.getNumChildren() ;
+  for (int server_n = 0 ; server_n < n_servers ; ++server_n)
+    verifyServer(this->servers.getChild(server_n)) ;
+}
+
+void AvCasterStore::verifyServer(ValueTree a_server_node)
+{
+DEBUG_TRACE_VERIFY_SERVER_IN
+
+  if (!a_server_node.isValid()) return ;
+
+  // transfer missing properties
+  if (!a_server_node.hasProperty(CONFIG::HOST_ID   ) ||
+      !a_server_node.hasProperty(CONFIG::PORT_ID   ) ||
+      !a_server_node.hasProperty(CONFIG::CHANNEL_ID)  )
+    a_server_node.getParent().removeChild(a_server_node , nullptr) ;
+
+DEBUG_TRACE_VERIFY_SERVER_OUT
+}
+
 void AvCasterStore::sanitizeRoot()
 {
   sanitizeRootComboProperty(CONFIG::PRESET_ID , presetsNames()) ;
@@ -264,11 +291,13 @@ DEBUG_TRACE_STORE_CONFIG
   this->config.removeProperty(CONFIG::IS_OUTPUT_ON_ID , nullptr) ;
 
   // append presets and servers to persistent storage (ignoring chatters)
-  int n_servers = this->servers.getNumChildren() ; UndoManager um ;
+  int n_servers = this->servers.getNumChildren() ; UndoManager undo_manager ;
   for (int server_n = 0 ; server_n < n_servers ; ++server_n)
-    this->servers.getChild(server_n).removeAllChildren(&um) ;
-  this->root.addChild(this->presets , -1 , nullptr) ;
-  this->root.addChild(this->servers , -1 , nullptr) ;
+    this->servers.getChild(server_n).removeAllChildren(&undo_manager) ;
+  this->root.addChild(this->presets , -1 , &undo_manager) ;
+  this->root.addChild(this->servers , -1 , &undo_manager) ;
+
+DEBUG_TRACE_DUMP_CONFIG("AvCasterStore->StoreConfig()")
 
   // marshall configuration out to persistent binary storage
   FileOutputStream* config_stream = new FileOutputStream(this->configFile) ;
@@ -277,9 +306,7 @@ DEBUG_TRACE_STORE_CONFIG
   delete config_stream ;
 
   // remove presets and servers from runtime store (restoring chatters)
-  this->root.removeChild(this->presets , nullptr) ;
-  this->root.removeChild(this->servers , nullptr) ;
-  while (um.canUndo()) um.undo() ;
+  while (undo_manager.canUndo()) undo_manager.undo() ;
 
   // restore transient data
   this->root  .setProperty(CONFIG::IS_PENDING_ID   , is_config_pending , nullptr) ;
@@ -501,6 +528,8 @@ void AvCasterStore::resetPreset()
   AvCaster::RefreshGui() ;
 }
 
+// TODO: GUI and model support
+// void AvCasterStore::storeServer(String host , String port , String nick , String pass)
 void AvCasterStore::storeServer(String host , String port)
 {
 String channel = xmpp_chat ; // TODOI: GUI support for host , port , channel
@@ -514,6 +543,8 @@ DEBUG_TRACE_STORE_SERVER
 
   server_store.setProperty(CONFIG::HOST_ID    , host    , nullptr) ;
   server_store.setProperty(CONFIG::PORT_ID    , port    , nullptr) ;
+//   server_store.setProperty(CONFIG::NICK_ID    , nick    , nullptr) ;
+//   server_store.setProperty(CONFIG::PASS_ID    , pass    , nullptr) ;
   server_store.setProperty(CONFIG::CHANNEL_ID , channel , nullptr) ;
 }
 

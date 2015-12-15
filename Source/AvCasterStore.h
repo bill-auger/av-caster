@@ -58,6 +58,8 @@ private:
   void      verifyRoot        () ;
   void      verifyPresets     () ;
   void      verifyPreset      () ;
+  void      verifyServers     () ;
+  void      verifyServer      (ValueTree a_server_node) ;
   void      sanitizeRoot      () ;
   void      sanitizePresets   () ;
   void      sanitizePreset    () ;

@@ -85,6 +85,57 @@ void ChatList::resized()
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
+void ChatList::valueTreeChildAdded(ValueTree& a_parent_node , ValueTree& a_node)
+{
+  if (isChattersNode(a_parent_node , a_node)) return ;
+
+DEBUG_TRACE_ADD_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
+
+  reloadNicks() ;
+
+  ChatListItem* a_list_item = new ChatListItem(a_node) ;
+  int           child_idx   = sortedChildIdx(a_parent_node , a_node) ;
+
+  const MessageManagerLock mmLock ; addAndMakeVisible(a_list_item , child_idx) ;
+  refresh() ;
+}
+
+void ChatList::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)
+{
+  if (isChattersNode(a_parent_node , a_node)) return ;
+
+  int        child_idx   = sortedChildIdx(a_parent_node , a_node) ;
+  Component* a_list_item = getChildComponent(child_idx) ;
+
+DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
+
+  const MessageManagerLock mmLock ; delete a_list_item ;
+  refresh() ; reloadNicks() ;
+}
+
+bool ChatList::isChattersNode(ValueTree& a_parent_node , ValueTree& a_node)
+{
+  return (a_node.getType()        == CONFIG::CHATTERS_ID &&
+          a_parent_node.getType() != CONFIG::CHATTERS_ID  ) ;
+}
+
+int ChatList::sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node)
+{
+  String     nick         = STRING(a_node[CONFIG::CHAT_NICK_ID]) ;
+  Identifier server_id    = a_parent_node.getParent().getType() ;
+  ValueTree  server_store = this->serversStore.getChildWithName(server_id) ;
+  int        server_idx   = this->serversStore.indexOf(server_store) ;
+  int        child_idx    = this->nicks[server_idx].indexOf(nick) ;
+
+if (server_id == Identifier("irc-servers"))
+{
+  printf("this should not be so") ; // FIXME:
+}
+DEBUG_TRACE_LOCATE_SORTED_CHILD
+
+  return child_idx ;
+}
+
 void ChatList::reloadNicks()
 {
   this->nicks.clear() ;
@@ -120,51 +171,6 @@ void ChatList::refresh()
 
     list_item_y += GUI::LIST_ITEM_H + GUI::PAD ;
   }
-}
-
-int ChatList::sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node)
-{
-  String     nick         = STRING(a_node[CONFIG::CHAT_NICK_ID]) ;
-  Identifier server_id    = a_parent_node.getParent().getType() ;
-  ValueTree  server_store = this->serversStore.getChildWithName(server_id) ;
-  int        server_idx   = this->serversStore.indexOf(server_store) ;
-  int        child_idx    = this->nicks[server_idx].indexOf(nick) ;
-
-if (server_id == Identifier("irc-servers"))
-{
-  printf("this should not be so") ; // FIXME:
-}
-DEBUG_TRACE_LOCATE_SORTED_CHILD
-
-  return child_idx ;
-}
-
-void ChatList::valueTreeChildAdded(ValueTree& a_parent_node , ValueTree& a_node)
-{
-DEBUG_TRACE_ADD_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
-
-  reloadNicks() ;
-
-  ChatListItem* a_list_item = new ChatListItem(a_node) ;
-  int           child_idx   = sortedChildIdx(a_parent_node , a_node) ;
-
-  const MessageManagerLock mmLock ; addAndMakeVisible(a_list_item , child_idx) ;
-  refresh() ;
-}
-
-void ChatList::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)
-{
-  int        child_idx   = sortedChildIdx(a_parent_node , a_node) ;
-  Component* a_list_item = getChildComponent(child_idx) ;
-
-DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
-DBG("a_parent_node=" + String(a_parent_node.getType()) +
-    " a_node=" + String(a_node.getType()) +
-    " child_idx=" + String(child_idx) +
-    " a_list_item=" + String(!!a_list_item)) ;
-
-  const MessageManagerLock mmLock ; delete a_list_item ;
-  refresh() ; reloadNicks() ;
 }
 
 //[/MiscUserCode]

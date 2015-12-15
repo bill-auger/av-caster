@@ -37,17 +37,20 @@
 
 #  define DEBUG_TRACE_INIT_PHASE_4 Trace::TraceState("instantiating media") ;
 
-#  define DEBUG_TRACE_INIT_PHASE_5 Trace::TraceState("instantiating network") ;
+#  define DEBUG_TRACE_INIT_PHASE_5 if (IsChatEnabled) Trace::TraceState("instantiating network") ;
 
 #  define DEBUG_TRACE_INIT_PHASE_6 Trace::TraceState("AvCaster ready") ;
 
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT                                         \
-  StringArray tokens ;                                                                   \
-  if      (CliParams.contains(APP::CLI_HELP_TOKEN   )) tokens.add("CLI_HELP_TOKEN") ;    \
-  else if (CliParams.contains(APP::CLI_PRESETS_TOKEN)) tokens.add("CLI_PRESETS_TOKEN") ; \
-  else if (CliParams.contains(APP::CLI_VERSION_TOKEN)) tokens.add("CLI_VERSION_TOKEN") ; \
-  String dbg = tokens.joinIntoString(",") ;                                              \
-  if (tokens.size()) Trace::TraceConfig("found pre-init cli tokens " + dbg)              ;
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT                                                         \
+  StringArray tokens ;                                                                                   \
+  if      (CliParams.contains(APP::CLI_HELP_TOKEN           )) tokens.add("CLI_HELP_TOKEN"           ) ; \
+  else if (CliParams.contains(APP::CLI_PRESETS_TOKEN        )) tokens.add("CLI_PRESETS_TOKEN"        ) ; \
+  else if (CliParams.contains(APP::CLI_VERSION_TOKEN        )) tokens.add("CLI_VERSION_TOKEN"        ) ; \
+  else if (CliParams.contains(APP::CLI_DISABLE_COMP_TOKEN   )) tokens.add("CLI_DISABLE_COMP_TOKEN"   ) ; \
+  else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) tokens.add("CLI_DISABLE_PREVIEW_TOKEN") ; \
+  else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) tokens.add("CLI_DISABLE_CHAT_TOKEN"   ) ; \
+  String dbg = tokens.joinIntoString(",") ;                                                              \
+  if (tokens.size()) Trace::TraceConfig("found pre-init cli tokens " + dbg)                              ;
 
 #  define DEBUG_TRACE_HANDLE_CLI_PARAMS_POST_INIT                                 \
   StringArray tokens ;                                                            \
@@ -107,7 +110,7 @@
 
 /* helpers */
 
-#  define DEBUG_TRACE_DUMP_CHAT_NICKS                                                     \
+#  define DEBUG_TRACE_DUMP_CHAT_NICKS if (DEBUG_TRACE_VB)                                 \
   Trace::TraceConfig(String("sorting (") + String(nicks.size()) + ") '"                 + \
                      String(server_id)   + "' nicks=[" + nicks.joinIntoString(",") + "]") ;
 

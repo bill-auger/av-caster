@@ -46,7 +46,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
 
   void updateVisiblilty() ;
-  void addChatLine     (String chat_user , String chat_text) ;
+  void addChatLine     (String prefix , String chat_user , String chat_text) ;
 
     //[/UserMethods]
 

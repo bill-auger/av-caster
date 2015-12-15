@@ -29,11 +29,14 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 /* AvCaster private class variables */
 
-MainContent*             AvCaster::Gui          = nullptr ; // Initialize()
-ScopedPointer<IrcClient> AvCaster::Irc          = nullptr ; // Initialize()
-StringArray              AvCaster::CliParams ;              // initialize()
+MainContent*             AvCaster::Gui                 = nullptr ; // Initialize()
+ScopedPointer<IrcClient> AvCaster::Irc                 = nullptr ; // Initialize()
+StringArray              AvCaster::CliParams ;                     // initialize()
+bool                     AvCaster::IsCompositorEnabled = true ;    // HandleCliParamsPreInit()
+bool                     AvCaster::IsPreviewEnabled    = true ;    // HandleCliParamsPreInit()
+bool                     AvCaster::IsChatEnabled       = true ;    // HandleCliParamsPreInit()
 Array<Alert*>            AvCaster::Alerts ;
-bool                     AvCaster::IsAlertModal = false ;   // Warning() , Error()
+bool                     AvCaster::IsAlertModal        = false ;   // Warning() , Error()
 
 
 /* AvCaster public class methods */
@@ -50,9 +53,9 @@ void AvCaster::Error(String message_text)
   Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
 }
 
-void AvCaster::AddChatLine(String nick , String message)
+void AvCaster::AddChatLine(String prefix , String nick , String message)
 {
-  Gui->chat->addChatLine(nick , message) ;
+  Gui->chat->addChatLine(prefix , nick , message) ;
 }
 
 void AvCaster::SendChat(String chat_message) { Irc->sendChat(chat_message) ; }
@@ -235,6 +238,10 @@ DEBUG_TRACE_INIT_VERSION
 
   if (!HandleCliParamsPreInit()) return false ;
 
+#ifdef NO_INITIALIZE_NETWORK
+  IsChatEnabled = false ;
+#endif // NO_INITIALIZE_NETWORK
+
 DEBUG_TRACE_INIT_PHASE_1
 
   if (!ValidateEnvironment()) return false ;
@@ -256,12 +263,10 @@ DEBUG_TRACE_INIT_PHASE_4
   if (!Gstreamer::Initialize()) return false ;
 #endif // NO_INITIALIZE_MEDIA
 
-#ifndef NO_INITIALIZE_NETWORK
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libircclient
-  if ((Irc = new IrcClient(Store->servers)) == nullptr) return false ;
-#endif // NO_INITIALIZE_NETWORK
+  if (IsChatEnabled && (Irc = new IrcClient(Store->servers)) == nullptr) return false ;
 
 DEBUG_TRACE_INIT_PHASE_6
 
@@ -279,17 +284,11 @@ void AvCaster::Shutdown()
 {
   DisplayAlert() ;
 
-#ifndef NO_INITIALIZE_NETWORK
 DEBUG_TRACE_SHUTDOWN_PHASE_1
-#  ifdef RUN_NETWORK_AS_THREAD
 
   // shutdown network
-  if (Irc != nullptr && Irc->isThreadRunning()) Irc->stopThread(5000) ; Irc = nullptr ;
-
-#  else // RUN_NETWORK_AS_THREAD
+  if (IsChatEnabled && Irc != nullptr && Irc->isThreadRunning()) Irc->stopThread(5000) ;
   Irc = nullptr ;
-#  endif // RUN_NETWORK_AS_THREAD
-#endif // NO_INITIALIZE_NETWORK
 
 #ifndef NO_INITIALIZE_MEDIA
 DEBUG_TRACE_SHUTDOWN_PHASE_2
@@ -308,19 +307,10 @@ void AvCaster::HandleTimer(int timer_id)
 {
   switch (timer_id)
   {
-    case APP::GUI_TIMER_HI_ID:                                       break ;
-#ifdef NO_INITIALIZE_NETWORK
-    case APP::GUI_TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ; break ;
-#else // NO_INITIALIZE_NETWORK
-#  ifdef RUN_NETWORK_AS_THREAD
-    case APP::GUI_TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ; break ;
-    case APP::GUI_TIMER_LO_ID:  Irc->startThread() ;                 break ;
-#  else // RUN_NETWORK_AS_THREAD
-    case APP::GUI_TIMER_MED_ID: UpdateStatusGUI() ; Irc->run() ; DisplayAlert() ; break ;
-    case APP::GUI_TIMER_LO_ID:                                                    break ;
-#  endif // RUN_NETWORK_AS_THREAD
-#endif // NO_INITIALIZE_NETWORK
-    default:                                                         break ;
+    case APP::GUI_TIMER_HI_ID:                                          break ;
+    case APP::GUI_TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ;    break ;
+    case APP::GUI_TIMER_LO_ID:  if (IsChatEnabled) Irc->startThread() ; break ;
+    default:                                                            break ;
   }
 }
 
@@ -414,6 +404,9 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT
 
     return false ;
   }
+  else if (CliParams.contains(APP::CLI_DISABLE_COMP_TOKEN   )) IsCompositorEnabled = false ;
+  else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) IsPreviewEnabled    = false ;
+  else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) IsChatEnabled       = false ;
 
   return true ;
 }

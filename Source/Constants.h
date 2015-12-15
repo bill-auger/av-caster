@@ -36,7 +36,6 @@
 // #define DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
 #define NATIVE_CAMERA_RESOLUTION_ONLY
 // #define SHOW_DISABLED_PREVIEW_TINY
-#define RUN_NETWORK_AS_THREAD
 #define IRCCLIENT_HAS_MULTIPLE_SESSIONS
 // #define PREFIX_CHAT_NICKS
 #define STATIC_PIPELINE
@@ -97,17 +96,20 @@ namespace APP
   static const int GUI_TIMER_LO_ID  = 3 ; static const int GUI_UPDATE_LO_IVL  = 1000 ;
 
   // cli args
-  static const String CLI_HELP_TOKEN    = "--help" ;
-  static const String CLI_PRESETS_TOKEN = "--presets" ;
-  static const String CLI_PRESET_TOKEN  = "--preset" ;
-  static const String CLI_VERSION_TOKEN = "--version" ;
-  static const String CLI_VERSION_MSG   = "AvCaster v" + String(ProjectInfo::versionString) ;
-  static const String CLI_USAGE_MSG     = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN    + "     ] |"                                              +
-                                                           "\n\t          [ " + CLI_PRESETS_TOKEN + "  ] |"                                                 +
-                                                           "\n\t          [ " + CLI_PRESET_TOKEN  + " n ] |"                                                +
-                                                           "\n\n\t"           + CLI_HELP_TOKEN    + "\n\t\t\tprints this message"                           +
-                                                           "\n\n\t"           + CLI_PRESETS_TOKEN + "\n\t\t\tlist stored presets"                           +
-                                                           "\n\n\t"           + CLI_PRESET_TOKEN  + "\n\t\t\tstart with initial preset number n"            ;
+  static const String CLI_HELP_TOKEN            = "--help" ;
+  static const String CLI_PRESETS_TOKEN         = "--presets" ;
+  static const String CLI_PRESET_TOKEN          = "--preset" ;
+  static const String CLI_VERSION_TOKEN         = "--version" ;
+  static const String CLI_DISABLE_COMP_TOKEN    = "--no-compositing" ;
+  static const String CLI_DISABLE_PREVIEW_TOKEN = "--no-preview" ;
+  static const String CLI_DISABLE_CHAT_TOKEN    = "--no-chat" ;
+  static const String CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionString) ;
+  static const String CLI_USAGE_MSG   = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN    + "     ] |"                                              +
+                                                         "\n\t          [ " + CLI_PRESETS_TOKEN + "  ] |"                                                 +
+                                                         "\n\t          [ " + CLI_PRESET_TOKEN  + " n ] |"                                                +
+                                                         "\n\n\t"           + CLI_HELP_TOKEN    + "\n\t\t\tprints this message"                           +
+                                                         "\n\n\t"           + CLI_PRESETS_TOKEN + "\n\t\t\tlist stored presets"                           +
+                                                         "\n\n\t"           + CLI_PRESET_TOKEN  + "\n\t\t\tstart with initial preset number n"            ;
 
   // filesystem
   static const File   HOME_DIR        = File::getSpecialLocation(File::userHomeDirectory           ) ;
@@ -327,9 +329,9 @@ namespace CONFIG
 \*/
 
 
-  static Identifier FilterId(String a_string , String filter_chars)
+  static Identifier FilterId(String a_string , String retain_chars)
   {
-    return a_string.retainCharacters(filter_chars)
+    return a_string.retainCharacters(retain_chars)
                    .toLowerCase()
                    .replaceCharacters(APP::FILTER_CHARS , APP::REPLACE_CHARS) ;
   }

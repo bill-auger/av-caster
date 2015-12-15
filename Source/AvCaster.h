@@ -62,7 +62,7 @@ public:
   static void SetStatusL (String status_text) ;
   static void Warning    (String message_text) ;
   static void Error      (String message_text) ;
-  static void AddChatLine(String nick , String message) ;
+  static void AddChatLine(String prefix , String nick , String message) ;
   static void SendChat   (String chat_message) ;
 
   // callbacks and event handlers
@@ -104,6 +104,11 @@ public:
 
   // persistence
   static ScopedPointer<AvCasterStore> Store ;
+
+  // runtime features
+  static bool IsCompositorEnabled ;
+  static bool IsPreviewEnabled ;
+  static bool IsChatEnabled ;
 
 
 private:

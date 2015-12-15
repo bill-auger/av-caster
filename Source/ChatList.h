@@ -56,17 +56,19 @@ private:
   friend class Chat ;
   friend class ChatListItem ;
 
-  void reloadNicks          () ;
-  void refresh              () ;
-  int  sortedChildIdx       (ValueTree& a_parent_node , ValueTree& a_node) ;
   void valueTreeChildAdded  (ValueTree& a_parent_node , ValueTree& a_node) override ;
   void valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node) override ;
 
+  bool isChattersNode(ValueTree& a_parent_node , ValueTree& a_node) ;
+  int  sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node) ;
+  void reloadNicks   () ;
+  void refresh       () ;
+
   // unused ValueTree::Listener interface implementations
-  void valueTreePropertyChanged(  ValueTree& a_node , const Identifier& a_key)  override { UNUSED(a_node) ; UNUSED(a_key) ;  } ;
-  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ;           } ;
-  void valueTreeParentChanged(    ValueTree& a_node)                            override { UNUSED(a_node) ;                  } ;
-  void valueTreeRedirected(       ValueTree& a_node)                            override { UNUSED(a_node) ;                  } ;
+  void valueTreePropertyChanged(  ValueTree& a_node , const Identifier& a_key) override { UNUSED(a_node) ; UNUSED(a_key) ;  } ;
+  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                    override { UNUSED(a_parent_node) ;           } ;
+  void valueTreeParentChanged(    ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
+  void valueTreeRedirected(       ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
 
 
   ValueTree          serversStore ;

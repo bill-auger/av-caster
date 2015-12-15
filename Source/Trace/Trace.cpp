@@ -75,9 +75,9 @@ void Trace::DumpConfig(ValueTree config_store , String node_desc)
 
   String pad = "  " ;
   String dbg = String("dump node '" + node_desc            + "' =>\n") + pad +
-                "node => "           + node_name                              +
-                " (properties: "     + String(n_properties) + ")"             +
-                " (children: "       + String(n_children)   + ")"             ;
+               "node => "           + node_name                              +
+               " (properties: "     + String(n_properties) + ")"             +
+               " (children: "       + String(n_children)   + ")"             ;
 
   for (int property_n = 0 ; property_n < n_properties ; ++property_n)
   {
@@ -90,7 +90,12 @@ void Trace::DumpConfig(ValueTree config_store , String node_desc)
   Trace::TraceConfig(dbg) ;
 
   for (int child_n = 0 ; child_n < n_children ; ++child_n)
-    DumpConfig(config_store.getChild(child_n) , node_name + "[" + String(child_n) +"]") ;
+  {
+    ValueTree child_node      = config_store.getChild(child_n) ;
+    String    child_node_desc = node_name + "[" + String(child_n) + "] ('" +
+                                String(child_node.getType()) + "')"        ;
+    DumpConfig(child_node , child_node_desc) ;
+  }
 }
 
 #endif // DEBUG

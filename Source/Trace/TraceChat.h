@@ -34,18 +34,19 @@
                   ") nicks from server[" + String(server_n) + "] '" + String(server_id) + \
                   "' nicks=[" + nix.joinIntoString(",") + "]"                           ) ;
 
-#  define DEBUG_TRACE_LOCATE_SORTED_CHILD if (!(~child_idx) && DEBUG_TRACE_VB)            \
-  Trace::TraceError(String("error locating component for chatter ")             +         \
-    " nick="          + nick                                                    +         \
-    " a_parent_node=" + String(a_parent_node.getType())                         +         \
-    " server_id="     + String(server_id)                                       +         \
-    " server_store="  + String((server_store.isValid()) ? "valid" : " invalid") +         \
-    " server_idx="    + String(server_idx)                                      +         \
-    " child_idx="     + String(child_idx)                                       ) ;       \
-  StringArray nix = this->nicks[server_idx] ;                                             \
-  Trace::TraceGui(String("searching (") + String(nix.size()) +                            \
-                  ") nicks on server[" + String(server_idx) + "] '" + String(server_id) + \
-                  "' nicks=[" + nix.joinIntoString(",") + "]"                           ) ;
+#  define DEBUG_TRACE_LOCATE_SORTED_CHILD if (!(~child_idx) && DEBUG_TRACE_VB)              \
+  Trace::TraceError(String("error locating component for chatter ")             +           \
+    " nick="          + nick                                                    +           \
+    " a_parent_node=" + String(a_parent_node.getType())                         +           \
+    " server_id="     + String(server_id)                                       +           \
+    " server_store="  + String((server_store.isValid()) ? "valid" : " invalid") +           \
+    " server_idx="    + String(server_idx)                                      +           \
+    " child_idx="     + String(child_idx)                                       ) ;         \
+  StringArray these_nicks = this->nicks[server_idx] ;                                       \
+  if (DEBUG_TRACE_VB) Trace::TraceGui(String("searching (") + String(these_nicks.size()) +  \
+                                      ") nicks on server[" + String(server_idx)  +          \
+                                      "] '" + String(server_id)                  +          \
+                                      "' nicks=[" + these_nicks.joinIntoString(",") + "]")  ;
 
 #  define DEBUG_TRACE_ADD_CHAT_LIST_ITEM                                           \
   Trace::TraceGui("adding chatter '" + STRING(a_node[CONFIG::CHAT_NICK_ID]) + "'") ;

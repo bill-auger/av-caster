@@ -39,20 +39,31 @@
                      ((!do_versions_match                  ) ? outdated_msg  :               \
                                                                success_msg))))               ;
 
-#  define DEBUG_TRACE_VERIFY_PRESETS                       \
+#  define DEBUG_TRACE_VERIFY_PRESETS_NODE                  \
   Trace::TraceMissingNode(this->root , CONFIG::PRESETS_ID) ;
 
-#  define DEBUG_TRACE_VERIFY_SERVERS                       \
+#  define DEBUG_TRACE_VERIFY_SERVERS_NODE                  \
   Trace::TraceMissingNode(this->root , CONFIG::SERVERS_ID) ;
 
 #  define DEBUG_TRACE_VERIFY_CONFIG_ROOT                                   \
   if (!this->root.isValid()) Trace::TraceError("invalid config root node") ;
 
-#  define DEBUG_TRACE_VERIFY_CONFIG_PRESETS                                     \
-  if (!this->config.isValid()) Trace::TraceError("invalid config presets node") ;
+#  define DEBUG_TRACE_VERIFY_CONFIG_PRESETS                                      \
+  if (!this->presets.isValid()) Trace::TraceError("invalid config presets node") ;
 
-#  define DEBUG_TRACE_VERIFY_CONFIG_PRESET                         \
-  if (!this->config.isValid()) Trace::TraceError("invalid preset") ;
+#  define DEBUG_TRACE_VERIFY_CONFIG_PRESET                              \
+  if (!this->config.isValid()) Trace::TraceError("invalid preset node") ;
+
+#  define DEBUG_TRACE_VERIFY_SERVERS                                      \
+  if (!this->servers.isValid()) Trace::TraceError("invalid servers node") ;
+
+#  define DEBUG_TRACE_VERIFY_SERVER_IN                                   \
+  if (!a_server_node.isValid()) Trace::TraceError("invalid server node") ;
+
+#  define DEBUG_TRACE_VERIFY_SERVER_OUT                               \
+  String node_id = String(a_server_node.getType()) ;                  \
+  if (!a_server_node.getParent().isValid())                           \
+    Trace::TraceError("pruned corrupt server node '" + node_id + "'") ;
 
 #  define DEBUG_TRACE_VERIFY_CONFIG_PROPERTY                          \
   Trace::TraceMissingProperty(config_store , a_key , a_default_value) ;
@@ -63,32 +74,26 @@
     Trace::TraceConfig("value out of range for property of '" + node_id          +       \
                        "' - removing '"                       + property_id + "'")       ;
 
-# define DEBUG_TRACE_DUMP_CONFIG(method_name)                   \
-  Trace::TraceVerbose(String(method_name) + "dumping config") ; \
-  DEBUG_TRACE_DUMP_CONFIG_ROOT                                  \
-  DEBUG_TRACE_DUMP_CONFIG_PRESETS                               \
-  DEBUG_TRACE_DUMP_CONFIG_SERVERS                               \
-  DEBUG_TRACE_DUMP_CONFIG_VOLATILE                              \
-  DEBUG_TRACE_DUMP_CONFIG_CAMERAS                               \
-  DEBUG_TRACE_DUMP_CONFIG_AUDIOS
-
-#  define DEBUG_TRACE_DUMP_CONFIG_CHILDREN(parent_node)                                \
-  { String parent_name = String(parent_node.getType()) ;                               \
-    int    child_n     = parent_node.getNumChildren() ;                                \
-    while (child_n--) Trace::DumpConfig(parent_node.getChild(child_n) , parent_name) ; }
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT     Trace::DumpConfig(this->root    , "root"    ) ;
-#  define DEBUG_TRACE_DUMP_CONFIG_PRESETS  DEBUG_TRACE_DUMP_CONFIG_CHILDREN(this->presets)
-#  define DEBUG_TRACE_DUMP_CONFIG_SERVERS  DEBUG_TRACE_DUMP_CONFIG_CHILDREN(this->servers)
+#  define DEBUG_TRACE_DUMP_CONFIG_PRESETS  Trace::DumpConfig(this->presets , "presets" ) ;
+#  define DEBUG_TRACE_DUMP_CONFIG_SERVERS  Trace::DumpConfig(this->servers , "servers" ) ;
 #  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE Trace::DumpConfig(this->config  , "volatile") ;
 #  define DEBUG_TRACE_DUMP_CONFIG_CAMERAS  Trace::DumpConfig(this->cameras , "cameras" ) ;
 #  define DEBUG_TRACE_DUMP_CONFIG_AUDIOS   Trace::DumpConfig(this->audios  , "audios"  ) ;
 
+# define DEBUG_TRACE_DUMP_CONFIG(method_name)                    \
+  Trace::TraceVerbose(String(method_name) + " dumping config") ; \
+  DEBUG_TRACE_DUMP_CONFIG_ROOT                                   \
+  DEBUG_TRACE_DUMP_CONFIG_PRESETS                                \
+  DEBUG_TRACE_DUMP_CONFIG_SERVERS                                \
+  DEBUG_TRACE_DUMP_CONFIG_VOLATILE                               \
+  DEBUG_TRACE_DUMP_CONFIG_CAMERAS                                \
+  DEBUG_TRACE_DUMP_CONFIG_AUDIOS
+
 #  define DEBUG_TRACE_STORE_CONFIG                                                      \
   String file_path = this->configFile.getFullPathName() ;                               \
   if (!this->root.isValid()) Trace::TraceError("stored config invalid - not storing") ; \
-  else {                     Trace::TraceConfig("storing config to " + file_path) ;     \
-                             Trace::TraceVerbose("DEBUG_TRACE_STORE_CONFIG") ;          \
-                             DEBUG_TRACE_DUMP_CONFIG("AvCasterStore->StoreConfig()")    }
+  else                       Trace::TraceConfig("storing config to " + file_path)       ;
 
 #  define DEBUG_TRACE_STORE_SERVER                                              \
   Trace::TraceConfig("creating storage for IRC server '" +                      \
@@ -158,21 +163,23 @@
 #else // DEBUG
 
 #  define DEBUG_TRACE_VERIFY_CONFIG                     ;
-#  define DEBUG_TRACE_VERIFY_PRESETS                    ;
-#  define DEBUG_TRACE_VERIFY_SERVERS                    ;
+#  define DEBUG_TRACE_VERIFY_PRESETS_NODE               ;
+#  define DEBUG_TRACE_VERIFY_SERVERS_NODE               ;
 #  define DEBUG_TRACE_VERIFY_CONFIG_ROOT                ;
 #  define DEBUG_TRACE_VERIFY_CONFIG_PRESETS             ;
 #  define DEBUG_TRACE_VERIFY_CONFIG_PRESET              ;
+#  define DEBUG_TRACE_VERIFY_SERVERS                    ;
+#  define DEBUG_TRACE_VERIFY_SERVER_IN                  ;
+#  define DEBUG_TRACE_VERIFY_SERVER_OUT                 ;
 #  define DEBUG_TRACE_VERIFY_CONFIG_PROPERTY            ;
 #  define DEBUG_TRACE_SANITIZE_CONFIG_INT_PROPERTY      ;
-#  define DEBUG_TRACE_DUMP_CONFIG(method_name)          ;
-#  define DEBUG_TRACE_DUMP_CONFIG_CHILDREN(parent_node) ;
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT                  ;
 #  define DEBUG_TRACE_DUMP_CONFIG_PRESETS               ;
 #  define DEBUG_TRACE_DUMP_CONFIG_SERVERS               ;
 #  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE              ;
 #  define DEBUG_TRACE_DUMP_CONFIG_CAMERAS               ;
 #  define DEBUG_TRACE_DUMP_CONFIG_AUDIOS                ;
+#  define DEBUG_TRACE_DUMP_CONFIG(method_name)          ;
 #  define DEBUG_TRACE_STORE_CONFIG                      ;
 #  define DEBUG_TRACE_STORE_SERVER                      ;
 #  define DEBUG_TRACE_CONFIG_TREE_CHANGED               ;

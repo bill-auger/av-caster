@@ -192,9 +192,9 @@ DEBUG_TRACE_CHAT_VISIBILITY
   this->chatList        ->setVisible(is_visible) ;
 }
 
-void Chat::addChatLine(String nick , String message_text)
+void Chat::addChatLine(String prefix , String nick , String message_text)
 {
-  String message_header = (nick == GUI::CLIENT_NICK) ? "" : nick + ": " ;
+  String message_header = prefix + ((nick == GUI::CLIENT_NICK) ? "" : nick + ": ") ;
 
   const MessageManagerLock mmLock ;
   this->chatHistoryText->moveCaretToEnd() ;

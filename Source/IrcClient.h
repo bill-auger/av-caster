@@ -17,8 +17,8 @@
 \*/
 
 
-#ifndef _IRC_H_
-#define _IRC_H_
+#ifndef _IRCCLIENT_H_
+#define _IRCCLIENT_H_
 
 
 #include <libircclient.h>
@@ -40,11 +40,7 @@ typedef struct IrcServerInfo
   It encapsulates interactions with the libircclient C library
       and provides cross-network channel bridging.
 */
-#ifdef RUN_NETWORK_AS_THREAD
 class IrcClient : public Thread
-#else // RUN_NETWORK_AS_THREAD
-class IrcClient
-#endif // RUN_NETWORK_AS_THREAD
 {
   friend class AvCaster ;
 
@@ -58,34 +54,34 @@ private:
 
   IrcClient(ValueTree servers_store) ;
 
-  // helpers
-  static bool IsValidServerInfo  (IrcServerInfo* a_server_info) ;
-  static bool IsSufficientVersion() ;
-  static void AddServerChat      (String message) ;
-  static void AddClientChat      (String message) ;
-  static void AddUserChat        (String nick , String message) ;
-
   // libircclient callbacks
-  static void OnConnect   (irc_session_t* session , const char*  event , const char* origin ,
+  static void OnConnect   (irc_session_t* session , const char* event  , const char* origin ,
                            const char**   params  , unsigned int count                      ) ;
-  static void OnChannelMsg(irc_session_t* session , const char*  event , const char* origin ,
+  static void OnChannelMsg(irc_session_t* session , const char* event  , const char* origin ,
                            const char**   params  , unsigned int count                      ) ;
-  static void OnJoin      (irc_session_t* session , const char*  event , const char* origin ,
+  static void OnJoin      (irc_session_t* session , const char* event  , const char* origin ,
                            const char**   params  , unsigned int count                      ) ;
-  static void OnPart      (irc_session_t* session , const char*  event , const char* origin ,
+  static void OnPart      (irc_session_t* session , const char* event  , const char* origin ,
                            const char**   params  , unsigned int count                      ) ;
+  static void OnNickChange(irc_session_t* session , const char* event  , const char* origin ,
+                           const char**   params  , unsigned int count                     ) ;
   static void OnNumeric   (irc_session_t* session , unsigned int event , const char* origin ,
                            const char**   params  , unsigned int count                      ) ;
-  static void HandleNicks (String host , String channel , StringArray nicks) ;
+
+  // helpers
+  static bool        IsValidServerInfo  (IrcServerInfo* a_server_info) ;
+  static bool        IsSufficientVersion() ;
+  static void        HandleNicks        (String host , String channel , StringArray nicks) ;
+  static String      ProcessTextMeta    (const char* message) ;
+  static StringArray ProcessTimestamp   (String message) ;
+  static void        AddServerChat      (String message) ;
+  static void        AddClientChat      (String message) ;
+  static void        AddUserChat        (String prefix , String nick , String message) ;
 
   // session management
   IrcServerInfo createSession(ValueTree server_store) ;
   bool          login        (IrcServerInfo* a_server_info) ;
-#ifdef RUN_NETWORK_AS_THREAD
   void          run          () override ;
-#else // RUN_NETWORK_AS_THREAD
-  void          run          () ;
-#endif // RUN_NETWORK_AS_THREAD
 
   void sendChat(String chat_msg) ;
 
@@ -95,4 +91,4 @@ private:
   ValueTree            serversStore ; // TODO: replace servers?? replace IrcServerInfo
 } ;
 
-#endif // _IRC_H_
+#endif // _IRCCLIENT_H_

@@ -33,12 +33,8 @@ String greeting     = "" ;               // TODO: GUI support
 
 /* IrcClient class methods */
 
-#ifdef RUN_NETWORK_AS_THREAD
 IrcClient::IrcClient(ValueTree servers_store) : Thread(APP::IRC_THREAD_NAME) ,
                                                 serversStore(servers_store)
-#else // RUN_NETWORK_AS_THREAD
-IrcClient::IrcClient(ValueTree servers_store) : serversStore(servers_store)
-#endif // RUN_NETWORK_AS_THREAD
 {
   // establish shared server callbacks
   memset(&this->callbacks , 0 , sizeof(this->callbacks)) ;
@@ -46,6 +42,7 @@ IrcClient::IrcClient(ValueTree servers_store) : serversStore(servers_store)
   this->callbacks.event_channel = OnChannelMsg ;
   this->callbacks.event_join    = OnJoin ;
   this->callbacks.event_part    = OnPart ;
+  this->callbacks.event_nick    = OnNickChange ;
   this->callbacks.event_numeric = OnNumeric ;
 
  // create per server session instances and login
@@ -55,9 +52,8 @@ IrcClient::IrcClient(ValueTree servers_store) : serversStore(servers_store)
     ValueTree     server_store = this->serversStore.getChild(server_n) ;
     IrcServerInfo server_info  = createSession(server_store) ;
 
-    if (!IsValidServerInfo(&server_info)) continue ;
-
-    this->servers.add(server_info) ; login(&server_info) ;
+    if (IsValidServerInfo(&server_info))
+      this->servers.add(server_info) ; login(&server_info) ;
   }
 }
 
@@ -88,39 +84,6 @@ DEBUG_TRACE_CREATE_SESSION
   return server_info ;
 }
 
-bool IrcClient::IsValidServerInfo(IrcServerInfo* a_server_info)
-{
-  return a_server_info->session != 0      &&
-         a_server_info->host.isNotEmpty() &&
-         a_server_info->port > 0          &&
-         a_server_info->nick.isNotEmpty()  ;
-}
-
-bool IrcClient::IsSufficientVersion()
-{
-  unsigned int major_version , minor_version ;
-
-  irc_get_version(&major_version , &minor_version) ;
-
-  return major_version >= IRC::MIN_MAJOR_VERSION &&
-         minor_version >= IRC::MIN_MINOR_VERSION  ;
-}
-
-void IrcClient::AddServerChat(String message)
-{
-  AvCaster::AddChatLine(GUI::SERVER_NICK , message) ;
-}
-
-void IrcClient::AddClientChat(String message)
-{
-  AvCaster::AddChatLine(GUI::CLIENT_NICK , message) ;
-}
-
-void IrcClient::AddUserChat(String nick , String message)
-{
-  AvCaster::AddChatLine(nick , message) ;
-}
-
 void IrcClient::OnConnect(irc_session_t* session , const char*  event , const char* origin ,
                           const char**   params  , unsigned int count                      )
 {
@@ -129,11 +92,11 @@ void IrcClient::OnConnect(irc_session_t* session , const char*  event , const ch
   bool   is_bitlbee = host    == bitlbeehost                       &&
                       message == IRC::BITLBEE_WELCOME_MSG + my_nick ;
 
+DEBUG_TRACE_CONNECTED
+
 // String OFTC_TLD = "oftc.net" ;
 //   if (host.endsWith(IRC::OFTC_TLD)) AvCaster::RenameServer(debianhost , host) ;
   if (host.endsWith(IRC::OFTC_TLD)) AvCaster::UpdateIrcHost(IRC::OFTC_ALIAS_URIS , host) ;
-
-DEBUG_TRACE_IRC_CONNECTED
 
   // display connected message
   AddClientChat(IRC::LOGGED_IN_MSG + host) ; AddServerChat(message) ;
@@ -141,7 +104,7 @@ DEBUG_TRACE_IRC_CONNECTED
   if (is_bitlbee)
   {
     // identify with bitlbee
-    String my_pass      = "123" ;
+    String my_pass      = "123" ; // TODO: GUI and model support
     String identify_cmd = IRC::IDENTIFY_CMD + my_pass ;
 
     irc_cmd_msg(session , IRC::ROOT_CHANNEL , CHARSTAR(identify_cmd)) ;
@@ -179,33 +142,36 @@ static void event_notice (irc_session_t * session, const char * event,
 void IrcClient::OnChannelMsg(irc_session_t* session , const char*  event , const char* origin ,
                              const char**   params  , unsigned int count                      )
 {
-DEBUG_TRACE_IRC_CHAT_MSG_VB
+DEBUG_TRACE_CHAT_MSG_VB
 
   if (!origin || count != 2) return ;
 
   char nickbuf[128] ; irc_target_get_nick(origin , nickbuf , sizeof(nickbuf)) ;
 
-  String user_id          = String(origin) ;
-  String nick             = nickbuf ;
-  String channel          = CharPointer_UTF8(params[0]) ;
-  String message          = CharPointer_UTF8(params[1]) ;
-  bool   is_root_user     = user_id.startsWith(IRC::ROOT_USER + bitlbeehost) ;
-  bool   is_root_channel  = channel == String (IRC::ROOT_CHANNEL           ) ;
-  bool   is_xmpp_channel  = channel == String (xmpp_channel                ) ;
-  bool   is_login_blocked = message.endsWith  (IRC::LOGIN_BLOCKED_MSG      ) ;
-  bool   is_logged_in     = message.endsWith  (IRC::CONNECTED_MSG          ) ||
-                            message.endsWith  (IRC::KICKED_SELF_MSG        )  ;
+  String      user_id           = String(origin) ;
+  String      nick              = nickbuf ;
+  String      channel           = CharPointer_UTF8(params[0]) ;
+  String      filtered_message  = ProcessTextMeta(params[1]) ;
+  StringArray processed_message = ProcessTimestamp(filtered_message) ;
+  String      timestamp         = processed_message[0] ;
+  String      message           = processed_message[1] ;
+  bool        is_root_user      = user_id.startsWith(IRC::ROOT_USER + bitlbeehost) ;
+  bool        is_root_channel   = channel == String (IRC::ROOT_CHANNEL           ) ;
+  bool        is_xmpp_channel   = channel == String (xmpp_channel                ) ;
+  bool        is_login_blocked  = message.endsWith  (IRC::LOGIN_BLOCKED_MSG      ) ;
+  bool        is_logged_in      = message.endsWith  (IRC::CONNECTED_MSG          ) ||
+                                  message.endsWith  (IRC::KICKED_SELF_MSG        )  ;
 
-DEBUG_TRACE_IRC_CHAT_MSG
+DEBUG_TRACE_CHAT_MSG
 
-  // handle message from the bee
+  // handle login message from the bee
   if (is_root_user && is_root_channel)
     if      (is_login_blocked) AddClientChat(IRC::SESSION_BLOCKED_MSG) ;
     else if (is_logged_in    ) irc_cmd_join(session , CHARSTAR(xmpp_channel) , NULL) ;
   if (is_root_user || is_root_channel) return ;
 
   // handle peer messages
-  AddUserChat(nick , message) ;
+  AddUserChat(timestamp , nick , message) ;
 }
 
 void IrcClient::OnJoin(irc_session_t* session , const char*  event , const char* origin ,
@@ -217,7 +183,7 @@ void IrcClient::OnJoin(irc_session_t* session , const char*  event , const char*
 
   irc_cmd_user_mode(session , "+i") ;
 
-DEBUG_TRACE_IRC_ONJOIN
+DEBUG_TRACE_ONJOIN
 
   if (channel_name == IRC::ROOT_CHANNEL) return ;
 
@@ -239,7 +205,7 @@ void IrcClient::OnPart(irc_session_t* session , const char*  event , const char*
   String nick         = nickbuf ;
   String channel_name = params[0] ;
 
-DEBUG_TRACE_IRC_ONPART
+DEBUG_TRACE_ONPART
 
 #ifndef HIDE_JOIN_PART_MESSAGES
   AddClientChat(nick + " just parted channel " + channel_name) ;
@@ -249,10 +215,21 @@ DEBUG_TRACE_IRC_ONPART
   irc_cmd_names(session , CHARSTAR(channel_name)) ;
 }
 
+void IrcClient::OnNickChange(irc_session_t* session , const char* event , const char* origin ,
+                             const char**   params  , unsigned int count                     )
+{
+  String from_nick    = origin ;
+  String to_nick      = params[0] ;
+//   String channel_name = session. ; // TODO: may need to add session_ctx
+
+DEBUG_TRACE_NICK_CHANGE
+// DUMP_SERVER_PARAMS
+//   irc_cmd_names(session , CHARSTAR(channel_name)) ;
+}
 void IrcClient::OnNumeric(irc_session_t* session , unsigned int event , const char* origin ,
                           const char**   params  , unsigned int count                      )
 {
-DEBUG_TRACE_IRC_SERVER_MSG
+DEBUG_TRACE_SERVER_MSG
 
   if (event == LIBIRC_RFC_RPL_NAMREPLY)
   {
@@ -264,19 +241,83 @@ DEBUG_TRACE_IRC_SERVER_MSG
   }
 }
 
+bool IrcClient::IsValidServerInfo(IrcServerInfo* a_server_info)
+{
+DEBUG_TRACE_SERVER_INFO
+
+  return a_server_info->session != 0      &&
+         a_server_info->host.isNotEmpty() &&
+         a_server_info->port > 0          &&
+         a_server_info->nick.isNotEmpty()  ;
+}
+
+bool IrcClient::IsSufficientVersion()
+{
+  unsigned int major_version , minor_version ;
+
+  irc_get_version(&major_version , &minor_version) ;
+
+  return major_version >= IRC::MIN_MAJOR_VERSION &&
+         minor_version >= IRC::MIN_MINOR_VERSION  ;
+}
+
 void IrcClient::HandleNicks(String host , String channel , StringArray nicks)
 {
   if (host == bitlbeehost && channel == IRC::ROOT_CHANNEL) return ;
 
   nicks.removeEmptyStrings() ; nicks.removeString(IRC::ROOT_NICK) ;
 
-DEBUG_TRACE_IRC_NICKS
+DEBUG_TRACE_NICKS
 
 #ifdef PREFIX_CHAT_NICKS
   AvCaster::UpdateChatNicks(host , channel , nicks) ;
 #else // PREFIX_CHAT_NICKS
   AvCaster::UpdateChatNicks(host , nicks) ;
 #endif // PREFIX_CHAT_NICKS
+}
+
+String IrcClient::ProcessTextMeta(const char* message)
+{
+  // TODO: for now we just strip these - see docs for irc_color_convert_to_mirc()
+  char*  msg_cstr      = irc_color_convert_from_mirc(message) ;
+  String converted_msg = CharPointer_UTF8(msg_cstr) ; delete msg_cstr ;
+  String filtered_msg  = converted_msg.replace("[B]" , "").replace("[/B]"     , "") // bold
+                                      .replace("[I]" , "").replace("[/I]"     , "") // italic
+                                      .replace("[U]" , "").replace("[/U]"     , "") // underline
+                                                          .replace("[/COLOR]" , "") ;
+
+  while (filtered_msg.contains("[COLOR="))
+    filtered_msg.replace(filtered_msg.fromFirstOccurrenceOf("[COLOR=" , true , false)
+                                     .upToFirstOccurrenceOf("]"       , true , false) , "") ;
+
+  return filtered_msg ;
+}
+
+StringArray IrcClient::ProcessTimestamp(String message)
+{
+  String timestamp     = message.fromFirstOccurrenceOf("[" , true , false)
+                                .upToFirstOccurrenceOf("]" , true , false) ;
+  String processed_msg = message.replace(timestamp , "") ;
+  bool   is_timestamp  = timestamp.replaceCharacters("[:]" , "000")
+                                  .containsOnly(APP::DIGITS) ;
+
+  return (is_timestamp) ? StringArray::fromLines(timestamp + " \n" + processed_msg) :
+                          StringArray::fromLines("\n" + message)                    ;
+}
+
+void IrcClient::AddServerChat(String message)
+{
+  AvCaster::AddChatLine(String::empty , GUI::SERVER_NICK , message) ;
+}
+
+void IrcClient::AddClientChat(String message)
+{
+  AvCaster::AddChatLine(String::empty , GUI::CLIENT_NICK , message) ;
+}
+
+void IrcClient::AddUserChat(String prefix , String nick , String message)
+{
+  AvCaster::AddChatLine(prefix , nick , message) ;
 }
 
 
@@ -290,14 +331,12 @@ bool IrcClient::login(IrcServerInfo* a_server_info)
   unsigned short port    =          a_server_info->port ;
   const char*    nick    = CHARSTAR(a_server_info->nick    ) ;
 
-DEBUG_TRACE_IRC_LOGIN_IN
-
   // display login message
   AddClientChat(IRC::LOGGING_IN_MSG + a_server_info->host) ;
 
   bool is_err = irc_connect(session , host , port , 0 , nick , 0 , 0) ;
 
-DEBUG_TRACE_IRC_LOGIN_OUT
+DEBUG_TRACE_LOGIN
 
   return !is_err ;
 }
@@ -305,11 +344,11 @@ DEBUG_TRACE_IRC_LOGIN_OUT
 void IrcClient::run()
 {
 #ifdef RUN_NETWORK_AS_PROC
-DEBUG_TRACE_IRC_THREAD_RUN_IN
+DEBUG_TRACE_THREAD_RUN_IN
 
   bool is_err = irc_run(this->session) ;
 
-DEBUG_TRACE_IRC_THREAD_RUN_OUT
+DEBUG_TRACE_THREAD_RUN_OUT
 
   return ;
 #endif // RUN_NETWORK_AS_PROC
@@ -317,12 +356,11 @@ DEBUG_TRACE_IRC_THREAD_RUN_OUT
   if (threadShouldExit()) return ;
 
   for (IrcServerInfo* server = this->servers.begin() ; server != this->servers.end() ; ++server)
-    if (IsValidServerInfo(server) && !irc_is_connected(server->session))
-      { login(server) ; continue ; }
+    if (!irc_is_connected(server->session)) { login(server) ; continue ; }
 
-  struct timeval tv ;
-  tv.tv_usec   = 250000 ;
-  tv.tv_sec    = 0 ;
+  struct timeval timeout ;
+  timeout.tv_usec   = 250000 ;
+  timeout.tv_sec    = 0 ;
   int    maxfd = 0 ;
   fd_set in_set , out_set ;
 
@@ -331,7 +369,7 @@ DEBUG_TRACE_IRC_THREAD_RUN_OUT
   for (IrcServerInfo* server = this->servers.begin() ; server != this->servers.end() ; ++server)
     irc_add_select_descriptors(server->session , &in_set , &out_set , &maxfd) ;
 
-  if (select(maxfd + 1 , &in_set , &out_set , 0 , &tv) < 0) return ;
+  if (select(maxfd + 1 , &in_set , &out_set , 0 , &timeout) < 0) return ;
 
   for (IrcServerInfo* server = this->servers.begin() ; server != this->servers.end() ; ++server)
     if (irc_process_select_descriptors(server->session , &in_set , &out_set)) continue ;
@@ -343,5 +381,5 @@ void IrcClient::sendChat(String chat_msg)
   while (server != this->servers.end())
     irc_cmd_msg((server++)->session , CHARSTAR(xmpp_channel) , CHARSTAR(String(chat_msg))) ;
 
-  AddUserChat(my_nick , chat_msg) ;
+  AddUserChat(String::empty , my_nick , chat_msg) ;
 }
