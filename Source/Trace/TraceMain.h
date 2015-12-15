@@ -27,12 +27,16 @@
 
 /* state */
 
+#  define DEBUG_TRACE_INIT_VERSION printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ;
+
 #  define DEBUG_TRACE_SHUTDOWN_IN  Trace::TraceState("shutting down") ;
+
 #  define DEBUG_TRACE_SHUTDOWN_OUT Trace::TraceState("clean shutdown - bye") ;
 
 #else // DEBUG
 
-#  define DEBUG_TRACE_SHUTDOWN_IN ;
+#  define DEBUG_TRACE_INIT_VERSION ;
+#  define DEBUG_TRACE_SHUTDOWN_IN  ;
 #  define DEBUG_TRACE_SHUTDOWN_OUT ;
 
 #endif // DEBUG

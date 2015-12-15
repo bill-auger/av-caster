@@ -127,10 +127,6 @@ int ChatList::sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node)
   int        server_idx   = this->serversStore.indexOf(server_store) ;
   int        child_idx    = this->nicks[server_idx].indexOf(nick) ;
 
-if (server_id == Identifier("irc-servers"))
-{
-  printf("this should not be so") ; // FIXME:
-}
 DEBUG_TRACE_LOCATE_SORTED_CHILD
 
   return child_idx ;

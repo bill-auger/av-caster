@@ -70,42 +70,46 @@ public:
   static void                             OnModalDismissed(int result , int unused) ;
 
   // getters/setters
-  static void*          GetGuiXwinHandle    () ;
-  static Rectangle<int> GetPreviewBounds    () ;
-  static void           SetConfig           (const Identifier& a_key , var a_value) ;
-  static void           StorePreset         (String preset_name) ;
-  static void           RenamePreset        (String preset_name) ;
-  static void           DeletePreset        () ;
-  static void           ResetPreset         () ;
-  static bool           SetPreset           (String preset_name , int option_n) ;
-  static ValueTree      GetConfigStore      () ;
-  static bool           RejectPresetChange  () ;
-  static bool           IsStaticPreset      () ;
-  static int            GetPresetIdx        () ;
-  static String         GetPresetName       () ;
-  static bool           GetIsPreviewOn      () ;
-  static bool           GetIsConfigPending  () ;
-  static StringArray    GetPresetsNames     () ;
-  static StringArray    GetCameraNames      () ;
-  static StringArray    GetAudioNames       () ;
-  static StringArray    GetCameraResolutions() ;
-  static String         GetCameraResolution () ;
-  static String         GetCameraPath       () ;
-  static int            GetCameraRate       () ;
-  static String         GetVersionString    () ;
-  static void           UpdateIrcHost       (StringArray alias_uris , String actual_host) ;
+  static bool           GetIsMediaEnabled     () ;
+  static bool           GetIsCompositorEnabled() ;
+  static bool           GetIsPreviewEnabled   () ;
+  static void*          GetGuiXwinHandle      () ;
+  static Rectangle<int> GetPreviewBounds      () ;
+  static void           SetConfig             (const Identifier& a_key , var a_value) ;
+  static void           StorePreset           (String preset_name) ;
+  static void           RenamePreset          (String preset_name) ;
+  static void           DeletePreset          () ;
+  static void           ResetPreset           () ;
+  static bool           SetPreset             (String preset_name , int option_n) ;
+  static ValueTree      GetConfigStore        () ;
+  static bool           RejectPresetChange    () ;
+  static bool           IsStaticPreset        () ;
+  static int            GetPresetIdx          () ;
+  static String         GetPresetName         () ;
+  static bool           GetIsPreviewActive    () ;
+  static bool           GetIsConfigPending    () ;
+  static StringArray    GetPresetsNames       () ;
+  static StringArray    GetCameraNames        () ;
+  static StringArray    GetAudioNames         () ;
+  static StringArray    GetCameraResolutions  () ;
+  static String         GetCameraResolution   () ;
+  static String         GetCameraPath         () ;
+  static int            GetCameraRate         () ;
+  static String         GetVersionString      () ;
+  static void           UpdateIrcHost         (StringArray alias_uris , String actual_host) ;
 #ifdef PREFIX_CHAT_NICKS
-  static void           UpdateChatNicks     (String host , String channel , StringArray nicks) ;
+  static void           UpdateChatNicks       (String host , String channel , StringArray nicks) ;
 #else // PREFIX_CHAT_NICKS
-  static void           UpdateChatNicks     (String host , StringArray nicks) ;
+  static void           UpdateChatNicks       (String host , StringArray nicks) ;
 #endif // PREFIX_CHAT_NICKS
-  static StringArray    GetChatNicks        (const Identifier& server_id) ;
+  static StringArray    GetChatNicks          (const Identifier& server_id) ;
 
 
   // persistence
   static ScopedPointer<AvCasterStore> Store ;
 
   // runtime features
+  static bool IsMediaEnabled ;
   static bool IsCompositorEnabled ;
   static bool IsPreviewEnabled ;
   static bool IsChatEnabled ;

@@ -30,6 +30,8 @@ public:
 
   void initialise(const String& command_line) override
   {
+DEBUG_TRACE_INIT_VERSION
+
     this->mainWindow = new MainWindow() ;
 
     if (AvCaster::Initialize(this->mainWindow->mainContent))

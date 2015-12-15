@@ -22,7 +22,7 @@
 
 // enable standard features
 // #define NO_INITIALIZE_MEDIA
-// #define NO_INITIALIZE_NETWORK
+// #define NO_INSTANTIATE_IRC
 // #define SUPRESS_ALERTS
 #define CONFIGURE_TEXT_BIN         0
 #define CONFIGURE_INTERSTITIAL_BIN 0
@@ -39,12 +39,12 @@
 #define IRCCLIENT_HAS_MULTIPLE_SESSIONS
 // #define PREFIX_CHAT_NICKS
 #define STATIC_PIPELINE
-// #define FAUX_SCREEN                   // replace sceen-real-source with fakesrc
-// #define FAUX_CAMERA                   // replace camera-real-source with fakesrc
-// #define FAUX_AUDIO                    // replace audio-real-source with fakesrc
-#define FAUX_PREVIEW (! JUCE_LINUX)      // replace composite-sink with fakesink
-// #define FAUX_OUTPUT                   // replace filesink or rtmpsink
-// #define FAKE_MUX_ENCODER_SRC_AND_SINK // isolate compositor from encoder and muxer from output
+// #define FAUX_SCREEN                       // replace sceen-real-source with fakesrc
+// #define FAUX_CAMERA                       // replace camera-real-source with fakesrc
+// #define FAUX_AUDIO                        // replace audio-real-source with fakesrc
+#define NO_INITIALIZE_PREVIEW (! JUCE_LINUX) // replace composite-sink with fakesink
+// #define FAUX_OUTPUT                       // replace filesink or rtmpsink
+// #define FAKE_MUX_ENCODER_SRC_AND_SINK     // isolate compositor from encoder and muxer from output
 
 
 // enable debug features
@@ -100,6 +100,7 @@ namespace APP
   static const String CLI_PRESETS_TOKEN         = "--presets" ;
   static const String CLI_PRESET_TOKEN          = "--preset" ;
   static const String CLI_VERSION_TOKEN         = "--version" ;
+  static const String CLI_DISABLE_MEDIA_TOKEN   = "--no-media" ;
   static const String CLI_DISABLE_COMP_TOKEN    = "--no-compositing" ;
   static const String CLI_DISABLE_PREVIEW_TOKEN = "--no-preview" ;
   static const String CLI_DISABLE_CHAT_TOKEN    = "--no-chat" ;
@@ -537,7 +538,9 @@ namespace GST
   static const String PULSE_PLUGIN_ID       = "pulsesrc" ;
   static const String JACK_PLUGIN_ID        = "jackaudiosrc" ;
   static const String FAUX_AUDIO_PLUGIN_ID  = "audiotestsrc" ;
-  static const String NIX_PREVIEW_PLUGIN_ID = "xvimagesink" ;
+#  if JUCE_LINUX
+  static const String PREVIEW_PLUGIN_ID     = "xvimagesink" ;
+#  endif //JUCE_LINUX
   static const String FILE_SINK_PLUGIN_ID   = "filesink" ;
   static const String RTMP_SINK_PLUGIN_ID   = "rtmpsink" ;
   static const String FAUX_SINK_PLUGIN_ID   = "fakesink" ;

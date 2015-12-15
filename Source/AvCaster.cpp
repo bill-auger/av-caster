@@ -32,7 +32,11 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 MainContent*             AvCaster::Gui                 = nullptr ; // Initialize()
 ScopedPointer<IrcClient> AvCaster::Irc                 = nullptr ; // Initialize()
 StringArray              AvCaster::CliParams ;                     // initialize()
+bool                     AvCaster::IsMediaEnabled      = true ;    // HandleCliParamsPreInit()
 bool                     AvCaster::IsCompositorEnabled = true ;    // HandleCliParamsPreInit()
+// bool                     AvCaster::IsScreenEnabled     = true ;    // HandleCliParamsPreInit()
+// bool                     AvCaster::IsCameraEnabled     = true ;    // HandleCliParamsPreInit()
+// bool                     AvCaster::IsTextEnabled       = true ;    // HandleCliParamsPreInit()
 bool                     AvCaster::IsPreviewEnabled    = true ;    // HandleCliParamsPreInit()
 bool                     AvCaster::IsChatEnabled       = true ;    // HandleCliParamsPreInit()
 Array<Alert*>            AvCaster::Alerts ;
@@ -68,6 +72,12 @@ ModalComponentManager::Callback* AvCaster::GetModalCb()
 }
 
 void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
+
+bool AvCaster::GetIsMediaEnabled() { return IsMediaEnabled ; }
+
+bool AvCaster::GetIsCompositorEnabled() { return IsCompositorEnabled ; }
+
+bool AvCaster::GetIsPreviewEnabled() { return IsPreviewEnabled ; }
 
 void* AvCaster::GetGuiXwinHandle() { return Gui->getWindowHandle() ; }
 
@@ -137,7 +147,7 @@ String AvCaster::GetPresetName()
   return STRING(current_preset[CONFIG::PRESET_NAME_ID]) ;
 }
 
-bool AvCaster::GetIsPreviewOn()
+bool AvCaster::GetIsPreviewActive()
 {
   return bool(Store->config[CONFIG::IS_PREVIEW_ON_ID]) && !GetIsConfigPending() ;
 }
@@ -234,13 +244,17 @@ bool AvCaster::Initialize(MainContent* main_content)
   Gui       = main_content ;
   CliParams = JUCEApplicationBase::getCommandLineParameterArray() ;
 
-DEBUG_TRACE_INIT_VERSION
+#ifdef NO_INITIALIZE_MEDIA
+  CliParams.add(APP::CLI_DISABLE_MEDIA_TOKEN) ;
+#endif // NO_INITIALIZE_MEDIA
+#if NO_INITIALIZE_PREVIEW
+  CliParams.add(APP::CLI_DISABLE_PREVIEW_TOKEN) ;
+#endif // NO_INITIALIZE_PREVIEW
+#ifdef NO_INSTANTIATE_IRC
+  CliParams.add(APP::CLI_DISABLE_CHAT_TOKEN) ;
+#endif // NO_INSTANTIATE_IRC
 
   if (!HandleCliParamsPreInit()) return false ;
-
-#ifdef NO_INITIALIZE_NETWORK
-  IsChatEnabled = false ;
-#endif // NO_INITIALIZE_NETWORK
 
 DEBUG_TRACE_INIT_PHASE_1
 
@@ -256,12 +270,10 @@ DEBUG_TRACE_INIT_PHASE_3
   // initialze GUI
   Gui->initialize(Store->servers) ; SetWindowTitle() ; RefreshGui() ;
 
-#ifndef NO_INITIALIZE_MEDIA
 DEBUG_TRACE_INIT_PHASE_4
 
   // initialize libgtreamer
-  if (!Gstreamer::Initialize()) return false ;
-#endif // NO_INITIALIZE_MEDIA
+  if (IsMediaEnabled && !Gstreamer::Initialize()) return false ;
 
 DEBUG_TRACE_INIT_PHASE_5
 
@@ -353,7 +365,7 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 void AvCaster::RefreshGui()
 {
   bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID   ]) ;
-  bool       is_preview_on     = bool(Store->config[CONFIG::IS_PREVIEW_ON_ID]) ;
+  bool       is_preview_on     = bool(Store->config[CONFIG::IS_PREVIEW_ON_ID]) && IsPreviewEnabled ;
   Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets ) :
                                                        static_cast<Component*>(Gui->controls) ;
   Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config ) :
@@ -369,11 +381,11 @@ DEBUG_TRACE_REFRESH_GUI
 
 void AvCaster::SetWindowTitle()
 {
-  bool   is_output_enabled = bool(Store->config[CONFIG::IS_OUTPUT_ON_ID]) ;
-  int    sink_idx          = int (Store->config[CONFIG::OUTPUT_SINK_ID ]) ;
+  bool   is_output_active = bool(Store->config[CONFIG::IS_OUTPUT_ON_ID]) ;
+  int    sink_idx         = int (Store->config[CONFIG::OUTPUT_SINK_ID ]) ;
   String title_text ;
 
-  if      (!is_output_enabled                 ) title_text = GUI::IDLE_TITLE_TEXT ;
+  if      (!is_output_active                  ) title_text = GUI::IDLE_TITLE_TEXT ;
   else if (sink_idx == CONFIG::FILE_STREAM_IDX) title_text = GUI::FILE_TITLE_TEXT ;
   else if (sink_idx == CONFIG::RTMP_STREAM_IDX) title_text = GUI::RTMP_TITLE_TEXT ;
   else                                          return ;
@@ -404,6 +416,8 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT
 
     return false ;
   }
+  else if (CliParams.contains(APP::CLI_DISABLE_MEDIA_TOKEN  ))
+    IsMediaEnabled = IsCompositorEnabled = IsPreviewEnabled = false ;
   else if (CliParams.contains(APP::CLI_DISABLE_COMP_TOKEN   )) IsCompositorEnabled = false ;
   else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) IsPreviewEnabled    = false ;
   else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) IsChatEnabled       = false ;

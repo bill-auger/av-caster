@@ -139,7 +139,7 @@ static void event_notice (irc_session_t * session, const char * event,
 }
 */
 
-void IrcClient::OnChannelMsg(irc_session_t* session , const char*  event , const char* origin ,
+void IrcClient::OnChannelMsg(irc_session_t* session , const char* event  , const char* origin ,
                              const char**   params  , unsigned int count                      )
 {
 DEBUG_TRACE_CHAT_MSG_VB
@@ -174,7 +174,7 @@ DEBUG_TRACE_CHAT_MSG
   AddUserChat(timestamp , nick , message) ;
 }
 
-void IrcClient::OnJoin(irc_session_t* session , const char*  event , const char* origin ,
+void IrcClient::OnJoin(irc_session_t* session , const char* event  , const char* origin ,
                        const char**   params  , unsigned int count                      )
 {
   char nickbuf[128] ; irc_target_get_nick(origin , nickbuf , sizeof(nickbuf)) ;
@@ -198,7 +198,7 @@ DEBUG_TRACE_ONJOIN
   irc_cmd_names(session , CHARSTAR(channel_name)) ;
 }
 
-void IrcClient::OnPart(irc_session_t* session , const char*  event , const char* origin ,
+void IrcClient::OnPart(irc_session_t* session , const char* event  , const char* origin ,
                        const char**   params  , unsigned int count                      )
 {
   char nickbuf[128] ; irc_target_get_nick(origin , nickbuf , sizeof(nickbuf)) ;

@@ -27,15 +27,13 @@
 
 /* state */
 
-#  define DEBUG_TRACE_INIT_VERSION printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ;
-
 #  define DEBUG_TRACE_INIT_PHASE_1 Trace::TraceState("validating environment") ;
 
 #  define DEBUG_TRACE_INIT_PHASE_2 Trace::TraceState("instantiating model") ;
 
 #  define DEBUG_TRACE_INIT_PHASE_3 Trace::TraceState("instantiating GUI") ;
 
-#  define DEBUG_TRACE_INIT_PHASE_4 Trace::TraceState("instantiating media") ;
+#  define DEBUG_TRACE_INIT_PHASE_4 if (IsMediaEnabled) Trace::TraceState("instantiating media") ;
 
 #  define DEBUG_TRACE_INIT_PHASE_5 if (IsChatEnabled) Trace::TraceState("instantiating network") ;
 
@@ -120,7 +118,6 @@
 
 #else // DEBUG
 
-#  define DEBUG_TRACE_INIT_VERSION                ;
 #  define DEBUG_TRACE_INIT_PHASE_1                ;
 #  define DEBUG_TRACE_INIT_PHASE_2                ;
 #  define DEBUG_TRACE_INIT_PHASE_3                ;

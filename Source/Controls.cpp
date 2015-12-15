@@ -253,13 +253,14 @@ void Controls::broughtToFront() { loadConfig() ; }
 void Controls::loadConfig()
 {
   ValueTree config_store = AvCaster::GetConfigStore() ;
-
-  bool is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ON_ID   ]) ;
-  bool is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ON_ID      ]) ;
-  bool is_text_on         = bool(config_store[CONFIG::IS_TEXT_ON_ID        ]) ;
-  bool is_interstitial_on = bool(config_store[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
-  bool is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ON_ID     ]) ;
-  bool is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ON_ID      ]) ;
+  bool      is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ON_ID   ]) ;
+  bool      is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ON_ID      ]) ;
+  bool      is_text_on         = bool(config_store[CONFIG::IS_TEXT_ON_ID        ]) ;
+  bool      is_interstitial_on = bool(config_store[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
+  bool      is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ON_ID     ]) ;
+  bool      is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ON_ID      ]) ;
+  bool      is_media_enabled   = AvCaster::GetIsMediaEnabled() ;
+  bool      is_preview_enabled = AvCaster::GetIsPreviewEnabled() ;
 
   this->screencapToggle   ->setToggleState  (is_screencap_on    , juce::dontSendNotification) ;
   this->cameraToggle      ->setToggleState  (is_camera_on       , juce::dontSendNotification) ;
@@ -268,6 +269,14 @@ void Controls::loadConfig()
   this->previewToggle     ->setToggleState  (is_preview_on      , juce::dontSendNotification) ;
   this->outputToggle      ->setToggleState  (is_output_on       , juce::dontSendNotification) ;
   this->mainContent       ->loadPresetsCombo(this->presetsCombo) ;
+
+  // disable controls per cli args
+  this->screencapToggle   ->setEnabled(is_media_enabled  ) ;
+  this->cameraToggle      ->setEnabled(is_media_enabled  ) ;
+  this->textToggle        ->setEnabled(is_media_enabled  ) ;
+  this->interstitialToggle->setEnabled(is_media_enabled  ) ;
+  this->previewToggle     ->setEnabled(is_preview_enabled) ;
+  this->outputToggle      ->setEnabled(is_media_enabled  ) ;
 
 #ifdef DISABLE_CONTROLS_NYI
 this->screencapToggle   ->setEnabled(false) ;

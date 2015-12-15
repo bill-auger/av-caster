@@ -560,24 +560,20 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
 
 bool Gstreamer::ConfigurePreviewBin()
 {
-#ifndef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
   // NOTE: x_window_handle must be attached before pipline is started
   //           so PreviewSink must never be FAUX_SINK_PLUGIN_ID if it is to be usable
-  bool   is_enabled = AvCaster::GetIsPreviewOn() ;
-  String plugin_id  = (is_enabled) ? GST::NIX_PREVIEW_PLUGIN_ID : GST::FAUX_SINK_PLUGIN_ID ;
-
-#  ifdef DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-UNUSED(is_enabled) ; is_enabled = true ; plugin_id  = GST::NIX_PREVIEW_PLUGIN_ID ; // FIXME: no fake sink needed ?
-#  endif // DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
+#ifdef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
+  bool   is_enabled = AvCaster::GetIsPreviewEnabled() ;
 #else // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-#  if JUCE_LINUX
-  String plugin_id = GST::NIX_PREVIEW_PLUGIN_ID ;
-#  endif //JUCE_LINUX
+  bool   is_enabled = AvCaster::GetIsPreviewEnabled() && AvCaster::GetIsPreviewActive() ;
 #endif // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
+  String plugin_id  = (is_enabled) ? GST::PREVIEW_PLUGIN_ID : GST::FAUX_SINK_PLUGIN_ID ;
 
-#  if FAUX_PREVIEW
-plugin_id = GST::FAUX_SINK_PLUGIN_ID ;
-#  endif // FAUX_PREVIEW
+#ifndef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
+#  ifdef DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
+UNUSED(is_enabled) ; is_enabled = true ; plugin_id = GST::PREVIEW_PLUGIN_ID ; // FIXME: no fake sink needed ?
+#  endif // DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
+#endif // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
 
 DEBUG_TRACE_CONFIGURE_PREVIEW_BIN
 
@@ -586,7 +582,7 @@ DEBUG_TRACE_CONFIGURE_PREVIEW_BIN
   { AvCaster::Error(GUI::PREVIEW_INIT_ERROR_MSG) ; return false ; }
 
   // configure elements
-  if (plugin_id != GST::FAUX_SINK_PLUGIN_ID)
+  if (is_enabled)
   {
     guintptr x_window_handle = (guintptr)AvCaster::GetGuiXwinHandle() ;
     gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(PreviewSink) , x_window_handle) ;
@@ -826,6 +822,143 @@ if (sink_idx == CONFIG::RTMP_STREAM_IDX)
   { AvCaster::Error(GUI::OUTPUT_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
+}
+
+void Gstreamer::ConfigureCaps(GstElement* a_capsfilter , GstCaps* a_caps)
+{
+DEBUG_TRACE_CONFIGURE_CAPS
+
+  g_object_set(G_OBJECT(a_capsfilter) , "caps" , a_caps , NULL) ; gst_caps_unref(a_caps) ;
+}
+
+void Gstreamer::ConfigureQueue(GstElement* a_queue  , guint max_bytes  ,
+                               guint64     max_time , guint max_buffers)
+{
+DEBUG_TRACE_CONFIGURE_QUEUE
+
+  g_object_set(G_OBJECT(a_queue) , "max-size-bytes"   , max_bytes   , NULL) ;
+  g_object_set(G_OBJECT(a_queue) , "max-size-time"    , max_time    , NULL) ;
+  g_object_set(G_OBJECT(a_queue) , "max-size-buffers" , max_buffers , NULL) ;
+}
+
+void Gstreamer::ConfigureScreen(GstElement* a_screen_source , guint capture_w , guint capture_h ,
+                                guint       pattern_n       , bool  is_active                   )
+{
+DEBUG_TRACE_CONFIGURE_SCREEN
+
+  if (is_active)
+  {
+    g_object_set(G_OBJECT(a_screen_source) , "endx"       , capture_w - 1 , NULL) ;
+    g_object_set(G_OBJECT(a_screen_source) , "endy"       , capture_h - 1 , NULL) ;
+    g_object_set(G_OBJECT(a_screen_source) , "use-damage" , false         , NULL) ;
+  }
+  else ConfigureFauxVideo(a_screen_source , pattern_n) ;
+}
+
+void Gstreamer::ConfigureCamera(GstElement* a_camera_source , String device_path ,
+                                guint       pattern_n       , bool   is_active   )
+{
+DEBUG_TRACE_CONFIGURE_CAMERA
+
+  if (is_active)
+    g_object_set(G_OBJECT(a_camera_source) , "device" , CHARSTAR(device_path) , NULL) ;
+  else ConfigureFauxVideo(a_camera_source , pattern_n) ;
+}
+
+void Gstreamer::ConfigureFauxVideo(GstElement* a_faux_source , guint pattern_n)
+{
+DEBUG_TRACE_CONFIGURE_FAUX_VIDEO
+
+  g_object_set(G_OBJECT(a_faux_source) , "is_live" , true      , NULL) ;
+  g_object_set(G_OBJECT(a_faux_source) , "pattern" , pattern_n , NULL) ;
+}
+
+void Gstreamer::ConfigureText(GstElement* a_text_source , String font_desc)
+{
+DEBUG_TRACE_CONFIGURE_TEXT
+
+  g_object_set(G_OBJECT(a_text_source) , "font-desc" , CHARSTAR(font_desc) , NULL) ;
+}
+
+void Gstreamer::ConfigureFile(GstElement* a_file_source , String file_path)
+{
+DEBUG_TRACE_CONFIGURE_FILE
+
+  g_object_set(G_OBJECT(a_file_source) , "location" , CHARSTAR(file_path) , NULL) ;
+}
+
+void Gstreamer::ConfigureCompositor(GstElement* a_compositor , guint background_n)
+{
+DEBUG_TRACE_CONFIGURE_COMPOSITOR
+
+  g_object_set(G_OBJECT(a_compositor) , "background" , background_n , NULL) ;
+}
+
+void Gstreamer::ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h ,
+                                                          gint x , gint y )
+{
+DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK
+
+  g_object_set(G_OBJECT(sinkpad) , "width"  , w , NULL) ;
+  g_object_set(G_OBJECT(sinkpad) , "height" , h , NULL) ;
+  g_object_set(G_OBJECT(sinkpad) , "xpos"   , x , NULL) ;
+  g_object_set(G_OBJECT(sinkpad) , "ypos"   , y , NULL) ;
+}
+
+bool Gstreamer::ConfigurePreview()
+{
+DEBUG_TRACE_CONFIGURE_PREVIEW
+
+  if (!AvCaster::GetIsPreviewEnabled()) return true ;
+
+  bool           is_active      = AvCaster::GetIsPreviewActive() ;
+  Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
+  gint           preview_x      = (is_active) ? preview_bounds.getX()      : -1 ;
+  gint           preview_y      = (is_active) ? preview_bounds.getY()      : -1 ;
+  gint           preview_w      = (is_active) ? preview_bounds.getWidth()  : 1 ;
+  gint           preview_h      = (is_active) ? preview_bounds.getHeight() : 1 ;
+#ifdef SHOW_DISABLED_PREVIEW_TINY
+preview_x = (is_active) ? preview_bounds.getX()      : 1 ;
+preview_y = (is_active) ? preview_bounds.getY()      : 1 ;
+preview_w = (is_active) ? preview_bounds.getWidth()  : 160 ;
+preview_h = (is_active) ? preview_bounds.getHeight() : 120 ;
+#endif // SHOW_DISABLED_PREVIEW_TINY
+
+  return gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(PreviewSink) ,
+                                                preview_x , preview_y          ,
+                                                preview_w , preview_h          ) ;
+}
+
+void Gstreamer::ConfigureFauxAudio(GstElement* a_faux_source)
+{
+DEBUG_TRACE_CONFIGURE_FAUX_AUDIO
+
+ g_object_set(G_OBJECT(a_faux_source) , "is_live" , true , NULL) ;
+}
+
+void Gstreamer::ConfigureX264Encoder(GstElement* an_x264_encoder , guint bitrate)
+{
+DEBUG_TRACE_CONFIGURE_X264ENC
+
+  g_object_set(G_OBJECT(an_x264_encoder) , "bitrate" , bitrate , NULL) ;
+//   g_object_set(G_OBJECT(video_encoder)  , "tune"       , 0x00000004     , NULL) ; // may lower quality in favor of latency
+}
+
+void Gstreamer::ConfigureLameEncoder(GstElement* a_lame_encoder , guint bitrate)
+{
+DEBUG_TRACE_CONFIGURE_LAMEENC
+
+  g_object_set(G_OBJECT(a_lame_encoder) , "target"  , 1       , NULL) ;
+  g_object_set(G_OBJECT(a_lame_encoder) , "cbr"     , true    , NULL) ; // CBR
+  g_object_set(G_OBJECT(a_lame_encoder) , "bitrate" , bitrate , NULL) ; // CBR
+// g_object_set(G_OBJECT(audio_encoder) , "quality" , 2 , NULL) ; // VBR (default is 4) // VBR
+}
+
+void Gstreamer::ConfigureFlvmux(GstElement* a_flvmuxer)
+{
+DEBUG_TRACE_CONFIGURE_FLVMUX
+
+  g_object_set(G_OBJECT(a_flvmuxer) , "streamable" , true , NULL) ;
 }
 
 bool Gstreamer::Reconfigure(const Identifier& config_key , bool is_config_pending)
@@ -1121,145 +1254,6 @@ GstPad* Gstreamer::NewRequestPad(GstElement* an_element , String template_id)
 DEBUG_TRACE_GET_REQUEST_PAD ; UNUSED(is_err) ;
 
   return private_pad ;
-}
-
-void Gstreamer::ConfigureCaps(GstElement* a_capsfilter , GstCaps* a_caps)
-{
-DEBUG_TRACE_CONFIGURE_CAPS
-
-  g_object_set(G_OBJECT(a_capsfilter) , "caps" , a_caps , NULL) ; gst_caps_unref(a_caps) ;
-}
-
-void Gstreamer::ConfigureQueue(GstElement* a_queue  , guint max_bytes  ,
-                               guint64     max_time , guint max_buffers)
-{
-DEBUG_TRACE_CONFIGURE_QUEUE
-
-  g_object_set(G_OBJECT(a_queue) , "max-size-bytes"   , max_bytes   , NULL) ;
-  g_object_set(G_OBJECT(a_queue) , "max-size-time"    , max_time    , NULL) ;
-  g_object_set(G_OBJECT(a_queue) , "max-size-buffers" , max_buffers , NULL) ;
-}
-
-void Gstreamer::ConfigureScreen(GstElement* a_screen_source , guint capture_w  , guint capture_h ,
-                                guint       pattern_n       , bool  is_enabled                   )
-{
-DEBUG_TRACE_CONFIGURE_SCREEN
-
-  if (is_enabled)
-  {
-    g_object_set(G_OBJECT(a_screen_source) , "endx"       , capture_w - 1 , NULL) ;
-    g_object_set(G_OBJECT(a_screen_source) , "endy"       , capture_h - 1 , NULL) ;
-    g_object_set(G_OBJECT(a_screen_source) , "use-damage" , false         , NULL) ;
-  }
-  else ConfigureFauxVideo(a_screen_source , pattern_n) ;
-}
-
-void Gstreamer::ConfigureCamera(GstElement* a_camera_source , String device_path ,
-                                guint       pattern_n       , bool   is_enabled  )
-{
-DEBUG_TRACE_CONFIGURE_CAMERA
-
-  if (is_enabled)
-    g_object_set(G_OBJECT(a_camera_source) , "device" , CHARSTAR(device_path) , NULL) ;
-  else ConfigureFauxVideo(a_camera_source , pattern_n) ;
-}
-
-void Gstreamer::ConfigureFauxVideo(GstElement* a_faux_source , guint pattern_n)
-{
-DEBUG_TRACE_CONFIGURE_FAUX_VIDEO
-
-  g_object_set(G_OBJECT(a_faux_source) , "is_live" , true      , NULL) ;
-  g_object_set(G_OBJECT(a_faux_source) , "pattern" , pattern_n , NULL) ;
-}
-
-void Gstreamer::ConfigureText(GstElement* a_text_source , String font_desc)
-{
-DEBUG_TRACE_CONFIGURE_TEXT
-
-  g_object_set(G_OBJECT(a_text_source) , "font-desc" , CHARSTAR(font_desc) , NULL) ;
-}
-
-void Gstreamer::ConfigureFile(GstElement* a_file_source , String file_path)
-{
-DEBUG_TRACE_CONFIGURE_FILE
-
-  g_object_set(G_OBJECT(a_file_source) , "location" , CHARSTAR(file_path) , NULL) ;
-}
-
-void Gstreamer::ConfigureCompositor(GstElement* a_compositor , guint background_n)
-{
-DEBUG_TRACE_CONFIGURE_COMPOSITOR
-
-  g_object_set(G_OBJECT(a_compositor) , "background" , background_n , NULL) ;
-}
-
-void Gstreamer::ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h ,
-                                                          gint x , gint y )
-{
-DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK
-
-  g_object_set(G_OBJECT(sinkpad) , "width"  , w , NULL) ;
-  g_object_set(G_OBJECT(sinkpad) , "height" , h , NULL) ;
-  g_object_set(G_OBJECT(sinkpad) , "xpos"   , x , NULL) ;
-  g_object_set(G_OBJECT(sinkpad) , "ypos"   , y , NULL) ;
-}
-
-bool Gstreamer::ConfigurePreview()
-{
-DEBUG_TRACE_CONFIGURE_PREVIEW
-#if FAUX_PREVIEW
-// TODO: ensure this is never called with PreviewSink as FAUX_SINK_PLUGIN_ID
-  return true ;
-#endif // FAUX_PREVIEW
-
-  bool           is_enabled     = AvCaster::GetIsPreviewOn() ;
-  Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
-  gint           preview_x      = (is_enabled) ? preview_bounds.getX()      : -1 ;
-  gint           preview_y      = (is_enabled) ? preview_bounds.getY()      : -1 ;
-  gint           preview_w      = (is_enabled) ? preview_bounds.getWidth()  : 1 ;
-  gint           preview_h      = (is_enabled) ? preview_bounds.getHeight() : 1 ;
-#ifdef SHOW_DISABLED_PREVIEW_TINY
-preview_x = (is_enabled) ? preview_bounds.getX()      : 1 ;
-preview_y = (is_enabled) ? preview_bounds.getY()      : 1 ;
-preview_w = (is_enabled) ? preview_bounds.getWidth()  : 160 ;
-preview_h = (is_enabled) ? preview_bounds.getHeight() : 120 ;
-#endif // SHOW_DISABLED_PREVIEW_TINY
-
-  return gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(PreviewSink) ,
-                                                preview_x , preview_y          ,
-                                                preview_w , preview_h          ) ;
-}
-
-void Gstreamer::ConfigureFauxAudio(GstElement* a_faux_source)
-{
-DEBUG_TRACE_CONFIGURE_FAUX_AUDIO
-
- g_object_set(G_OBJECT(a_faux_source) , "is_live" , true , NULL) ;
-}
-
-void Gstreamer::ConfigureX264Encoder(GstElement* an_x264_encoder , guint bitrate)
-{
-DEBUG_TRACE_CONFIGURE_X264ENC
-
-  g_object_set(G_OBJECT(an_x264_encoder) , "bitrate" , bitrate , NULL) ;
-//   g_object_set(G_OBJECT(video_encoder)  , "tune"       , 0x00000004     , NULL) ; // may lower quality in favor of latency
-}
-
-void Gstreamer::ConfigureLameEncoder(GstElement* a_lame_encoder , guint bitrate)
-{
-DEBUG_TRACE_CONFIGURE_LAMEENC
-
-  g_object_set(G_OBJECT(a_lame_encoder) , "target"  , 1       , NULL) ;
-  g_object_set(G_OBJECT(a_lame_encoder) , "cbr"     , true    , NULL) ; // CBR
-  g_object_set(G_OBJECT(a_lame_encoder) , "bitrate" , bitrate , NULL) ; // CBR
-// g_object_set(G_OBJECT(audio_encoder) , "quality" , 2 , NULL) ; // VBR (default is 4) // VBR
-}
-
-void Gstreamer::ConfigureFlvmux(GstElement* a_flvmuxer)
-{
-DEBUG_TRACE_CONFIGURE_FLVMUX
-
-  g_object_set(G_OBJECT(a_flvmuxer) , "streamable" , true , NULL) ;
 }
 
 String Gstreamer::MakeVideoCapsString(int width , int height , int framerate)
