@@ -40,7 +40,7 @@ protected:
   bool       isScreencapActive ;
   bool       isCameraActive ;
   bool       isTextActive ;
-  bool       isInterstitialActive ;
+  bool       isImageActive ;
   bool       isPreviewActive ;
   bool       isAudioActive ;
   bool       isOutputActive ;
@@ -71,7 +71,7 @@ protected:
   int        textPosIdx ;
 
   // interstitial params
-  String     interstitialLoc ;
+  String     imageLocation ;
 
   // output params
   int        sinkIdx ;

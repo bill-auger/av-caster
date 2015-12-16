@@ -71,13 +71,13 @@ public:
 
   // getters/setters
   static bool           GetIsMediaEnabled     () ;
-  static bool           GetIsAudioEnabled     () ;
   static bool           GetIsScreenEnabled    () ;
   static bool           GetIsCameraEnabled    () ;
   static bool           GetIsTextEnabled      () ;
   static bool           GetIsImageEnabled     () ;
   static bool           GetIsCompositorEnabled() ;
   static bool           GetIsPreviewEnabled   () ;
+  static bool           GetIsAudioEnabled     () ;
   static void*          GetGuiXwinHandle      () ;
   static Rectangle<int> GetPreviewBounds      () ;
   static void           SetConfig             (const Identifier& a_key , var a_value) ;
@@ -144,8 +144,10 @@ private:
   static bool IsScreenEnabled ;
   static bool IsCameraEnabled ;
   static bool IsTextEnabled ;
+  static bool IsImageEnabled ;
   static bool IsCompositorEnabled ;
   static bool IsPreviewEnabled ;
+  static bool IsAudioEnabled ;
   static bool IsChatEnabled ;
 } ;
 

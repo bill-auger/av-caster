@@ -177,39 +177,39 @@ DEBUG_TRACE_VERIFY_CONFIG_PRESET
   if (!this->config.isValid()) return ;
 
   // transfer missing properties
-  verifyPresetProperty(CONFIG::PRESET_NAME_ID        , var(CONFIG::DEFAULT_PRESET_NAME       )) ;
-  verifyPresetProperty(CONFIG::IS_SCREENCAP_ON_ID    , var(CONFIG::DEFAULT_IS_SCREENCAP_ON   )) ;
-  verifyPresetProperty(CONFIG::IS_CAMERA_ON_ID       , var(CONFIG::DEFAULT_IS_CAMERA_ON      )) ;
-  verifyPresetProperty(CONFIG::IS_TEXT_ON_ID         , var(CONFIG::DEFAULT_IS_TEXT_ON        )) ;
-  verifyPresetProperty(CONFIG::IS_INTERSTITIAL_ON_ID , var(CONFIG::DEFAULT_IS_INTERSTITIAL_ON)) ;
-  verifyPresetProperty(CONFIG::IS_PREVIEW_ON_ID      , var(CONFIG::DEFAULT_IS_PREVIEW_ON     )) ;
-  verifyPresetProperty(CONFIG::IS_AUDIO_ON_ID        , var(CONFIG::DEFAULT_IS_AUDIO_ON       )) ;
-  verifyPresetProperty(CONFIG::IS_OUTPUT_ON_ID       , var(CONFIG::DEFAULT_IS_OUTPUT_ON      )) ;
-  verifyPresetProperty(CONFIG::DISPLAY_N_ID          , var(CONFIG::DEFAULT_DISPLAY_N         )) ;
-  verifyPresetProperty(CONFIG::SCREEN_N_ID           , var(CONFIG::DEFAULT_SCREEN_N          )) ;
-  verifyPresetProperty(CONFIG::SCREENCAP_W_ID        , var(CONFIG::DEFAULT_SCREENCAP_W       )) ;
-  verifyPresetProperty(CONFIG::SCREENCAP_H_ID        , var(CONFIG::DEFAULT_SCREENCAP_H       )) ;
-  verifyPresetProperty(CONFIG::OFFSET_X_ID           , var(CONFIG::DEFAULT_OFFSET_X          )) ;
-  verifyPresetProperty(CONFIG::OFFSET_Y_ID           , var(CONFIG::DEFAULT_OFFSET_Y          )) ;
-  verifyPresetProperty(CONFIG::CAMERA_DEVICE_ID      , var(CONFIG::DEFAULT_CAMERA_DEVICE_IDX )) ;
-  verifyPresetProperty(CONFIG::CAMERA_RES_ID         , var(CONFIG::DEFAULT_CAMERA_RES_IDX    )) ;
-  verifyPresetProperty(CONFIG::AUDIO_API_ID          , var(CONFIG::DEFAULT_AUDIO_API_IDX     )) ;
-  verifyPresetProperty(CONFIG::AUDIO_DEVICE_ID       , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX  )) ;
-  verifyPresetProperty(CONFIG::AUDIO_CODEC_ID        , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX   )) ;
-  verifyPresetProperty(CONFIG::N_CHANNELS_ID         , var(CONFIG::DEFAULT_N_CHANNELS        )) ;
-  verifyPresetProperty(CONFIG::SAMPLERATE_ID         , var(CONFIG::DEFAULT_SAMPLERATE_IDX    )) ;
-  verifyPresetProperty(CONFIG::AUDIO_BITRATE_ID      , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX )) ;
-  verifyPresetProperty(CONFIG::MOTD_TEXT_ID          , var(CONFIG::DEFAULT_MOTD_TEXT         )) ;
-  verifyPresetProperty(CONFIG::TEXT_STYLE_ID         , var(CONFIG::DEFAULT_TEXT_STYLE_IDX    )) ;
-  verifyPresetProperty(CONFIG::TEXT_POSITION_ID      , var(CONFIG::DEFAULT_TEXT_POSITION_IDX )) ;
-  verifyPresetProperty(CONFIG::INTERSTITIAL_ID       , var(CONFIG::DEFAULT_INTERSTITIAL_LOC  )) ;
-  verifyPresetProperty(CONFIG::OUTPUT_SINK_ID        , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX   )) ;
-  verifyPresetProperty(CONFIG::OUTPUT_MUXER_ID       , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX  )) ;
-  verifyPresetProperty(CONFIG::OUTPUT_W_ID           , var(CONFIG::DEFAULT_OUTPUT_W          )) ;
-  verifyPresetProperty(CONFIG::OUTPUT_H_ID           , var(CONFIG::DEFAULT_OUTPUT_H          )) ;
-  verifyPresetProperty(CONFIG::FRAMERATE_ID          , var(CONFIG::DEFAULT_FRAMERATE_IDX     )) ;
-  verifyPresetProperty(CONFIG::VIDEO_BITRATE_ID      , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX )) ;
-  verifyPresetProperty(CONFIG::OUTPUT_DEST_ID        , var(CONFIG::DEFAULT_OUTPUT_DEST       )) ;
+  verifyPresetProperty(CONFIG::PRESET_NAME_ID         , var(CONFIG::DEFAULT_PRESET_NAME        )) ;
+  verifyPresetProperty(CONFIG::IS_SCREENCAP_ACTIVE_ID , var(CONFIG::DEFAULT_IS_SCREENCAP_ACTIVE)) ;
+  verifyPresetProperty(CONFIG::IS_CAMERA_ACTIVE_ID    , var(CONFIG::DEFAULT_IS_CAMERA_ACTIVE   )) ;
+  verifyPresetProperty(CONFIG::IS_TEXT_ACTIVE_ID      , var(CONFIG::DEFAULT_IS_TEXT_ACTIVE     )) ;
+  verifyPresetProperty(CONFIG::IS_IMAGE_ACTIVE_ID     , var(CONFIG::DEFAULT_IS_IMAGE_ACTIVE    )) ;
+  verifyPresetProperty(CONFIG::IS_PREVIEW_ACTIVE_ID   , var(CONFIG::DEFAULT_IS_PREVIEW_ACTIVE  )) ;
+  verifyPresetProperty(CONFIG::IS_AUDIO_ACTIVE_ID     , var(CONFIG::DEFAULT_IS_AUDIO_ACTIVE    )) ;
+  verifyPresetProperty(CONFIG::IS_OUTPUT_ACTIVE_ID    , var(CONFIG::DEFAULT_IS_OUTPUT_ACTIVE   )) ;
+  verifyPresetProperty(CONFIG::DISPLAY_N_ID           , var(CONFIG::DEFAULT_DISPLAY_N          )) ;
+  verifyPresetProperty(CONFIG::SCREEN_N_ID            , var(CONFIG::DEFAULT_SCREEN_N           )) ;
+  verifyPresetProperty(CONFIG::SCREENCAP_W_ID         , var(CONFIG::DEFAULT_SCREENCAP_W        )) ;
+  verifyPresetProperty(CONFIG::SCREENCAP_H_ID         , var(CONFIG::DEFAULT_SCREENCAP_H        )) ;
+  verifyPresetProperty(CONFIG::OFFSET_X_ID            , var(CONFIG::DEFAULT_OFFSET_X           )) ;
+  verifyPresetProperty(CONFIG::OFFSET_Y_ID            , var(CONFIG::DEFAULT_OFFSET_Y           )) ;
+  verifyPresetProperty(CONFIG::CAMERA_DEVICE_ID       , var(CONFIG::DEFAULT_CAMERA_DEVICE_IDX  )) ;
+  verifyPresetProperty(CONFIG::CAMERA_RES_ID          , var(CONFIG::DEFAULT_CAMERA_RES_IDX     )) ;
+  verifyPresetProperty(CONFIG::AUDIO_API_ID           , var(CONFIG::DEFAULT_AUDIO_API_IDX      )) ;
+  verifyPresetProperty(CONFIG::AUDIO_DEVICE_ID        , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX   )) ;
+  verifyPresetProperty(CONFIG::AUDIO_CODEC_ID         , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX    )) ;
+  verifyPresetProperty(CONFIG::N_CHANNELS_ID          , var(CONFIG::DEFAULT_N_CHANNELS         )) ;
+  verifyPresetProperty(CONFIG::SAMPLERATE_ID          , var(CONFIG::DEFAULT_SAMPLERATE_IDX     )) ;
+  verifyPresetProperty(CONFIG::AUDIO_BITRATE_ID       , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX  )) ;
+  verifyPresetProperty(CONFIG::MOTD_TEXT_ID           , var(CONFIG::DEFAULT_MOTD_TEXT          )) ;
+  verifyPresetProperty(CONFIG::TEXT_STYLE_ID          , var(CONFIG::DEFAULT_TEXT_STYLE_IDX     )) ;
+  verifyPresetProperty(CONFIG::TEXT_POSITION_ID       , var(CONFIG::DEFAULT_TEXT_POSITION_IDX  )) ;
+  verifyPresetProperty(CONFIG::IMAGE_ID               , var(CONFIG::DEFAULT_IMAGE_LOCATION     )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_SINK_ID         , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX    )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_MUXER_ID        , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX   )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_W_ID            , var(CONFIG::DEFAULT_OUTPUT_W           )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_H_ID            , var(CONFIG::DEFAULT_OUTPUT_H           )) ;
+  verifyPresetProperty(CONFIG::FRAMERATE_ID           , var(CONFIG::DEFAULT_FRAMERATE_IDX      )) ;
+  verifyPresetProperty(CONFIG::VIDEO_BITRATE_ID       , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX  )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_DEST_ID         , var(CONFIG::DEFAULT_OUTPUT_DEST        )) ;
 }
 
 void AvCasterStore::verifyServers()
@@ -285,10 +285,10 @@ DEBUG_TRACE_STORE_CONFIG
   listen(false) ;
 
   // filter transient data
-  var is_config_pending = this->root  [CONFIG::IS_PENDING_ID  ] ;
-  var is_output_on      = this->config[CONFIG::IS_OUTPUT_ON_ID] ;
-  this->root  .removeProperty(CONFIG::IS_PENDING_ID   , nullptr) ;
-  this->config.removeProperty(CONFIG::IS_OUTPUT_ON_ID , nullptr) ;
+  var is_config_pending = this->root  [CONFIG::IS_PENDING_ID      ] ;
+  var is_output_on      = this->config[CONFIG::IS_OUTPUT_ACTIVE_ID] ;
+  this->root  .removeProperty(CONFIG::IS_PENDING_ID       , nullptr) ;
+  this->config.removeProperty(CONFIG::IS_OUTPUT_ACTIVE_ID , nullptr) ;
 
   // append presets and servers to persistent storage (ignoring chatters)
   int n_servers = this->servers.getNumChildren() ; UndoManager undo_manager ;
@@ -309,8 +309,8 @@ DEBUG_TRACE_DUMP_CONFIG("AvCasterStore->StoreConfig()")
   while (undo_manager.canUndo()) undo_manager.undo() ;
 
   // restore transient data
-  this->root  .setProperty(CONFIG::IS_PENDING_ID   , is_config_pending , nullptr) ;
-  this->config.setProperty(CONFIG::IS_OUTPUT_ON_ID , is_output_on      , nullptr) ;
+  this->root  .setProperty(CONFIG::IS_PENDING_ID       , is_config_pending , nullptr) ;
+  this->config.setProperty(CONFIG::IS_OUTPUT_ACTIVE_ID , is_output_on      , nullptr) ;
 
   // re-subscribe to model change events
   listen(true) ;
@@ -578,15 +578,15 @@ ValueTree AvCasterStore::getKeyNode(const Identifier& a_key)
 bool AvCasterStore::isControlKey(const Identifier& a_key)
 {
   // TODO: this could be a static Array<Identifier>
-  return a_key == CONFIG::IS_SCREENCAP_ON_ID    ||
-         a_key == CONFIG::IS_CAMERA_ON_ID       ||
-         a_key == CONFIG::IS_TEXT_ON_ID         ||
-         a_key == CONFIG::IS_INTERSTITIAL_ON_ID ||
-         a_key == CONFIG::IS_PREVIEW_ON_ID      ||
-         a_key == CONFIG::IS_AUDIO_ON_ID        ||
-         a_key == CONFIG::IS_OUTPUT_ON_ID       ||
-         a_key == CONFIG::IS_PENDING_ID         ||
-         a_key == CONFIG::PRESET_ID              ;
+  return a_key == CONFIG::IS_SCREENCAP_ACTIVE_ID ||
+         a_key == CONFIG::IS_CAMERA_ACTIVE_ID    ||
+         a_key == CONFIG::IS_TEXT_ACTIVE_ID      ||
+         a_key == CONFIG::IS_IMAGE_ACTIVE_ID     ||
+         a_key == CONFIG::IS_PREVIEW_ACTIVE_ID   ||
+         a_key == CONFIG::IS_AUDIO_ACTIVE_ID     ||
+         a_key == CONFIG::IS_OUTPUT_ACTIVE_ID    ||
+         a_key == CONFIG::IS_PENDING_ID          ||
+         a_key == CONFIG::PRESET_ID               ;
 }
 
 StringArray AvCasterStore::presetsNames()

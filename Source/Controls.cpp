@@ -166,7 +166,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_screencapToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_SCREENCAP_ON_ID ;
+      key = CONFIG::IS_SCREENCAP_ACTIVE_ID ;
 
         //[/UserButtonCode_screencapToggle]
     }
@@ -174,7 +174,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_cameraToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_CAMERA_ON_ID ;
+      key = CONFIG::IS_CAMERA_ACTIVE_ID ;
 
         //[/UserButtonCode_cameraToggle]
     }
@@ -182,7 +182,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_textToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_TEXT_ON_ID ;
+      key = CONFIG::IS_TEXT_ACTIVE_ID ;
 
         //[/UserButtonCode_textToggle]
     }
@@ -190,7 +190,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_interstitialToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_INTERSTITIAL_ON_ID ;
+      key = CONFIG::IS_IMAGE_ACTIVE_ID ;
 
         //[/UserButtonCode_interstitialToggle]
     }
@@ -198,7 +198,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_previewToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_PREVIEW_ON_ID ;
+      key = CONFIG::IS_PREVIEW_ACTIVE_ID ;
 
         //[/UserButtonCode_previewToggle]
     }
@@ -206,7 +206,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_outputToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_OUTPUT_ON_ID ;
+      key = CONFIG::IS_OUTPUT_ACTIVE_ID ;
 
         //[/UserButtonCode_outputToggle]
     }
@@ -253,12 +253,12 @@ void Controls::broughtToFront() { loadConfig() ; }
 void Controls::loadConfig()
 {
   ValueTree config_store = AvCaster::GetConfigStore() ;
-  bool      is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ON_ID   ]) ;
-  bool      is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ON_ID      ]) ;
-  bool      is_text_on         = bool(config_store[CONFIG::IS_TEXT_ON_ID        ]) ;
-  bool      is_interstitial_on = bool(config_store[CONFIG::IS_INTERSTITIAL_ON_ID]) ;
-  bool      is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ON_ID     ]) ;
-  bool      is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ON_ID      ]) ;
+  bool      is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ACTIVE_ID]) ;
+  bool      is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ACTIVE_ID   ]) ;
+  bool      is_text_on         = bool(config_store[CONFIG::IS_TEXT_ACTIVE_ID     ]) ;
+  bool      is_interstitial_on = bool(config_store[CONFIG::IS_IMAGE_ACTIVE_ID    ]) ;
+  bool      is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ACTIVE_ID  ]) ;
+  bool      is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ACTIVE_ID   ]) ;
   bool      is_media_enabled   = AvCaster::GetIsMediaEnabled() ;
   bool      is_preview_enabled = AvCaster::GetIsPreviewEnabled() ;
 

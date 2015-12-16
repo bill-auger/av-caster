@@ -40,39 +40,39 @@ private:
   static void Shutdown  () ;
 
   // pipeline configuration
-  static bool InitializePipeline      () ;
-//   static bool ConfigurePipeline       () ;
-  static bool ConfigureScreencapBin   () ;
-  static bool ConfigureCameraBin      () ;
-  static bool ConfigureTextBin        () ;
-  static bool ConfigureInterstitialBin() ;
-  static bool ConfigureCompositorBin  () ;
-  static bool ConfigurePreviewBin     () ;
-  static bool ConfigureAudioBin       () ;
-  static bool ConfigureMuxerBin       () ;
-  static bool ConfigureOutputBin      () ;
+  static bool InitializePipeline    () ;
+//   static bool ConfigurePipeline     () ;
+  static bool ConfigureScreencapBin (GstElement* link_bin) ;
+  static bool ConfigureCameraBin    (GstElement* link_bin) ;
+  static bool ConfigureTextBin      (GstElement* link_bin) ;
+  static bool ConfigureImageBin     (GstElement* link_bin) ;
+  static bool ConfigureCompositorBin() ;
+  static bool ConfigurePreviewBin   () ;
+  static bool ConfigureAudioBin     () ;
+  static bool ConfigureMuxerBin     () ;
+  static bool ConfigureOutputBin    () ;
 
   // element configuration
-  static void ConfigureCaps           (GstElement* a_capsfilter , GstCaps* a_caps) ;
-  static void ConfigureQueue          (GstElement* a_queue  , guint max_bytes  ,
-                                       guint64     max_time , guint max_buffers) ;
-  static void ConfigureScreen         (GstElement* a_screen_source ,
-                                       guint       capture_w       , guint capture_h ,
-                                       guint       pattern_n       , bool  is_active ) ;
-  static void ConfigureCamera         (GstElement* a_camera_source , String device_path ,
-                                       guint       pattern_n       , bool   is_active   ) ;
-  static void ConfigureFauxVideo      (GstElement* a_faux_source , guint pattern_n) ;
-  static void ConfigureText           (GstElement* a_text_source , String font_desc) ;
-  static void ConfigureFile           (GstElement* a_file_source , String file_path) ;
-  static void ConfigureCompositor     (GstElement* a_compositor , guint background_n) ;
-  static void ConfigureCompositorSink (GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
-  static bool ConfigurePreview        () ;
-  static void ConfigureFauxAudio      (GstElement* faux_source) ;
-  static void ConfigureX264Encoder    (GstElement* an_x264_encoder , guint bitrate) ;
-  static void ConfigureLameEncoder    (GstElement* a_lame_encoder , guint bitrate) ;
-  static void ConfigureFlvmux         (GstElement* a_flvmuxer) ;
-  static bool Reconfigure             (const Identifier& config_key , bool is_config_pending) ;
-//   static bool ReconfigureBin       (String      bin_id       , GstElement* a_bin) ;
+  static void ConfigureCaps          (GstElement* a_capsfilter , GstCaps* a_caps) ;
+  static void ConfigureQueue         (GstElement* a_queue  , guint max_bytes  ,
+                                      guint64     max_time , guint max_buffers) ;
+  static void ConfigureScreen        (GstElement* a_screen_source ,
+                                      guint       capture_w       , guint capture_h ,
+                                      guint       pattern_n       , bool  is_active ) ;
+  static void ConfigureCamera        (GstElement* a_camera_source , String device_path ,
+                                      guint       pattern_n       , bool   is_active   ) ;
+  static void ConfigureFauxVideo     (GstElement* a_faux_source , guint pattern_n) ;
+  static void ConfigureText          (GstElement* a_text_source , String font_desc) ;
+  static void ConfigureFile          (GstElement* a_file_source , String file_path) ;
+  static void ConfigureCompositor    (GstElement* a_compositor , guint background_n) ;
+  static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
+  static bool ConfigureVideoSink     (GstElement* a_video_sink) ;
+  static void ConfigureFauxAudio     (GstElement* faux_source) ;
+  static void ConfigureX264Encoder   (GstElement* an_x264_encoder , guint bitrate) ;
+  static void ConfigureLameEncoder   (GstElement* a_lame_encoder , guint bitrate) ;
+  static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
+  static bool Reconfigure            (const Identifier& config_key , bool is_config_pending) ;
+//   static bool ReconfigureBin      (String      bin_id       , GstElement* a_bin) ;
 
   // state
   static bool SetState(GstElement* an_element , GstState next_state) ;
@@ -127,7 +127,7 @@ private:
   static GstElement* ScreencapBin ;
   static GstElement* CameraBin ;
   static GstElement* TextBin ;
-  static GstElement* InterstitialBin ;
+  static GstElement* ImageBin ;
   static GstElement* CompositorBin ;
   static GstElement* PreviewBin ;
   static GstElement* PreviewSink ;

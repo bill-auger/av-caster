@@ -22,13 +22,13 @@
 
 PresetSeed::PresetSeed()
 {
-  isScreencapActive    = CONFIG::DEFAULT_IS_SCREENCAP_ON ;
-  isCameraActive       = CONFIG::DEFAULT_IS_CAMERA_ON ;
-  isTextActive         = CONFIG::DEFAULT_IS_TEXT_ON ;
-  isInterstitialActive = CONFIG::DEFAULT_IS_INTERSTITIAL_ON ;
-  isPreviewActive      = CONFIG::DEFAULT_IS_PREVIEW_ON ;
-  isAudioActive        = CONFIG::DEFAULT_IS_AUDIO_ON ;
-  isOutputActive       = CONFIG::DEFAULT_IS_OUTPUT_ON ;
+  isScreencapActive    = CONFIG::DEFAULT_IS_SCREENCAP_ACTIVE ;
+  isCameraActive       = CONFIG::DEFAULT_IS_CAMERA_ACTIVE ;
+  isTextActive         = CONFIG::DEFAULT_IS_TEXT_ACTIVE ;
+  isImageActive        = CONFIG::DEFAULT_IS_IMAGE_ACTIVE ;
+  isPreviewActive      = CONFIG::DEFAULT_IS_PREVIEW_ACTIVE ;
+  isAudioActive        = CONFIG::DEFAULT_IS_AUDIO_ACTIVE ;
+  isOutputActive       = CONFIG::DEFAULT_IS_OUTPUT_ACTIVE ;
   displayN             = CONFIG::DEFAULT_DISPLAY_N ;
   screenN              = CONFIG::DEFAULT_SCREEN_N ;
   screencapW           = CONFIG::DEFAULT_SCREENCAP_W ;
@@ -46,7 +46,7 @@ PresetSeed::PresetSeed()
   motdText             = CONFIG::DEFAULT_MOTD_TEXT ;
   textStyleIdx         = CONFIG::DEFAULT_TEXT_STYLE_IDX ;
   textPosIdx           = CONFIG::DEFAULT_TEXT_POSITION_IDX ;
-  interstitialLoc      = CONFIG::DEFAULT_INTERSTITIAL_LOC ;
+  imageLocation        = CONFIG::DEFAULT_IMAGE_LOCATION ;
   muxerIdx             = CONFIG::DEFAULT_OUTPUT_MUXER_IDX ;
   outputW              = CONFIG::DEFAULT_OUTPUT_W ;
   outputH              = CONFIG::DEFAULT_OUTPUT_H ;
@@ -64,39 +64,39 @@ PresetSeed::PresetSeed()
 void PresetSeed::createPreset()
 {
   preset = ValueTree(presetId) ;
-  preset.setProperty(CONFIG::PRESET_NAME_ID        , var(presetName          ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_SCREENCAP_ON_ID    , var(isScreencapActive   ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_CAMERA_ON_ID       , var(isCameraActive      ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_TEXT_ON_ID         , var(isTextActive        ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_INTERSTITIAL_ON_ID , var(isInterstitialActive) , nullptr) ;
-  preset.setProperty(CONFIG::IS_PREVIEW_ON_ID      , var(isPreviewActive     ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_AUDIO_ON_ID        , var(isAudioActive       ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_OUTPUT_ON_ID       , var(isOutputActive      ) , nullptr) ;
-  preset.setProperty(CONFIG::DISPLAY_N_ID          , var(displayN            ) , nullptr) ;
-  preset.setProperty(CONFIG::SCREEN_N_ID           , var(screenN             ) , nullptr) ;
-  preset.setProperty(CONFIG::SCREENCAP_W_ID        , var(screencapW          ) , nullptr) ;
-  preset.setProperty(CONFIG::SCREENCAP_H_ID        , var(screencapH          ) , nullptr) ;
-  preset.setProperty(CONFIG::OFFSET_X_ID           , var(offsetX             ) , nullptr) ;
-  preset.setProperty(CONFIG::OFFSET_Y_ID           , var(offsetY             ) , nullptr) ;
-  preset.setProperty(CONFIG::CAMERA_DEVICE_ID      , var(cameraDeviceIdx     ) , nullptr) ;
-  preset.setProperty(CONFIG::CAMERA_RES_ID         , var(cameraResolutionIdx ) , nullptr) ;
-  preset.setProperty(CONFIG::AUDIO_API_ID          , var(audioApiIdx         ) , nullptr) ;
-  preset.setProperty(CONFIG::AUDIO_DEVICE_ID       , var(audioDeviceIdx      ) , nullptr) ;
-  preset.setProperty(CONFIG::AUDIO_CODEC_ID        , var(audioCodecIdx       ) , nullptr) ;
-  preset.setProperty(CONFIG::N_CHANNELS_ID         , var(nChannels           ) , nullptr) ;
-  preset.setProperty(CONFIG::SAMPLERATE_ID         , var(samplerate          ) , nullptr) ;
-  preset.setProperty(CONFIG::AUDIO_BITRATE_ID      , var(audioBitrate        ) , nullptr) ;
-  preset.setProperty(CONFIG::MOTD_TEXT_ID          , var(motdText            ) , nullptr) ;
-  preset.setProperty(CONFIG::TEXT_STYLE_ID         , var(textStyleIdx        ) , nullptr) ;
-  preset.setProperty(CONFIG::TEXT_POSITION_ID      , var(textPosIdx          ) , nullptr) ;
-  preset.setProperty(CONFIG::INTERSTITIAL_ID       , var(interstitialLoc     ) , nullptr) ;
-  preset.setProperty(CONFIG::OUTPUT_SINK_ID        , var(sinkIdx             ) , nullptr) ;
-  preset.setProperty(CONFIG::OUTPUT_MUXER_ID       , var(muxerIdx            ) , nullptr) ;
-  preset.setProperty(CONFIG::OUTPUT_W_ID           , var(outputW             ) , nullptr) ;
-  preset.setProperty(CONFIG::OUTPUT_H_ID           , var(outputH             ) , nullptr) ;
-  preset.setProperty(CONFIG::FRAMERATE_ID          , var(framerate           ) , nullptr) ;
-  preset.setProperty(CONFIG::VIDEO_BITRATE_ID      , var(videoBitrate        ) , nullptr) ;
-  preset.setProperty(CONFIG::OUTPUT_DEST_ID        , var(outputDest          ) , nullptr) ;
+  preset.setProperty(CONFIG::PRESET_NAME_ID         , var(presetName          ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_SCREENCAP_ACTIVE_ID , var(isScreencapActive   ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_CAMERA_ACTIVE_ID    , var(isCameraActive      ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_TEXT_ACTIVE_ID      , var(isTextActive        ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_IMAGE_ACTIVE_ID     , var(isImageActive) , nullptr) ;
+  preset.setProperty(CONFIG::IS_PREVIEW_ACTIVE_ID   , var(isPreviewActive     ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_AUDIO_ACTIVE_ID     , var(isAudioActive       ) , nullptr) ;
+  preset.setProperty(CONFIG::IS_OUTPUT_ACTIVE_ID    , var(isOutputActive      ) , nullptr) ;
+  preset.setProperty(CONFIG::DISPLAY_N_ID           , var(displayN            ) , nullptr) ;
+  preset.setProperty(CONFIG::SCREEN_N_ID            , var(screenN             ) , nullptr) ;
+  preset.setProperty(CONFIG::SCREENCAP_W_ID         , var(screencapW          ) , nullptr) ;
+  preset.setProperty(CONFIG::SCREENCAP_H_ID         , var(screencapH          ) , nullptr) ;
+  preset.setProperty(CONFIG::OFFSET_X_ID            , var(offsetX             ) , nullptr) ;
+  preset.setProperty(CONFIG::OFFSET_Y_ID            , var(offsetY             ) , nullptr) ;
+  preset.setProperty(CONFIG::CAMERA_DEVICE_ID       , var(cameraDeviceIdx     ) , nullptr) ;
+  preset.setProperty(CONFIG::CAMERA_RES_ID          , var(cameraResolutionIdx ) , nullptr) ;
+  preset.setProperty(CONFIG::AUDIO_API_ID           , var(audioApiIdx         ) , nullptr) ;
+  preset.setProperty(CONFIG::AUDIO_DEVICE_ID        , var(audioDeviceIdx      ) , nullptr) ;
+  preset.setProperty(CONFIG::AUDIO_CODEC_ID         , var(audioCodecIdx       ) , nullptr) ;
+  preset.setProperty(CONFIG::N_CHANNELS_ID          , var(nChannels           ) , nullptr) ;
+  preset.setProperty(CONFIG::SAMPLERATE_ID          , var(samplerate          ) , nullptr) ;
+  preset.setProperty(CONFIG::AUDIO_BITRATE_ID       , var(audioBitrate        ) , nullptr) ;
+  preset.setProperty(CONFIG::MOTD_TEXT_ID           , var(motdText            ) , nullptr) ;
+  preset.setProperty(CONFIG::TEXT_STYLE_ID          , var(textStyleIdx        ) , nullptr) ;
+  preset.setProperty(CONFIG::TEXT_POSITION_ID       , var(textPosIdx          ) , nullptr) ;
+  preset.setProperty(CONFIG::IMAGE_ID               , var(imageLocation       ) , nullptr) ;
+  preset.setProperty(CONFIG::OUTPUT_SINK_ID         , var(sinkIdx             ) , nullptr) ;
+  preset.setProperty(CONFIG::OUTPUT_MUXER_ID        , var(muxerIdx            ) , nullptr) ;
+  preset.setProperty(CONFIG::OUTPUT_W_ID            , var(outputW             ) , nullptr) ;
+  preset.setProperty(CONFIG::OUTPUT_H_ID            , var(outputH             ) , nullptr) ;
+  preset.setProperty(CONFIG::FRAMERATE_ID           , var(framerate           ) , nullptr) ;
+  preset.setProperty(CONFIG::VIDEO_BITRATE_ID       , var(videoBitrate        ) , nullptr) ;
+  preset.setProperty(CONFIG::OUTPUT_DEST_ID         , var(outputDest          ) , nullptr) ;
 }
 
 FilePresetSeed::FilePresetSeed()

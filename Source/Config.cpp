@@ -878,7 +878,7 @@ void Config::buttonClicked (Button* buttonThatWasClicked)
       FileChooser chooser(GUI::IMAGE_CHOOSER_TEXT , APP::HOME_DIR , APP::IMG_FILE_EXTS) ;
       if (!chooser.browseForFileToOpen()) return ;
 
-      key   = CONFIG::INTERSTITIAL_ID ;
+      key   = CONFIG::IMAGE_ID ;
       value = var(chooser.getResult().getFullPathName()) ;
 
         //[/UserButtonCode_browseButton]
@@ -910,7 +910,7 @@ void Config::textEditorFocusLost(TextEditor& a_text_editor)
   else if (ed == this->xOffsetText     ) { key = CONFIG::OFFSET_X_ID ;     value = int_var ; }
   else if (ed == this->yOffsetText     ) { key = CONFIG::OFFSET_Y_ID ;     value = int_var ; }
   else if (ed == this->motdText        ) { key = CONFIG::MOTD_TEXT_ID ;    value = str_var ; }
-  else if (ed == this->interstitialText) { key = CONFIG::INTERSTITIAL_ID ; value = str_var ; }
+  else if (ed == this->interstitialText) { key = CONFIG::IMAGE_ID ; value = str_var ; }
   else if (ed == this->outputWidthText ) { key = CONFIG::OUTPUT_W_ID ;     value = int_var ; }
   else if (ed == this->outputHeightText) { key = CONFIG::OUTPUT_H_ID ;     value = int_var ; }
   else if (ed == this->outputDestText  ) { key = CONFIG::OUTPUT_DEST_ID ;  value = str_var ; }
@@ -974,7 +974,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   int    text_style_idx    = int   (config_store[CONFIG::TEXT_STYLE_ID   ]) ;
   int    text_pos_idx      = int   (config_store[CONFIG::TEXT_POSITION_ID]) ;
   String motd_text         = STRING(config_store[CONFIG::MOTD_TEXT_ID    ]) ;
-  String interstitial_text = STRING(config_store[CONFIG::INTERSTITIAL_ID ]) ;
+  String interstitial_text = STRING(config_store[CONFIG::IMAGE_ID ]) ;
   int    output_sink_idx   = int   (config_store[CONFIG::OUTPUT_SINK_ID  ]) ;
   String output_w_text     = STRING(config_store[CONFIG::OUTPUT_W_ID     ]) ;
   String output_h_text     = STRING(config_store[CONFIG::OUTPUT_H_ID     ]) ;

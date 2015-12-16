@@ -104,8 +104,8 @@ String GstPadId(GstPad* a_pad)
   Trace::TraceState("configuring TextBin " + CONFIG::TEXT_STYLES   [text_style_n] + \
                     " overlay @ "          + CONFIG::TEXT_POSITIONS[text_pos_n  ] ) ;
 
-#  define DEBUG_TRACE_CONFIGURE_INTERSTITIAL_BIN                            \
-  Trace::TraceState("configuring InterstitialBin '" + image_filename + "'") ;
+#  define DEBUG_TRACE_CONFIGURE_IMAGE_BIN                            \
+  Trace::TraceState("configuring ImageBin '" + image_filename + "'") ;
 
 #  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN                          \
   Trace::TraceState("configuring CompositorBin @ "                    + \
@@ -156,12 +156,6 @@ String GstPadId(GstPad* a_pad)
   if (is_err) Trace::TraceError("error adding" + dbg) ;    \
   else        Trace::TraceMedia("added"        + dbg)      ;
 
-#  define DEBUG_FILTER_BINS                                                                       \
-  String binid         = GstElementId(a_bin) ;                                                    \
-  bool   should_bypass = ((!CONFIGURE_TEXT_BIN         && binid == GST::TEXT_BIN_ID        ) ||   \
-                          (!CONFIGURE_INTERSTITIAL_BIN && binid == GST::INTERSTITIAL_BIN_ID)  ) ; \
-  if (should_bypass) return true ;
-
 #  define DEBUG_TRACE_ADD_BIN                                     \
   String dbg = " bin '" + GstElementId(a_bin) + "' to Pipeline" ; \
   if (is_err) Trace::TraceError("error adding" + dbg) ;           \
@@ -170,9 +164,9 @@ String GstPadId(GstPad* a_pad)
 #  define DEBUG_TRACE_REMOVE_BIN_IN                               \
   String dbg = " bin '" + GstElementId(a_bin) + "' from Pipeline" ;
 
-#  define DEBUG_TRACE_REMOVE_BIN_OUT                      \
-  if (is_err) Trace::TraceError("error removing" + dbg) ; \
-  else        Trace::TraceMedia("removed"        + dbg)   ;
+#  define DEBUG_TRACE_REMOVE_BIN_OUT if (a_bin != nullptr) \
+  if (is_err) Trace::TraceError("error removing" + dbg) ;  \
+  else        Trace::TraceMedia("removed"        + dbg)    ;
 
 #  define DEBUG_TRACE_RECREATE_BIN_IN Trace::TraceMedia("re-creating '" + bin_id + "'") ;
 
@@ -268,56 +262,56 @@ String GstPadId(GstPad* a_pad)
 
 #else // DEBUG
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_1           ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_2           ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_3           ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_4           ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_5           ;
-#  define DEBUG_TRACE_GST_INIT_PHASE_6           ;
-#  define DEBUG_TRACE_SET_GST_STATE              ;
-#  define DEBUG_TRACE_INITIALIZE_PIPELINE        ;
-#  define DEBUG_TRACE_CONFIGURE_PIPELINE         ;
-#  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN    ;
-#  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN       ;
-#  define DEBUG_TRACE_CONFIGURE_TEXT_BIN         ;
-#  define DEBUG_TRACE_CONFIGURE_INTERSTITIAL_BIN ;
-#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN   ;
-#  define DEBUG_TRACE_CONFIGURE_PREVIEW_BIN      ;
-#  define DEBUG_TRACE_CONFIGURE_AUDIO_BIN        ;
-#  define DEBUG_TRACE_CONFIGURE_MUXER_BIN        ;
-#  define DEBUG_TRACE_CONFIGURE_OUTPUT_BIN       ;
-#  define DEBUG_TRACE_RECONFIGURE                ;
-#  define DEBUG_TRACE_MAKE_ELEMENT               ;
-#  define DEBUG_TRACE_MAKE_CAPS                  ;
-#  define DEBUG_TRACE_ADD_ELEMENT                ;
-#  define DEBUG_FILTER_BINS                      ;
-#  define DEBUG_TRACE_ADD_BIN                    ;
-#  define DEBUG_TRACE_REMOVE_BIN_IN              ;
-#  define DEBUG_TRACE_REMOVE_BIN_OUT             ;
-#  define DEBUG_TRACE_RECREATE_BIN_IN            ;
-#  define DEBUG_TRACE_RECREATE_BIN_OUT           ;
-#  define DEBUG_TRACE_LINK_ELEMENTS              ;
-#  define DEBUG_TRACE_LINK_PADS                  ;
-#  define DEBUG_TRACE_MAKE_GHOST_PAD             ;
-#  define DEBUG_TRACE_ADD_GHOST_PAD              ;
-#  define DEBUG_TRACE_GET_PAD                    ;
-#  define DEBUG_TRACE_GET_STATIC_PAD             ;
-#  define DEBUG_TRACE_GET_REQUEST_PAD            ;
-#  define DEBUG_TRACE_CONFIGURE_CAPS             ;
-#  define DEBUG_TRACE_CONFIGURE_QUEUE            ;
-#  define DEBUG_TRACE_CONFIGURE_SCREEN           ;
-#  define DEBUG_TRACE_CONFIGURE_CAMERA           ;
-#  define DEBUG_TRACE_CONFIGURE_FAUX_VIDEO       ;
-#  define DEBUG_TRACE_CONFIGURE_TEXT             ;
-#  define DEBUG_TRACE_CONFIGURE_FILE             ;
-#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR       ;
-#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK  ;
-#  define DEBUG_TRACE_CONFIGURE_PREVIEW          ;
-#  define DEBUG_TRACE_CONFIGURE_FAUX_AUDIO       ;
-#  define DEBUG_TRACE_CONFIGURE_X264ENC          ;
-#  define DEBUG_TRACE_CONFIGURE_LAMEENC          ;
-#  define DEBUG_TRACE_CONFIGURE_FLVMUX           ;
-#  define DEBUG_MAKE_GRAPHVIZ                    ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_1          ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_2          ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_3          ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_4          ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_5          ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_6          ;
+#  define DEBUG_TRACE_SET_GST_STATE             ;
+#  define DEBUG_TRACE_INITIALIZE_PIPELINE       ;
+#  define DEBUG_TRACE_CONFIGURE_PIPELINE        ;
+#  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN   ;
+#  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN      ;
+#  define DEBUG_TRACE_CONFIGURE_TEXT_BIN        ;
+#  define DEBUG_TRACE_CONFIGURE_IMAGE_BIN       ;
+#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN  ;
+#  define DEBUG_TRACE_CONFIGURE_PREVIEW_BIN     ;
+#  define DEBUG_TRACE_CONFIGURE_AUDIO_BIN       ;
+#  define DEBUG_TRACE_CONFIGURE_MUXER_BIN       ;
+#  define DEBUG_TRACE_CONFIGURE_OUTPUT_BIN      ;
+#  define DEBUG_TRACE_RECONFIGURE               ;
+#  define DEBUG_TRACE_MAKE_ELEMENT              ;
+#  define DEBUG_TRACE_MAKE_CAPS                 ;
+#  define DEBUG_TRACE_ADD_ELEMENT               ;
+#  define DEBUG_FILTER_BINS                     ;
+#  define DEBUG_TRACE_ADD_BIN                   ;
+#  define DEBUG_TRACE_REMOVE_BIN_IN             ;
+#  define DEBUG_TRACE_REMOVE_BIN_OUT            ;
+#  define DEBUG_TRACE_RECREATE_BIN_IN           ;
+#  define DEBUG_TRACE_RECREATE_BIN_OUT          ;
+#  define DEBUG_TRACE_LINK_ELEMENTS             ;
+#  define DEBUG_TRACE_LINK_PADS                 ;
+#  define DEBUG_TRACE_MAKE_GHOST_PAD            ;
+#  define DEBUG_TRACE_ADD_GHOST_PAD             ;
+#  define DEBUG_TRACE_GET_PAD                   ;
+#  define DEBUG_TRACE_GET_STATIC_PAD            ;
+#  define DEBUG_TRACE_GET_REQUEST_PAD           ;
+#  define DEBUG_TRACE_CONFIGURE_CAPS            ;
+#  define DEBUG_TRACE_CONFIGURE_QUEUE           ;
+#  define DEBUG_TRACE_CONFIGURE_SCREEN          ;
+#  define DEBUG_TRACE_CONFIGURE_CAMERA          ;
+#  define DEBUG_TRACE_CONFIGURE_FAUX_VIDEO      ;
+#  define DEBUG_TRACE_CONFIGURE_TEXT            ;
+#  define DEBUG_TRACE_CONFIGURE_FILE            ;
+#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR      ;
+#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK ;
+#  define DEBUG_TRACE_CONFIGURE_PREVIEW         ;
+#  define DEBUG_TRACE_CONFIGURE_FAUX_AUDIO      ;
+#  define DEBUG_TRACE_CONFIGURE_X264ENC         ;
+#  define DEBUG_TRACE_CONFIGURE_LAMEENC         ;
+#  define DEBUG_TRACE_CONFIGURE_FLVMUX          ;
+#  define DEBUG_MAKE_GRAPHVIZ                   ;
 
 #endif // DEBUG
 #endif // _TRACEGSTREAMER_H_
