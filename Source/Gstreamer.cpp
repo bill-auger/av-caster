@@ -165,20 +165,9 @@ bool Gstreamer::ConfigureScreencapBin()
   int    screencap_h = int (ConfigStore[CONFIG::SCREENCAP_H_ID    ]) ;
   int    framerate_n = int (ConfigStore[CONFIG::FRAMERATE_ID      ]) ;
   int    framerate   = CONFIG::FRAMERATES[framerate_n].getIntValue() ;
-#if JUCE_LINUX
-  String plugin_id   = GST::NIX_SCREEN_PLUGIN_ID ;
-  String caps_str    = MakeScreenCapsString(screencap_w , screencap_h , framerate) ;
-#endif // JUCE_LINUX
-
-#ifdef FAUX_SCREEN
-UNUSED(is_enabled) ; is_enabled = false ;
-#endif // FAUX_SCREEN
-
-  if (!is_enabled)
-  {
-    plugin_id = GST::FAUX_VIDEO_PLUGIN_ID ;
-    caps_str  = MakeVideoCapsString(screencap_w , screencap_h , framerate) ;
-  }
+  String plugin_id   = (is_enabled) ? GST::SCREEN_PLUGIN_ID : GST::FAUX_VIDEO_PLUGIN_ID ;
+  String caps_str    = (is_enabled) ? MakeScreenCapsString(screencap_w , screencap_h , framerate) :
+                                      MakeVideoCapsString (screencap_w , screencap_h , framerate) ;
 
 DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN
 

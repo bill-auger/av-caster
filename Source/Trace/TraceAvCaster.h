@@ -43,8 +43,14 @@
   StringArray tokens ;                                                                                   \
   if      (CliParams.contains(APP::CLI_HELP_TOKEN           )) tokens.add("CLI_HELP_TOKEN"           ) ; \
   else if (CliParams.contains(APP::CLI_PRESETS_TOKEN        )) tokens.add("CLI_PRESETS_TOKEN"        ) ; \
+  else if (CliParams.contains(APP::CLI_PRESET_TOKEN         )) tokens.add("CLI_PRESET_TOKEN"         ) ; \
   else if (CliParams.contains(APP::CLI_VERSION_TOKEN        )) tokens.add("CLI_VERSION_TOKEN"        ) ; \
-  else if (CliParams.contains(APP::CLI_DISABLE_COMP_TOKEN   )) tokens.add("CLI_DISABLE_COMP_TOKEN"   ) ; \
+  else if (CliParams.contains(APP::CLI_DISABLE_MEDIA_TOKEN  )) tokens.add("CLI_DISABLE_MEDIA_TOKEN"  ) ; \
+  else if (CliParams.contains(APP::CLI_SCREEN_ONLY_TOKEN    )) tokens.add("CLI_SCREEN_ONLY_TOKEN"    ) ; \
+  else if (CliParams.contains(APP::CLI_CAMERA_ONLY_TOKEN    )) tokens.add("CLI_CAMERA_ONLY_TOKEN"    ) ; \
+  else if (CliParams.contains(APP::CLI_TEXT_ONLY_TOKEN      )) tokens.add("CLI_TEXT_ONLY_TOKEN"      ) ; \
+  else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) tokens.add("CLI_DISABLE_PREVIEW_TOKEN") ; \
+  else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) tokens.add("CLI_DISABLE_CHAT_TOKEN"   ) ; \
   else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) tokens.add("CLI_DISABLE_PREVIEW_TOKEN") ; \
   else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) tokens.add("CLI_DISABLE_CHAT_TOKEN"   ) ; \
   String dbg = tokens.joinIntoString(",") ;                                                              \

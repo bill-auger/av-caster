@@ -71,6 +71,11 @@ public:
 
   // getters/setters
   static bool           GetIsMediaEnabled     () ;
+  static bool           GetIsAudioEnabled     () ;
+  static bool           GetIsScreenEnabled    () ;
+  static bool           GetIsCameraEnabled    () ;
+  static bool           GetIsTextEnabled      () ;
+  static bool           GetIsImageEnabled     () ;
   static bool           GetIsCompositorEnabled() ;
   static bool           GetIsPreviewEnabled   () ;
   static void*          GetGuiXwinHandle      () ;
@@ -105,16 +110,6 @@ public:
   static StringArray    GetChatNicks          (const Identifier& server_id) ;
 
 
-  // persistence
-  static ScopedPointer<AvCasterStore> Store ;
-
-  // runtime features
-  static bool IsMediaEnabled ;
-  static bool IsCompositorEnabled ;
-  static bool IsPreviewEnabled ;
-  static bool IsChatEnabled ;
-
-
 private:
 
   // setup
@@ -140,6 +135,18 @@ private:
   static StringArray              CliParams ;
   static Array<Alert*>            Alerts ;
   static bool                     IsAlertModal ;
+
+  // persistence
+  static ScopedPointer<AvCasterStore> Store ;
+
+  // runtime features
+  static bool IsMediaEnabled ;
+  static bool IsScreenEnabled ;
+  static bool IsCameraEnabled ;
+  static bool IsTextEnabled ;
+  static bool IsCompositorEnabled ;
+  static bool IsPreviewEnabled ;
+  static bool IsChatEnabled ;
 } ;
 
 #endif // _AVCASTER_H_

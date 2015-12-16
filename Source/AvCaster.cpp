@@ -33,10 +33,12 @@ MainContent*             AvCaster::Gui                 = nullptr ; // Initialize
 ScopedPointer<IrcClient> AvCaster::Irc                 = nullptr ; // Initialize()
 StringArray              AvCaster::CliParams ;                     // initialize()
 bool                     AvCaster::IsMediaEnabled      = true ;    // HandleCliParamsPreInit()
+bool                     AvCaster::IsAudioEnabled      = true ;    // HandleCliParamsPreInit()
+bool                     AvCaster::IsScreenEnabled     = true ;    // HandleCliParamsPreInit()
+bool                     AvCaster::IsCameraEnabled     = true ;    // HandleCliParamsPreInit()
+bool                     AvCaster::IsTextEnabled       = true ;    // HandleCliParamsPreInit()
+bool                     AvCaster::IsImageEnabled      = true ;    // HandleCliParamsPreInit()
 bool                     AvCaster::IsCompositorEnabled = true ;    // HandleCliParamsPreInit()
-// bool                     AvCaster::IsScreenEnabled     = true ;    // HandleCliParamsPreInit()
-// bool                     AvCaster::IsCameraEnabled     = true ;    // HandleCliParamsPreInit()
-// bool                     AvCaster::IsTextEnabled       = true ;    // HandleCliParamsPreInit()
 bool                     AvCaster::IsPreviewEnabled    = true ;    // HandleCliParamsPreInit()
 bool                     AvCaster::IsChatEnabled       = true ;    // HandleCliParamsPreInit()
 Array<Alert*>            AvCaster::Alerts ;
@@ -74,6 +76,16 @@ ModalComponentManager::Callback* AvCaster::GetModalCb()
 void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
 bool AvCaster::GetIsMediaEnabled() { return IsMediaEnabled ; }
+
+bool AvCaster::GetIsAudioEnabled() { return IsAudioEnabled ; }
+
+bool AvCaster::GetIsScreenEnabled() { return IsScreenEnabled ; }
+\
+bool AvCaster::GetIsCameraEnabled() { return IsCameraEnabled ; }
+
+bool AvCaster::GetIsTextEnabled() { return IsTextEnabled ; }
+
+bool AvCaster::GetIsImageEnabled() { return IsImageEnabled ; }
 
 bool AvCaster::GetIsCompositorEnabled() { return IsCompositorEnabled ; }
 
@@ -244,9 +256,19 @@ bool AvCaster::Initialize(MainContent* main_content)
   Gui       = main_content ;
   CliParams = JUCEApplicationBase::getCommandLineParameterArray() ;
 
+  // debug feature switches
 #ifdef NO_INITIALIZE_MEDIA
   CliParams.add(APP::CLI_DISABLE_MEDIA_TOKEN) ;
 #endif // NO_INITIALIZE_MEDIA
+#ifdef SCREEN_ONLY
+  CliParams.add(APP::CLI_SCREEN_ONLY_TOKEN) ;
+#endif // SCREEN_ONLY
+#ifdef CAMERA_ONLY
+  CliParams.add(APP::CLI_CAMERA_ONLY_TOKEN) ;
+#endif // CAMERA_ONLY
+#ifdef TEXT_ONLY
+  CliParams.add(APP::CLI_TEXT_ONLY_TOKEN) ;
+#endif // TEXT_ONLY
 #if NO_INITIALIZE_PREVIEW
   CliParams.add(APP::CLI_DISABLE_PREVIEW_TOKEN) ;
 #endif // NO_INITIALIZE_PREVIEW
@@ -417,10 +439,19 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT
     return false ;
   }
   else if (CliParams.contains(APP::CLI_DISABLE_MEDIA_TOKEN  ))
-    IsMediaEnabled = IsCompositorEnabled = IsPreviewEnabled = false ;
-  else if (CliParams.contains(APP::CLI_DISABLE_COMP_TOKEN   )) IsCompositorEnabled = false ;
-  else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) IsPreviewEnabled    = false ;
-  else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) IsChatEnabled       = false ;
+    IsMediaEnabled = IsScreenEnabled     = IsCameraEnabled  =
+    IsTextEnabled  = IsCompositorEnabled = IsPreviewEnabled = false ;
+  else if (CliParams.contains(APP::CLI_SCREEN_ONLY_TOKEN    ))
+    IsCameraEnabled = IsTextEnabled   = IsImageEnabled = IsCompositorEnabled = false ;
+  else if (CliParams.contains(APP::CLI_CAMERA_ONLY_TOKEN    ))
+    IsScreenEnabled = IsTextEnabled   = IsImageEnabled = IsCompositorEnabled = false ;
+  else if (CliParams.contains(APP::CLI_TEXT_ONLY_TOKEN      ))
+    IsScreenEnabled = IsCameraEnabled = IsImageEnabled = IsCompositorEnabled = false ;
+  else if (CliParams.contains(APP::CLI_IMAGE_ONLY_TOKEN     ))
+    IsScreenEnabled = IsCameraEnabled = IsTextEnabled  = IsCompositorEnabled = false ;
+  else if (CliParams.contains(APP::CLI_DISABLE_AUDIO_TOKEN  )) IsAudioEnabled   = false ;
+  else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) IsPreviewEnabled = false ;
+  else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) IsChatEnabled    = false ;
 
   return true ;
 }

@@ -22,6 +22,14 @@
 
 // enable standard features
 // #define NO_INITIALIZE_MEDIA
+// #define SCEEN_ONLY
+// #define CAMERA_ONLY
+// #define TEXT_ONLY
+// #define FAUX_SCREEN                       // replace sceen-real-source with fakesrc
+// #define FAUX_CAMERA                       // replace camera-real-source with fakesrc
+// #define FAUX_AUDIO                        // replace audio-real-source with fakesrc
+#define NO_INITIALIZE_PREVIEW (! JUCE_LINUX) // replace composite-sink with fakesink
+// #define FAUX_OUTPUT                       // replace filesink or rtmpsink
 // #define NO_INSTANTIATE_IRC
 // #define SUPRESS_ALERTS
 #define CONFIGURE_TEXT_BIN         0
@@ -39,11 +47,6 @@
 #define IRCCLIENT_HAS_MULTIPLE_SESSIONS
 // #define PREFIX_CHAT_NICKS
 #define STATIC_PIPELINE
-// #define FAUX_SCREEN                       // replace sceen-real-source with fakesrc
-// #define FAUX_CAMERA                       // replace camera-real-source with fakesrc
-// #define FAUX_AUDIO                        // replace audio-real-source with fakesrc
-#define NO_INITIALIZE_PREVIEW (! JUCE_LINUX) // replace composite-sink with fakesink
-// #define FAUX_OUTPUT                       // replace filesink or rtmpsink
 // #define FAKE_MUX_ENCODER_SRC_AND_SINK     // isolate compositor from encoder and muxer from output
 
 
@@ -101,16 +104,35 @@ namespace APP
   static const String CLI_PRESET_TOKEN          = "--preset" ;
   static const String CLI_VERSION_TOKEN         = "--version" ;
   static const String CLI_DISABLE_MEDIA_TOKEN   = "--no-media" ;
-  static const String CLI_DISABLE_COMP_TOKEN    = "--no-compositing" ;
+  static const String CLI_DISABLE_AUDIO_TOKEN   = "--no-audio" ;
+  static const String CLI_SCREEN_ONLY_TOKEN     = "--screen-only" ;
+  static const String CLI_CAMERA_ONLY_TOKEN     = "--camera-only" ;
+  static const String CLI_TEXT_ONLY_TOKEN       = "--text-only" ;
   static const String CLI_DISABLE_PREVIEW_TOKEN = "--no-preview" ;
   static const String CLI_DISABLE_CHAT_TOKEN    = "--no-chat" ;
   static const String CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionString) ;
-  static const String CLI_USAGE_MSG   = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN    + "     ] |"                                              +
-                                                         "\n\t          [ " + CLI_PRESETS_TOKEN + "  ] |"                                                 +
-                                                         "\n\t          [ " + CLI_PRESET_TOKEN  + " n ] |"                                                +
-                                                         "\n\n\t"           + CLI_HELP_TOKEN    + "\n\t\t\tprints this message"                           +
-                                                         "\n\n\t"           + CLI_PRESETS_TOKEN + "\n\t\t\tlist stored presets"                           +
-                                                         "\n\n\t"           + CLI_PRESET_TOKEN  + "\n\t\t\tstart with initial preset number n"            ;
+  static const String CLI_USAGE_MSG   = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN            + "          ] |"                                                         +
+                                                         "\n\t          [ " + CLI_PRESETS_TOKEN         + "       ] |"                                                            +
+                                                         "\n\t          [ " + CLI_PRESET_TOKEN          + " n      ] |"                                                           +
+                                                         "\n\t          [ " + CLI_VERSION_TOKEN         + "       ] |"                                                            +
+                                                         "\n\t          [ " + CLI_DISABLE_MEDIA_TOKEN   + "      ] |"                                                             +
+                                                         "\n\t          [ " + CLI_SCREEN_ONLY_TOKEN     + "   ] |"                                                                +
+                                                         "\n\t          [ " + CLI_CAMERA_ONLY_TOKEN     + "   ] |"                                                                +
+                                                         "\n\t          [ " + CLI_TEXT_ONLY_TOKEN       + "     ] |"                                                              +
+                                                         "\n\t          [ " + CLI_DISABLE_PREVIEW_TOKEN + "    ] |"                                                               +
+                                                         "\n\t          [ " + CLI_DISABLE_CHAT_TOKEN    + "       ] |"                                                            +
+                                                         "\n\n\t"           + CLI_HELP_TOKEN            + "\n\t\t\tprints this message"                                           +
+                                                         "\n\n\t"           + CLI_PRESETS_TOKEN         + "\n\t\t\tlist stored presets"                                           +
+                                                         "\n\n\t"           + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstart with initial preset number n"                            +
+                                                         "\n\n\t"           + CLI_VERSION_TOKEN         + "\n\t\t\tprints the application version string"                         +
+                                                         "\n\n\t"           + CLI_DISABLE_MEDIA_TOKEN   + "\n\t\t\tdisables all media and stream output (debugging)"              +
+                                                         "\n\n\t"           + CLI_DISABLE_AUDIO_TOKEN   + "\n\t\t\tdisables audio capture (debugging)"                            +
+                                                         "\n\n\t"           + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and uses screen capture only (debugging)" +
+                                                         "\n\n\t"           + CLI_CAMERA_ONLY_TOKEN     + "\n\t\t\tdisables compositing and uses webcam capture only (debugging)" +
+                                                         "\n\n\t"           + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and uses text overlay only (debugging)"   +
+                                                         "\n\n\t"           + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and uses static image only (debugging)"   +
+                                                         "\n\n\t"           + CLI_DISABLE_PREVIEW_TOKEN + "\n\t\t\tdisables realtime preview (debugging)"                         +
+                                                         "\n\n\t"           + CLI_DISABLE_CHAT_TOKEN    + "\n\t\t\tdisables chat (debugging)"                                     ;
 
   // filesystem
   static const File   HOME_DIR        = File::getSpecialLocation(File::userHomeDirectory           ) ;
@@ -531,16 +553,18 @@ namespace GST
   static const String AUDIO_BIN_ID          = "audio-bin" ;
   static const String MUXER_BIN_ID          = "muxer-bin" ;
   static const String OUTPUT_BIN_ID         = "output-bin" ;
-  static const String NIX_SCREEN_PLUGIN_ID  = "ximagesrc" ;
+#if JUCE_LINUX
+  static const String SCREEN_PLUGIN_ID      = "ximagesrc" ;
+#endif //JUCE_LINUX
   static const String V4L2_PLUGIN_ID        = "v4l2src" ;
   static const String FAUX_VIDEO_PLUGIN_ID  = "videotestsrc" ;
   static const String ALSA_PLUGIN_ID        = "alsasrc" ;
   static const String PULSE_PLUGIN_ID       = "pulsesrc" ;
   static const String JACK_PLUGIN_ID        = "jackaudiosrc" ;
   static const String FAUX_AUDIO_PLUGIN_ID  = "audiotestsrc" ;
-#  if JUCE_LINUX
+#if JUCE_LINUX
   static const String PREVIEW_PLUGIN_ID     = "xvimagesink" ;
-#  endif //JUCE_LINUX
+#endif //JUCE_LINUX
   static const String FILE_SINK_PLUGIN_ID   = "filesink" ;
   static const String RTMP_SINK_PLUGIN_ID   = "rtmpsink" ;
   static const String FAUX_SINK_PLUGIN_ID   = "fakesink" ;
