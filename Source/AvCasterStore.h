@@ -116,6 +116,7 @@ private:
 #else // PREFIX_CHAT_NICKS
   void        updateChatNicks     (String host , StringArray nicks) ;
 #endif // PREFIX_CHAT_NICKS
+  StringArray getChatNicks        (ValueTree chatters_store) ;
 
   // configuration/persistence
   ValueTree root ;      // config root            (STORAGE_ID node)

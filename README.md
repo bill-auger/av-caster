@@ -39,6 +39,7 @@ The [OpenSUSE Build Service][obs] hosts AvCaster x86 and x86-64 binary package r
   * Debian 8 , Ubuntu 15.10
   * Suse Tumbleweed , SUSE 12
   * CentOS 7 , Fedora 23 , RedHat 7 , ScientificLinux 7
+
 Follow the [instructions][obs] there to subscribe your package manager or download the latest package for your distribution directly.  Let us know if you would like packaging for another architecture.
 #### Other GNU/Linux:
 Refer to "Building from Source" below.
@@ -74,11 +75,12 @@ $ makepkg --install ./PKGCONFIG
 ```
 ### build dependencies ###
 $ sudo apt-get install build-essential libfreetype6-dev libgstreamer-plugins-base1.0-dev \
-                       libx11-dev libxcursor-dev libxinerama-dev
+                       libircclient-dev libx11-dev libxcursor-dev libxinerama-dev
 ### runtime dependencies (Debian 'unstable' , Ubuntu 'wily universe') ###
-$ sudo apt-get install freeglut3 gstreamer1.0-plugins-bad gstreamer1.0-plugins-good    \
-                       gstreamer1.0-plugins-ugly libfreetype6 libgl1-mesa-glx libx11-6 \
-                       libxcomposite1 libxcursor1 libxext6 libxinerama1 libxrender1
+$ sudo apt-get install freeglut3 gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
+                       gstreamer1.0-plugins-ugly libfreetype6 libgl1-mesa-glx       \
+                       libircclient1 libx11-6 libxcomposite1 libxcursor1 libxext6   \
+                       libxinerama1 libxrender1
 ### compile ###
 $ cd Builds/Makefile
 $ make CONFIG=Release
@@ -87,10 +89,11 @@ $ ./build/av-caster
 #### Suse:
 ```
 ### build dependencies ###
-$ sudo zypper install gcc-c++ libX11-devel freetype2-devel libXinerama-devel \
-                      libXcursor-devel gstreamer-plugins-base-devel
+$ sudo zypper install gcc-c++ libX11-devel freetype2-devel libXinerama-devel           \
+                      libXcursor-devel gstreamer-plugins-base-devel libircclient-devel
 ### runtime dependencies ###
-$ sudo zypper install gstreamer-plugins-good gstreamer-plugins-bad-free gstreamer-plugins-ugly
+$ sudo zypper install gstreamer-plugins-good gstreamer-plugins-bad-free \
+                      gstreamer-plugins-ugly libircclient1
 ### compile ###
 $ cd Builds/Makefile
 $ make CONFIG=Release
@@ -99,15 +102,16 @@ $ ./build/av-caster
 #### Fedora:
 ```
 ### build dependencies ###
-$ sudo dnf install gcc-c++ libX11-devel freetype-devel libXinerama-devel \
-                   libXcursor-devel gstreamer1-plugins-base-devel
+$ sudo dnf install gcc-c++ libX11-devel freetype-devel libXinerama-devel             \
+                   libXcursor-devel gstreamer1-plugins-base-devel libircclient-devel
 ### runtime dependencies (rpmfusion repositories) ###
 $ RPMFUSION_URL=http://download1.rpmfusion.org
 $ FEDORA_VERSION=$(rpm -E %fedora)
 $ REPO1=$RPMFUSION_URL/free/fedora/rpmfusion-free-release-$FEDORA_VERSION.noarch.rpm
 $ REPO2=$RPMFUSION_URL/nonfree/fedora/rpmfusion-nonfree-release-$FEDORA_VERSION.noarch.rpm
 $ sudo dnf install $REPO1 $REPO2
-$ sudo dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-plugins-ugly
+$ sudo dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
+                   gstreamer1-plugins-ugly libircclient1
 ### compile ###
 $ cd Builds/Makefile
 $ make CONFIG=Release

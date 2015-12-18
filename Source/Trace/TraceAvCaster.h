@@ -114,10 +114,6 @@
 
 /* helpers */
 
-#  define DEBUG_TRACE_DUMP_CHAT_NICKS if (DEBUG_TRACE_VB)                                 \
-  Trace::TraceConfig(String("sorting (") + String(nicks.size()) + ") '"                 + \
-                     String(server_id)   + "' nicks=[" + nicks.joinIntoString(",") + "]") ;
-
 #  define DEBUG_TRACE_DISPLAY_ALERT                                                     \
   if      (message_type == GUI::ALERT_TYPE_WARNING) Trace::TraceWarning(message_text) ; \
   else if (message_type == GUI::ALERT_TYPE_ERROR  ) Trace::TraceError  (message_text)   ;
@@ -140,7 +136,6 @@
 #  define DEBUG_TRACE_SET_CONFIG                  ;
 #  define DEBUG_TRACE_REJECT_CONFIG_CHANGE        ;
 #  define DEBUG_TRACE_HANDLE_PRESETCOMBO          ;
-#  define DEBUG_TRACE_DUMP_CHAT_NICKS             ;
 #  define DEBUG_TRACE_DISPLAY_ALERT               ;
 
 #endif // DEBUG

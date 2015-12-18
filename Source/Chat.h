@@ -1,20 +1,21 @@
-/*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 #ifndef __JUCE_HEADER_8B23E8CA1D72080__
 #define __JUCE_HEADER_8B23E8CA1D72080__
@@ -35,7 +36,8 @@
                                                                     //[/Comments]
 */
 class Chat  : public Component,
-              public TextEditor::Listener
+              public TextEditor::Listener,
+              public ValueTree::Listener
 {
 public:
     //==============================================================================
@@ -46,6 +48,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
 
   void updateVisiblilty() ;
+  void refresh         () ;
   void addChatLine     (String prefix , String chat_user , String chat_text) ;
 
     //[/UserMethods]
@@ -60,11 +63,24 @@ private:
 
   friend class MainContent ;
 
-  void initialize                (ValueTree servers_store) ;
-  void textEditorReturnKeyPressed(TextEditor& a_text_editor) ;
+  void textEditorReturnKeyPressed(TextEditor& a_text_editor) override ;
+  void valueTreeChildAdded       (ValueTree& servers_store , ValueTree& server_store) override ;
+  void valueTreeChildRemoved     (ValueTree& servers_store , ValueTree& server_store) override ;
+
+  void initialize     (ValueTree servers_store) ;
+  void createChatList (ValueTree server_store) ;
+  void destroyChatList(String server_id) ;
+  bool isServersNode  (ValueTree& a_parent_node , ValueTree& a_node) ;
+
+  // unused ValueTree::Listener interface implementations
+  void valueTreePropertyChanged(  ValueTree& a_node , const Identifier& a_key) override { UNUSED(a_node) ; UNUSED(a_key) ;  } ;
+  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                    override { UNUSED(a_parent_node) ;           } ;
+  void valueTreeParentChanged(    ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
+  void valueTreeRedirected(       ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
 
 
-  ValueTree serversStore ;
+  ValueTree            serversStore ;
+  OwnedArray<ChatList> chatLists ;
 
     //[/UserVariables]
 
@@ -74,7 +90,7 @@ private:
     ScopedPointer<TextEditor> chatHistoryText;
     ScopedPointer<GroupComponent> chatEntryGroup;
     ScopedPointer<TextEditor> chatEntryText;
-    ScopedPointer<ChatList> chatList;
+    ScopedPointer<ChatList> dummyChatList;
 
 
     //==============================================================================

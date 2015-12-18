@@ -154,7 +154,9 @@ namespace GUI
 {
   // common
   static const int    PAD                 = 4 ;
+  static const int    PAD3                = (PAD * 3) ;
   static const int    PAD4                = (PAD * 4) ;
+  static const int    PAD6                = (PAD * 6) ;
   static const int    PAD8                = (PAD * 8) ;
   static const Colour TEXT_BG_COLOR       = Colour(0xFF000000) ;
   static const Colour TEXT_EMPTY_COLOR    = Colour(0x80808080) ;
@@ -173,19 +175,22 @@ namespace GUI
   static const String RTMP_TITLE_TEXT = "(Broadcasting)" ;
 
   // Chat
-  static const int    SCROLLBAR_W      = 12 ;
-  static const int    LIST_ITEM_H      = 24 ;
-  static const int    LIST_W           = 160 ;
-  static const int    LIST_H           = 256 ;
-  static const int    LIST_X           = LIST_W + SCROLLBAR_W + PAD8 + PAD ;
-  static const int    LIST_Y           = PAD8 + PAD ;
-  static const int    SCROLLING_LIST_W = LIST_W - SCROLLBAR_W - PAD ;
-  static const String CHAT_GROUP_TITLE = "Chat" ;
-  static const String CHAT_PROMPT_TEXT = "<type some chat here - then press ENTER key to send>" ;
-  static const String CLIENT_NICK      = "AvCaster" ;
-  static const String SERVER_NICK      = "SERVER" ;
-  static const String IRC_USER_PREFIX  = "IRC" ;
-  static const String LCTV_USER_PREFIX = "LCTV" ;
+  static const int    N_STATIC_CHATLIST_CHILDREN = 2 ;
+  static const int    SCROLLBAR_W                = 12 ;
+  static const int    CHATLIST_W                 = 128 ;
+  static const int    CHATLIST_X                 = CHATLIST_W + SCROLLBAR_W + PAD8 + PAD ;
+  static const int    CHATLIST_Y                 = PAD8 + PAD ;
+  static const int    OFFSET_CHATLIST_X          = CHATLIST_X + SCROLLBAR_W + PAD ;
+  static const int    EMPTY_CHATLIST_H           = 24 ;
+  static const int    CHATLIST_ITEM_H            = 24 ;
+  static const int    CHATLIST_ITEM_W            = CHATLIST_W - PAD6 ;
+  static const int    PADDED_CHATLIST_ITEM_H     = CHATLIST_ITEM_H + PAD ;
+  static const String CHAT_GROUP_TITLE           = "Chat" ;
+  static const String CHAT_PROMPT_TEXT           = "<type some chat here - then press ENTER key to send>" ;
+  static const String CLIENT_NICK                = "AvCaster" ;
+  static const String SERVER_NICK                = "SERVER" ;
+  static const String IRC_USER_PREFIX            = "IRC" ;
+  static const String LCTV_USER_PREFIX           = "LCTV" ;
 
   // Config
   static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;

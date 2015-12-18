@@ -82,7 +82,7 @@ DEBUG_TRACE_DUMP_CONFIG("AvCasterStore::AvCasterStore()")
   storeConfig() ;
 
 storeServer(bitlbee_host , bitlbee_port) ; // TODO: GUI support
-storeServer(debian_host  , debian_port) ;  // TODO: GUI support
+// storeServer(debian_host  , debian_port) ;  // TODO: GUI support
 }
 
 ValueTree AvCasterStore::verifyConfig(ValueTree stored_config , Identifier root_node_id)
@@ -665,8 +665,9 @@ void AvCasterStore::updateChatNicks(String host , String channel , StringArray n
 void AvCasterStore::updateChatNicks(String host , StringArray nicks)
 {
 #endif // PREFIX_CHAT_NICKS
-  ValueTree  server_store   = this->servers.getChildWithProperty(CONFIG::HOST_ID , host) ;
-  ValueTree  chatters_store = server_store.getChildWithName(CONFIG::CHATTERS_ID) ;
+  ValueTree   server_store   = this->servers.getChildWithProperty(CONFIG::HOST_ID , host) ;
+  ValueTree   chatters_store = server_store.getChildWithName(CONFIG::CHATTERS_ID) ;
+  StringArray current_nicks  = getChatNicks(chatters_store) ;
 
 DEBUG_TRACE_UPDATE_CHAT_NICKS
 
@@ -676,13 +677,15 @@ DEBUG_TRACE_UPDATE_CHAT_NICKS
     Identifier user_id       = CONFIG::FilterId(*nick , APP::VALID_NICK_CHARS) ;
     ValueTree  chatter_store = chatters_store.getChildWithName(user_id) ;
 
-DEBUG_TRACE_ADD_CHAT_NICK
-
     if (!chatter_store.isValid())
     {
+DEBUG_TRACE_ADD_CHAT_NICK
+
+      current_nicks.add(*nick) ; current_nicks.sort(true) ;
+
       chatter_store = ValueTree(user_id) ;
       chatter_store.setProperty(CONFIG::CHAT_NICK_ID , var(*nick) , nullptr) ;
-      chatters_store.addChild(chatter_store , -1 , nullptr) ;
+      chatters_store.addChild(chatter_store , current_nicks.indexOf(*nick) , nullptr) ;
     }
   }
 
@@ -696,4 +699,11 @@ DEBUG_TRACE_REMOVE_CHAT_NICK
 
     if (!nicks.contains(nick)) chatters_store.removeChild(chatter_store , nullptr) ;
   }
+
+DEBUG_TRACE_DUMP_CHAT_NICKS(chatters_store)
+}
+
+StringArray AvCasterStore::getChatNicks(ValueTree chatters_store)
+{
+  return AvCasterStore::PropertyValues(chatters_store , CONFIG::CHAT_NICK_ID) ;
 }

@@ -1,20 +1,21 @@
-/*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -71,9 +72,9 @@ Chat::Chat ()
     chatEntryText->setColour (TextEditor::backgroundColourId, Colour (0xff202020));
     chatEntryText->setText (String::empty);
 
-    addAndMakeVisible (chatList = new ChatList());
-    chatList->setExplicitFocusOrder (2);
-    chatList->setName ("chatList");
+    addAndMakeVisible (dummyChatList = new ChatList (ValueTree::invalid));
+    dummyChatList->setExplicitFocusOrder (2);
+    dummyChatList->setName ("dummyChatList");
 
 
     //[UserPreSize]
@@ -109,7 +110,10 @@ Chat::Chat ()
   this->chatEntryText->setTextToShowWhenEmpty(GUI::CHAT_PROMPT_TEXT , GUI::TEXT_EMPTY_COLOR) ;
   this->chatEntryText->setInputRestrictions(1024) ;
 
-  // local event handlers
+  // hide GUI designer placeholder
+  this->dummyChatList->setVisible(false) ;
+
+  // register interest in outgoing chat text
   this->chatEntryText->addListener(this) ;
 
     //[/Constructor]
@@ -125,7 +129,7 @@ Chat::~Chat()
     chatHistoryText = nullptr;
     chatEntryGroup = nullptr;
     chatEntryText = nullptr;
-    chatList = nullptr;
+    dummyChatList = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -155,11 +159,8 @@ void Chat::resized()
     chatHistoryText->setBounds (32, 32, getWidth() - 64, getHeight() - 104);
     chatEntryGroup->setBounds (28, getHeight() - 68, getWidth() - 56, 38);
     chatEntryText->setBounds (32, getHeight() - 58, getWidth() - 64, 24);
-    chatList->setBounds (getWidth() - 160, 32, 128, 256);
+    dummyChatList->setBounds (getWidth() - 160, 32, 128, 48);
     //[UserResized] Add your own custom resize handling here..
-
-  chatList->setBounds(getWidth() - GUI::LIST_X , GUI::LIST_Y , GUI::LIST_W , GUI::LIST_H) ;
-
     //[/UserResized]
 }
 
@@ -174,9 +175,9 @@ void Chat::updateVisiblilty()
   int n_chatters = 0 ; int n_servers = this->serversStore.getNumChildren() ;
   for (int server_n = 0 ; server_n < n_servers ; ++server_n)
   {
-    ValueTree  server   = this->serversStore.getChild(server_n) ;
-    ValueTree  chatters = server.getChildWithName(CONFIG::CHATTERS_ID) ;
-    n_chatters         += chatters.getNumChildren() ;
+    ValueTree server   = this->serversStore.getChild(server_n) ;
+    ValueTree chatters = server.getChildWithName(CONFIG::CHATTERS_ID) ;
+    n_chatters        += chatters.getNumChildren() ;
   }
 
   bool   is_visible  = n_chatters > 0 ;
@@ -189,7 +190,32 @@ DEBUG_TRACE_CHAT_VISIBILITY
   this->chatHistoryText ->setVisible(is_visible) ;
   this->chatEntryGroup  ->setVisible(is_visible) ;
   this->chatEntryText   ->setVisible(is_visible) ;
-  this->chatList        ->setVisible(is_visible) ;
+  for (int server_n = 0 ; server_n < this->chatLists.size() ; ++server_n)
+    this->chatLists[server_n]->setVisible(is_visible) ;
+}
+
+void Chat::refresh()
+{
+  updateVisiblilty() ;
+
+ // calculate total height
+  int server_n = this->chatLists.size() ; int lists_h = GUI::CHATLIST_Y ;
+  while (server_n--) lists_h += this->chatLists[server_n]->getHeight() + GUI::PAD ;
+
+  bool is_scrollbar_visible = lists_h > getHeight() ;
+  int  list_x_offset        = (is_scrollbar_visible)? GUI::OFFSET_CHATLIST_X : GUI::CHATLIST_X ;
+  int  list_x               = getWidth() - list_x_offset ;
+  int  list_y               = GUI::CHATLIST_Y ;
+
+  // arrange lists
+  for (int server_n = 0 ; server_n < this->chatLists.size() ; ++server_n)
+  {
+    ChatList* chatList = this->chatLists[server_n] ;
+
+    chatList->setTopLeftPosition(list_x , list_y) ;
+
+    list_y += chatList->getHeight() ;
+  }
 }
 
 void Chat::addChatLine(String prefix , String nick , String message_text)
@@ -204,17 +230,59 @@ void Chat::addChatLine(String prefix , String nick , String message_text)
 
 /* Chat private instance methods */
 
-void Chat::initialize(ValueTree servers_store)
-{
-  this->chatList->serversStore = this->serversStore = servers_store ;
-}
-
 void Chat::textEditorReturnKeyPressed(TextEditor& a_text_editor)
 {
   if (&a_text_editor != this->chatEntryText) return ;
 
   AvCaster::SendChat(this->chatEntryText->getText()) ;
   this->chatEntryText->clear() ;
+}
+
+void Chat::valueTreeChildAdded(ValueTree& a_parent_node , ValueTree& a_node)
+{
+  if (isServersNode(a_parent_node , a_node)) createChatList(a_node) ;
+}
+
+void Chat::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)
+{
+  if (isServersNode(a_parent_node , a_node)) destroyChatList(String(a_node.getType())) ;
+}
+
+void Chat::initialize(ValueTree servers_store)
+{
+  this->serversStore = servers_store ; this->serversStore.addListener(this) ;
+
+  for (int server_n = 0 ; server_n < servers_store.getNumChildren() ; ++server_n)
+    createChatList(this->serversStore.getChild(server_n)) ;
+}
+
+void Chat::createChatList(ValueTree server_store)
+{
+  ValueTree chatters_store = server_store.getChildWithName(CONFIG::CHATTERS_ID) ;
+
+  String    server_id = String(server_store.getType()) ;
+  ChatList* chat_list = new ChatList(chatters_store) ;
+
+  chat_list->setComponentID(server_id) ; addAndMakeVisible(chat_list) ;
+  this->chatLists.add(chat_list) ;
+
+  refresh() ;
+}
+
+void Chat::destroyChatList(String server_id)
+{
+  for (int server_n = 0 ; server_n < this->chatLists.size() ; ++server_n)
+  {
+    ChatList* chatlist = this->chatLists[server_n] ;
+    if (chatlist->getComponentID() == server_id) this->chatLists.removeObject(chatlist) ;
+  }
+
+  refresh() ;
+}
+
+bool Chat::isServersNode(ValueTree& a_parent_node , ValueTree& a_node)
+{
+  return a_parent_node.getType() == CONFIG::SERVERS_ID ;
 }
 
 //[/MiscUserCode]
@@ -229,7 +297,7 @@ void Chat::textEditorReturnKeyPressed(TextEditor& a_text_editor)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="Chat" componentName="" parentClasses="public Component, public TextEditor::Listener"
+<JUCER_COMPONENT documentType="Component" className="Chat" componentName="" parentClasses="public Component, public TextEditor::Listener, public ValueTree::Listener"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
                  initialHeight="1">
@@ -253,9 +321,9 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="2" pos="32 58R 64M 24" textcol="ffffffff"
               bkgcol="ff202020" initialText="" multiline="0" retKeyStartsLine="0"
               readonly="0" scrollbars="0" caret="1" popupmenu="1"/>
-  <GENERICCOMPONENT name="chatList" id="90795555172fbed0" memberName="chatList" virtualName=""
-                    explicitFocusOrder="2" pos="160R 32 128 256" class="ChatList"
-                    params=""/>
+  <GENERICCOMPONENT name="dummyChatList" id="90795555172fbed0" memberName="dummyChatList"
+                    virtualName="" explicitFocusOrder="2" pos="160R 32 128 48" class="ChatList"
+                    params="ValueTree::invalid"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

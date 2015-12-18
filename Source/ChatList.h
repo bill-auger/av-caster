@@ -1,20 +1,21 @@
-/*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 #ifndef __JUCE_HEADER_CF0070E7070C0E60__
 #define __JUCE_HEADER_CF0070E7070C0E60__
@@ -38,7 +39,7 @@ class ChatList  : public Component,
 {
 public:
     //==============================================================================
-    ChatList ();
+    ChatList (ValueTree chatters_store);
     ~ChatList();
 
     //==============================================================================
@@ -53,16 +54,12 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  friend class Chat ;
-  friend class ChatListItem ;
+  void valueTreeChildAdded  (ValueTree& chatters_store , ValueTree& chatter_store) override ;
+  void valueTreeChildRemoved(ValueTree& chatters_store , ValueTree& chatter_store) override ;
 
-  void valueTreeChildAdded  (ValueTree& a_parent_node , ValueTree& a_node) override ;
-  void valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node) override ;
-
-  bool isChattersNode(ValueTree& a_parent_node , ValueTree& a_node) ;
-  int  sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node) ;
-  void reloadNicks   () ;
-  void refresh       () ;
+  void createChatListItem(int child_idx) ;
+  int  sortedChildIdx    (ValueTree& a_parent_node , ValueTree& a_node) ;
+  void refresh           () ;
 
   // unused ValueTree::Listener interface implementations
   void valueTreePropertyChanged(  ValueTree& a_node , const Identifier& a_key) override { UNUSED(a_node) ; UNUSED(a_key) ;  } ;
@@ -71,12 +68,13 @@ private:
   void valueTreeRedirected(       ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
 
 
-  ValueTree          serversStore ;
-  Array<StringArray> nicks ;
+  ValueTree chattersStore ;
 
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<GroupComponent> chattersGroup;
+    ScopedPointer<ChatListItem> dummyChatListItem;
 
 
     //==============================================================================

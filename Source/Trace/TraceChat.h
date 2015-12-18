@@ -28,41 +28,52 @@
   if (chatHistoryGroup->isVisible() != is_visible)                             \
     Trace::TraceGui((is_visible) ? "showing chat panel" : "hiding chat panel") ;
 
-#  define DEBUG_TRACE_RELOAD_NICKS                                                        \
-  StringArray nix = this->nicks[server_n] ;                                               \
-  Trace::TraceGui(String("loading (") + String(nix.size()) +                              \
-                  ") nicks from server[" + String(server_n) + "] '" + String(server_id) + \
-                  "' nicks=[" + nix.joinIntoString(",") + "]"                           ) ;
+#  define DEBUG_TRACE_LOCATE_SORTED_CHILD                                         \
+  Identifier server_id = chatters_store.getParent().getType() ;                   \
+  if (!(~item_idx) && DEBUG_TRACE_VB)                                             \
+    Trace::TraceError(String("error locating component for chatter ") +           \
+      " nick="           + nick                                       +           \
+      " chatters_store=" + String(chatters_store.getType())           +           \
+      " server_id="      + String(server_id)                          +           \
+      " item_idx="       + String(item_idx)                           ) ;         \
+  if (1) Trace::TraceGui(String("searching (") + String(nicks.size())           + \
+                                ") nicks on '" + String(server_id)              + \
+                                "' nicks=["    + nicks.joinIntoString(",") + "]") ;
 
-#  define DEBUG_TRACE_LOCATE_SORTED_CHILD if (!(~child_idx) && DEBUG_TRACE_VB)              \
-  Trace::TraceError(String("error locating component for chatter ")             +           \
-    " nick="          + nick                                                    +           \
-    " a_parent_node=" + String(a_parent_node.getType())                         +           \
-    " server_id="     + String(server_id)                                       +           \
-    " server_store="  + String((server_store.isValid()) ? "valid" : " invalid") +           \
-    " server_idx="    + String(server_idx)                                      +           \
-    " child_idx="     + String(child_idx)                                       ) ;         \
-  StringArray these_nicks = this->nicks[server_idx] ;                                       \
-  if (DEBUG_TRACE_VB) Trace::TraceGui(String("searching (") + String(these_nicks.size()) +  \
-                                      ") nicks on server[" + String(server_idx)  +          \
-                                      "] '" + String(server_id)                  +          \
-                                      "' nicks=[" + these_nicks.joinIntoString(",") + "]")  ;
+#  define DEBUG_TRACE_ADD_CHAT_LIST_ITEM                                                  \
+  Trace::TraceGui("adding chatter '" + STRING(chatter_store[CONFIG::CHAT_NICK_ID]) + "'") ;
 
-#  define DEBUG_TRACE_ADD_CHAT_LIST_ITEM                                           \
-  Trace::TraceGui("adding chatter '" + STRING(a_node[CONFIG::CHAT_NICK_ID]) + "'") ;
+#  define DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM                                       \
+  String nick = STRING(chatter_store[CONFIG::CHAT_NICK_ID]) ;                     \
+  String dbg  = "removing chatter '" + nick + "' at index " + String(item_idx) ;  \
+  if (!a_list_item) Trace::TraceError("error " + dbg) ; else Trace::TraceGui(dbg) ;
 
-#  define DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM                                        \
-  String nick = STRING(a_node[CONFIG::CHAT_NICK_ID]) ;                             \
-  String dbg  = "removing chatter '" + nick + "' at index " + String(child_idx) ;  \
-  if (!a_list_item) Trace::TraceError("error " + dbg) ; else Trace::TraceGui(dbg)  ;
+#  define DEBUG_TRACE_MOVE_CHAT_LIST if (DEBUG_TRACE_VB)                \
+  Trace::TraceGui("moving ChatList[" + String(server_n) + "] '"       + \
+                  chatList->getComponentID() + "' from "              + \
+                  String(chatList->getPosition().toString()) + " to " + \
+                  Point(list_x , list_y).toString()                   ) ;
+
+#  define DEBUG_TRACE_RESIZE_CHAT_LIST if (DEBUG_TRACE_VB)                   \
+    Trace::TraceGui("resizing ChatList '" + getComponentID() + "' from "   + \
+                  Point<int>(getWidth() , getHeight()).toString() + " to " + \
+                  Point<int>(GUI::CHATLIST_W , list_h).toString()          ) ;
+
+#  define DEBUG_TRACE_MOVE_CHAT_LIST_ITEM if (DEBUG_TRACE_VB)            \
+  Trace::TraceGui("moving ChatListItem[" + String(child_n) + "] '"     + \
+                  list_item->getName() + "' from "                     + \
+                  String(list_item->getPosition().toString()) + " to " + \
+                  Point<int>(list_item_x , list_item_y).toString()     ) ;
 
 #else // DEBUG
 
 #  define DEBUG_TRACE_CHAT_VISIBILITY       ;
-#  define DEBUG_TRACE_RELOAD_NICKS          ;
 #  define DEBUG_TRACE_LOCATE_SORTED_CHILD   ;
 #  define DEBUG_TRACE_ADD_CHAT_LIST_ITEM    ;
 #  define DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM ;
+#  define DEBUG_TRACE_MOVE_CHAT_LIST        ;
+#  define DEBUG_TRACE_RESIZE_CHAT_LIST      ;
+#  define DEBUG_TRACE_MOVE_CHAT_LIST_ITEM   ;
 
 #endif // DEBUG
 #endif // _TRACECHAT_H_

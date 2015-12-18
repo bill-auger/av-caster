@@ -100,7 +100,7 @@
                      host + ":" + String(port) + "' channel '" + channel + "'") ;
 
 
-/* state */
+/* maintenance */
 
 #  define DEBUG_TRACE_CONFIG_TREE_CHANGED                                                \
   String parent_id = String(a_node.getParent().getType()) ;                              \
@@ -143,15 +143,15 @@
   if (server_store.isValid())                                                             \
     Trace::TraceConfig("updating " + alias_uris[alias_n] + " host '" + actual_host + "'") ;
 
-#  define DEBUG_TRACE_UPDATE_CHAT_NICKS                                                        \
-  String dbg = " invalid updating chatters" ;                                                  \
-  if      (!server_store  .isValid())   Trace::TraceError("server_store " + dbg) ;             \
-  else if (!chatters_store.isValid()) { Trace::TraceError("chatters_store" + dbg) ;            \
-                                        Trace::DumpConfig(server_store , "chatters invalid") ; }
+#  define DEBUG_TRACE_UPDATE_CHAT_NICKS                                                          \
+  String dbg = " invalid updating chatters" ;                                                    \
+  if      (!server_store  .isValid())   Trace::TraceError("server_store " + dbg) ;               \
+  else if (!chatters_store.isValid()) { Trace::TraceError("chatters_store" + dbg) ;              \
+                                        Trace::DumpConfig(server_store , "chatters invalid") ; } \
+  else DEBUG_TRACE_DUMP_CHAT_NICKS(chatters_store)
 
 #  define DEBUG_TRACE_ADD_CHAT_NICK                                                   \
   Identifier server_id = server_store.getType() ;                                     \
-  if (!chatters_store.getChildWithName(user_id).isValid())                            \
     Trace::TraceConfig("adding chatter '" + String(user_id)   + "' (" + *nick + ")" + \
                        " from '"          + String(server_id) + "' (" + host  + ")" ) ;
 
@@ -159,6 +159,14 @@
   String userid = String(chatter_store.getType()) ;                        \
   if (!nicks.contains(nick))                                               \
     Trace::TraceConfig("removing chatter '" + userid + "' (" + nick + ")") ;
+
+#  define DEBUG_TRACE_DUMP_CHAT_NICKS(chatters_store) if (DEBUG_TRACE_VB)           \
+  {                                                                                 \
+    Identifier server_id = chatters_store.getParent().getType() ;                   \
+    Trace::TraceConfig(String("dumping (") + String(nicks.size()) + ") '"       +   \
+                       String(server_id)                          + "' nicks=[" +   \
+                       nicks.joinIntoString(",")                  + "]"         ) ; \
+  }
 
 #else // DEBUG
 
@@ -193,6 +201,7 @@
 #  define DEBUG_TRACE_UPDATE_CHAT_NICKS                 ;
 #  define DEBUG_TRACE_ADD_CHAT_NICK                     ;
 #  define DEBUG_TRACE_REMOVE_CHAT_NICK                  ;
+#  define DEBUG_TRACE_DUMP_CHAT_NICKS(chatters_store)   ;
 
 #endif // DEBUG
 #endif // _TRACEAVCASTERSTORE_H_

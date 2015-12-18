@@ -236,16 +236,9 @@ void AvCaster::UpdateChatNicks(String host , StringArray nicks)
   const MessageManagerLock mmLock ; Gui->chat->updateVisiblilty() ;
 }
 
-StringArray AvCaster::GetChatNicks(const Identifier& server_id)
+StringArray AvCaster::GetChatNicks(ValueTree chatters_store)
 {
-  ValueTree server   = Store->servers.getChildWithName(server_id) ;
-  ValueTree chatters = server.getChildWithName(CONFIG::CHATTERS_ID) ;
-  StringArray nicks  = AvCasterStore::PropertyValues(chatters , CONFIG::CHAT_NICK_ID) ;
-  nicks.sort(true) ;
-
-DEBUG_TRACE_DUMP_CHAT_NICKS
-
-  return nicks ;
+  return Store->getChatNicks(chatters_store) ;
 }
 
 

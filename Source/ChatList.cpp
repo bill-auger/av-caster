@@ -1,20 +1,21 @@
-/*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -30,20 +31,33 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-ChatList::ChatList ()
+ChatList::ChatList (ValueTree chatters_store)
+    : chattersStore(chatters_store)
 {
+    addAndMakeVisible (chattersGroup = new GroupComponent ("chattersGroup",
+                                                           TRANS("(connecting)")));
+    chattersGroup->setColour (GroupComponent::outlineColourId, Colours::white);
+    chattersGroup->setColour (GroupComponent::textColourId, Colours::white);
+
+    addAndMakeVisible (dummyChatListItem = new ChatListItem (ValueTree::invalid));
+    dummyChatListItem->setName ("dummyChatListItem");
+
 
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (1, 1);
+    setSize (128, 48);
 
 
     //[Constructor] You can add your own custom stuff here..
 
-  this->serversStore.addListener(this) ;
+  chattersGroup->setTextLabelPosition(Justification::horizontallyCentred) ;
 
-  refresh() ;
+  // hide GUI designer placeholder
+  this->dummyChatListItem->setVisible(false) ;
+
+  // register interest in join/parts
+  this->chattersStore.addListener(this) ;
 
     //[/Constructor]
 }
@@ -53,6 +67,8 @@ ChatList::~ChatList()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    chattersGroup = nullptr;
+    dummyChatListItem = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -68,7 +84,13 @@ void ChatList::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
+    g.setColour (Colour (0xff202020));
+    g.fillRoundedRectangle (4.0f, 10.0f, 120.0f, 34.0f, 4.000f);
+
     //[UserPaint] Add your own custom painting code here..
+
+  g.fillRoundedRectangle(4.0f , 10.0f , getWidth() - 8.0f , getHeight() - 14.0f , 4.000f) ;
+
     //[/UserPaint]
 }
 
@@ -77,7 +99,12 @@ void ChatList::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
+    chattersGroup->setBounds (0, 0, 128, 48);
+    dummyChatListItem->setBounds (12, 16, 104, 24);
     //[UserResized] Add your own custom resize handling here..
+
+  this->chattersGroup->setSize(getWidth() , getHeight()) ;
+
     //[/UserResized]
 }
 
@@ -85,88 +112,67 @@ void ChatList::resized()
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void ChatList::valueTreeChildAdded(ValueTree& a_parent_node , ValueTree& a_node)
+void ChatList::valueTreeChildAdded(ValueTree& chatters_store , ValueTree& chatter_store)
 {
-  if (isChattersNode(a_parent_node , a_node)) return ;
+  int           item_idx    = sortedChildIdx(chatters_store , chatter_store) ;
+  ChatListItem* a_list_item = new ChatListItem(chatter_store) ;
 
-DEBUG_TRACE_ADD_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
+DEBUG_TRACE_ADD_CHAT_LIST_ITEM
 
-  reloadNicks() ;
-
-  ChatListItem* a_list_item = new ChatListItem(a_node) ;
-  int           child_idx   = sortedChildIdx(a_parent_node , a_node) ;
-
-  const MessageManagerLock mmLock ; addAndMakeVisible(a_list_item , child_idx) ;
+  const MessageManagerLock mmLock ; addAndMakeVisible(a_list_item , item_idx) ;
   refresh() ;
 }
 
-void ChatList::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)
+void ChatList::valueTreeChildRemoved(ValueTree& chatters_store , ValueTree& chatter_store)
 {
-  if (isChattersNode(a_parent_node , a_node)) return ;
+  int        item_idx    = sortedChildIdx(chatters_store , chatter_store) ;
+  Component* a_list_item = getChildComponent(item_idx) ;
 
-  int        child_idx   = sortedChildIdx(a_parent_node , a_node) ;
-  Component* a_list_item = getChildComponent(child_idx) ;
-
-DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM UNUSED(a_parent_node) ;
+DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM
 
   const MessageManagerLock mmLock ; delete a_list_item ;
-  refresh() ; reloadNicks() ;
+  refresh() ;
 }
 
-bool ChatList::isChattersNode(ValueTree& a_parent_node , ValueTree& a_node)
+int ChatList::sortedChildIdx(ValueTree& chatters_store , ValueTree& chatter_store)
 {
-  return (a_node.getType()        == CONFIG::CHATTERS_ID &&
-          a_parent_node.getType() != CONFIG::CHATTERS_ID  ) ;
-}
-
-int ChatList::sortedChildIdx(ValueTree& a_parent_node , ValueTree& a_node)
-{
-  String     nick         = STRING(a_node[CONFIG::CHAT_NICK_ID]) ;
-  Identifier server_id    = a_parent_node.getParent().getType() ;
-  ValueTree  server_store = this->serversStore.getChildWithName(server_id) ;
-  int        server_idx   = this->serversStore.indexOf(server_store) ;
-  int        child_idx    = this->nicks[server_idx].indexOf(nick) ;
+  StringArray nicks    = AvCaster::GetChatNicks(chatters_store) ;
+  String      nick     = STRING(chatter_store[CONFIG::CHAT_NICK_ID]) ;
+  int         item_idx = nicks.indexOf(nick) + GUI::N_STATIC_CHATLIST_CHILDREN ;
 
 DEBUG_TRACE_LOCATE_SORTED_CHILD
 
-  return child_idx ;
-}
-
-void ChatList::reloadNicks()
-{
-  this->nicks.clear() ;
-  for (int server_n = 0 ; server_n < this->serversStore.getNumChildren() ; ++server_n)
-  {
-    Identifier server_id = this->serversStore.getChild(server_n).getType() ;
-
-    this->nicks.add(AvCaster::GetChatNicks(server_id)) ;
-
-DEBUG_TRACE_RELOAD_NICKS
-  }
+  return item_idx ;
 }
 
 void ChatList::refresh()
 {
-  bool is_scrollbar_visible = getHeight() > GUI::LIST_H ;
-  int  n_list_items         = getNumChildComponents() ;
-  int  list_item_h          = GUI::LIST_ITEM_H + GUI::PAD ;
-  int  list_item_w          = (is_scrollbar_visible)? GUI::SCROLLING_LIST_W : GUI::LIST_W ;
-  int  list_item_x          = 0 ;
-  int  list_item_y          = 0 ;
-  int  list_h               = GUI::PAD + (n_list_items * list_item_h) ;
+  String server_id = String(this->chattersStore.getParent().getType()) ;
+  chattersGroup->setText(server_id) ;
 
-  setSize(GUI::LIST_W , list_h) ;
+  int n_list_items = getNumChildComponents() - GUI::N_STATIC_CHATLIST_CHILDREN ;
+  int list_h       = GUI::EMPTY_CHATLIST_H + (n_list_items * GUI::PADDED_CHATLIST_ITEM_H) ;
+  int list_item_x  = GUI::PAD3 ;
+  int list_item_y  = GUI::PAD4 ;
 
-  // resize and arrange list entries
+DEBUG_TRACE_RESIZE_CHAT_LIST
+
+  setSize(GUI::CHATLIST_W , list_h) ;
+
+  // arrange list entries
   for (int item_n = 0 ; item_n < n_list_items ; ++item_n)
   {
-    Component* list_item = getChildComponent(item_n) ;
+    int        child_n   = item_n + GUI::N_STATIC_CHATLIST_CHILDREN ;
+    Component* list_item = getChildComponent(child_n) ;
 
-    list_item->setSize(           list_item_w , GUI::LIST_ITEM_H) ;
-    list_item->setTopLeftPosition(list_item_x , list_item_y     ) ;
+DEBUG_TRACE_MOVE_CHAT_LIST_ITEM
 
-    list_item_y += GUI::LIST_ITEM_H + GUI::PAD ;
+    list_item->setTopLeftPosition(list_item_x , list_item_y) ;
+
+    list_item_y += GUI::PADDED_CHATLIST_ITEM_H ;
   }
+
+  (static_cast<Chat*>(getParentComponent()))->refresh() ;
 }
 
 //[/MiscUserCode]
@@ -183,10 +189,18 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ChatList" componentName=""
                  parentClasses="public Component, public ValueTree::Listener"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
-                 initialHeight="1">
-  <BACKGROUND backgroundColour="0"/>
+                 constructorParams="ValueTree chatters_store" variableInitialisers="chattersStore(chatters_store)"
+                 snapPixels="4" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="0" initialWidth="128" initialHeight="48">
+  <BACKGROUND backgroundColour="0">
+    <ROUNDRECT pos="4 10 120 34" cornerSize="4" fill="solid: ff202020" hasStroke="0"/>
+  </BACKGROUND>
+  <GROUPCOMPONENT name="chattersGroup" id="49d2cfd1b8779149" memberName="chattersGroup"
+                  virtualName="" explicitFocusOrder="0" pos="0 0 128 48" outlinecol="ffffffff"
+                  textcol="ffffffff" title="(connecting)"/>
+  <GENERICCOMPONENT name="dummyChatListItem" id="56b906e64be2f4b6" memberName="dummyChatListItem"
+                    virtualName="" explicitFocusOrder="0" pos="12 16 104 24" class="ChatListItem"
+                    params="ValueTree::invalid"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
