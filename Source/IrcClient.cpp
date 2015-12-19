@@ -16,8 +16,10 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+#include "IrcClient.h"
+#ifndef DISABLE_CHAT
 
-#include <libirc_rfcnumeric.h>
+#include <libircclient/libirc_rfcnumeric.h>
 
 #include "AvCaster.h"
 #include "IrcClient.h"
@@ -36,15 +38,6 @@ String greeting     = "" ;               // TODO: GUI support
 IrcClient::IrcClient(ValueTree servers_store) : Thread(APP::IRC_THREAD_NAME) ,
                                                 serversStore(servers_store)
 {
-  // establish shared server callbacks
-  memset(&this->callbacks , 0 , sizeof(this->callbacks)) ;
-  this->callbacks.event_connect = OnConnect ;
-  this->callbacks.event_channel = OnChannelMsg ;
-  this->callbacks.event_join    = OnJoin ;
-  this->callbacks.event_part    = OnPart ;
-  this->callbacks.event_nick    = OnNickChange ;
-  this->callbacks.event_numeric = OnNumeric ;
-
  // create per server session instances and login
   int n_servers = this->serversStore.getNumChildren() ;
   for (int server_n = 0 ; server_n < n_servers ; ++server_n)
@@ -72,6 +65,17 @@ IrcClient::~IrcClient()
 
 IrcServerInfo IrcClient::createSession(ValueTree server_store)
 {
+  // assign shared server callbacks
+  irc_callbacks_t callbacks ;
+  memset(&callbacks , 0 , sizeof(callbacks)) ;
+  callbacks.event_connect = OnConnect ;
+  callbacks.event_channel = OnChannelMsg ;
+  callbacks.event_join    = OnJoin ;
+  callbacks.event_part    = OnPart ;
+  callbacks.event_nick    = OnNickChange ;
+  callbacks.event_numeric = OnNumeric ;
+
+  // create session
   String         host        = STRING(server_store[CONFIG::HOST_ID]) ;
   unsigned short port        = int   (server_store[CONFIG::PORT_ID]) ;
   IrcServerInfo  server_info = { NULL , host , port , my_nick } ;
@@ -383,3 +387,5 @@ void IrcClient::sendChat(String chat_msg)
 
   AddUserChat(String::empty , my_nick , chat_msg) ;
 }
+
+#endif // DISABLE_CHAT

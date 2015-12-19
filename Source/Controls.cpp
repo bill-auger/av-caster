@@ -66,22 +66,28 @@ Controls::Controls ()
     previewToggle->addListener (this);
     previewToggle->setColour (ToggleButton::textColourId, Colours::white);
 
+    addAndMakeVisible (audioToggle = new ToggleButton ("audioToggle"));
+    audioToggle->setExplicitFocusOrder (6);
+    audioToggle->setButtonText (TRANS("Audio"));
+    audioToggle->addListener (this);
+    audioToggle->setColour (ToggleButton::textColourId, Colours::white);
+
     addAndMakeVisible (outputToggle = new ToggleButton ("outputToggle"));
-    outputToggle->setExplicitFocusOrder (6);
+    outputToggle->setExplicitFocusOrder (7);
     outputToggle->setButtonText (TRANS("Broadcast"));
     outputToggle->addListener (this);
     outputToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (presetsCombo = new ComboBox ("presetsCombo"));
-    presetsCombo->setExplicitFocusOrder (7);
+    presetsCombo->setExplicitFocusOrder (8);
     presetsCombo->setEditableText (true);
     presetsCombo->setJustificationType (Justification::centredLeft);
-    presetsCombo->setTextWhenNothingSelected (String::empty);
+    presetsCombo->setTextWhenNothingSelected (TRANS("livecoding.tv"));
     presetsCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     presetsCombo->addListener (this);
 
     addAndMakeVisible (configButton = new ImageButton ("configButton"));
-    configButton->setExplicitFocusOrder (8);
+    configButton->setExplicitFocusOrder (9);
     configButton->addListener (this);
 
     configButton->setImages (false, true, true,
@@ -113,6 +119,7 @@ Controls::~Controls()
     textToggle = nullptr;
     interstitialToggle = nullptr;
     previewToggle = nullptr;
+    audioToggle = nullptr;
     outputToggle = nullptr;
     presetsCombo = nullptr;
     configButton = nullptr;
@@ -146,8 +153,9 @@ void Controls::resized()
     textToggle->setBounds (188, 36, 52, 24);
     interstitialToggle->setBounds (244, 36, 64, 24);
     previewToggle->setBounds (314, 36, 78, 24);
-    outputToggle->setBounds (396, 36, 90, 24);
-    presetsCombo->setBounds (512, 36, 176, 24);
+    audioToggle->setBounds (396, 36, 64, 24);
+    outputToggle->setBounds (464, 36, 90, 24);
+    presetsCombo->setBounds (560, 36, 128, 24);
     configButton->setBounds (696, 36, 24, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
@@ -202,6 +210,14 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_previewToggle]
     }
+    else if (buttonThatWasClicked == audioToggle)
+    {
+        //[UserButtonCode_audioToggle] -- add your button handler code here..
+
+      key = CONFIG::IS_AUDIO_ACTIVE_ID ;
+
+        //[/UserButtonCode_audioToggle]
+    }
     else if (buttonThatWasClicked == outputToggle)
     {
         //[UserButtonCode_outputToggle] -- add your button handler code here..
@@ -237,6 +253,14 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == presetsCombo)
     {
         //[UserComboBoxCode_presetsCombo] -- add your combo box handling code here..
+
+      String preset_name = this->presetsCombo->getText() ;
+      int    option_n    = this->presetsCombo->getSelectedItemIndex() ;
+
+      AvCaster::SetPreset(preset_name , option_n) ;
+
+      return ;
+
         //[/UserComboBoxCode_presetsCombo]
     }
 
@@ -252,38 +276,46 @@ void Controls::broughtToFront() { loadConfig() ; }
 
 void Controls::loadConfig()
 {
-  ValueTree config_store = AvCaster::GetConfigStore() ;
+  ValueTree config_store       = AvCaster::GetConfigStore() ;
+  bool      is_media_enabled   = AvCaster::GetIsMediaEnabled() ;
+  bool      is_screen_enabled  = AvCaster::GetIsScreenEnabled() ;
+  bool      is_camera_enabled  = AvCaster::GetIsCameraEnabled() ;
+  bool      is_text_enabled    = AvCaster::GetIsTextEnabled() ;
+  bool      is_image_enabled   = AvCaster::GetIsImageEnabled() ;
+  bool      is_preview_enabled = AvCaster::GetIsPreviewEnabled() ;
+  bool      is_audio_enabled   = AvCaster::GetIsAudioEnabled() ;
   bool      is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ACTIVE_ID]) ;
   bool      is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ACTIVE_ID   ]) ;
   bool      is_text_on         = bool(config_store[CONFIG::IS_TEXT_ACTIVE_ID     ]) ;
   bool      is_interstitial_on = bool(config_store[CONFIG::IS_IMAGE_ACTIVE_ID    ]) ;
   bool      is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ACTIVE_ID  ]) ;
+  bool      is_audio_on        = bool(config_store[CONFIG::IS_AUDIO_ACTIVE_ID    ]) ;
   bool      is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ACTIVE_ID   ]) ;
-  bool      is_media_enabled   = AvCaster::GetIsMediaEnabled() ;
-  bool      is_preview_enabled = AvCaster::GetIsPreviewEnabled() ;
 
   this->screencapToggle   ->setToggleState  (is_screencap_on    , juce::dontSendNotification) ;
   this->cameraToggle      ->setToggleState  (is_camera_on       , juce::dontSendNotification) ;
   this->textToggle        ->setToggleState  (is_text_on         , juce::dontSendNotification) ;
   this->interstitialToggle->setToggleState  (is_interstitial_on , juce::dontSendNotification) ;
   this->previewToggle     ->setToggleState  (is_preview_on      , juce::dontSendNotification) ;
+  this->audioToggle       ->setToggleState  (is_audio_on        , juce::dontSendNotification) ;
   this->outputToggle      ->setToggleState  (is_output_on       , juce::dontSendNotification) ;
   this->mainContent       ->loadPresetsCombo(this->presetsCombo) ;
 
   // disable controls per cli args
-  this->screencapToggle   ->setEnabled(is_media_enabled  ) ;
-  this->cameraToggle      ->setEnabled(is_media_enabled  ) ;
-  this->textToggle        ->setEnabled(is_media_enabled  ) ;
-  this->interstitialToggle->setEnabled(is_media_enabled  ) ;
+  this->screencapToggle   ->setEnabled(is_screen_enabled ) ;
+  this->cameraToggle      ->setEnabled(is_camera_enabled ) ;
+  this->textToggle        ->setEnabled(is_text_enabled   ) ;
+  this->interstitialToggle->setEnabled(is_image_enabled  ) ;
   this->previewToggle     ->setEnabled(is_preview_enabled) ;
+  this->audioToggle       ->setEnabled(is_audio_enabled  ) ;
   this->outputToggle      ->setEnabled(is_media_enabled  ) ;
 
-#ifdef DISABLE_CONTROLS_NYI
+#ifdef DISABLE_GUI_CONTROLS_NYI
 this->screencapToggle   ->setEnabled(false) ;
 this->cameraToggle      ->setEnabled(false) ;
 this->textToggle        ->setEnabled(false) ;
 this->interstitialToggle->setEnabled(false) ;
-#endif // DISABLE_CONTROLS_NYI
+#endif // DISABLE_GUI_CONTROLS_NYI
 }
 
 //[/MiscUserCode]
@@ -328,15 +360,19 @@ BEGIN_JUCER_METADATA
                 virtualName="" explicitFocusOrder="5" pos="314 36 78 24" txtcol="ffffffff"
                 buttonText="Preview" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
+  <TOGGLEBUTTON name="audioToggle" id="36486443d32175e6" memberName="audioToggle"
+                virtualName="" explicitFocusOrder="6" pos="396 36 64 24" txtcol="ffffffff"
+                buttonText="Audio" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
   <TOGGLEBUTTON name="outputToggle" id="22cf1f64bccae1df" memberName="outputToggle"
-                virtualName="" explicitFocusOrder="6" pos="396 36 90 24" txtcol="ffffffff"
+                virtualName="" explicitFocusOrder="7" pos="464 36 90 24" txtcol="ffffffff"
                 buttonText="Broadcast" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <COMBOBOX name="presetsCombo" id="94d77976c2b2f37" memberName="presetsCombo"
-            virtualName="" explicitFocusOrder="7" pos="512 36 176 24" editable="1"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+            virtualName="" explicitFocusOrder="8" pos="560 36 128 24" editable="1"
+            layout="33" items="" textWhenNonSelected="livecoding.tv" textWhenNoItems="(no choices)"/>
   <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
-               virtualName="" explicitFocusOrder="8" pos="696 36 24 24" buttonText="configButton"
+               virtualName="" explicitFocusOrder="9" pos="696 36 24 24" buttonText="configButton"
                connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="1"
                resourceNormal="preferencessystem_png" opacityNormal="1" colourNormal="0"
                resourceOver="confighover_png" opacityOver="1" colourOver="0"

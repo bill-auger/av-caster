@@ -37,19 +37,13 @@ public:
 
   ~AvCasterStore() ;
 
-
-  enum AudioApi     { ALSA_AUDIO , PULSE_AUDIO , JACK_AUDIO } ;
-  enum AudioCodec   { MP3_AUDIO , AAC_AUDIO } ;
-  enum OutputStream { FILE_OUTPUT , RTMP_OUTPUT } ;
+  // class helpers
+  static StringArray PropertyValues(ValueTree root_node , Identifier property_id) ;
 
 
 private:
 
   AvCasterStore() ;
-
-  // class helpers
-  static StringArray PropertyValues(ValueTree root_node , Identifier property_id) ;
-
 
   // persistence
   ValueTree verifyConfig      (ValueTree config_store , Identifier root_node_id) ;
@@ -108,7 +102,7 @@ private:
   StringArray audioNames          () ;
   ValueTree   getCameraConfig     () ;
   StringArray getCameraResolutions() ;
-  void        toogleControl       (const Identifier& a_key) ;
+  void        deactivateControl   (const Identifier& a_key) ;
   void        setConfig           (const Identifier& a_key , var a_value) ;
   void        updateIrcHost       (StringArray alias_uris , String actual_host) ;
 #ifdef PREFIX_CHAT_NICKS

@@ -59,7 +59,6 @@ class AvCaster
 public:
 
   // GUI dispatchers
-  static void SetStatusL (String status_text) ;
   static void Warning    (String message_text) ;
   static void Error      (String message_text) ;
   static void AddChatLine(String prefix , String nick , String message) ;
@@ -70,6 +69,7 @@ public:
   static void                             OnModalDismissed(int result , int unused) ;
 
   // getters/setters
+  static bool           GetIsInitialized      () ;
   static bool           GetIsMediaEnabled     () ;
   static bool           GetIsScreenEnabled    () ;
   static bool           GetIsCameraEnabled    () ;
@@ -78,15 +78,16 @@ public:
   static bool           GetIsCompositorEnabled() ;
   static bool           GetIsPreviewEnabled   () ;
   static bool           GetIsAudioEnabled     () ;
-  static void*          GetGuiXwinHandle      () ;
+  static bool           GetIsChatEnabled      () ;
   static Rectangle<int> GetPreviewBounds      () ;
   static void           SetConfig             (const Identifier& a_key , var a_value) ;
+  static ValueTree      GetConfigStore        () ;
+  static void           DeactivateControl     (const Identifier& a_key) ;
   static void           StorePreset           (String preset_name) ;
   static void           RenamePreset          (String preset_name) ;
   static void           DeletePreset          () ;
   static void           ResetPreset           () ;
   static bool           SetPreset             (String preset_name , int option_n) ;
-  static ValueTree      GetConfigStore        () ;
   static bool           RejectPresetChange    () ;
   static bool           IsStaticPreset        () ;
   static int            GetPresetIdx          () ;
@@ -121,17 +122,19 @@ private:
   static void UpdateStatusGUI    () ;
   static void HandleConfigChanged(const Identifier& a_key) ;
   static void RefreshGui         () ;
-  static void SetWindowTitle     () ;
+  static void RefreshStatus      () ;
 
   // helpers
-  static bool HandleCliParamsPreInit () ;
-  static bool HandleCliParamsPostInit() ;
-  static bool ValidateEnvironment    () ;
-  static void DisplayAlert           () ;
+  static bool HandleCliParamsTerminating() ;
+  static bool ProcessCliParams          () ;
+  static bool ValidateEnvironment       () ;
+  static void DisplayAlert              () ;
 
 
   static MainContent*             Gui ;
+#ifndef DISABLE_CHAT
   static ScopedPointer<IrcClient> Irc ;
+#endif // DISABLE_CHAT
   static StringArray              CliParams ;
   static Array<Alert*>            Alerts ;
   static bool                     IsAlertModal ;
@@ -140,6 +143,7 @@ private:
   static ScopedPointer<AvCasterStore> Store ;
 
   // runtime features
+  static bool IsInitialized ;
   static bool IsMediaEnabled ;
   static bool IsScreenEnabled ;
   static bool IsCameraEnabled ;

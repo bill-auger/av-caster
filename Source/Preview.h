@@ -16,8 +16,8 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef __JUCE_HEADER_B62EB707F79339A4__
-#define __JUCE_HEADER_B62EB707F79339A4__
+#ifndef _PREVIEW_H_
+#define _PREVIEW_H_
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
@@ -64,4 +64,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_B62EB707F79339A4__
+#endif // _PREVIEW_H_

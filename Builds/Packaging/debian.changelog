@@ -1,8 +1,8 @@
-av-caster (0.16.000) whatever; urgency=medium
+av-caster (0.15.200) whatever; urgency=medium
 
-  * add chat feature
+  * add cli switches to disable runtime features
 
- -- bill-auger <bill-auger@programmer.net>  Sat, 05 Dec 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Sat, 19 Dec 2015 04:20:42 -0400
 
 
 av-caster (0.15.000) whatever; urgency=medium

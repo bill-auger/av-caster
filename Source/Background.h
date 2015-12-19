@@ -16,8 +16,8 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef __JUCE_HEADER_1288B153F353A5D8__
-#define __JUCE_HEADER_1288B153F353A5D8__
+#ifndef _BACKGROUND_H_
+#define _BACKGROUND_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -64,4 +64,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_1288B153F353A5D8__
+#endif // _BACKGROUND_H_

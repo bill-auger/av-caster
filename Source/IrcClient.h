@@ -16,12 +16,13 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+#include "Constants.h"
+#ifndef DISABLE_CHAT
 
 #ifndef _IRCCLIENT_H_
 #define _IRCCLIENT_H_
 
-
-#include <libircclient.h>
+#include <libircclient/libircclient.h>
 
 #include "Constants.h"
 
@@ -92,3 +93,5 @@ private:
 } ;
 
 #endif // _IRCCLIENT_H_
+
+#endif // DISABLE_CHAT

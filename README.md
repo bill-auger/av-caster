@@ -20,7 +20,7 @@
           <img src="https://scan.coverity.com/projects/bill-auger-av-caster/badge.svg" width="100" height="18"
                alt="static analysis status" /></a></td></tr></table>
   </td>
-  <td><h2>*A simple native gStreamer GUI for screencast, webcam, and audio streaming*</h2></td></tr></table>
+  <td><h2>*A light-weight native gStreamer GUI for screencast, webcam, and audio streaming*</h2></td></tr></table>
 
 
 AvCaster is a native GNU/linux appliction built with the [JUCE][juce] framework and using [gStreamer][gstreamer] as the media backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture, webcam, and stereo audio.  This initial implementation is specialized for full-screen screencast with webcam overlay.  It is moderately configurable, with a preset configuration for streaming via [livecoding.tv][lctv], and allows custom user-defined configurations to be stored as additional presets.  If one is handy with bits it could be easily customized for webcam-only, screencap-only, audio-only, or for any streaming server.  Also, it has been designed for portability, anticipating Windows and Mac ports.  These and more are planned to become standard features along with presets for other hosts.
@@ -36,9 +36,9 @@ A command-line solution is the obvious choice for such scenarios but obviously l
 *NOTE: AvCaster requires gStreamer >= v1.6.0 and the non-free 'ugly' plugins which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below)*
 #### AvCaster Package Repositories
 The [OpenSUSE Build Service][obs] hosts AvCaster x86 and x86-64 binary package repositories for the following distributions:
-  * Debian 8 , Ubuntu 15.10
-  * Suse Tumbleweed , SUSE 12
-  * CentOS 7 , Fedora 23 , RedHat 7 , ScientificLinux 7
+  * Ubuntu 15.10
+  * Suse Tumbleweed
+  * Fedora 23
 
 Follow the [instructions][obs] there to subscribe your package manager or download the latest package for your distribution directly.  Let us know if you would like packaging for another architecture.
 #### Other GNU/Linux:
@@ -75,11 +75,11 @@ $ makepkg --install ./PKGCONFIG
 ```
 ### build dependencies ###
 $ sudo apt-get install build-essential libfreetype6-dev libgstreamer-plugins-base1.0-dev \
-                       libircclient-dev libx11-dev libxcursor-dev libxinerama-dev
+                       libx11-dev libxcursor-dev libxinerama-dev
 ### runtime dependencies (Debian 'unstable' , Ubuntu 'wily universe') ###
 $ sudo apt-get install freeglut3 gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
                        gstreamer1.0-plugins-ugly libfreetype6 libgl1-mesa-glx       \
-                       libircclient1 libx11-6 libxcomposite1 libxcursor1 libxext6   \
+                       libx11-6 libxcomposite1 libxcursor1 libxext6                 \
                        libxinerama1 libxrender1
 ### compile ###
 $ cd Builds/Makefile
@@ -89,11 +89,11 @@ $ ./build/av-caster
 #### Suse:
 ```
 ### build dependencies ###
-$ sudo zypper install gcc-c++ libX11-devel freetype2-devel libXinerama-devel           \
-                      libXcursor-devel gstreamer-plugins-base-devel libircclient-devel
+$ sudo zypper install gcc-c++ libX11-devel freetype2-devel libXinerama-devel \
+                      libXcursor-devel gstreamer-plugins-base-devel
 ### runtime dependencies ###
 $ sudo zypper install gstreamer-plugins-good gstreamer-plugins-bad-free \
-                      gstreamer-plugins-ugly libircclient1
+                      gstreamer-plugins-ugly
 ### compile ###
 $ cd Builds/Makefile
 $ make CONFIG=Release
@@ -102,8 +102,8 @@ $ ./build/av-caster
 #### Fedora:
 ```
 ### build dependencies ###
-$ sudo dnf install gcc-c++ libX11-devel freetype-devel libXinerama-devel             \
-                   libXcursor-devel gstreamer1-plugins-base-devel libircclient-devel
+$ sudo dnf install gcc-c++ libX11-devel freetype-devel libXinerama-devel \
+                   libXcursor-devel gstreamer1-plugins-base-devel
 ### runtime dependencies (rpmfusion repositories) ###
 $ RPMFUSION_URL=http://download1.rpmfusion.org
 $ FEDORA_VERSION=$(rpm -E %fedora)
@@ -111,20 +111,18 @@ $ REPO1=$RPMFUSION_URL/free/fedora/rpmfusion-free-release-$FEDORA_VERSION.noarch
 $ REPO2=$RPMFUSION_URL/nonfree/fedora/rpmfusion-nonfree-release-$FEDORA_VERSION.noarch.rpm
 $ sudo dnf install $REPO1 $REPO2
 $ sudo dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
-                   gstreamer1-plugins-ugly libircclient1
+                   gstreamer1-plugins-ugly
 ### compile ###
 $ cd Builds/Makefile
 $ make CONFIG=Release
 $ ./build/av-caster
 ```
 #### Other GNU/Linux:
-Install the corresponding libraries as above for your system.
+Install the corresponding libraries as above for your system and compile similarly.
 
 
-#### Developers and Designers
-You will find in the Builds/Scripts directory some helper scripts to aid in building and debugging this application. Note that we are currently locked at JUCE v3.1.1 until [an issue affecting scaled monitor resolutions](http://www.juce.com/forum/topic/juce-v320-and-v401-apps-window-not-visible-scaled-monitor-resolutions) is resolved. This is not relevant to most development tasks, but if you must use the Introjucer GUI builder for design or project maintenance, please compile it from [this branch](https://github.com/bill-auger/JUCE/tree/v3-1-1).
-
-Note that branches other than 'master' tend to be rebased often so you may need to force pull those.
+### Developers and Designers
+You will find in the Builds/Scripts directory some helper scripts to aid in building and debugging this application. Simply run ```./Builds/Scripts/setup-build-helpers``` to install them. Note that we are currently locked at JUCE v3.1.1 until [an issue affecting scaled monitor resolutions](http://www.juce.com/forum/topic/juce-v320-and-v401-apps-window-not-visible-scaled-monitor-resolutions) is resolved. This is not relevant to most development tasks, but if you must use the Introjucer GUI builder for design or project maintenance, please compile it from [this branch](https://github.com/bill-auger/JUCE/tree/v3-1-1).
 ```
 ### Build the Introjucer GUI builder and project manager ###
 $ git clone --depth 1 https://github.com/bill-auger/JUCE.git
@@ -134,6 +132,13 @@ $ make
 $ ./build/Introjucer
 
 ### Then select "Open" from the Introjucer "File" menu and browse to the AvCaster.jucer file in this project root directory. ###
+```
+Note that branches other than 'master' tend to be rebased often so you may need to force pull those.  Please rebase all pull requests on/into the latest development HEAD.  Ideally, all branches should be a fast-foreward from master so that in most cases the cleanest way to re-sync is like:
+```
+$ git fetch all
+$ git checkout development
+$ git reset --hard master
+$ git merge upstream/development
 ```
 
 
@@ -153,7 +158,7 @@ Also, the original ffmpeg bash script with all of the features that this project
 [gstreamer]:  http://gstreamer.freedesktop.org/
 [lctv]:       https://www.livecoding.tv/
 [deb]:        https://packagecloud.io/ninjam/av-caster
-[wiki]:       https://github.com/bill-auger/av-caster/wiki
+[wiki]:       https://github.com/bill-auger/av-caster/wiki/AvCaster-Wiki
 [tracker]:    https://github.com/bill-auger/av-caster/issues
 [gitter-img]: https://badges.gitter.im/Join%20Chat.svg
 [gitter]:     https://gitter.im/bill-auger/av-caster

@@ -36,21 +36,20 @@ class Gstreamer
 private:
 
   // setup
-  static bool Initialize() ;
-  static void Shutdown  () ;
+  static bool Initialize  (void* x_window_handle) ;
+  static void ReloadConfig() ;
+  static void Shutdown    () ;
 
   // pipeline configuration
-  static bool InitializePipeline    () ;
-//   static bool ConfigurePipeline     () ;
-  static bool ConfigureScreencapBin (GstElement* link_bin) ;
-  static bool ConfigureCameraBin    (GstElement* link_bin) ;
-  static bool ConfigureTextBin      (GstElement* link_bin) ;
-  static bool ConfigureImageBin     (GstElement* link_bin) ;
-  static bool ConfigureCompositorBin() ;
-  static bool ConfigurePreviewBin   () ;
-  static bool ConfigureAudioBin     () ;
-  static bool ConfigureMuxerBin     () ;
-  static bool ConfigureOutputBin    () ;
+  static bool BuildScreencapBin () ;
+  static bool BuildCameraBin    () ;
+  static bool BuildTextBin      () ;
+  static bool BuildImageBin     () ;
+  static bool BuildCompositorBin() ;
+  static bool BuildPreviewBin   () ;
+  static bool BuildAudioBin     () ;
+  static bool BuildMuxerBin     () ;
+  static bool BuildOutputBin    () ;
 
   // element configuration
   static void ConfigureCaps          (GstElement* a_capsfilter , GstCaps* a_caps) ;
@@ -61,21 +60,32 @@ private:
                                       guint       pattern_n       , bool  is_active ) ;
   static void ConfigureCamera        (GstElement* a_camera_source , String device_path ,
                                       guint       pattern_n       , bool   is_active   ) ;
-  static void ConfigureFauxVideo     (GstElement* a_faux_source , guint pattern_n) ;
+  static void ConfigureTestVideo     (GstElement* a_test_source , guint pattern_n) ;
   static void ConfigureText          (GstElement* a_text_source , String font_desc) ;
   static void ConfigureFile          (GstElement* a_file_source , String file_path) ;
   static void ConfigureCompositor    (GstElement* a_compositor , guint background_n) ;
   static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
   static bool ConfigureVideoSink     (GstElement* a_video_sink) ;
-  static void ConfigureFauxAudio     (GstElement* faux_source) ;
+  static void ConfigureFauxSource    (GstElement* a_faux_source) ;
   static void ConfigureX264Encoder   (GstElement* an_x264_encoder , guint bitrate) ;
   static void ConfigureLameEncoder   (GstElement* a_lame_encoder , guint bitrate) ;
   static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
-  static bool Reconfigure            (const Identifier& config_key , bool is_config_pending) ;
-//   static bool ReconfigureBin      (String      bin_id       , GstElement* a_bin) ;
+  static bool Reconfigure            (const Identifier& config_key) ;
+// static bool        ConfigureScreen() ;
+// static bool        ConfigureCamera() ;
+// static bool        ConfigureText() ;
+// static bool        ConfigureImage() ;
+  static GstElement* ConfigurePreview() ;
+  static GstElement* ConfigureAudio() ;
+// static bool        ConfigureOutput() ;
 
   // state
-  static bool SetState(GstElement* an_element , GstState next_state) ;
+  static bool            SetState          (GstElement* an_element , GstState next_state) ;
+  static void            SetMessageHandler (GstPipeline*      pipeline     ,
+                                            GstBusSyncHandler on_message_cb) ;
+  static GstBusSyncReply HandleMessage     (GstBus*      message_bus , GstMessage* message ,
+                                            GstPipeline* pipeline                          ) ;
+  static void            HandleErrorMessage(GstMessage* message) ;
 
   // element creation and destruction
   static GstElement* NewPipeline      (String pipeline_id) ;
@@ -83,11 +93,10 @@ private:
   static GstElement* NewElement       (String plugin_id , String element_id) ;
   static GstCaps*    NewCaps          (String caps_str) ;
   static bool        AddElement       (GstElement* a_bin , GstElement* an_element) ;
-  static void        DeleteElement    (GstElement* an_element) ;
+  static bool        RemoveElement    (GstElement* a_bin , GstElement* an_element) ;
+  static void        DestroyElement   (GstElement* an_element) ;
   static bool        AddBin           (GstElement* a_bin) ;
   static bool        RemoveBin        (GstElement* a_bin) ;
-  static void        DestroyBin       (GstElement* a_bin) ;
-  static GstElement* RecreateBin      (GstElement* a_bin , String bin_id) ;
   static bool        LinkElements     (GstElement* source , GstElement* sink) ;
   static bool        LinkPads         (GstPad* srcpad , GstPad* sinkpad) ;
   static GstPad*     NewGhostSrcPad   (GstElement* a_bin         , GstElement* an_element ,
@@ -113,14 +122,16 @@ private:
   static String MakeMp3CapsString   (int samplerate , int n_channels) ;
   static String MakeLctvUrl         (String dest) ;
 
-  // state helpers
-  static unsigned int GetVersionMajor    () ;
-  static unsigned int GetVersionMinor    () ;
-  static bool         IsSufficientVersion() ;
-  static bool         IsInitialized      () ;
-  static bool         IsPlaying          () ;
-  static bool         IsInPipeline       (GstElement* an_element) ;
+  // getters/setters
+  static String GetElementId(GstElement* an_element) ;
+  static String GetPadId    (GstPad* a_pad) ;
 
+  // state helpers
+  static bool IsSufficientVersion() ;
+  static bool IsInitialized      () ;
+  static bool IsPlaying          () ;
+  static bool IsInPipeline       (GstElement* an_element) ;
+  static bool IsInBin            (GstElement* a_parent_element , GstElement* a_child_element) ;
 
   // pipeline
   static GstElement* Pipeline ;
@@ -130,10 +141,18 @@ private:
   static GstElement* ImageBin ;
   static GstElement* CompositorBin ;
   static GstElement* PreviewBin ;
-  static GstElement* PreviewSink ;
+  static GstElement* PreviewQueue ;
+  static GstElement* PreviewFauxSink ;
+  static GstElement* PreviewRealSink ;
   static GstElement* AudioBin ;
+  static GstElement* AudioAlsaSource ;
+  static GstElement* AudioPulseSource ;
+  static GstElement* AudioJackSource ;
+  static GstElement* AudioTestSource ;
+  static GstElement* AudioCaps ;
   static GstElement* MuxerBin ;
   static GstElement* OutputBin ;
+  static guintptr    PreviewXwin ;
 
   // configuration
   static ValueTree ConfigStore ;

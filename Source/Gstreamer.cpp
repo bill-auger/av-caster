@@ -28,24 +28,46 @@
 
 /* GstElement private class variables */
 
-GstElement* Gstreamer::Pipeline        = nullptr ;
-GstElement* Gstreamer::ScreencapBin    = nullptr ;
-GstElement* Gstreamer::CameraBin       = nullptr ;
-GstElement* Gstreamer::TextBin         = nullptr ;
-GstElement* Gstreamer::ImageBin        = nullptr ;
-GstElement* Gstreamer::CompositorBin   = nullptr ;
-GstElement* Gstreamer::PreviewBin      = nullptr ;
-GstElement* Gstreamer::PreviewSink     = nullptr ;
-GstElement* Gstreamer::AudioBin        = nullptr ;
-GstElement* Gstreamer::MuxerBin        = nullptr ;
-GstElement* Gstreamer::OutputBin       = nullptr ;
-ValueTree   Gstreamer::ConfigStore ;               // Configure()
+GstElement* Gstreamer::Pipeline         = nullptr ;
+GstElement* Gstreamer::ScreencapBin     = nullptr ;
+GstElement* Gstreamer::CameraBin        = nullptr ;
+GstElement* Gstreamer::TextBin          = nullptr ;
+GstElement* Gstreamer::ImageBin         = nullptr ;
+GstElement* Gstreamer::CompositorBin    = nullptr ;
+GstElement* Gstreamer::PreviewBin       = nullptr ;
+GstElement* Gstreamer::PreviewQueue     = nullptr ;
+GstElement* Gstreamer::PreviewFauxSink  = nullptr ;
+GstElement* Gstreamer::PreviewRealSink  = nullptr ;
+GstElement* Gstreamer::AudioBin         = nullptr ;
+GstElement* Gstreamer::AudioAlsaSource  = nullptr ;
+GstElement* Gstreamer::AudioPulseSource = nullptr ;
+GstElement* Gstreamer::AudioJackSource  = nullptr ;
+GstElement* Gstreamer::AudioTestSource  = nullptr ;
+GstElement* Gstreamer::AudioCaps        = nullptr ;
+GstElement* Gstreamer::MuxerBin         = nullptr ;
+GstElement* Gstreamer::OutputBin        = nullptr ;
+guintptr    Gstreamer::PreviewXwin      = 0    ;               // Initialize()
+ValueTree   Gstreamer::ConfigStore      = ValueTree::invalid ; // Configure()
 
 
 /* GstElement private class methods */
 
-bool Gstreamer::Initialize()
+bool Gstreamer::Initialize(void* x_window_handle)
 {
+  PreviewXwin = (guintptr)x_window_handle ;
+
+  // determine static pipeline macro configuration
+  bool should_build_pipeline       = AvCaster::GetIsMediaEnabled() ;
+  bool should_build_screen_bin     = AvCaster::GetIsScreenEnabled() ;
+  bool should_build_camera_bin     = AvCaster::GetIsCameraEnabled() ;
+  bool should_build_text_bin       = AvCaster::GetIsTextEnabled() ;
+  bool should_build_image_bin      = AvCaster::GetIsImageEnabled() ;
+  bool should_build_compositor_bin = AvCaster::GetIsCompositorEnabled() ;
+  bool should_build_preview_bin    = AvCaster::GetIsPreviewEnabled() ;
+  bool should_build_audio_bin      = should_build_pipeline ;
+  bool should_build_muxer_bin      = should_build_pipeline ;
+  bool should_build_output_bin     = should_build_pipeline ;
+
 DEBUG_TRACE_GST_INIT_PHASE_1
 
   // initialize gStreamer (NOTE: this will terminate the app on failure)
@@ -54,41 +76,75 @@ DEBUG_TRACE_GST_INIT_PHASE_1
 DEBUG_TRACE_GST_INIT_PHASE_2
 
   // instantiate pipeline
-  if (!(Pipeline        = NewPipeline(GST::PIPELINE_ID      )) ||
-      !(ScreencapBin    = NewBin     (GST::SCREENCAP_BIN_ID )) ||
-      !(CameraBin       = NewBin     (GST::CAMERA_BIN_ID    )) ||
-      !(TextBin         = NewBin     (GST::TEXT_BIN_ID      )) ||
-      !(ImageBin        = NewBin     (GST::IMAGE_BIN_ID     )) ||
-      !(CompositorBin   = NewBin     (GST::COMPOSITOR_BIN_ID)) ||
-      !(PreviewBin      = NewBin     (GST::PREVIEW_BIN_ID   )) ||
-      !(AudioBin        = NewBin     (GST::AUDIO_BIN_ID     )) ||
-      !(MuxerBin        = NewBin     (GST::MUXER_BIN_ID     )) ||
-      !(OutputBin       = NewBin     (GST::OUTPUT_BIN_ID    ))  )
+  if ((should_build_pipeline       && !(Pipeline      = NewPipeline(GST::PIPELINE_ID      ))) ||
+      (should_build_screen_bin     && !(ScreencapBin  = NewBin     (GST::SCREENCAP_BIN_ID ))) ||
+      (should_build_camera_bin     && !(CameraBin     = NewBin     (GST::CAMERA_BIN_ID    ))) ||
+      (should_build_text_bin       && !(TextBin       = NewBin     (GST::TEXT_BIN_ID      ))) ||
+      (should_build_image_bin      && !(ImageBin      = NewBin     (GST::IMAGE_BIN_ID     ))) ||
+      (should_build_compositor_bin && !(CompositorBin = NewBin     (GST::COMPOSITOR_BIN_ID))) ||
+      (should_build_preview_bin    && !(PreviewBin    = NewBin     (GST::PREVIEW_BIN_ID   ))) ||
+      (should_build_audio_bin      && !(AudioBin      = NewBin     (GST::AUDIO_BIN_ID     ))) ||
+      (should_build_muxer_bin      && !(MuxerBin      = NewBin     (GST::MUXER_BIN_ID     ))) ||
+      (should_build_output_bin     && !(OutputBin     = NewBin     (GST::OUTPUT_BIN_ID    )))  )
   { AvCaster::Error(GUI::GST_PIPELINE_INST_ERROR_MSG) ; return false ; }
 
-  // prune unused bins per cli args (debugging)
-  if (!AvCaster::GetIsScreenEnabled()    ) { DestroyBin(ScreencapBin) ;  ScreencapBin  = nullptr ; }
-  if (!AvCaster::GetIsCameraEnabled()    ) { DestroyBin(CameraBin) ;     CameraBin     = nullptr ; }
-  if (!AvCaster::GetIsTextEnabled()      ) { DestroyBin(TextBin) ;       TextBin       = nullptr ; }
-  if (!AvCaster::GetIsImageEnabled()     ) { DestroyBin(ImageBin) ;      ImageBin      = nullptr ; }
-  if (!AvCaster::GetIsCompositorEnabled()) { DestroyBin(CompositorBin) ; CompositorBin = nullptr ; }
-  if (!AvCaster::GetIsPreviewEnabled()   ) { DestroyBin(PreviewBin) ;    PreviewBin    = nullptr ; }
-  if (!AvCaster::GetIsAudioEnabled()     ) { DestroyBin(AudioBin) ;      AudioBin      = nullptr ; }
+  SetMessageHandler(GST_PIPELINE(Pipeline) , (GstBusSyncHandler)HandleMessage) ;
 
 DEBUG_TRACE_GST_INIT_PHASE_3
 
   // configure pipeline
-  if (!AddBin(ScreencapBin) || !AddBin(CameraBin)     || !AddBin(TextBin)    ||
-      !AddBin(ImageBin)     || !AddBin(CompositorBin) || !AddBin(PreviewBin) ||
-      !AddBin(AudioBin)     || !AddBin(MuxerBin)      || !AddBin(OutputBin)   )
+  if ((should_build_screen_bin     && !AddBin(ScreencapBin )) ||
+      (should_build_camera_bin     && !AddBin(CameraBin    )) ||
+      (should_build_text_bin       && !AddBin(TextBin      )) ||
+      (should_build_image_bin      && !AddBin(ImageBin     )) ||
+      (should_build_compositor_bin && !AddBin(CompositorBin)) ||
+      (should_build_preview_bin    && !AddBin(PreviewBin   )) ||
+      (should_build_audio_bin      && !AddBin(AudioBin     )) ||
+      (should_build_muxer_bin      && !AddBin(MuxerBin     )) ||
+      (should_build_output_bin     && !AddBin(OutputBin    ))  )
   { AvCaster::Error(GUI::GST_ADD_ERROR_MSG) ; return false ; }
 
-DEBUG_TRACE_GST_INIT_PHASE_4
+DEBUG_TRACE_GST_INIT_PHASE_4 DEBUG_TRACE_DISABLED_BINS
 
-  // configure elements
-  if (!InitializePipeline()) return false ;
+  // configure bins
+  ReloadConfig() ;
+  if ((should_build_screen_bin     && !BuildScreencapBin ()) ||
+      (should_build_camera_bin     && !BuildCameraBin    ()) ||
+      (should_build_text_bin       && !BuildTextBin      ()) ||
+      (should_build_image_bin      && !BuildImageBin     ()) ||
+      (should_build_compositor_bin && !BuildCompositorBin()) ||
+      (should_build_preview_bin    && !BuildPreviewBin   ()) ||
+      (should_build_audio_bin      && !BuildAudioBin     ()) ||
+      (should_build_muxer_bin      && !BuildMuxerBin     ()) ||
+      (should_build_output_bin     && !BuildOutputBin    ())  )
+  { AvCaster::Error(GUI::GST_PIPELINE_INIT_ERROR_MSG) ; return false ; }
 
 DEBUG_TRACE_GST_INIT_PHASE_5
+
+  // link bins
+  if (should_build_compositor_bin)
+  {
+    if (!LinkElements(ScreencapBin  , CompositorBin) ||
+        !LinkElements(CameraBin     , CompositorBin) ||
+//         !LinkElements(TextBin   , CompositorBin) ||
+//         !LinkElements  (ImageBin   , CompositorBin  ) ||
+        !LinkElements(CompositorBin , MuxerBin     ) ||
+        !LinkElements(CompositorBin , PreviewBin   )  )
+    { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
+  }
+  else
+  {
+    if ((should_build_screen_bin && !LinkElements(ScreencapBin , MuxerBin)) ||
+        (should_build_camera_bin && !LinkElements(CameraBin    , MuxerBin)) ||
+        (should_build_text_bin   && !LinkElements(TextBin      , MuxerBin)) ||
+        (should_build_image_bin  && !LinkElements(ImageBin     , MuxerBin))  )
+    { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
+  }
+  if (!LinkElements(AudioBin , MuxerBin ) ||
+      !LinkElements(MuxerBin , OutputBin)  )
+  { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ; return false ; }
+
+DEBUG_TRACE_GST_INIT_PHASE_6
 
   // set rolling
   if (!SetState(Pipeline , GST_STATE_PLAYING)) return false ;
@@ -101,14 +157,18 @@ if (!bool(ConfigStore[CONFIG::IS_PREVIEW_ACTIVE_ID])) RemoveBin(PreviewBin) ;
 if (!bool(ConfigStore[CONFIG::IS_OUTPUT_ACTIVE_ID]))  RemoveBin(OutputBin) ;
 #endif // DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
 
-DEBUG_TRACE_GST_INIT_PHASE_6
-DEBUG_MAKE_GRAPHVIZ
+DEBUG_TRACE_GST_INIT_PHASE_7
+// DEBUG_MAKE_GRAPHVIZ
 
   return true ;
 }
 
+void Gstreamer::ReloadConfig() { ConfigStore = AvCaster::GetConfigStore() ; }
+
 void Gstreamer::Shutdown()
 {
+// DEBUG_MAKE_GRAPHVIZ
+
   // cleanup gStreamer
   // TODO: to shut down correctly (flushing the buffers)
   //       gst_element_send_event(Pipeline , gst_event_eos()) ;
@@ -125,50 +185,15 @@ void Gstreamer::Shutdown()
   if (!IsInPipeline(TextBin)      ) SetState(TextBin       , GST_STATE_NULL) ;
   if (!IsInPipeline(CameraBin)    ) SetState(CameraBin     , GST_STATE_NULL) ;
   if (!IsInPipeline(ScreencapBin) ) SetState(ScreencapBin  , GST_STATE_NULL) ;
-  DeleteElement(Pipeline) ;
+
+  DestroyElement(Pipeline) ;
 
   ConfigStore = ValueTree::invalid ;
 }
 
-bool Gstreamer::InitializePipeline()
+bool Gstreamer::BuildScreencapBin()
 {
-DEBUG_TRACE_INITIALIZE_PIPELINE
-
-  if (!IsInitialized()) return false ;
-
-  GstElement* link_bin = (AvCaster::GetIsCompositorEnabled()) ? CompositorBin : MuxerBin ;
-  ConfigStore          = AvCaster::GetConfigStore() ;
-
-  if (!ConfigureCompositorBin()        || !ConfigureMuxerBin()          ||
-      !ConfigureScreencapBin(link_bin) || !ConfigureCameraBin(link_bin) ||
-      !ConfigureTextBin(link_bin)      || !ConfigureImageBin(link_bin)  ||
-      !ConfigurePreviewBin()           || !ConfigureAudioBin()          ||
-      !ConfigureOutputBin()                                              )
-  { AvCaster::Error(GUI::GST_PIPELINE_INIT_ERROR_MSG) ; return false ; }
-
-  return true ;
-}
-/*
-bool Gstreamer::ConfigurePipeline()
-{
-DEBUG_TRACE_CONFIGURE_PIPELINE
-
-  if (!IsInitialized()) return false ;
-
-  ConfigStore = AvCaster::GetConfigStore() ;
-
-  // FIXME: most of these are not guarded against !Is*Enabled
-  if (!ConfigureCompositor() || !ConfigureMuxer() || !ConfigureScreencap() ||
-      !ConfigureCamera()     || !ConfigureText()  || !ConfigureImage()     ||
-      !ConfigurePreview()    || !ConfigureAudio() || !ConfigureOutput()     )
-  { AvCaster::Error(GUI::GST_CONFIG_ERROR_MSG) ; return false ; }
-
-  return true ;
-}
-*/
-bool Gstreamer::ConfigureScreencapBin(GstElement* link_bin)
-{
-  if (!AvCaster::GetIsScreenEnabled()) return true ;
+DEBUG_TRACE_BUILD_SCREENCAP_BIN
 
   GstElement *source , *capsfilter , *converter , *queue ;
   GstCaps    *caps ;
@@ -181,9 +206,8 @@ bool Gstreamer::ConfigureScreencapBin(GstElement* link_bin)
   String      screen_caps_str = MakeScreenCapsString(screencap_w , screencap_h , framerate) ;
   String      faux_caps_str   = MakeVideoCapsString (screencap_w , screencap_h , framerate) ;
   String      caps_str        = (is_enabled) ? screen_caps_str : faux_caps_str ;
-  String      plugin_id       = (is_enabled) ? GST::SCREEN_PLUGIN_ID : GST::FAUX_VIDEO_PLUGIN_ID ;
+  String      plugin_id       = (is_enabled) ? GST::SCREEN_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ;
 
-DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN
 
   // instantiate elements
   if (!(source     = NewElement(plugin_id      , "screen-real-source")) ||
@@ -193,29 +217,30 @@ DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN
       !(caps       = NewCaps   (caps_str)                             )  )
   { AvCaster::Error(GUI::SCREENCAP_INIT_ERROR_MSG) ; return false ; }
 
+DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN
+
   // configure elements
   ConfigureScreen(source     , screencap_w , screencap_h , 1 , is_enabled) ;
   ConfigureCaps  (capsfilter , caps                                      ) ;
   ConfigureQueue (queue      , 0           , 0           , 0             ) ;
 
   // link elements
-  if (!AddElement    (ScreencapBin , source    )              ||
-      !AddElement    (ScreencapBin , capsfilter)              ||
-      !AddElement    (ScreencapBin , converter )              ||
-      !AddElement    (ScreencapBin , queue     )              ||
-      !LinkElements  (source       , capsfilter   )           ||
-      !LinkElements  (capsfilter   , converter    )           ||
-      !LinkElements  (converter    , queue        )           ||
-      !NewGhostSrcPad(ScreencapBin , queue , "screen-source") ||
-      !LinkElements  (ScreencapBin , link_bin     )            )
+  if (!AddElement    (ScreencapBin , source    )            ||
+      !AddElement    (ScreencapBin , capsfilter)            ||
+      !AddElement    (ScreencapBin , converter )            ||
+      !AddElement    (ScreencapBin , queue     )            ||
+      !LinkElements  (source       , capsfilter   )         ||
+      !LinkElements  (capsfilter   , converter    )         ||
+      !LinkElements  (converter    , queue        )         ||
+      !NewGhostSrcPad(ScreencapBin , queue , "screen-source"))
   { AvCaster::Error(GUI::SCREENCAP_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
 }
 
-bool Gstreamer::ConfigureCameraBin(GstElement* link_bin)
+bool Gstreamer::BuildCameraBin()
 {
-  if (!AvCaster::GetIsCameraEnabled()) return true ;
+DEBUG_TRACE_BUILD_CAMERA_BIN
 
   GstElement* source , *capsfilter , *converter , *queue ;
   GstCaps*    caps ;
@@ -237,16 +262,14 @@ bool Gstreamer::ConfigureCameraBin(GstElement* link_bin)
 #endif // JUCE_LINUX
 
 #ifdef FAUX_CAMERA
-UNUSED(is_enabled) ; is_enabled = false ; // TODO: GUI support
+UNUSED(is_enabled) ; is_enabled = false ;
 #endif // FAUX_CAMERA
 
   if (!is_enabled)
   {
-    plugin_id = GST::FAUX_VIDEO_PLUGIN_ID ;
+    plugin_id = GST::TESTVIDEO_PLUGIN_ID ;
     caps_str  = MakeVideoCapsString(160 , 120 , 12) ;
   }
-
-DEBUG_TRACE_CONFIGURE_CAMERA_BIN
 
   // instantiate elements
   if (!(source     = NewElement(plugin_id      , "camera-real-source")) ||
@@ -256,28 +279,29 @@ DEBUG_TRACE_CONFIGURE_CAMERA_BIN
       !(caps       = NewCaps   (caps_str)                             )  )
   { AvCaster::Error(GUI::CAMERA_INIT_ERROR_MSG) ; return false ; }
 
+DEBUG_TRACE_CONFIGURE_CAMERA_BIN
+
   // configure elements
   ConfigureCamera(source     , device_path , 0 , is_enabled) ;
   ConfigureCaps  (capsfilter , caps                        ) ;
 
   // link elements
-  if (!AddElement    (CameraBin , source    )              ||
-      !AddElement    (CameraBin , capsfilter)              ||
-      !AddElement    (CameraBin , converter )              ||
-      !AddElement    (CameraBin , queue     )              ||
-      !LinkElements  (source     , capsfilter   )          ||
-      !LinkElements  (capsfilter , converter    )          ||
-      !LinkElements  (converter  , queue        )          ||
-      !NewGhostSrcPad(CameraBin , queue , "camera-source") ||
-      !LinkElements  (CameraBin  , link_bin)    )
+  if (!AddElement    (CameraBin , source    )            ||
+      !AddElement    (CameraBin , capsfilter)            ||
+      !AddElement    (CameraBin , converter )            ||
+      !AddElement    (CameraBin , queue     )            ||
+      !LinkElements  (source     , capsfilter)           ||
+      !LinkElements  (capsfilter , converter )           ||
+      !LinkElements  (converter  , queue     )           ||
+      !NewGhostSrcPad(CameraBin , queue , "camera-source"))
   { AvCaster::Error(GUI::CAMERA_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
 }
 
-bool Gstreamer::ConfigureTextBin(GstElement* link_bin)
+bool Gstreamer::BuildTextBin()
 {
-  if (!AvCaster::GetIsTextEnabled()) return true ;
+DEBUG_TRACE_BUILD_TEXT_BIN
 
   GstElement *filesrc , *subparser , *source , *converter , *queue ;
 
@@ -285,8 +309,6 @@ bool Gstreamer::ConfigureTextBin(GstElement* link_bin)
   String motd_text    = STRING(ConfigStore[CONFIG::MOTD_TEXT_ID     ]) ;
   int    text_style_n = int   (ConfigStore[CONFIG::TEXT_STYLE_ID    ]) ;
   int    text_pos_n   = int   (ConfigStore[CONFIG::TEXT_POSITION_ID ]) ;
-
-DEBUG_TRACE_CONFIGURE_TEXT_BIN
 
 /* TODO: include custom font
 #include <fontconfig/fontconfig.h>
@@ -304,31 +326,31 @@ FcBool fontAddStatus = FcConfigAppFOntAddFile(FcConfigGetCurrent(),file);
       !(queue     = gst_element_factory_make("queue"        , "text-queue"    ))  )
   { AvCaster::Error(GUI::TEXT_INIT_ERROR_MSG) ; return false ; }
 
+DEBUG_TRACE_CONFIGURE_TEXT_BIN
+
   // configure elements
   ConfigureText(source  , "Purisa Normal 40"            ) ;
   ConfigureFile(filesrc , "/code/av-caster/deleteme.srt") ;
 
   // link elements
-  if (!AddElement    (TextBin , filesrc  )             ||
-      !AddElement    (TextBin , subparser)             ||
-      !AddElement    (TextBin , source   )             ||
-      !AddElement    (TextBin , converter)             ||
-      !AddElement    (TextBin , queue    )             ||
-      !LinkElements  (filesrc   , subparser    )       ||
-      !LinkElements  (subparser , source       )       ||
-      !LinkElements  (source    , converter    )       ||
-      !LinkElements  (converter , queue        )       ||
-      !NewGhostSrcPad(TextBin , queue , "text-source") ||
-      !LinkElements  (TextBin   , link_bin     )        )
+  if (!AddElement    (TextBin , filesrc  )           ||
+      !AddElement    (TextBin , subparser)           ||
+      !AddElement    (TextBin , source   )           ||
+      !AddElement    (TextBin , converter)           ||
+      !AddElement    (TextBin , queue    )           ||
+      !LinkElements  (filesrc   , subparser)         ||
+      !LinkElements  (subparser , source   )         ||
+      !LinkElements  (source    , converter)         ||
+      !LinkElements  (converter , queue    )         ||
+      !NewGhostSrcPad(TextBin , queue , "text-source"))
   { AvCaster::Error(GUI::TEXT_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
 }
 
-bool Gstreamer::ConfigureImageBin(GstElement* link_bin)
+bool Gstreamer::BuildImageBin()
 {
-  if (!AvCaster::GetIsImageEnabled()) return true ;
-
+DEBUG_TRACE_BUILD_IMAGE_BIN
 //#define STATIC_IMAGE
 #  ifdef STATIC_IMAGE
 
@@ -358,8 +380,6 @@ bool Gstreamer::ConfigureImageBin(GstElement* link_bin)
                             "interlace-mode=(string)progressive, "                   +
                             "pixel-aspect-ratio=(fraction)1/1"                       ;
 
-DEBUG_TRACE_CONFIGURE_IMAGE_BIN
-
   // instantiate elements
   if (!(source         = NewElement("filesrc"      , "interstitial-real-source" )) ||
       !(decoder        = NewElement("pngdec"       , "interstitial-decoder"     )) ||
@@ -373,6 +393,8 @@ DEBUG_TRACE_CONFIGURE_IMAGE_BIN
       !(freezer_caps   = NewCaps   (freezer_caps_str)                            )  )
   { AvCaster::Error(GUI::IMAGE_INIT_ERROR_MSG) ; return false ; }
 
+DEBUG_TRACE_CONFIGURE_IMAGE_BIN
+
   // configure elements
   ConfigureFile (source         , image_filename        ) ;
   ConfigureCaps (scaler_filter  , scaler_caps           ) ;
@@ -380,23 +402,22 @@ DEBUG_TRACE_CONFIGURE_IMAGE_BIN
   ConfigureQueue(queue          , 0              , 0 , 0) ;
 
   // link elements
-  if (!AddElement    (CameraBin , source        )                ||
-      !AddElement    (CameraBin , decoder       )                ||
-      !AddElement    (CameraBin , converter     )                ||
-      !AddElement    (CameraBin , scaler        )                ||
-      !AddElement    (CameraBin , scaler_filter )                ||
-      !AddElement    (CameraBin , freezer       )                ||
-      !AddElement    (CameraBin , freezer_filter)                ||
-      !AddElement    (CameraBin , queue         )                ||
-      !LinkElements  (source         , decoder       )           ||
-      !LinkElements  (decoder        , converter     )           ||
-      !LinkElements  (converter      , scaler        )           ||
-      !LinkElements  (scaler         , scaler_filter )           ||
-      !LinkElements  (scaler_filter  , freezer       )           ||
-      !LinkElements  (freezer        , freezer_filter)           ||
-      !LinkElements  (freezer_filter , queue         )           ||
-      !NewGhostSrcPad(CameraBin , queue , "interstitial-source") ||
-      !LinkElements  (CameraBin      , link_bin      )            )
+  if (!AddElement    (ImageBin , source        )              ||
+      !AddElement    (ImageBin , decoder       )              ||
+      !AddElement    (ImageBin , converter     )              ||
+      !AddElement    (ImageBin , scaler        )              ||
+      !AddElement    (ImageBin , scaler_filter )              ||
+      !AddElement    (ImageBin , freezer       )              ||
+      !AddElement    (ImageBin , freezer_filter)              ||
+      !AddElement    (ImageBin , queue         )              ||
+      !LinkElements  (source         , decoder       )        ||
+      !LinkElements  (decoder        , converter     )        ||
+      !LinkElements  (converter      , scaler        )        ||
+      !LinkElements  (scaler         , scaler_filter )        ||
+      !LinkElements  (scaler_filter  , freezer       )        ||
+      !LinkElements  (freezer        , freezer_filter)        ||
+      !LinkElements  (freezer_filter , queue         )        ||
+      !NewGhostSrcPad(ImageBin , queue , "interstitial-source"))
   { AvCaster::Error(GUI::IMAGE_LINK_ERROR_MSG) ; return false ; }
 
 #  else // STATIC_IMAGE
@@ -409,7 +430,7 @@ DEBUG_TRACE_CONFIGURE_IMAGE_BIN
   int    interstitial_h = int(ConfigStore[CONFIG::SCREENCAP_H_ID]) ;
   int    framerate_n    = int(ConfigStore[CONFIG::FRAMERATE_ID  ]) ;
   int    framerate      = CONFIG::FRAMERATES[framerate_n].getIntValue() ;
-  String plugin_id      = GST::FAUX_VIDEO_PLUGIN_ID ;
+  String plugin_id      = GST::TESTVIDEO_PLUGIN_ID ;
   String caps_str       = String("video/x-raw, ")                                  +
                           "width=(int)"          + String(interstitial_w) + ", "   +
                           "height=(int)"         + String(interstitial_h) + ", "   +
@@ -429,7 +450,7 @@ DEBUG_TRACE_CONFIGURE_IMAGE_BIN
   { AvCaster::Error(GUI::IMAGE_INIT_ERROR_MSG) ; return false ; }
 
   // configure elements
-  ConfigureFauxVideo(source , 1) ;
+  ConfigureTestVideo(source , 1) ;
   ConfigureCaps(capsfilter , caps) ;
 
   // link elements
@@ -441,7 +462,6 @@ DEBUG_TRACE_CONFIGURE_IMAGE_BIN
       !LinkElements  (capsfilter , converter )           ||
       !LinkElements  (converter  , queue     )           ||
       !NewGhostSrcPad(ImageBin   , queue , "image-source"))
-//       !LinkElements  (ImageBin   , link_bin  )
   { AvCaster::Error(GUI::IMAGE_LINK_ERROR_MSG) ; return false ; }
 
 #  endif // STATIC_IMAGE
@@ -449,9 +469,9 @@ DEBUG_TRACE_CONFIGURE_IMAGE_BIN
   return true ;
 }
 
-bool Gstreamer::ConfigureCompositorBin()
+bool Gstreamer::BuildCompositorBin()
 {
-  if (!AvCaster::GetIsCompositorEnabled()) return true ;
+DEBUG_TRACE_BUILD_COMPOSITOR_BIN
 
   GstElement *fullscreen_queue , *overlay_queue                                ,
              *compositor       , *capsfilter           , *converter            ,
@@ -473,8 +493,6 @@ bool Gstreamer::ConfigureCompositorBin()
   int         overlay_y    = fullscreen_h - overlay_h ;
   String      caps_str     = MakeVideoCapsString(output_w , output_h , framerate) ;
 
-DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
-
   // instantiate elements
   if (!(fullscreen_queue     = NewElement("queue"        , "compositor-fullscreen-queue")) ||
       !(overlay_queue        = NewElement("queue"        , "compositor-overlay-queue"   )) ||
@@ -486,6 +504,8 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
       !(composite_thru_queue = NewElement("queue"        , "compositor-thru-queue"      )) ||
       !(caps                 = NewCaps   (caps_str)                                      )  )
   { AvCaster::Error(GUI::MIXER_INIT_ERROR_MSG) ; return false ; }
+
+DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
 
   // configure elements
   ConfigureQueue     (fullscreen_queue     , 0    , 0 , 0) ;
@@ -541,134 +561,73 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
       !NewGhostSrcPad(CompositorBin , composite_sink_queue , "preview-source"   )     )
   { AvCaster::Error(GUI::MIXER_PAD_LINK_ERROR_MSG) ; return false ; }
 
-  if (!IsPlaying()) return true ;
-
-  // re-link to input and output bins
-  if (!LinkElements(ScreencapBin  , CompositorBin) ||
-      !LinkElements(CameraBin     , CompositorBin) ||
-      !LinkElements(CompositorBin , MuxerBin     ) ||
-      !LinkElements(CompositorBin , PreviewBin   )  )
-  { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
-
   return true ;
 }
 
-bool Gstreamer::ConfigurePreviewBin()
+bool Gstreamer::BuildPreviewBin()
 {
-  if (!AvCaster::GetIsPreviewEnabled()) return true ;
+DEBUG_TRACE_BUILD_PREVIEW_BIN
 
-  // NOTE: x_window_handle must be attached before pipline is started
-  //           so PreviewSink must never be FAUX_SINK_PLUGIN_ID if it is to be usable
-#ifdef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  bool   is_enabled = AvCaster::GetIsPreviewEnabled() ;
-#else // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  bool   is_enabled = AvCaster::GetIsPreviewEnabled() && AvCaster::GetIsPreviewActive() ;
-#endif // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  String plugin_id  = (is_enabled) ? GST::PREVIEW_PLUGIN_ID : GST::FAUX_SINK_PLUGIN_ID ;
-
-#ifndef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-#  ifdef DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-UNUSED(is_enabled) ; is_enabled = true ; plugin_id = GST::PREVIEW_PLUGIN_ID ; // FIXME: no fake sink needed ?
-#  endif // DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-#endif // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-
-DEBUG_TRACE_CONFIGURE_PREVIEW_BIN
+  GstElement* preview_sink ;
 
   // instantiate elements
-  if (!(PreviewSink = NewElement(plugin_id , "preview-real-sink")) )
+  if (!(PreviewQueue    = NewElement("queue"                 , "preview-queue"         )) ||
+      !(PreviewRealSink = NewElement(GST::PREVIEW_PLUGIN_ID  , GST::PREVIEW_SINK_ID    )) ||
+      !(PreviewFauxSink = NewElement(GST::FAUXSINK_PLUGIN_ID , GST::PREVIEW_FAUXSINK_ID))  )
   { AvCaster::Error(GUI::PREVIEW_INIT_ERROR_MSG) ; return false ; }
 
   // configure elements
-  if (is_enabled)
-  {
-    guintptr x_window_handle = (guintptr)AvCaster::GetGuiXwinHandle() ;
-    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(PreviewSink) , x_window_handle) ;
-
-    if (!ConfigureVideoSink(PreviewSink))
-    { AvCaster::Error(GUI::GST_XWIN_ERROR_MSG) ; return false ; }
-  }
+  ConfigureQueue(PreviewQueue , 0 , 0 , 0) ;
+  preview_sink = ConfigurePreview() ; if (preview_sink == nullptr) return false ;
 
   // link elements
-  if (!AddElement     (PreviewBin , PreviewSink                 ) ||
-      !NewGhostSinkPad(PreviewBin , PreviewSink , "preview-sink") ||
-      !LinkElements   (CompositorBin , PreviewBin)                 )
+  if (!AddElement     (PreviewBin , PreviewQueue                          ) ||
+      !AddElement     (PreviewBin , preview_sink                          ) ||
+      !NewGhostSinkPad(PreviewBin , PreviewQueue , GST::PREVIEW_SINKPAD_ID) ||
+      !LinkElements   (PreviewQueue  , preview_sink)                         )
   { AvCaster::Error(GUI::PREVIEW_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
 }
 
-bool Gstreamer::ConfigureAudioBin()
+bool Gstreamer::BuildAudioBin()
 {
-  if (!AvCaster::GetIsAudioEnabled()) return true ;
+DEBUG_TRACE_BUILD_AUDIO_BIN
 
-  GstElement *source , *capsfilter , *converter , *queue ;
-  GstCaps*    caps ;
-
-  bool   is_enabled       = bool(ConfigStore[CONFIG::IS_AUDIO_ACTIVE_ID]) ;
-  int    audio_api        = int (ConfigStore[CONFIG::AUDIO_API_ID      ]) ;
-  int    n_channels       = int (ConfigStore[CONFIG::N_CHANNELS_ID     ]) ;
-  int    samplerate_n     = int (ConfigStore[CONFIG::SAMPLERATE_ID     ]) ;
-  int    samplerate       = CONFIG::AUDIO_SAMPLERATES[samplerate_n].getIntValue() ;
-  String audio16_caps_str = MakeAudioCapsString("S16LE" , samplerate , n_channels) ;
-  String audio32_caps_str = MakeAudioCapsString("F32LE" , samplerate , n_channels) ;
-  String plugin_id , caps_str ;
-
-UNUSED(is_enabled) ; is_enabled = true ; // TODO: GUI support
-#ifdef FAUX_AUDIO
-UNUSED(is_enabled) ; is_enabled = false ;
-#endif // FAUX_AUDIO
-
-  switch ((AvCasterStore::AudioApi)audio_api)
-  {
-    case AvCasterStore::ALSA_AUDIO:  plugin_id  = GST::ALSA_PLUGIN_ID ;
-                                     caps_str   = audio16_caps_str ;          break ;
-    case AvCasterStore::PULSE_AUDIO: plugin_id  = GST::PULSE_PLUGIN_ID ;
-                                     caps_str   = audio16_caps_str ;          break ;
-    case AvCasterStore::JACK_AUDIO:  plugin_id  = GST::JACK_PLUGIN_ID ;
-                                     caps_str   = audio32_caps_str ;          break ;
-    default:                         plugin_id  = GST::FAUX_AUDIO_PLUGIN_ID ;
-                                     caps_str   = GST::FAUX_AUDIO_CAPS ;
-                                     is_enabled = false ;                     break ;
-  }
-
-  if (!is_enabled)
-  {
-    plugin_id = GST::FAUX_AUDIO_PLUGIN_ID ;
-    caps_str  = GST::FAUX_AUDIO_CAPS ;
-  }
-
-DEBUG_TRACE_CONFIGURE_AUDIO_BIN
+  GstElement *source , *converter , *queue ;
 
   // instantiate elements
-  if (!(source     = NewElement(plugin_id      , "audio-real-source")) ||
-      !(capsfilter = NewElement("capsfilter"   , "audio-capsfilter" )) ||
-      !(converter  = NewElement("audioconvert" , "audio-converter"  )) ||
-      !(queue      = NewElement("queue"        , "audio-queue"      )) ||
-      !(caps       = NewCaps   (caps_str)                            )  )
+  if (!(AudioAlsaSource  = NewElement(GST::ALSA_PLUGIN_ID      , "audio-alsa-source" )) ||
+      !(AudioPulseSource = NewElement(GST::PULSE_PLUGIN_ID     , "audio-pulse-source")) ||
+      !(AudioJackSource  = NewElement(GST::JACK_PLUGIN_ID      , "audio-jack-source" )) ||
+      !(AudioTestSource  = NewElement(GST::TESTAUDIO_PLUGIN_ID , "audio-test-source" )) ||
+      !(AudioCaps        = NewElement("capsfilter"             , "audio-capsfilter"  )) ||
+      !(converter        = NewElement("audioconvert"           , "audio-converter"   )) ||
+      !(queue            = NewElement("queue"                  , "audio-queue"       ))  )
   { AvCaster::Error(GUI::AUDIO_INIT_ERROR_MSG) ; return false ; }
 
   // configure elements
-  if (!is_enabled) ConfigureFauxAudio(source) ;
-  ConfigureCaps (capsfilter , caps        ) ;
-  ConfigureQueue(queue      , 0    , 0 , 0) ;
+  source = ConfigureAudio() ;
+  ConfigureQueue(queue , 0 , 0 , 0) ;
 
   // link elements
-  if (!AddElement    (AudioBin , source    )               ||
-      !AddElement    (AudioBin , capsfilter)               ||
-      !AddElement    (AudioBin , converter )               ||
-      !AddElement    (AudioBin , queue     )               ||
-      !LinkElements  (source     , capsfilter)             ||
-      !LinkElements  (capsfilter , converter )             ||
-      !LinkElements  (converter  , queue     )             ||
-      !NewGhostSrcPad(AudioBin   , queue , "audio-source") ||
-      !LinkElements  (AudioBin   , MuxerBin  )              )
+  if (!AddElement    (AudioBin , source   )             ||
+      !AddElement    (AudioBin , AudioCaps)             ||
+      !AddElement    (AudioBin , converter)             ||
+      !AddElement    (AudioBin , queue    )             ||
+      !LinkElements  (source    , AudioCaps)            ||
+      !LinkElements  (AudioCaps , converter)            ||
+      !LinkElements  (converter , queue    )            ||
+      !NewGhostSrcPad(AudioBin  , queue , "audio-source"))
   { AvCaster::Error(GUI::AUDIO_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
 }
 
-bool Gstreamer::ConfigureMuxerBin()
+bool Gstreamer::BuildMuxerBin()
 {
+DEBUG_TRACE_BUILD_MUXER_BIN
+
   GstElement *video_in_queue , *video_converter , *video_encoder , *video_parser ,
              *video_enc_caps , *video_enc_queue                                  ;
   GstElement *audio_in_queue , *audio_converter , *audio_encoder , *audio_parser ,
@@ -692,8 +651,6 @@ bool Gstreamer::ConfigureMuxerBin()
   String video_caps_str = h264_caps_str ;
   String audio_caps_str = mp3_caps_str ;
 
-DEBUG_TRACE_CONFIGURE_MUXER_BIN
-
   if (!(video_in_queue  = NewElement("queue"          , "mux-video-queue"    )) ||
       !(video_converter = NewElement("videoconvert"   , "mux-video-converter")) ||
       !(video_encoder   = NewElement("x264enc"        , "mux-video-encoder"  )) ||
@@ -710,6 +667,8 @@ DEBUG_TRACE_CONFIGURE_MUXER_BIN
       !(audio_enc_queue = NewElement("queue"          , "mux-audio-enc-queue")) ||
       !(muxer           = NewElement("flvmux"         , "mux-flvmux"         ))  )
   { AvCaster::Error(GUI::MUXER_INIT_ERROR_MSG) ; return false ; }
+
+DEBUG_TRACE_CONFIGURE_MUXER_BIN
 
   ConfigureX264Encoder(video_encoder   , video_bitrate) ;
   ConfigureCaps       (video_enc_caps  , video_caps   ) ;
@@ -753,16 +712,13 @@ DEBUG_TRACE_CONFIGURE_MUXER_BIN
       !NewGhostSrcPad (MuxerBin , muxer          , "mux-source"    )  )
   { AvCaster::Error(GUI::MUXER_LINK_ERROR_MSG) ; return false ; }
 
-  // re-link to input bins
-  if ((!IsPlaying() && !LinkElements(CompositorBin , MuxerBin)) ||
-       (IsPlaying() && !LinkElements(AudioBin      , MuxerBin))  )
-  { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ; return false ; }
-
   return true ;
 }
 
-bool Gstreamer::ConfigureOutputBin()
+bool Gstreamer::BuildOutputBin()
 {
+DEBUG_TRACE_BUILD_OUTPUT_BIN
+
   GstElement *queue , *sink ;
 
   bool   is_enabled  = bool  (ConfigStore[CONFIG::IS_OUTPUT_ACTIVE_ID]) ;
@@ -784,24 +740,22 @@ UNUSED(is_enabled) ; is_enabled = true ; // FIXME: no fake sink needed ?
 #endif // DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
 
   if (!is_enabled) sink_idx = -1 ; String plugin_id , output_url ;
-  switch (sink_idx)
+  switch ((CONFIG::OutputStream)sink_idx)
   {
-    case CONFIG::FILE_STREAM_IDX: plugin_id = GST::FILE_SINK_PLUGIN_ID ; output_url = file_url ; break ;
-    case CONFIG::RTMP_STREAM_IDX: plugin_id = GST::RTMP_SINK_PLUGIN_ID ; output_url = rtmp_url ; break ;
-    default:                      plugin_id = GST::FAUX_SINK_PLUGIN_ID ; is_enabled = false ;    break ;
+    case CONFIG::FILE_OUTPUT_IDX: plugin_id = GST::FILESINK_PLUGIN_ID ; output_url = file_url ; break ;
+    case CONFIG::RTMP_OUTPUT_IDX: plugin_id = GST::RTMPSINK_PLUGIN_ID ; output_url = rtmp_url ; break ;
+    default:                      plugin_id = GST::FAUXSINK_PLUGIN_ID ; is_enabled = false ;    break ;
   }
 
-DEBUG_TRACE_CONFIGURE_OUTPUT_BIN
-
 #ifdef DEBUG
-if (sink_idx == CONFIG::RTMP_STREAM_IDX)
+if (sink_idx == CONFIG::RTMP_OUTPUT_IDX)
 {
   String env_url = std::getenv("AVCASTER_RTMP_DEST") ;
   if (env_url.isNotEmpty()) output_url = (is_lctv) ? MakeLctvUrl(env_url) : env_url ;
   else
   {
     AvCaster::Error(DEBUG_RTMP_DEST_ERROR_MSG) ;
-    plugin_id = GST::FILE_SINK_PLUGIN_ID ; output_url = file_url ;
+    plugin_id = GST::FILESINK_PLUGIN_ID ; output_url = file_url ;
   }
 }
 #endif // DEBUG
@@ -810,17 +764,25 @@ if (sink_idx == CONFIG::RTMP_STREAM_IDX)
       !(sink  = NewElement(plugin_id , "output-real-sink"))  )
   { AvCaster::Error(GUI::OUTPUT_INIT_ERROR_MSG) ; return false ; }
 
+DEBUG_TRACE_CONFIGURE_OUTPUT_BIN
+
   ConfigureQueue(queue , 0 , 0 , 0) ;
   if (is_enabled) ConfigureFile(sink , output_url) ;
 
-  if (!AddElement     (OutputBin , queue)                 ||
-      !AddElement     (OutputBin , sink )                 ||
-      !LinkElements   (queue  , sink       )              ||
-      !NewGhostSinkPad(OutputBin , queue , "output-sink") ||
-      !LinkElements   (MuxerBin , OutputBin)               )
+  if (!AddElement     (OutputBin , queue)               ||
+      !AddElement     (OutputBin , sink )               ||
+      !LinkElements   (queue  , sink)                   ||
+      !NewGhostSinkPad(OutputBin , queue , "output-sink"))
   { AvCaster::Error(GUI::OUTPUT_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
+}
+
+void Gstreamer::ConfigureFauxSource(GstElement* a_faux_source)
+{
+DEBUG_TRACE_CONFIGURE_FAUX_SRC
+
+ g_object_set(G_OBJECT(a_faux_source) , "is_live" , true , NULL) ;
 }
 
 void Gstreamer::ConfigureCaps(GstElement* a_capsfilter , GstCaps* a_caps)
@@ -851,7 +813,7 @@ DEBUG_TRACE_CONFIGURE_SCREEN
     g_object_set(G_OBJECT(a_screen_source) , "endy"       , capture_h - 1 , NULL) ;
     g_object_set(G_OBJECT(a_screen_source) , "use-damage" , false         , NULL) ;
   }
-  else ConfigureFauxVideo(a_screen_source , pattern_n) ;
+  else ConfigureTestVideo(a_screen_source , pattern_n) ;
 }
 
 void Gstreamer::ConfigureCamera(GstElement* a_camera_source , String device_path ,
@@ -861,15 +823,15 @@ DEBUG_TRACE_CONFIGURE_CAMERA
 
   if (is_active)
     g_object_set(G_OBJECT(a_camera_source) , "device" , CHARSTAR(device_path) , NULL) ;
-  else ConfigureFauxVideo(a_camera_source , pattern_n) ;
+  else ConfigureTestVideo(a_camera_source , pattern_n) ;
 }
 
-void Gstreamer::ConfigureFauxVideo(GstElement* a_faux_source , guint pattern_n)
+void Gstreamer::ConfigureTestVideo(GstElement* a_test_source , guint pattern_n)
 {
-DEBUG_TRACE_CONFIGURE_FAUX_VIDEO
+DEBUG_TRACE_CONFIGURE_TEST_VIDEO
 
-  g_object_set(G_OBJECT(a_faux_source) , "is_live" , true      , NULL) ;
-  g_object_set(G_OBJECT(a_faux_source) , "pattern" , pattern_n , NULL) ;
+  ConfigureFauxSource(a_test_source) ;
+  g_object_set(G_OBJECT(a_test_source) , "pattern" , pattern_n , NULL) ;
 }
 
 void Gstreamer::ConfigureText(GstElement* a_text_source , String font_desc)
@@ -910,6 +872,7 @@ DEBUG_TRACE_CONFIGURE_PREVIEW
 
   if (!AvCaster::GetIsPreviewEnabled()) return true ;
 
+#ifdef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
   bool           is_active      = AvCaster::GetIsPreviewActive() ;
   Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
   gint           preview_x      = (is_active) ? preview_bounds.getX()      : -1 ;
@@ -923,16 +886,21 @@ preview_w = (is_active) ? preview_bounds.getWidth()  : 160 ;
 preview_h = (is_active) ? preview_bounds.getHeight() : 120 ;
 #endif // SHOW_DISABLED_PREVIEW_TINY
 
+#else // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
+
+  Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
+  gint           preview_x      = preview_bounds.getX() ;
+  gint           preview_y      = preview_bounds.getY() ;
+  gint           preview_w      = preview_bounds.getWidth() ;
+  gint           preview_h      = preview_bounds.getHeight() ;
+
+#endif // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
+
+// g_object_set (app->video_sink, "async-handling", TRUE, NULL);
+
   return gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(a_video_sink) ,
                                                 preview_x , preview_y           ,
                                                 preview_w , preview_h           ) ;
-}
-
-void Gstreamer::ConfigureFauxAudio(GstElement* a_faux_source)
-{
-DEBUG_TRACE_CONFIGURE_FAUX_AUDIO
-
- g_object_set(G_OBJECT(a_faux_source) , "is_live" , true , NULL) ;
 }
 
 void Gstreamer::ConfigureX264Encoder(GstElement* an_x264_encoder , guint bitrate)
@@ -960,11 +928,17 @@ DEBUG_TRACE_CONFIGURE_FLVMUX
   g_object_set(G_OBJECT(a_flvmuxer) , "streamable" , true , NULL) ;
 }
 
-bool Gstreamer::Reconfigure(const Identifier& config_key , bool is_config_pending)
+bool Gstreamer::Reconfigure(const Identifier& config_key)
 {
-DEBUG_TRACE_RECONFIGURE
+DEBUG_TRACE_RECONFIGURE_IN
 
-/* FIXME: most of these are not guarded against !Is*Enabled
+// FIXME: it should be possible to handle all toggles consistently
+//        perhaps using RecreateBin()/DestroyBin() as below (currently leaky)
+//        or ReconfigureBin()
+//        or simply detaching/re-attaching bins
+
+/* recreate then reconfigure bin
+ * FIXME: most of these are not guarded against !Is*Enabled
   if      (config_key == CONFIG::PRESET_ID             )
   { if (!ConfigurePipeline())                                     return false ; }
   else if (config_key == CONFIG::IS_PENDING_ID         )
@@ -985,10 +959,8 @@ DEBUG_TRACE_RECONFIGURE
   { AudioBin        = RecreateBin(AudioBin        , GST::AUDIO_BIN_ID       ) ;
     if (!ConfigureAudio()       ) { DestroyBin(AudioBin       ) ; return false ; } }
 */
-// FIXME: it should be possible to handle all toggles consistently
-//        perhaps using RecreateBin()/DestroyBin() as below (currently leaky)
-//        or ReconfigureBin()
-//        or simply detaching/re-attaching bins
+
+/* experiments
   if (config_key == CONFIG::IS_PENDING_ID       ||
       config_key == CONFIG::IS_PREVIEW_ACTIVE_ID )
 #ifdef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
@@ -1020,46 +992,139 @@ DBG("detachingOutputBin") ;
     OutputBin       = RecreateBin(OutputBin       , GST::OUTPUT_BIN_ID      ) ;
     if (!ConfigureOutputBin()      ) { DestroyBin(OutputBin      ) ; return false ; } }
 #endif // DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
+*/
+
+/* recreate then reconfigure bin
+// TODO: refactor with fn_pointer?
+  return (config_key == CONFIG::IS_SCREENCAP_ACTIVE_ID) ? RecreateBin(&ScreencapBin , nullptr) :
+         (config_key == CONFIG::IS_CAMERA_ACTIVE_ID   ) ? RecreateBin(&CameraBin    , nullptr) :
+         (config_key == CONFIG::IS_TEXT_ACTIVE_ID     ) ? RecreateBin(&TextBin      , nullptr) :
+         (config_key == CONFIG::IS_IMAGE_ACTIVE_ID    ) ? RecreateBin(&ImageBin     , nullptr) :
+         (config_key == CONFIG::IS_PREVIEW_ACTIVE_ID  ) ? RecreateBin(&PreviewBin   , nullptr) :
+         (config_key == CONFIG::IS_AUDIO_ACTIVE_ID    ) ? RecreateBin(&AudioBin     , nullptr) :
+         (config_key == CONFIG::IS_OUTPUT_ACTIVE_ID   ) ? RecreateBin(&OutputBin    , nullptr) :
+                                                          true                                 ;
+*/
+//* reconfigure internal elements only (keeping bins in place)
+
+  ReloadConfig() ;
+
+  SetState(Pipeline , GST_STATE_READY) ;
+  bool is_error =/*(config_key == CONFIG::IS_SCREENCAP_ACTIVE_ID) ? ConfigureScreen()             :
+                  (config_key == CONFIG::IS_CAMERA_ACTIVE_ID   ) ? ConfigureCamera()             :
+                  (config_key == CONFIG::IS_TEXT_ACTIVE_ID     ) ? ConfigureText()               :
+                  (config_key == CONFIG::IS_IMAGE_ACTIVE_ID    ) ? ConfigureImage()              :*/
+                  (config_key == CONFIG::IS_PENDING_ID        ||
+                   config_key == CONFIG::IS_PREVIEW_ACTIVE_ID  ) ? ConfigurePreview() == nullptr :
+                  (config_key == CONFIG::IS_AUDIO_ACTIVE_ID    ) ? ConfigureAudio()   == nullptr :
+//                   (config_key == CONFIG::IS_OUTPUT_ACTIVE_ID   ) ? ConfigureOutput()             :
+                                                                   false                         ;
+
+DEBUG_TRACE_RECONFIGURE_OUT
+
+  // NOTE: an error here should cause Gstreamer::HandleErrorMessage() to fire
+  //         which should attempt revovery to a same configuration
+  is_error = !SetState(Pipeline , GST_STATE_PLAYING) || is_error ;
 
 // DEBUG_MAKE_GRAPHVIZ
 
-  return true ;
+  return !is_error ;
+}
+/*
+bool Gstreamer::ConfigureScreen()
+{
+
 }
 
-void Gstreamer::DestroyBin(GstElement* a_bin) { RemoveBin(a_bin) ; DeleteElement(a_bin) ; }
-/* recreate then reconfigure bin
- * TODO: refactor with fn_pointer ?
-  if      (config_key == CONFIG::IS_SCREENCAP_ACTIVE_ID )
-    return ReconfigureBin(GST::SCREENCAP_BIN_ID , ScreencapBin , fn_pointer) ;
-  else if (config_key == CONFIG::IS_CAMERA_ACTIVE_ID    )
-    return ReconfigureBin(GST::CAMERA_BIN_ID    , CameraBin    , fn_pointer) ;
-  else if (config_key == CONFIG::IS_TEXT_ACTIVE_ID      )
-    return ReconfigureBin(GST::TEXT_BIN_ID      , TextBin      , fn_pointer) ;
-  else if (config_key == CONFIG::IS_IMAGE_ACTIVE_ID     )
-    return ReconfigureBin(GST::IMAGE_BIN_ID     , ImageBin     , fn_pointer) ;
-  else if (config_key == CONFIG::IS_PREVIEW_ACTIVE_ID   )
-    return ReconfigureBin(GST::PREVIEW_BIN_ID   , PreviewBin   , fn_pointer) ;
-  else if (config_key == CONFIG::IS_AUDIO_ACTIVE_ID     )
-    return ReconfigureBin(GST::AUDIO_BIN_ID     , AudioBin     , fn_pointer) ;
-  else if (config_key == CONFIG::IS_OUTPUT_ACTIVE_ID    )
-    return ReconfigureBin(GST::OUTPUT_BIN_ID    , OutputBin    , fn_pointer) ;
-  else return false ;
-bool Gstreamer::ReconfigureBin(String      bin_id       , GstElement* a_bin)
+bool Gstreamer::ConfigureCamera()
 {
-DEBUG_TRACE_RECONFIGURE_BIN
 
-  a_bin       = RecreateBin(a_bin , bin_id) ;
-  bool is_err = (bin_id == GST::SCREENCAP_BIN_ID    && !ConfigureScreencap (a_bin)) ||
-                (bin_id == GST::CAMERA_BIN_ID       && !ConfigureCamera    (a_bin)) ||
-                (bin_id == GST::TEXT_BIN_ID         && !ConfigureText      (a_bin)) ||
-                (bin_id == GST::IMAGE_BIN_ID && !ConfigureImage     (a_bin)) ||
-                (bin_id == GST::AUDIO_BIN_ID        && !ConfigureAudio     (a_bin)) ||
-                (bin_id == GST::PREVIEW_BIN_ID      && !ConfigurePreviewBin(a_bin)) ||
-                (bin_id == GST::OUTPUT_BIN_ID       && !ConfigureOutput    (a_bin))  ;
+}
 
-  if (is_err) { RemoveBin(a_bin) ; DeleteElement(a_bin) ; }
+bool Gstreamer::ConfigureText() {}
 
-  return !is_err ;
+bool Gstreamer::ConfigureImage() {}
+*/
+GstElement* Gstreamer::ConfigurePreview()
+{
+  GstElement *current_sink , *next_sink ;
+
+  bool is_enabled = AvCaster::GetIsPreviewEnabled() && AvCaster::GetIsPreviewActive() ;
+  current_sink    = (IsInBin(PreviewBin , PreviewRealSink)) ? PreviewRealSink :
+                    (IsInBin(PreviewBin , PreviewFauxSink)) ? PreviewFauxSink : nullptr ;
+  next_sink       = (is_enabled) ? PreviewRealSink : PreviewFauxSink ;
+
+DEBUG_TRACE_CONFIGURE_PREVIEW_BIN
+
+  // configure elements
+  if (next_sink == PreviewRealSink)
+  {
+    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(PreviewRealSink) , PreviewXwin) ;
+    if (!ConfigureVideoSink(PreviewRealSink))
+    { AvCaster::Error(GUI::GST_XWIN_ERROR_MSG) ; return nullptr ; }
+  }
+
+  // re-link elements
+  if (current_sink != nullptr)
+  {
+    if (!RemoveElement(PreviewBin , current_sink) ||
+        !AddElement   (PreviewBin , next_sink)    ||
+        !LinkElements (PreviewQueue , next_sink)   )
+    { AvCaster::Error(GUI::PREVIEW_LINK_ERROR_MSG) ; return nullptr ; }
+  }
+
+  return next_sink ;
+}
+
+GstElement* Gstreamer::ConfigureAudio()
+{
+  GstElement *current_source , *next_source ;
+  String      caps_str ;
+
+  bool   is_enabled       = AvCaster::GetIsAudioEnabled()                &&
+                            bool(ConfigStore[CONFIG::IS_AUDIO_ACTIVE_ID]) ;
+  int    audio_api_idx    = int (ConfigStore[CONFIG::AUDIO_API_ID      ]) ;
+  int    n_channels       = int (ConfigStore[CONFIG::N_CHANNELS_ID     ]) ;
+  int    samplerate_n     = int (ConfigStore[CONFIG::SAMPLERATE_ID     ]) ;
+  int    samplerate       = CONFIG::AUDIO_SAMPLERATES[samplerate_n].getIntValue() ;
+  String audio16_caps_str = MakeAudioCapsString("S16LE" , samplerate , n_channels) ;
+  String audio32_caps_str = MakeAudioCapsString("F32LE" , samplerate , n_channels) ;
+
+  current_source = (IsInBin(AudioBin , AudioAlsaSource )) ? AudioAlsaSource  :
+                   (IsInBin(AudioBin , AudioPulseSource)) ? AudioPulseSource :
+                   (IsInBin(AudioBin , AudioJackSource )) ? AudioJackSource  :
+                   (IsInBin(AudioBin , AudioTestSource )) ? AudioTestSource  : nullptr ;
+
+  if (!is_enabled) audio_api_idx = CONFIG::CONFIG_IDX_INVALID ;
+  switch ((CONFIG::AudioApi)audio_api_idx)
+  {
+    case CONFIG::ALSA_AUDIO_IDX:  next_source = AudioAlsaSource ;  caps_str = audio16_caps_str ; break ;
+    case CONFIG::PULSE_AUDIO_IDX: next_source = AudioPulseSource ; caps_str = audio16_caps_str ; break ;
+    case CONFIG::JACK_AUDIO_IDX:  next_source = AudioJackSource ;  caps_str = audio32_caps_str ; break ;
+    default:                      next_source = AudioTestSource ;  caps_str = audio16_caps_str ; break ;
+  }
+
+DEBUG_TRACE_CONFIGURE_AUDIO_BIN
+
+  // configure elements
+  if (next_source == AudioTestSource) ConfigureFauxSource(AudioTestSource) ;
+  ConfigureCaps(AudioCaps , NewCaps(caps_str)) ;
+
+  // re-link elements
+  if (current_source != nullptr)
+  {
+    if (!RemoveElement(AudioBin , current_source) ||
+        !AddElement   (AudioBin , next_source)    ||
+        !LinkElements (next_source , AudioCaps)    )
+    { AvCaster::Error(GUI::AUDIO_LINK_ERROR_MSG) ; return nullptr ; }
+  }
+
+  return next_source ;
+}
+/*
+bool Gstreamer::ConfigureOutput()
+{
+
 }
 */
 
@@ -1073,6 +1138,80 @@ DEBUG_TRACE_SET_GST_STATE
   if (is_err) AvCaster::Error(GUI::GST_STATE_ERROR_MSG) ;
 
   return !is_err ;
+}
+
+
+GstBusSyncReply Gstreamer::HandleMessage(GstBus* message_bus , GstMessage* message , GstPipeline* pipeline)
+{
+  switch (GST_MESSAGE_TYPE(message))
+  {
+    case GST_MESSAGE_ERROR:         HandleErrorMessage(message) ;         break ;
+    case GST_MESSAGE_EOS:           DBG("GST_MESSAGE_EOS") ;              break ;
+    case GST_MESSAGE_STATE_CHANGED:                                       break ;
+    case GST_MESSAGE_STREAM_STATUS: /* DEBUG_TRACE_DUMP_MESSAGE_STRUCT */ break ;
+    default:                        DEBUG_TRACE_UNHANDLED_MESSAGE         break ;
+/* GST_MESSAGE_TYPE types
+GST_MESSAGE_UNKNOWN           = 0,
+GST_MESSAGE_EOS               = (1 << 0),
+GST_MESSAGE_ERROR             = (1 << 1),
+GST_MESSAGE_WARNING           = (1 << 2),
+GST_MESSAGE_INFO              = (1 << 3),
+GST_MESSAGE_TAG               = (1 << 4),
+GST_MESSAGE_BUFFERING         = (1 << 5),
+GST_MESSAGE_STATE_CHANGED     = (1 << 6),
+GST_MESSAGE_STATE_DIRTY       = (1 << 7),
+GST_MESSAGE_STEP_DONE         = (1 << 8),
+GST_MESSAGE_CLOCK_PROVIDE     = (1 << 9),
+GST_MESSAGE_CLOCK_LOST        = (1 << 10),
+GST_MESSAGE_NEW_CLOCK         = (1 << 11),
+GST_MESSAGE_STRUCTURE_CHANGE  = (1 << 12),
+GST_MESSAGE_STREAM_STATUS     = (1 << 13),
+GST_MESSAGE_APPLICATION       = (1 << 14),
+GST_MESSAGE_ELEMENT           = (1 << 15),
+GST_MESSAGE_SEGMENT_START     = (1 << 16),
+GST_MESSAGE_SEGMENT_DONE      = (1 << 17),
+GST_MESSAGE_DURATION          = (1 << 18),
+GST_MESSAGE_LATENCY           = (1 << 19),
+GST_MESSAGE_ASYNC_START       = (1 << 20),
+GST_MESSAGE_ASYNC_DONE        = (1 << 21),
+GST_MESSAGE_ANY               = ~0
+*/
+  }
+/*  The result values for a GstBusSyncHandler.
+GST_BUS_DROP   drop the message
+GST_BUS_PASS   pass the message to the async queue
+GST_BUS_ASYNC  pass message to async queue, continue if message is handled
+*/
+  return GST_BUS_PASS ;
+}
+
+void Gstreamer::HandleErrorMessage(GstMessage* message)
+{
+  GError *error ;
+  gchar  *debug ;
+
+  gst_message_parse_error(message , &error , &debug) ;
+  String error_message       = String(error->message) ;
+  bool   is_alsa_init_error  = error_message == GST::ALSA_INIT_ERROR ;
+  bool   is_pulse_init_error = error_message == GST::PULSE_INIT_ERROR ;
+  bool   is_jack_init_error  = error_message == GST::JACK_INIT_ERROR ;
+
+DEBUG_TRACE_GST_ERROR_MESSAGE
+
+  if (is_alsa_init_error || is_pulse_init_error || is_jack_init_error)
+  {
+    // re-configure with null source
+    AvCaster::DeactivateControl(CONFIG::IS_AUDIO_ACTIVE_ID) ;
+    ConfigureAudio() ;
+
+    // alert user
+    String warning_msg = (is_alsa_init_error ) ? GUI::ALSA_INIT_ERROR_MSG  :
+                         (is_pulse_init_error) ? GUI::PULSE_INIT_ERROR_MSG :
+                         (is_jack_init_error ) ? GUI::JACK_INIT_ERROR_MSG  : String::empty ;
+    AvCaster::Warning(warning_msg + error_message) ;
+  }
+
+  g_error_free(error) ; g_free(debug) ;
 }
 
 GstElement* Gstreamer::NewPipeline(String pipeline_id) { return gst_pipeline_new(CHARSTAR(pipeline_id)) ; }
@@ -1097,6 +1236,14 @@ DEBUG_TRACE_MAKE_CAPS
   return new_caps ;
 }
 
+void Gstreamer::SetMessageHandler(GstPipeline* pipeline , GstBusSyncHandler on_message_cb)
+{
+  GstBus* message_bus = gst_pipeline_get_bus(pipeline) ;
+
+  gst_bus_set_sync_handler(message_bus , on_message_cb , pipeline , NULL) ;
+  gst_object_unref(message_bus) ;
+}
+
 bool Gstreamer::AddElement(GstElement* a_bin , GstElement* an_element)
 {
   bool is_err = !gst_bin_add(GST_BIN(a_bin) , an_element)    ||
@@ -1107,19 +1254,35 @@ DEBUG_TRACE_ADD_ELEMENT
   return !is_err ;
 }
 
-void Gstreamer::DeleteElement(GstElement* an_element)
+bool Gstreamer::RemoveElement(GstElement* a_bin , GstElement* an_element)
 {
+DEBUG_TRACE_REMOVE_ELEMENT_IN
+//   bool is_err = !IsInBin(a_bin , an_element) || !SetState(an_element , GST_STATE_NULL) ||
+//                 !gst_bin_remove(GST_BIN(a_bin) , an_element) ;
+  bool is_err = !IsInBin(a_bin , an_element) || !gst_bin_remove(GST_BIN(a_bin) , an_element) ;
+
+DEBUG_TRACE_REMOVE_ELEMENT_OUT
+
+  return !is_err ;
+}
+
+void Gstreamer::DestroyElement(GstElement* an_element)
+{
+DEBUG_TRACE_DESTROY_ELEMENT
+
   if (an_element != nullptr && SetState(an_element , GST_STATE_NULL))
     gst_object_unref(an_element) ;
 }
 
 bool Gstreamer::AddBin(GstElement* a_bin)
 {
-  bool is_err = a_bin != nullptr                             &&
+DEBUG_TRACE_ADD_BIN_IN
+
+  bool is_err = a_bin == nullptr || IsInPipeline(a_bin)    ||
                 (!gst_bin_add(GST_BIN(Pipeline) , a_bin)   ||
                  !gst_element_sync_state_with_parent(a_bin) ) ;
 
-DEBUG_TRACE_ADD_BIN
+DEBUG_TRACE_ADD_BIN_OUT
 
   return !is_err ;
 }
@@ -1128,27 +1291,11 @@ bool Gstreamer::RemoveBin(GstElement* a_bin)
 {
 DEBUG_TRACE_REMOVE_BIN_IN
 
-  bool is_err = IsInPipeline(a_bin) && !gst_bin_remove(GST_BIN(Pipeline) , a_bin) ;
+  bool is_err = !IsInPipeline(a_bin) || !gst_bin_remove(GST_BIN(Pipeline) , a_bin) ;
 
 DEBUG_TRACE_REMOVE_BIN_OUT
 
   return !is_err ;
-}
-
-GstElement* Gstreamer::RecreateBin(GstElement* a_bin , String bin_id)
-{
-DEBUG_TRACE_RECREATE_BIN_IN
-
-  GstElement* new_bin ;
-
-  if (RemoveBin(a_bin) && (new_bin = NewBin(bin_id)) != nullptr)
-    if (AddBin(new_bin)) { DeleteElement(a_bin) ; a_bin = new_bin ; }
-
-  if (!IsInPipeline(new_bin)) { AddBin(a_bin) ; DeleteElement(new_bin) ; }
-
-DEBUG_TRACE_RECREATE_BIN_OUT
-
-  return a_bin ;
 }
 
 bool Gstreamer::LinkElements(GstElement* source , GstElement* sink)
@@ -1294,6 +1441,7 @@ String Gstreamer::MakeAudioCapsString(String format , int samplerate , int n_cha
          String("format=(string)"             ) + format             + ", " +
          String("rate=(int)"    )               + String(samplerate) + ", " +
          String("channels=(int)")               + String(n_channels)        ;
+//"channel-mask=(bitmask)0x03"
 }
 
 String Gstreamer::MakeH264CapsString(int output_w , int output_h , int framerate)
@@ -1332,6 +1480,24 @@ bool Gstreamer::IsSufficientVersion()
          minor_version >= GST::MIN_MINOR_VERSION  ;
 }
 
+String Gstreamer::GetElementId(GstElement* an_element)
+{
+  if (!an_element) return "nil" ;
+
+  gchar* id = gst_element_get_name(an_element) ; String element_id = id ; g_free(id) ;
+
+  return element_id ;
+}
+
+String Gstreamer::GetPadId(GstPad* a_pad)
+{
+  if (!a_pad) return "nil" ;
+
+  gchar* id = gst_pad_get_name(a_pad) ; String pad_id = id ; g_free(id) ;
+
+  return pad_id ;
+}
+
 bool Gstreamer::IsInitialized() { return gst_is_initialized() ; }
 
 bool Gstreamer::IsPlaying()
@@ -1341,5 +1507,11 @@ bool Gstreamer::IsPlaying()
 
 bool Gstreamer::IsInPipeline(GstElement* an_element)
 {
-  return !!an_element && GST_ELEMENT_PARENT(an_element) == Pipeline ;
+  return IsInBin(Pipeline , an_element) ;
+}
+
+bool Gstreamer::IsInBin(GstElement* a_parent_element , GstElement* a_child_element)
+{
+  return !!a_child_element && !!a_parent_element                &&
+         GST_ELEMENT_PARENT(a_child_element) == a_parent_element ;
 }

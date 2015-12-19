@@ -25,6 +25,66 @@
 #  include "Trace.h"
 
 
+/* feature switches */
+
+StringArray DisabledFeatures()
+{
+  StringArray disabled_features = StringArray() ;
+#  ifdef DISABLE_MEDIA
+  disabled_features.add(APP::CLI_DISABLE_MEDIA_TOKEN) ;
+#  endif // DISABLE_MEDIA
+#  ifdef SCREEN_ONLY
+  disabled_features.add(APP::CLI_SCREEN_ONLY_TOKEN) ;
+#  endif // SCREEN_ONLY
+#  ifdef CAMERA_ONLY
+  disabled_features.add(APP::CLI_CAMERA_ONLY_TOKEN) ;
+#  endif // CAMERA_ONLY
+#  ifdef TEXT_ONLY
+#    if ! TEXT_BIN_NYI
+  disabled_features.add(APP::CLI_TEXT_ONLY_TOKEN) ;
+#    endif // TEXT_BIN_NYI
+#  endif // TEXT_ONLY
+#  ifdef IMAGE_ONLY
+#    if ! IMAGE_BIN_NYI
+  disabled_features.add(APP::CLI_IMAGE_ONLY_TOKEN) ;
+#    endif // IMAGE_BIN_NYI
+#  endif // IMAGE_ONLY
+#  if DISABLE_PREVIEW
+  disabled_features.add(APP::CLI_DISABLE_PREVIEW_TOKEN) ;
+#  endif // DISABLE_PREVIEW
+#  if DISABLE_AUDIO
+  disabled_features.add(APP::CLI_DISABLE_AUDIO_TOKEN) ;
+#  endif // DISABLE_AUDIO
+#  ifdef DISABLE_CHAT
+  disabled_features.add(APP::CLI_DISABLE_CHAT_TOKEN) ;
+#  endif // DISABLE_CHAT
+
+  return disabled_features ;
+}
+
+#  if TEXT_BIN_NYI && IMAGE_BIN_NYI
+#    define DISABLE_FEATURES \
+  IsTextEnabled = false ;    \
+  IsImageEnabled = false     ;
+#  else // TEXT_BIN_NYI && IMAGE_BIN_NYI
+#    if TEXT_BIN_NYI
+#      define DISABLE_FEATURES \
+  IsTextEnabled = false        ;
+#    endif // TEXT_BIN_NYI
+#    if IMAGE_BIN_NYI
+#      define DISABLE_FEATURES \
+  IsImageEnabled = false       ;
+#    endif // IMAGE_BIN_NYI
+#  endif // TEXT_BIN_NYI && IMAGE_BIN_NYI
+
+#  define DEBUG_DISABLE_FEATURES DISABLE_FEATURES                           \
+  StringArray disabled_features = DisabledFeatures() ;                      \
+  if (!!disabled_features.size() || !IsTextEnabled || !IsImageEnabled)      \
+    Trace::TraceState("DEBUG: disabling some features") ;                   \
+  CliParams.addArray(disabled_features) ; CliParams.removeDuplicates(false) ;
+  // CliParams.mergeArray(DisabledFeatures()) ; // TODO: new feature after upgrade
+
+
 /* state */
 
 #  define DEBUG_TRACE_INIT_PHASE_1 Trace::TraceState("validating environment") ;
@@ -33,34 +93,50 @@
 
 #  define DEBUG_TRACE_INIT_PHASE_3 Trace::TraceState("instantiating GUI") ;
 
-#  define DEBUG_TRACE_INIT_PHASE_4 if (IsMediaEnabled) Trace::TraceState("instantiating media") ;
+#  define DEBUG_TRACE_INIT_PHASE_4                                               \
+  Trace::TraceState((IsMediaEnabled) ? "instantiating media" : "media disabled") ;
 
-#  define DEBUG_TRACE_INIT_PHASE_5 if (IsChatEnabled) Trace::TraceState("instantiating network") ;
+#  define DEBUG_TRACE_INIT_PHASE_5                                            \
+  Trace::TraceState((IsChatEnabled) ? "instantiating chat" : "chat disabled") ;
 
-#  define DEBUG_TRACE_INIT_PHASE_6 Trace::TraceState("AvCaster ready") ;
+#  define DEBUG_TRACE_INIT_PHASE_6 Trace::TraceState("finalizing initialization") ;
 
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT                                                         \
-  StringArray tokens ;                                                                                   \
-  if      (CliParams.contains(APP::CLI_HELP_TOKEN           )) tokens.add("CLI_HELP_TOKEN"           ) ; \
-  else if (CliParams.contains(APP::CLI_PRESETS_TOKEN        )) tokens.add("CLI_PRESETS_TOKEN"        ) ; \
-  else if (CliParams.contains(APP::CLI_PRESET_TOKEN         )) tokens.add("CLI_PRESET_TOKEN"         ) ; \
-  else if (CliParams.contains(APP::CLI_VERSION_TOKEN        )) tokens.add("CLI_VERSION_TOKEN"        ) ; \
-  else if (CliParams.contains(APP::CLI_DISABLE_MEDIA_TOKEN  )) tokens.add("CLI_DISABLE_MEDIA_TOKEN"  ) ; \
-  else if (CliParams.contains(APP::CLI_SCREEN_ONLY_TOKEN    )) tokens.add("CLI_SCREEN_ONLY_TOKEN"    ) ; \
-  else if (CliParams.contains(APP::CLI_CAMERA_ONLY_TOKEN    )) tokens.add("CLI_CAMERA_ONLY_TOKEN"    ) ; \
-  else if (CliParams.contains(APP::CLI_TEXT_ONLY_TOKEN      )) tokens.add("CLI_TEXT_ONLY_TOKEN"      ) ; \
-  else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) tokens.add("CLI_DISABLE_PREVIEW_TOKEN") ; \
-  else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) tokens.add("CLI_DISABLE_CHAT_TOKEN"   ) ; \
-  else if (CliParams.contains(APP::CLI_DISABLE_PREVIEW_TOKEN)) tokens.add("CLI_DISABLE_PREVIEW_TOKEN") ; \
-  else if (CliParams.contains(APP::CLI_DISABLE_CHAT_TOKEN   )) tokens.add("CLI_DISABLE_CHAT_TOKEN"   ) ; \
-  String dbg = tokens.joinIntoString(",") ;                                                              \
-  if (tokens.size()) Trace::TraceConfig("found pre-init cli tokens " + dbg)                              ;
+#  define DEBUG_TRACE_INIT_PHASE_7 Trace::TraceState("AvCaster ready") ;
 
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_POST_INIT                                 \
-  StringArray tokens ;                                                            \
-  if (CliParams.contains(APP::CLI_PRESET_TOKEN)) tokens.add("CLI_PRESET_TOKEN") ; \
-  String dbg = tokens.joinIntoString(",") ;                                       \
-  if (tokens.size()) Trace::TraceConfig("found post-init cli tokens " + dbg)      ;
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_TERMINATING String token ;                      \
+  if      (CliParams.contains(APP::CLI_HELP_TOKEN   )) token = APP::CLI_HELP_TOKEN ;    \
+  else if (CliParams.contains(APP::CLI_PRESETS_TOKEN)) token = APP::CLI_PRESETS_TOKEN ; \
+  else if (CliParams.contains(APP::CLI_VERSION_TOKEN)) token = APP::CLI_VERSION_TOKEN ; \
+  if (token.isNotEmpty()) Trace::TraceConfig("found terminating cli token " + token)    ;
+
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS StringArray tokens ;                   \
+  for (String* token = CliParams.begin() ; token != CliParams.end() ; ++token) \
+    if (*token == APP::CLI_PRESET_TOKEN          ||                            \
+        *token == APP::CLI_DISABLE_MEDIA_TOKEN   ||                            \
+        *token == APP::CLI_SCREEN_ONLY_TOKEN     ||                            \
+        *token == APP::CLI_CAMERA_ONLY_TOKEN     ||                            \
+/*        *token == APP::CLI_TEXT_ONLY_TOKEN       ||                            */\
+/*        *token == APP::CLI_IMAGE_ONLY_TOKEN      ||                            */\
+        *token == APP::CLI_DISABLE_PREVIEW_TOKEN ||                            \
+        *token == APP::CLI_DISABLE_AUDIO_TOKEN   ||                            \
+        *token == APP::CLI_DISABLE_CHAT_TOKEN     ) tokens.add(*token) ;       \
+  String dbg = tokens.joinIntoString(",") ;                                    \
+  if (tokens.size()) Trace::TraceConfig("found pre-init cli tokens " + dbg)    ;
+
+#  define DUMP_DEBUG_MEDIA_SWITCHES                                                        \
+  Trace::TraceVerbose("CliParams="                    + CliParams.joinIntoString(",")    + \
+                      "\n\tAPP::N_COMPOSITOR_INPUTS=" + String(APP::N_COMPOSITOR_INPUTS) + \
+                      "\n\tn_video_inputs="           + String(n_video_inputs          ) + \
+                      "\n\tIsMediaEnabled="           + String(IsMediaEnabled          ) + \
+                      "\n\tIsScreenEnabled="          + String(IsScreenEnabled         ) + \
+                      "\n\tIsCameraEnabled="          + String(IsCameraEnabled         ) + \
+                      "\n\tIsTextEnabled="            + String(IsTextEnabled           ) + \
+                      "\n\tIsImageEnabled="           + String(IsImageEnabled          ) + \
+                      "\n\tIsCompositorEnabled="      + String(IsCompositorEnabled     ) + \
+                      "\n\tIsPreviewEnabled="         + String(IsPreviewEnabled        ) + \
+                      "\n\tIsAudioEnabled="           + String(IsAudioEnabled          ) + \
+                      "\n\tIsChatEnabled="            + String(IsChatEnabled           ) + \
+                      "\n\tis_sane="                  + String(is_sane                 ) ) ;
 
 #  define DEBUG_TRACE_VALIDATE_ENVIRONMENT                                                 \
   bool is_err = false ; String dbg = "" ;                                                  \
@@ -120,23 +196,26 @@
 
 #else // DEBUG
 
-#  define DEBUG_TRACE_INIT_PHASE_1                ;
-#  define DEBUG_TRACE_INIT_PHASE_2                ;
-#  define DEBUG_TRACE_INIT_PHASE_3                ;
-#  define DEBUG_TRACE_INIT_PHASE_4                ;
-#  define DEBUG_TRACE_INIT_PHASE_5                ;
-#  define DEBUG_TRACE_INIT_PHASE_6                ;
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_PRE_INIT  ;
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_POST_INIT ;
-#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT        ;
-#  define DEBUG_TRACE_REFRESH_GUI                 ;
-#  define DEBUG_TRACE_SHUTDOWN_PHASE_1            ;
-#  define DEBUG_TRACE_SHUTDOWN_PHASE_2            ;
-#  define DEBUG_TRACE_SHUTDOWN_PHASE_3            ;
-#  define DEBUG_TRACE_SET_CONFIG                  ;
-#  define DEBUG_TRACE_REJECT_CONFIG_CHANGE        ;
-#  define DEBUG_TRACE_HANDLE_PRESETCOMBO          ;
-#  define DEBUG_TRACE_DISPLAY_ALERT               ;
+#  define DEBUG_DISABLE_FEATURES                    ;
+#  define DEBUG_TRACE_INIT_PHASE_1                  ;
+#  define DEBUG_TRACE_INIT_PHASE_2                  ;
+#  define DEBUG_TRACE_INIT_PHASE_3                  ;
+#  define DEBUG_TRACE_INIT_PHASE_4                  ;
+#  define DEBUG_TRACE_INIT_PHASE_5                  ;
+#  define DEBUG_TRACE_INIT_PHASE_6                  ;
+#  define DEBUG_TRACE_INIT_PHASE_7                  ;
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS_TERMINATING ;
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS             ;
+#  define DUMP_DEBUG_MEDIA_SWITCHES                 ;
+#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT          ;
+#  define DEBUG_TRACE_REFRESH_GUI                   ;
+#  define DEBUG_TRACE_SHUTDOWN_PHASE_1              ;
+#  define DEBUG_TRACE_SHUTDOWN_PHASE_2              ;
+#  define DEBUG_TRACE_SHUTDOWN_PHASE_3              ;
+#  define DEBUG_TRACE_SET_CONFIG                    ;
+#  define DEBUG_TRACE_REJECT_CONFIG_CHANGE          ;
+#  define DEBUG_TRACE_HANDLE_PRESETCOMBO            ;
+#  define DEBUG_TRACE_DISPLAY_ALERT                 ;
 
 #endif // DEBUG
 #endif // _TRACEAVCASTER_H_

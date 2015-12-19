@@ -16,8 +16,9 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef __JUCE_HEADER_21AE3B746DB36E0C__
-#define __JUCE_HEADER_21AE3B746DB36E0C__
+
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -138,4 +139,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_21AE3B746DB36E0C__
+#endif // _CONFIG_H_

@@ -21,26 +21,25 @@
 #define _CONSTANTS_H_
 
 // enable standard features
-// #define NO_INITIALIZE_MEDIA
+#define DISABLE_CHAT // TODO: add 'ircclient' dep back to jucer
+// #define DISABLE_MEDIA
 // #define SCREEN_ONLY
 // #define CAMERA_ONLY
 // #define TEXT_ONLY
 // #define IMAGE_ONLY
-// #define NO_INITIALIZE_AUDIO
-// #define FAUX_CAMERA                       // replace camera-real-source with fakesrc
-// #define FAUX_AUDIO                        // replace audio-real-source with fakesrc
-#define NO_INITIALIZE_PREVIEW (! JUCE_LINUX) // replace composite-sink with fakesink
-// #define FAUX_OUTPUT                       // replace filesink or rtmpsink
-// #define NO_INSTANTIATE_IRC
+#define TEXT_BIN_NYI  1
+#define IMAGE_BIN_NYI 1
+#define DISABLE_GUI_CONTROLS_NYI
+#define DISABLE_PREVIEW (! JUCE_LINUX) // replace preview-sink with fakesink
+// #define FAUX_CAMERA                 // replace camera-real-source with fakesrc
+// #define DISABLE_AUDIO               // replace audio-real-source with fakesrc
+// #define FAUX_OUTPUT                 // replace filesink or rtmpsink with fakesink
 // #define SUPRESS_ALERTS
-#define DISABLE_TEXT_BIN
-#define DISABLE_IMAGE_BIN
-#define DISABLE_CONTROLS_NYI
 
 // debugging tweaks and kludges
 #define INJECT_DEFAULT_CAMERA_DEVICE_INFO
 #define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
-#define RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
+// #define RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
 // #define DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
 // #define DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
 #define NATIVE_CAMERA_RESOLUTION_ONLY
@@ -67,9 +66,9 @@
 #define DEBUG_TRACE        (DEBUG_DEFINED && 1)
 #define DEBUG_TRACE_EVENTS (DEBUG_DEFINED && 1)
 #define DEBUG_TRACE_GUI    (DEBUG_DEFINED && 1)
-#define DEBUG_TRACE_MEDIA  (DEBUG_DEFINED && 0)
+#define DEBUG_TRACE_MEDIA  (DEBUG_DEFINED && 1)
 #define DEBUG_TRACE_CONFIG (DEBUG_DEFINED && 1)
-#define DEBUG_TRACE_CHAT   (DEBUG_DEFINED && 1)
+#define DEBUG_TRACE_CHAT   (DEBUG_DEFINED && 0)
 #define DEBUG_TRACE_STATE  (DEBUG_DEFINED && 1)
 #define DEBUG_TRACE_VB     (DEBUG_DEFINED && 0)
 
@@ -95,15 +94,18 @@ namespace APP
   static const String REPLACE_CHARS    = String::repeatedString("-" , FILTER_CHARS.length()) ;
 
   // timers
-  static const int GUI_TIMER_HI_ID  = 1 ; static const int GUI_UPDATE_HI_IVL  = 125 ;
-  static const int GUI_TIMER_MED_ID = 2 ; static const int GUI_UPDATE_MED_IVL = 500 ;
-  static const int GUI_TIMER_LO_ID  = 3 ; static const int GUI_UPDATE_LO_IVL  = 1000 ;
+  static const int N_TIMERS             = 3 ;
+  static const int TIMER_HI_ID          = 1 ; static const int TIMER_HI_IVL  = 125 ;
+  static const int TIMER_MED_ID         = 2 ; static const int TIMER_MED_IVL = 500 ;
+  static const int TIMER_LO_ID          = 3 ; static const int TIMER_LO_IVL  = 1000 ;
+  static const int TIMER_IDS [N_TIMERS] = { TIMER_HI_ID  , TIMER_MED_ID  , TIMER_LO_ID  } ;
+  static const int TIMER_IVLS[N_TIMERS] = { TIMER_HI_IVL , TIMER_MED_IVL , TIMER_LO_IVL } ;
 
   // cli args
   static const String CLI_HELP_TOKEN            = "--help" ;
   static const String CLI_PRESETS_TOKEN         = "--presets" ;
-  static const String CLI_PRESET_TOKEN          = "--preset" ;
   static const String CLI_VERSION_TOKEN         = "--version" ;
+  static const String CLI_PRESET_TOKEN          = "--preset" ;
   static const String CLI_DISABLE_MEDIA_TOKEN   = "--no-media" ;
   static const String CLI_SCREEN_ONLY_TOKEN     = "--screen-only" ;
   static const String CLI_CAMERA_ONLY_TOKEN     = "--camera-only" ;
@@ -113,30 +115,40 @@ namespace APP
   static const String CLI_DISABLE_AUDIO_TOKEN   = "--no-audio" ;
   static const String CLI_DISABLE_CHAT_TOKEN    = "--no-chat" ;
   static const String CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionString) ;
-  static const String CLI_USAGE_MSG   = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN            + "        ] |"                                                           +
-                                                         "\n\t          [ " + CLI_PRESETS_TOKEN         + "     ] |"                                                              +
-                                                         "\n\t          [ " + CLI_PRESET_TOKEN          + " n    ] |"                                                             +
-                                                         "\n\t          [ " + CLI_VERSION_TOKEN         + "     ] |"                                                              +
-                                                         "\n\t          [ " + CLI_DISABLE_MEDIA_TOKEN   + "    ] |"                                                               +
-                                                         "\n\t          [ " + CLI_SCREEN_ONLY_TOKEN     + " ] |"                                                                  +
-                                                         "\n\t          [ " + CLI_CAMERA_ONLY_TOKEN     + " ] |"                                                                  +
-                                                         "\n\t          [ " + CLI_TEXT_ONLY_TOKEN       + "   ] |"                                                                +
-                                                         "\n\t          [ " + CLI_IMAGE_ONLY_TOKEN      + "  ] |"                                                                 +
-                                                         "\n\t          [ " + CLI_DISABLE_PREVIEW_TOKEN + "  ] |"                                                                 +
-                                                         "\n\t          [ " + CLI_DISABLE_AUDIO_TOKEN   + "    ] |"                                                               +
-                                                         "\n\t          [ " + CLI_DISABLE_CHAT_TOKEN    + "     ] |"                                                              +
-                                                         "\n\n\t"           + CLI_HELP_TOKEN            + "\n\t\t\tprints this message"                                           +
-                                                         "\n\n\t"           + CLI_PRESETS_TOKEN         + "\n\t\t\tlist stored presets"                                           +
-                                                         "\n\n\t"           + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstart with initial preset number n"                            +
-                                                         "\n\n\t"           + CLI_VERSION_TOKEN         + "\n\t\t\tprints the application version string"                         +
-                                                         "\n\n\t"           + CLI_DISABLE_MEDIA_TOKEN   + "\n\t\t\tdisables all media and stream output (debugging)"              +
-                                                         "\n\n\t"           + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and uses screen capture only (debugging)" +
-                                                         "\n\n\t"           + CLI_CAMERA_ONLY_TOKEN     + "\n\t\t\tdisables compositing and uses webcam capture only (debugging)" +
-                                                         "\n\n\t"           + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and uses text overlay only (debugging)"   +
-                                                         "\n\n\t"           + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and uses static image only (debugging)"   +
-                                                         "\n\n\t"           + CLI_DISABLE_PREVIEW_TOKEN + "\n\t\t\tdisables realtime preview (debugging)"                         +
-                                                         "\n\n\t"           + CLI_DISABLE_AUDIO_TOKEN   + "\n\t\t\tdisables audio capture (debugging)"                            +
-                                                         "\n\n\t"           + CLI_DISABLE_CHAT_TOKEN    + "\n\t\t\tdisables chat (debugging)"                                     ;
+  static const String CLI_USAGE_MSG   = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN            + " | "                                                          +
+                                                                              CLI_PRESETS_TOKEN         + " | "                                                          +
+                                                                              CLI_VERSION_TOKEN         + " ]"                                                           +
+                                                       "\n\n\tav-caster [ " + CLI_PRESET_TOKEN          + " n    ] "                                                     +
+                                                         "\n\t          [ " + CLI_DISABLE_MEDIA_TOKEN   + "    ] "                                                       +
+                                                                       "[ " + CLI_DISABLE_PREVIEW_TOKEN + "  ] "                                                         +
+                                                                       "[ " + CLI_DISABLE_AUDIO_TOKEN   + "  ] "                                                         +
+                                                                       "[ " + CLI_DISABLE_CHAT_TOKEN    + "    ]"                                                        +
+                                                         "\n\t          [ " + CLI_SCREEN_ONLY_TOKEN     + " | "                                                          +
+                                                                       "  " + CLI_CAMERA_ONLY_TOKEN     + " | "                                                          +
+//                                                                        "  " + CLI_TEXT_ONLY_TOKEN       + " | "                                                          +
+//                                                                        "  " + CLI_IMAGE_ONLY_TOKEN      + " ] "                                                          +
+                                                     "\n\n\n\tINFORMATION:"                                                                                              +
+                                                     "\n\n\t\t"             + CLI_HELP_TOKEN            + "\n\t\t\tprints this message and exits"                        +
+                                                     "\n\n\t\t"             + CLI_PRESETS_TOKEN         + "\n\t\t\tlist stored presets and exits"                        +
+                                                     "\n\n\t\t"             + CLI_VERSION_TOKEN         + "\n\t\t\tprints the application version string and exits"      +
+                                                     "\n\n\n\tCONFIGURATION:"                                                                                            +
+                                                     "\n\n\t\t"             + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstarts " + APP_NAME + " with initial preset number n" +
+                                                     "\n\n\n\tFEATURE SWITCHES:"                                                                                         +
+                                                     "\n\n\t\t"             + CLI_DISABLE_MEDIA_TOKEN   + "\n\t\t\tdisables all media and stream output"                 +
+                                                     "\n\n\t\t"             + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and uses screen capture only"    +
+                                                     "\n\n\t\t"             + CLI_CAMERA_ONLY_TOKEN     + "\n\t\t\tdisables compositing and uses webcam capture only"    +
+//                                                      "\n\n\t\t"             + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and uses text overlay only"      +
+//                                                      "\n\n\t\t"             + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and uses static image only"      +
+                                                     "\n\n\t\t"             + CLI_DISABLE_PREVIEW_TOKEN + "\n\t\t\tdisables realtime preview"                            +
+                                                     "\n\n\t\t"             + CLI_DISABLE_AUDIO_TOKEN   + "\n\t\t\tdisables audio capture"                               +
+                                                     "\n\n\t\t"             + CLI_DISABLE_CHAT_TOKEN    + "\n\t\t\tdisables chat"                                        ;
+
+// NOTE: INPUTS are either mutually exclusive (compositor disabled) or must all be enabled (compositor enabled)
+//       N_COMPOSITOR_INPUTS is coupled to AvCaster::Is*Enabled flags in AvCaster::ProcessCliParams()
+#define INPUTS String(APP::CLI_SCREEN_ONLY_TOKEN + newLine + APP::CLI_CAMERA_ONLY_TOKEN + \
+               String((TEXT_BIN_NYI ) ? "" :       newLine + APP::CLI_TEXT_ONLY_TOKEN)  + \
+               String((IMAGE_BIN_NYI) ? "" :       newLine + APP::CLI_IMAGE_ONLY_TOKEN) )
+  static const int N_COMPOSITOR_INPUTS = StringArray::fromLines(INPUTS).size() ;
 
   // filesystem
   static const File   HOME_DIR        = File::getSpecialLocation(File::userHomeDirectory           ) ;
@@ -247,6 +259,9 @@ namespace GUI
   static const String PRESET_NAME_ERROR_MSG       = "Enter a name for this preset in the \"Preset\" box then press \"Save\" again." ;
   static const String PRESET_RENAME_ERROR_MSG     = "A preset already exists with that name." ;
   static const String CONFIG_CHANGE_ERROR_MSG     = "Can not re-configure while the stream is active." ;
+  static const String ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture device.\n\n" ;
+  static const String PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
+  static const String JACK_INIT_ERROR_MSG         = "Error connecting to Jack server.\n\n" ;
 }
 
 
@@ -282,6 +297,7 @@ namespace CONFIG
 |*|
 |*| // AvCasterStore->config
 |*| // AvCasterStore->presets (each child)
+|*| // Gstreamer::ConfigStore
 |*| VOLATILE_CONFIG_ID:
 |*| {
 |*|   // control IDs
@@ -369,6 +385,40 @@ namespace CONFIG
   }
 
 
+  // config indices
+  enum              StaticPreset       { FILE_PRESET_IDX , RTMP_PRESET_IDX , LCTV_PRESET_IDX } ;
+  enum              AudioApi           { ALSA_AUDIO_IDX , PULSE_AUDIO_IDX , JACK_AUDIO_IDX } ;
+  enum              AudioCodec         { MP3_AUDIO_IDX , AAC_AUDIO_IDX } ;
+  enum              OutputStream       { FILE_OUTPUT_IDX , RTMP_OUTPUT_IDX } ;
+  static const int  CONFIG_IDX_INVALID = -1 ;
+
+  // config strings
+  static const StringArray AUDIO_APIS        = StringArray::fromLines("ALSA"    + newLine +
+                                                                      "Pulse"   + newLine +
+                                                                      "JACK"              ) ;
+  static const StringArray AUDIO_CODECS      = StringArray::fromLines("MP3"     + newLine +
+                                                                      "AAC"               ) ;
+  static const StringArray AUDIO_SAMPLERATES = StringArray::fromLines("11025"   + newLine +
+                                                                      "22050"   + newLine +
+                                                                      "44100"             ) ;
+  static const StringArray AUDIO_BITRATES    = StringArray::fromLines("64k"     + newLine +
+                                                                      "96k"     + newLine +
+                                                                      "128k"    + newLine +
+                                                                      "192k"              ) ;
+  static const StringArray TEXT_STYLES       = StringArray::fromLines("Static"  + newLine +
+                                                                      "Marquee"           ) ;
+  static const StringArray TEXT_POSITIONS    = StringArray::fromLines("Top"     + newLine +
+                                                                      "Bottom"            ) ;
+  static const StringArray OUTPUT_SINKS      = StringArray::fromLines("File"    + newLine +
+                                                                      "RTMP"              ) ;
+  static const StringArray OUTPUT_MUXERS     = StringArray::fromLines(".flv"              ) ;
+  static const StringArray FRAMERATES        = StringArray::fromLines("8"       + newLine +
+                                                                      "12"      + newLine +
+                                                                      "20"      + newLine +
+                                                                      "30"                ) ;
+  static const StringArray VIDEO_BITRATES    = StringArray::fromLines("800k"    + newLine +
+                                                                      "1200k"             ) ;
+
   // nodes
   static const Identifier STORAGE_ID             = "av-caster-config" ;
   static const Identifier PRESETS_ID             = "presets" ;
@@ -382,7 +432,7 @@ namespace CONFIG
   static const Identifier CHATTERS_ID            = "active-chatters" ;
   // config root IDs
   static const Identifier CONFIG_VERSION_ID      = "config-version" ;
-  static const Identifier PRESET_ID              = "preset-idx" ;
+  static const Identifier PRESET_ID              = "current-preset-idx" ;
   static const Identifier IS_PENDING_ID          = "is-config-pending" ;
   // control IDs
   static const Identifier PRESET_NAME_ID         = "preset-name" ;
@@ -432,15 +482,16 @@ namespace CONFIG
   static const Identifier CHAT_NICK_ID           = "chat-nick" ;
 
   // root defaults
+#ifdef JUCE_LINUX
+  static const String     STORAGE_DIRNAME             = ".config/av-caster/" ;
+  static const String     STORAGE_FILENAME            = "av-caster.bin" ;
+#endif // JUCE_LINUX
 #ifdef JUCE_WINDOWS
   static const String     STORAGE_DIRNAME             = "AvCaster\\" ;
   static const String     STORAGE_FILENAME            = "AvCaster.bin" ;
-#else // JUCE_WINDOWS
-  static const String     STORAGE_DIRNAME             = ".av-caster/" ;
-  static const String     STORAGE_FILENAME            = "av-caster.bin" ;
 #endif // JUCE_WINDOWS
   static const double     CONFIG_VERSION              = 0.3 ;
-  static const int        DEFAULT_PRESET_IDX          = 0 ; // ASSERT: must be 0
+  static const int        DEFAULT_PRESET_IDX          = FILE_PRESET_IDX ; // ASSERT: must be 0
   static const int        N_STATIC_PRESETS            = 3 ; // ASSERT: num PresetSeed subclasses
   static const bool       DEFAULT_IS_PENDING          = false ;
 
@@ -450,11 +501,11 @@ namespace CONFIG
   static const String     LCTV_PRESET_NAME            = "livecoding.tv" ;
   static const String     DEFAULT_PRESET_NAME         = FILE_PRESET_NAME ;
   static const Identifier DEFAULT_PRESET_ID           = FilterId(DEFAULT_PRESET_NAME , APP::VALID_ID_CHARS) ;
-#ifdef DISABLE_CONTROLS_NYI
+#ifdef DISABLE_GUI_CONTROLS_NYI
   static const bool       DEFAULT_IS_SCREENCAP_ACTIVE = true ;
-#else // DISABLE_CONTROLS_NYI
+#else // DISABLE_GUI_CONTROLS_NYI
   static const bool       DEFAULT_IS_SCREENCAP_ACTIVE = false ;
-#endif // DISABLE_CONTROLS_NYI
+#endif // DISABLE_GUI_CONTROLS_NYI
   static const bool       DEFAULT_IS_CAMERA_ACTIVE    = false ;
   static const bool       DEFAULT_IS_TEXT_ACTIVE      = false ;
   static const bool       DEFAULT_IS_IMAGE_ACTIVE     = true ;
@@ -472,9 +523,9 @@ namespace CONFIG
   static const int        DEFAULT_CAMERA_DEVICE_IDX   = -1 ;
   static const int        DEFAULT_CAMERA_RES_IDX      = -1 ;
   // audio defaults
-  static const int        DEFAULT_AUDIO_API_IDX       = 0 ;
+  static const int        DEFAULT_AUDIO_API_IDX       = ALSA_AUDIO_IDX ;
   static const int        DEFAULT_AUDIO_DEVICE_IDX    = -1 ;
-  static const int        DEFAULT_AUDIO_CODEC_IDX     = 0 ;
+  static const int        DEFAULT_AUDIO_CODEC_IDX     = MP3_AUDIO_IDX ;
   static const int        DEFAULT_N_CHANNELS          = 2 ;
   static const int        DEFAULT_SAMPLERATE_IDX      = 0 ;
   static const int        DEFAULT_AUDIO_BITRATE_IDX   = 0 ;
@@ -485,50 +536,13 @@ namespace CONFIG
   // interstitial defaults
   static const String     DEFAULT_IMAGE_LOCATION      = "" ;
   // output defaults
-  static const int        DEFAULT_OUTPUT_SINK_IDX     = 0 ;
+  static const int        DEFAULT_OUTPUT_SINK_IDX     = FILE_OUTPUT_IDX ;
   static const int        DEFAULT_OUTPUT_MUXER_IDX    = 0 ;
   static const int        DEFAULT_OUTPUT_W            = 640 ;
   static const int        DEFAULT_OUTPUT_H            = 480 ;
   static const int        DEFAULT_FRAMERATE_IDX       = 0 ;
   static const int        DEFAULT_VIDEO_BITRATE_IDX   = 0 ;
   static const String     DEFAULT_OUTPUT_DEST         = APP::APP_NAME + ".flv" ;
-
-  // config indices
-  static const int FILE_PRESET_IDX = 0 ;
-  static const int RTMP_PRESET_IDX = 1 ;
-  static const int LCTV_PRESET_IDX = 2 ;
-  static const int FILE_STREAM_IDX = 0 ;
-  static const int RTMP_STREAM_IDX = 1 ;
-
-  // config strings
-  static const String      FILE_OUTPUT       = "File" ;
-  static const String      RTMP_OUTPUT       = "RTMP" ;
-  static const String      FLV_MUXER         = ".flv" ;
-  static const StringArray AUDIO_APIS        = StringArray::fromLines("ALSA"      + newLine +
-                                                                      "Pulse"     + newLine +
-                                                                      "JACK"                ) ;
-  static const StringArray AUDIO_CODECS      = StringArray::fromLines("MP3"       + newLine +
-                                                                      "AAC"                 ) ;
-  static const StringArray AUDIO_SAMPLERATES = StringArray::fromLines("11025"     + newLine +
-                                                                      "22050"     + newLine +
-                                                                      "44100"               ) ;
-  static const StringArray AUDIO_BITRATES    = StringArray::fromLines("64k"       + newLine +
-                                                                      "96k"       + newLine +
-                                                                      "128k"      + newLine +
-                                                                      "192k"                ) ;
-  static const StringArray TEXT_STYLES       = StringArray::fromLines("Static"    + newLine +
-                                                                      "Marquee"             ) ;
-  static const StringArray TEXT_POSITIONS    = StringArray::fromLines("Top"       + newLine +
-                                                                      "Bottom"              ) ;
-  static const StringArray OUTPUT_SINKS      = StringArray::fromLines(FILE_OUTPUT + newLine +
-                                                                      RTMP_OUTPUT           ) ;
-  static const StringArray OUTPUT_MUXERS     = StringArray::fromLines(FLV_MUXER             ) ;
-  static const StringArray FRAMERATES        = StringArray::fromLines("8"         + newLine +
-                                                                      "12"        + newLine +
-                                                                      "20"        + newLine +
-                                                                      "30"                  ) ;
-  static const StringArray VIDEO_BITRATES    = StringArray::fromLines("800k"      + newLine +
-                                                                      "1200k"               ) ;
 
 
   static ValueTree DefaultStore()
@@ -552,35 +566,46 @@ namespace GST
   static const unsigned int MIN_MAJOR_VERSION = 1 ;
   static const unsigned int MIN_MINOR_VERSION = 4 ;
 
-  static const String PIPELINE_ID           = "pipeline" ;
-  static const String SCREENCAP_BIN_ID      = "screencap-bin" ;
-  static const String CAMERA_BIN_ID         = "camera-bin" ;
-  static const String TEXT_BIN_ID           = "text-bin" ;
-  static const String IMAGE_BIN_ID   = "interstitial-bin" ;
-  static const String COMPOSITOR_BIN_ID     = "compositor-bin" ;
-  static const String PREVIEW_BIN_ID        = "preview-bin" ;
-  static const String AUDIO_BIN_ID          = "audio-bin" ;
-  static const String MUXER_BIN_ID          = "muxer-bin" ;
-  static const String OUTPUT_BIN_ID         = "output-bin" ;
+  // element IDs
+  static const String PIPELINE_ID         = "pipeline" ;
+  static const String SCREENCAP_BIN_ID    = "screencap-bin" ;
+  static const String CAMERA_BIN_ID       = "camera-bin" ;
+  static const String TEXT_BIN_ID         = "text-bin" ;
+  static const String IMAGE_BIN_ID        = "interstitial-bin" ;
+  static const String COMPOSITOR_BIN_ID   = "compositor-bin" ;
+  static const String PREVIEW_BIN_ID      = "preview-bin" ;
+  static const String PREVIEW_SINK_ID     = "preview-real-sink" ;
+  static const String PREVIEW_FAUXSINK_ID = "preview-faux-sink" ;
+  static const String PREVIEW_SINKPAD_ID  = "preview-sinkpad" ;
+  static const String AUDIO_BIN_ID        = "audio-bin" ;
+  static const String MUXER_BIN_ID        = "muxer-bin" ;
+  static const String OUTPUT_BIN_ID       = "output-bin" ;
+  // plugin IDs
+  static const String FAUXSRC_PLUGIN_ID   = "fakesrc" ;
+  static const String FAUXSINK_PLUGIN_ID  = "fakesink" ;
 #if JUCE_LINUX
-  static const String SCREEN_PLUGIN_ID      = "ximagesrc" ;
+  static const String SCREEN_PLUGIN_ID    = "ximagesrc" ;
 #endif //JUCE_LINUX
-  static const String V4L2_PLUGIN_ID        = "v4l2src" ;
-  static const String FAUX_VIDEO_PLUGIN_ID  = "videotestsrc" ;
-  static const String ALSA_PLUGIN_ID        = "alsasrc" ;
-  static const String PULSE_PLUGIN_ID       = "pulsesrc" ;
-  static const String JACK_PLUGIN_ID        = "jackaudiosrc" ;
-  static const String FAUX_AUDIO_PLUGIN_ID  = "audiotestsrc" ;
+  static const String V4L2_PLUGIN_ID      = "v4l2src" ;
+  static const String TESTVIDEO_PLUGIN_ID = "videotestsrc" ;
+  static const String ALSA_PLUGIN_ID      = "alsasrc" ;
+  static const String PULSE_PLUGIN_ID     = "pulsesrc" ;
+  static const String JACK_PLUGIN_ID      = "jackaudiosrc" ;
+  static const String TESTAUDIO_PLUGIN_ID = "audiotestsrc" ;
 #if JUCE_LINUX
-  static const String PREVIEW_PLUGIN_ID     = "xvimagesink" ;
+  static const String PREVIEW_PLUGIN_ID   = "xvimagesink" ;
 #endif //JUCE_LINUX
-  static const String FILE_SINK_PLUGIN_ID   = "filesink" ;
-  static const String RTMP_SINK_PLUGIN_ID   = "rtmpsink" ;
-  static const String FAUX_SINK_PLUGIN_ID   = "fakesink" ;
-  static const String FAUX_AUDIO_CAPS       = "audio/x-raw, format=(string)S16LE, endianness=(int)1234, signed=(boolean)true, width=(int)16, depth=(int)16, rate=(int)44100, channels=(int)2" ;
+  static const String FILESINK_PLUGIN_ID  = "filesink" ;
+  static const String RTMPSINK_PLUGIN_ID  = "rtmpsink" ;
 
   static const String LCTV_RTMP_URL = "rtmp://usmedia3.livecoding.tv:1935/livecodingtv/" ;
+
+  // library error messages
+  static const String ALSA_INIT_ERROR  = "Could not open audio device for recording. Device is being used by another application." ;
+  static const String PULSE_INIT_ERROR = "Failed to connect: Connection refused" ;
+  static const String JACK_INIT_ERROR  = "Jack server not found" ;
 }
+
 
 /** the IRC namespace defines configuration constants
         pertaining to the libircclient network backend */

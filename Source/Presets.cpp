@@ -16,6 +16,7 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+
 //[Headers] You can add your own extra header files here...
 
 #include "AvCaster.h"
@@ -128,11 +129,11 @@ void Presets::resized()
     //[/UserPreResize]
 
     presetsGroup->setBounds (16, 12, getWidth() - 32, 64);
-    saveButton->setBounds (156, 35, 64, 24);
-    newButton->setBounds (244, 35, 64, 24);
-    deleteButton->setBounds (332, 35, 64, 24);
-    presetLabel->setBounds (412, 36, 80, 24);
-    presetsCombo->setBounds (512, 36, 176, 24);
+    saveButton->setBounds (244, 35, 64, 24);
+    newButton->setBounds (332, 35, 64, 24);
+    deleteButton->setBounds (420, 35, 64, 24);
+    presetLabel->setBounds (500, 36, 48, 24);
+    presetsCombo->setBounds (560, 36, 128, 24);
     configButton->setBounds (696, 36, 24, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
@@ -198,6 +199,23 @@ void Presets::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == presetsCombo)
     {
         //[UserComboBoxCode_presetsCombo] -- add your combo box handling code here..
+
+      String preset_name = this->presetsCombo->getText() ;
+      int    option_n    = this->presetsCombo->getSelectedItemIndex() ;
+      bool   is_saving   = this->saveButton  ->isDown() ; // defer to handleSaveButton()
+      bool   is_deleting = this->deleteButton->isDown() ; // defer to handleDeleteButton()
+
+      if (is_deleting) return ;
+
+      // create new preset
+      if      (isCreatePresetMode()) AvCaster::StorePreset(preset_name) ;
+      else if (is_saving           ) return ;
+
+      // rename preset , restore selection , or commit preset change
+      if (AvCaster::SetPreset(preset_name , option_n)) setCreatePresetMode(false) ;
+
+      return ;
+
         //[/UserComboBoxCode_presetsCombo]
     }
 
@@ -298,21 +316,21 @@ BEGIN_JUCER_METADATA
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"
                   textcol="ffffffff" title="Presets"/>
   <TEXTBUTTON name="saveButton" id="b669a1abab5602e9" memberName="saveButton"
-              virtualName="" explicitFocusOrder="1" pos="156 35 64 24" buttonText="Save"
+              virtualName="" explicitFocusOrder="1" pos="244 35 64 24" buttonText="Save"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="newButton" id="693a3f523732acb3" memberName="newButton"
-              virtualName="" explicitFocusOrder="2" pos="244 35 64 24" buttonText="New"
+              virtualName="" explicitFocusOrder="2" pos="332 35 64 24" buttonText="New"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="deleteButton" id="846aa62a47585ee2" memberName="deleteButton"
-              virtualName="" explicitFocusOrder="3" pos="332 35 64 24" buttonText="Delete"
+              virtualName="" explicitFocusOrder="3" pos="420 35 64 24" buttonText="Delete"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="presetLabel" id="3a60504146c5134" memberName="presetLabel"
-         virtualName="" explicitFocusOrder="0" pos="412 36 80 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="500 36 48 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Preset:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="presetsCombo" id="94d77976c2b2f37" memberName="presetsCombo"
-            virtualName="" explicitFocusOrder="4" pos="512 36 176 24" editable="1"
+            virtualName="" explicitFocusOrder="4" pos="560 36 128 24" editable="1"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
                virtualName="" explicitFocusOrder="5" pos="696 36 24 24" buttonText="configButton"

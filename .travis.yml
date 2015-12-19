@@ -37,6 +37,9 @@ script:
   - wget $LIBIRCCLIENT_MIRROR/$LIBIRCCLIENTDEV
   - sudo dpkg -i $LIBIRCCLIENT
   - sudo dpkg -i $LIBIRCCLIENTDEV
+  - mkdir libircclient
+  - cp /usr/include/libirc* libircclient/
+  - sudo mv libircclient/ /usr/include/
   - make CONFIG=Release # TARGET_ARCH='-march=x86-64'
   - # $BUILD_DIR/build/$PROJECT_NAME --version
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.002"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.15.200"
               bundleIdentifier="com.bill-auger.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
@@ -105,7 +105,7 @@
     </VS2008>
     <LINUX_MAKE targetFolder="Builds/Makefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-1.0&#96;"
                 extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;"
-                externalLibraries="ircclient">
+                externalLibraries="">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="" isDebug="1" optimisation="1" targetName="av-caster-dbg"/>
         <CONFIGURATION name="Release" libraryPath="" isDebug="0" optimisation="3" targetName="av-caster"/>

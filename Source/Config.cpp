@@ -975,18 +975,17 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   int    text_pos_idx      = int   (config_store[CONFIG::TEXT_POSITION_ID]) ;
   String motd_text         = STRING(config_store[CONFIG::MOTD_TEXT_ID    ]) ;
   String interstitial_text = STRING(config_store[CONFIG::IMAGE_ID ]) ;
-  int    output_sink_idx   = int   (config_store[CONFIG::OUTPUT_SINK_ID  ]) ;
+  int    output_idx        = int   (config_store[CONFIG::OUTPUT_SINK_ID  ]) ;
   String output_w_text     = STRING(config_store[CONFIG::OUTPUT_W_ID     ]) ;
   String output_h_text     = STRING(config_store[CONFIG::OUTPUT_H_ID     ]) ;
   int    framerate_idx     = int   (config_store[CONFIG::FRAMERATE_ID    ]) ;
   int    video_bitrate_idx = int   (config_store[CONFIG::VIDEO_BITRATE_ID]) ;
   String output_dest_text  = STRING(config_store[CONFIG::OUTPUT_DEST_ID  ]) ;
-  bool   is_lctv           = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
-  String output_sink       = CONFIG::OUTPUT_SINKS[output_sink_idx] ;
-  String output_label_text = (is_lctv                           ) ? GUI::DEST_LCTV_TEXT :
-                             (output_sink == CONFIG::FILE_OUTPUT) ? GUI::DEST_FILE_TEXT :
-                             (output_sink == CONFIG::RTMP_OUTPUT) ? GUI::DEST_RTMP_TEXT :
-                                                                    "ERR"               ;
+  bool   is_lctv_preset    = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
+  String output_label_text = (is_lctv_preset                       ) ? GUI::DEST_LCTV_TEXT :
+                             (output_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::DEST_FILE_TEXT :
+                             (output_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::DEST_RTMP_TEXT :
+                                                                       "ERR"               ;
 
   this->displaySlider    ->setValue            (display_n ) ;
   this->screenSlider     ->setValue            (screen_n  ) ;
@@ -1034,7 +1033,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->audioBitrateCombo->setSelectedItemIndex(audio_bitrate_idx , juce::dontSendNotification) ;
   this->textStyleCombo   ->setSelectedItemIndex(text_style_idx    , juce::dontSendNotification) ;
   this->textPosCombo     ->setSelectedItemIndex(text_pos_idx      , juce::dontSendNotification) ;
-  this->outputSinkCombo  ->setSelectedItemIndex(output_sink_idx   , juce::dontSendNotification) ;
+  this->outputSinkCombo  ->setSelectedItemIndex(output_idx        , juce::dontSendNotification) ;
   this->framerateCombo   ->setSelectedItemIndex(framerate_idx     , juce::dontSendNotification) ;
   this->videoBitrateCombo->setSelectedItemIndex(video_bitrate_idx , juce::dontSendNotification) ;
 
@@ -1048,7 +1047,7 @@ void Config::enableComponents()
   this->audioCodecCombo->setEnabled(!is_static_preset) ; // TODO: videoCodecCombo
   this->outputSinkCombo->setEnabled(!is_static_preset) ; // TODO: outputMuxerCombo
 
-#ifdef DISABLE_CONTROLS_NYI
+#ifdef DISABLE_GUI_CONTROLS_NYI
 this->displaySlider   ->setEnabled(false) ;
 this->screenSlider    ->setEnabled(false) ;
 this->xOffsetText     ->setEnabled(false) ;
@@ -1061,7 +1060,7 @@ this->textStyleCombo  ->setEnabled(false) ;
 this->textPosCombo    ->setEnabled(false) ;
 this->interstitialText->setEnabled(false) ;
 this->browseButton    ->setEnabled(false) ;
-#endif // DISABLE_CONTROLS_NYI
+#endif // DISABLE_GUI_CONTROLS_NYI
 }
 
 //[/MiscUserCode]

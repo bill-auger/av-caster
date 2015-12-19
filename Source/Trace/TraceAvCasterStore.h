@@ -102,6 +102,10 @@
 
 /* maintenance */
 
+#  define DEBUG_TRACE_LISTEN                                 \
+  String state = (should_listen) ? "started" : "stopped" ;   \
+  Trace::TraceConfig(state + " listening for model changes") ;
+
 #  define DEBUG_TRACE_CONFIG_TREE_CHANGED                                                \
   String parent_id = String(a_node.getParent().getType()) ;                              \
   String node_id   = String(a_node.getType()) ;                                          \
@@ -128,16 +132,19 @@
   Trace::TraceConfig("deleting preset[" + String(preset_idx)             + \
                      "] '"              + AvCaster::GetPresetName() + "'") ;
 
-#  define DEBUG_TRACE_TOGGLE_CONTROL                                          \
-  Trace::TraceConfig("error re-configuring media - reverting control toggle") ;
+#  define DEBUG_TRACE_DEACTIVATE_CONTROL                                      \
+  Trace::TraceConfig("error configuring media - deactivating control toggle") ;
 
-#  define DEBUG_TRACE_SET_CONFIG                                              \
-  String    key        = (a_key.isValid()) ? String(a_key) : String("NULL") ; \
-  ValueTree node       = getKeyNode(a_key) ;                                  \
-  String    change_msg = "key '"             + key                 +          \
-                         "' changing from '" + STRING(node[a_key]) +          \
-                         "' to '"            + STRING(a_value    ) + "'" ;    \
-  Trace::TraceVerbose("config " + change_msg) ;
+#  define DEBUG_TRACE_SET_CONFIG                                                 \
+  String    key        = (a_key.isValid()) ? String(a_key) : String("NULL") ;    \
+  ValueTree node       = getKeyNode(a_key) ;                                     \
+  String    node_id    = String(storage_node.getType()) ;                        \
+  String    change_msg = "key '"             + key                 +             \
+                         "' changing from '" + STRING(node[a_key]) +             \
+                         "' to '"            + STRING(a_value    ) + "'" ;       \
+  if (!storage_node.isValid()) Trace::TraceError("invalid node " + change_msg) ; \
+  else                         Trace::TraceVerbose("config node '" + node_id +   \
+                                                   "' " + change_msg)            ;
 
 #  define DEBUG_TRACE_UPDATE_IRC_HOST                                                     \
   if (server_store.isValid())                                                             \
@@ -190,12 +197,13 @@
 #  define DEBUG_TRACE_DUMP_CONFIG(method_name)          ;
 #  define DEBUG_TRACE_STORE_CONFIG                      ;
 #  define DEBUG_TRACE_STORE_SERVER                      ;
+#  define DEBUG_TRACE_LISTEN                            ;
 #  define DEBUG_TRACE_CONFIG_TREE_CHANGED               ;
 #  define DEBUG_TRACE_DETECT_CAPTURE_DEVICES            ;
 #  define DEBUG_TRACE_STORE_PRESET                      ;
 #  define DEBUG_TRACE_RENAME_PRESET                     ;
 #  define DEBUG_TRACE_DELETE_PRESET                     ;
-#  define DEBUG_TRACE_TOGGLE_CONTROL                    ;
+#  define DEBUG_TRACE_DEACTIVATE_CONTROL                ;
 #  define DEBUG_TRACE_SET_CONFIG                        ;
 #  define DEBUG_TRACE_UPDATE_IRC_HOST                   ;
 #  define DEBUG_TRACE_UPDATE_CHAT_NICKS                 ;

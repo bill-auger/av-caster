@@ -8,8 +8,8 @@ Build-Depends: debhelper (>= 4.1.16), build-essential, libfreetype6-dev, libgstr
 Package: av-caster
 Architecture: any
 Depends: ${shlibs:Depends}, freeglut3, gstreamer1.0-plugins-bad (>= 1.6.0), gstreamer1.0-plugins-good (>= 1.6.0), gstreamer1.0-plugins-ugly (>= 1.6.0), libfreetype6, libgl1-mesa-glx, libx11-6, libxcomposite1, libxcursor1, libxext6, libxinerama1, libxrender1
-Description: A simple native gStreamer GUI for screencast, webcam, and audio streaming
-  AvCaster is a native GNU/linux appliction built with the JUCE framework
+Description: Light-weight native gStreamer GUI for screencast, webcam, and audio streaming.
+  AvCaster is a native GNU/Linux application built with the JUCE framework
   and using gStreamer as the media backend. The current version capable of
   recording to file or streaming to an RTMP server with screen capture,
   webcam overlay, and stereo audio. It is moderately configurable,

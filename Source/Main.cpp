@@ -36,10 +36,9 @@ DEBUG_TRACE_INIT_VERSION
 
     if (AvCaster::Initialize(this->mainWindow->mainContent))
     {
-      // start GUI update timers
-//       startTimer(APP::GUI_TIMER_HI_ID  , APP::GUI_UPDATE_HI_IVL ) ;
-      startTimer(APP::GUI_TIMER_MED_ID , APP::GUI_UPDATE_MED_IVL) ;
-      startTimer(APP::GUI_TIMER_LO_ID  , APP::GUI_UPDATE_LO_IVL ) ;
+      // start runtime timers
+      for (int timer_n = 0 ; timer_n < APP::N_TIMERS ; ++timer_n)
+        startTimer(APP::TIMER_IDS[timer_n] , APP::TIMER_IVLS[timer_n]) ;
     }
     else { setApplicationReturnValue(255) ; shutdown() ; quit() ; }
   }
@@ -54,6 +53,9 @@ DEBUG_TRACE_INIT_VERSION
   void shutdown() override
   {
 DEBUG_TRACE_SHUTDOWN_IN
+
+    for (int timer_n = 0 ; timer_n > APP::N_TIMERS ; ++timer_n)
+      stopTimer(APP::TIMER_IDS[timer_n]) ;
 
     AvCaster::Shutdown() ;
 
@@ -87,9 +89,9 @@ DEBUG_TRACE_SHUTDOWN_OUT
       setContentOwned(this->mainContent , true) ;
 
       // this main desktop window
-#ifdef _MAC
+#ifdef JUCE_MAC
       setTitleBarButtonsRequired(DocumentWindow::allButtons , true) ;
-#endif // _MAC
+#endif // JUCE_MAC
       setTitleBarHeight(GUI::TITLEBAR_H) ;
 //      setIcon(const Image &imageToUse) ;
       centreWithSize(getWidth() , getHeight()) ;
@@ -119,8 +121,8 @@ private:
 #else // DEBUG_QUIT_IMMEDIATELY
   void timerCallback(int timer_id) override
   {
-    if (timer_id != APP::GUI_TIMER_LO_ID) AvCaster::HandleTimer(timer_id) ;
-    else                                  { Trace::TraceEvent("forced quit") ; quit() ; }
+    if (timer_id != APP::TIMER_LO_ID) AvCaster::HandleTimer(timer_id) ;
+    else                              { Trace::TraceEvent("forced quit") ; quit() ; }
   }
 #endif // DEBUG_QUIT_IMMEDIATELY
 

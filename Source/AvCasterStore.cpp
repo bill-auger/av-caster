@@ -81,8 +81,10 @@ DEBUG_TRACE_DUMP_CONFIG("AvCasterStore::AvCasterStore()")
   verifyPresets() ; sanitizePresets() ; verifyPresets() ; loadPreset() ;
   storeConfig() ;
 
+#ifndef DISABLE_CHAT
 storeServer(bitlbee_host , bitlbee_port) ; // TODO: GUI support
 // storeServer(debian_host  , debian_port) ;  // TODO: GUI support
+#endif // DISABLE_CHAT
 }
 
 ValueTree AvCasterStore::verifyConfig(ValueTree stored_config , Identifier root_node_id)
@@ -469,7 +471,6 @@ DEBUG_TRACE_STORE_PRESET
   bool        has_idx_changed = preset_idx != AvCaster::GetPresetIdx() ;
   setConfig(CONFIG::OUTPUT_W_ID , var(jmax(fullscreen_w , camera_w , output_w))) ;
   setConfig(CONFIG::OUTPUT_H_ID , var(jmax(fullscreen_h , camera_h , output_h))) ;
-  if (!has_idx_changed) AvCaster::RefreshGui() ;
 #endif // FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
 
   setConfig(CONFIG::PRESET_NAME_ID , preset_name) ;
@@ -553,6 +554,10 @@ DEBUG_TRACE_STORE_SERVER
 
 void AvCasterStore::listen(bool should_listen)
 {
+  if (!AvCaster::GetIsInitialized()) return ;
+
+DEBUG_TRACE_LISTEN
+
   if (should_listen) { this->root.addListener   (this) ; this->config.addListener   (this) ; }
   else               { this->root.removeListener(this) ; this->config.removeListener(this) ; }
 }
@@ -571,8 +576,11 @@ DEBUG_TRACE_CONFIG_TREE_CHANGED
 
 ValueTree AvCasterStore::getKeyNode(const Identifier& a_key)
 {
-  return (a_key == CONFIG::PRESET_ID   ||
-          a_key == CONFIG::IS_PENDING_ID) ? this->root : this->config ;
+  bool is_root_key = a_key == CONFIG::PRESET_ID || a_key == CONFIG::IS_PENDING_ID ;
+
+  return (is_root_key    ) ? this->root         :
+         (a_key.isValid()) ? this->config       :
+                             ValueTree::invalid ;
 }
 
 bool AvCasterStore::isControlKey(const Identifier& a_key)
@@ -618,13 +626,11 @@ StringArray AvCasterStore::getCameraResolutions()
   return StringArray::fromLines(STRING(camera_store[CONFIG::CAMERA_RESOLUTIONS_ID])) ;
 }
 
-void AvCasterStore::toogleControl(const Identifier& a_key)
+void AvCasterStore::deactivateControl(const Identifier& a_key)
 {
-DEBUG_TRACE_TOGGLE_CONTROL
+DEBUG_TRACE_DEACTIVATE_CONTROL
 
-  listen(false) ;
-  setConfig(a_key , !bool(this->config[a_key])) ;
-  listen(true) ;
+  listen(false) ; setConfig(a_key , var(false)) ; listen(true) ;
 }
 
 void AvCasterStore::setConfig(const Identifier& a_key , var a_value)
@@ -633,7 +639,7 @@ void AvCasterStore::setConfig(const Identifier& a_key , var a_value)
 
 DEBUG_TRACE_SET_CONFIG
 
-  if (a_key.isValid()) storage_node.setProperty(a_key , a_value , nullptr) ;
+  if (storage_node.isValid()) storage_node.setProperty(a_key , a_value , nullptr) ;
 }
 
 void AvCasterStore::updateIrcHost(StringArray alias_uris , String actual_host)

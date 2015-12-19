@@ -16,8 +16,9 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef __JUCE_HEADER_7E49606CC1E6A40__
-#define __JUCE_HEADER_7E49606CC1E6A40__
+
+#ifndef _CONTROLS_H_
+#define _CONTROLS_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -82,6 +83,7 @@ private:
     ScopedPointer<ToggleButton> textToggle;
     ScopedPointer<ToggleButton> interstitialToggle;
     ScopedPointer<ToggleButton> previewToggle;
+    ScopedPointer<ToggleButton> audioToggle;
     ScopedPointer<ToggleButton> outputToggle;
     ScopedPointer<ComboBox> presetsCombo;
     ScopedPointer<ImageButton> configButton;
@@ -94,4 +96,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_7E49606CC1E6A40__
+#endif // _CONTROLS_H_

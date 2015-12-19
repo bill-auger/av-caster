@@ -68,7 +68,7 @@ void PresetSeed::createPreset()
   preset.setProperty(CONFIG::IS_SCREENCAP_ACTIVE_ID , var(isScreencapActive   ) , nullptr) ;
   preset.setProperty(CONFIG::IS_CAMERA_ACTIVE_ID    , var(isCameraActive      ) , nullptr) ;
   preset.setProperty(CONFIG::IS_TEXT_ACTIVE_ID      , var(isTextActive        ) , nullptr) ;
-  preset.setProperty(CONFIG::IS_IMAGE_ACTIVE_ID     , var(isImageActive) , nullptr) ;
+  preset.setProperty(CONFIG::IS_IMAGE_ACTIVE_ID     , var(isImageActive       ) , nullptr) ;
   preset.setProperty(CONFIG::IS_PREVIEW_ACTIVE_ID   , var(isPreviewActive     ) , nullptr) ;
   preset.setProperty(CONFIG::IS_AUDIO_ACTIVE_ID     , var(isAudioActive       ) , nullptr) ;
   preset.setProperty(CONFIG::IS_OUTPUT_ACTIVE_ID    , var(isOutputActive      ) , nullptr) ;
@@ -103,7 +103,7 @@ FilePresetSeed::FilePresetSeed()
 {
   presetId   = CONFIG::FilterId(CONFIG::FILE_PRESET_NAME , APP::VALID_ID_CHARS) ;
   presetName = CONFIG::FILE_PRESET_NAME ;
-  sinkIdx    = CONFIG::FILE_STREAM_IDX ;
+  sinkIdx    = CONFIG::FILE_OUTPUT_IDX ;
   outputDest = CONFIG::DEFAULT_OUTPUT_DEST ;
   createPreset() ;
 }
@@ -112,7 +112,7 @@ RtmpPresetSeed::RtmpPresetSeed()
 {
   presetId   = CONFIG::FilterId(CONFIG::RTMP_PRESET_NAME , APP::VALID_ID_CHARS) ;
   presetName = CONFIG::RTMP_PRESET_NAME ;
-  sinkIdx    = CONFIG::RTMP_STREAM_IDX ;
+  sinkIdx    = CONFIG::RTMP_OUTPUT_IDX ;
   outputDest = String::empty ;
   createPreset() ;
 }
@@ -121,7 +121,7 @@ LctvPresetSeed::LctvPresetSeed()
 {
   presetId   = CONFIG::FilterId(CONFIG::LCTV_PRESET_NAME , APP::VALID_ID_CHARS) ;
   presetName = CONFIG::LCTV_PRESET_NAME ;
-  sinkIdx    = CONFIG::RTMP_STREAM_IDX ;
+  sinkIdx    = CONFIG::RTMP_OUTPUT_IDX ;
   outputDest = String::empty ;
   createPreset() ;
 }

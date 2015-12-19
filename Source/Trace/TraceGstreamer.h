@@ -25,44 +25,48 @@
 #  include "Trace.h"
 
 
-String GstElementId(GstElement* an_element)
-{
-  if (!an_element) return "nil" ;
-
-  gchar* id = gst_element_get_name(an_element) ; String element_id = id ; g_free(id) ;
-
-  return element_id ;
-}
-
-String GstPadId(GstPad* a_pad)
-{
-  if (!a_pad) return "nil" ;
-
-  gchar* id = gst_pad_get_name(a_pad) ; String pad_id = id ; g_free(id) ;
-
-  return pad_id ;
-}
-
-#  define DEBUG_RTMP_DEST_ERROR_MSG "AVCASTER_RTMP_DEST must be defined in the environment " \
-                                    "in order to use RTMP output with the debug build\n\n"   \
-                                    "the \"Destination\" textbox is overridden so that "     \
-                                    "the developer's stream key is not broadcasted\n\n"      \
-                                    "falling back on file output"
-
-
 /* state */
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_1 Trace::TraceState("initializing gStreamer") ;
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_2 Trace::TraceState("instantiating pipeline") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_3 Trace::TraceState("initializing pipeline") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_3 Trace::TraceState("instantiating pipeline bins") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_4 Trace::TraceState("configuring pipeline") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_4 Trace::TraceState("instantiating bin elements") ;
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_5 Trace::TraceState("starting pipeline") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_6 Trace::TraceState("gStreamer ready") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_6 Trace::TraceState("linking bins") ;
+
+#  define DEBUG_TRACE_GST_INIT_PHASE_7 Trace::TraceState("gStreamer ready") ;
+
+#  define DEBUG_TRACE_DISABLED_BINS                                                      \
+  if (!AvCaster::GetIsScreenEnabled()    ) Trace::TraceState("ScreencapBin disabled") ;  \
+  if (!AvCaster::GetIsCameraEnabled()    ) Trace::TraceState("CameraBin disabled") ;     \
+  if (!AvCaster::GetIsTextEnabled()      ) Trace::TraceState("TextBin disabled") ;       \
+  if (!AvCaster::GetIsImageEnabled()     ) Trace::TraceState("ImageBin disabled") ;      \
+  if (!AvCaster::GetIsCompositorEnabled()) Trace::TraceState("CompositorBin disabled") ; \
+  if (!AvCaster::GetIsPreviewEnabled()   ) Trace::TraceState("PreviewBin disabled") ;    \
+  if (!AvCaster::GetIsAudioEnabled()     ) Trace::TraceState("AudioBin disabled")        ;
+
+#  define DEBUG_TRACE_BUILD_SCREENCAP_BIN  Trace::TraceState("instantiating ScreencapBin elements") ;
+
+#  define DEBUG_TRACE_BUILD_CAMERA_BIN     Trace::TraceState("instantiating CameraBin elements") ;
+
+#  define DEBUG_TRACE_BUILD_TEXT_BIN       Trace::TraceState("instantiating TextBin elements") ;
+
+#  define DEBUG_TRACE_BUILD_IMAGE_BIN      Trace::TraceState("instantiating ImageBin elements") ;
+
+#  define DEBUG_TRACE_BUILD_COMPOSITOR_BIN Trace::TraceState("instantiating CompositorBin elements") ;
+
+#  define DEBUG_TRACE_BUILD_PREVIEW_BIN    Trace::TraceState("instantiating PreviewBin elements") ;
+
+#  define DEBUG_TRACE_BUILD_AUDIO_BIN      Trace::TraceState("instantiating AudioBin elements") ;
+
+#  define DEBUG_TRACE_BUILD_MUXER_BIN      Trace::TraceState("instantiating MuxerBin elements") ;
+
+#  define DEBUG_TRACE_BUILD_OUTPUT_BIN     Trace::TraceState("instantiating OutputBin elements") ;
 
 #  define DEBUG_GST_STATE(state)                                          \
     String((state == GST_STATE_VOID_PENDING) ? "GST_STATE_VOID_PENDING" : \
@@ -73,20 +77,47 @@ String GstPadId(GstPad* a_pad)
                                                "unknown"                )
 
 #  define DEBUG_TRACE_SET_GST_STATE                              \
-  String dbg = " '" + GstElementId(an_element) + "' to state " + \
+  String dbg = " '" + GetElementId(an_element) + "' to state " + \
                DEBUG_GST_STATE(next_state)                     ; \
   if (IsInitialized())                                           \
     if (is_err) Trace::TraceError("error setting" + dbg) ;       \
     else        Trace::TraceState("set"           + dbg)         ;
 
 
+/* bus messages */
+
+#  define DEBUG_TRACE_GST_ERROR_MESSAGE                                                     \
+  bool   is_audio_error = is_alsa_init_error || is_pulse_init_error || is_jack_init_error ; \
+  String is_handled_msg = (is_audio_error) ? " (unhandled)" : "" ;                          \
+  Trace::TraceError("GSTError:" + is_handled_msg + " '" + error_message + "'") ;            \
+  if (is_audio_error) Trace::TraceMedia("deactivating audio")                               ;
+
+#  define DEBUG_TRACE_UNHANDLED_MESSAGE if (DEBUG_TRACE_VB)                                   \
+  Trace::TraceMedia("got unhandled message '" + String(GST_MESSAGE_TYPE_NAME(message)) + "'") ;
+
+void MessageStructEach(GstMessage* message ,  GstStructureForeachFunc each_fn)
+{
+  gst_structure_foreach(gst_message_get_structure(message) , each_fn , NULL) ;
+}
+
+gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data) // aka GstStructureForeachFunc
+{
+  gchar* gvalue_str = g_strdup_value_contents(gvalue) ;
+
+  DBG("DumpMessage() gvalue='" + String(gvalue_str) + "'") ;
+
+  g_free(gvalue_str) ;
+}
+#  define DEBUG_TRACE_DUMP_MESSAGE_STRUCT MessageStructEach(message , DumpMessage) ;
+
+#  define DEBUG_RTMP_DEST_ERROR_MSG "AVCASTER_RTMP_DEST must be defined in the environment " \
+                                    "in order to use RTMP output with the debug build\n\n"   \
+                                    "the \"Destination\" textbox is overridden so that "     \
+                                    "the developer's stream key is not broadcasted\n\n"      \
+                                    "falling back on file output"
+
+
 /* configuration */
-
-#  define DEBUG_TRACE_INITIALIZE_PIPELINE                     \
-  if (IsPlaying()) Trace::TraceState("initializing pipeline") ;
-
-#  define DEBUG_TRACE_CONFIGURE_PIPELINE                        \
-  if (IsPlaying()) Trace::TraceState("re-configuring pipeline") ;
 
 #  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN                         \
   Trace::TraceState("configuring ScreencapBin @ "                   + \
@@ -112,16 +143,23 @@ String GstPadId(GstPad* a_pad)
                     String(output_w) + "x" + String(output_h)         + \
                     " @ "                  + String(framerate) + "fps") ;
 
-#  define DEBUG_TRACE_CONFIGURE_PREVIEW_BIN                      \
-  Trace::TraceState("configuring PreviewBin using " + plugin_id) ;
+#  define DEBUG_TRACE_CONFIGURE_PREVIEW_BIN                                            \
+  String plugin_id = (is_enabled) ? GST::PREVIEW_PLUGIN_ID : GST::FAUXSINK_PLUGIN_ID ; \
+  Trace::TraceState("configuring PreviewBin using " + plugin_id)                       ;
 
-#  define DEBUG_TRACE_CONFIGURE_AUDIO_BIN                                          \
-  String bit_depth = (plugin_id == GST::ALSA_PLUGIN_ID ) ? "16" :                  \
-                     (plugin_id == GST::PULSE_PLUGIN_ID) ? "16" :                  \
-                     (plugin_id == GST::JACK_PLUGIN_ID ) ? "32" : "16" ;           \
-  Trace::TraceState("configuring AudioBin " + bit_depth + "bit @ "               + \
-                    String(samplerate)      + "hz x "                            + \
-                    String(n_channels)      + " channels" + " using " + plugin_id) ;
+#  define DEBUG_TRACE_CONFIGURE_AUDIO_BIN                                                            \
+  String bit_depth ; String plugin_id ;                                                              \
+  String dbg = String((current_source != nullptr) ? "re-" : "") + "configuring AudioBin " ;          \
+  switch ((CONFIG::AudioApi)audio_api_idx)                                                           \
+  {                                                                                                  \
+    case CONFIG::ALSA_AUDIO_IDX:  bit_depth = "16" ;  plugin_id = GST::ALSA_PLUGIN_ID ;      break ; \
+    case CONFIG::PULSE_AUDIO_IDX: bit_depth = "16" ;  plugin_id = GST::PULSE_PLUGIN_ID ;     break ; \
+    case CONFIG::JACK_AUDIO_IDX:  bit_depth = "32" ;  plugin_id = GST::JACK_PLUGIN_ID ;      break ; \
+    default:                      bit_depth = "16" ;  plugin_id = GST::TESTAUDIO_PLUGIN_ID ; break ; \
+  }                                                                                                  \
+  Trace::TraceState(dbg + bit_depth    + "bit @ "                           +                        \
+                    String(samplerate) + "hz x "                            +                        \
+                    String(n_channels) + " channels" + " using " + plugin_id)                        ;
 
 #  define DEBUG_TRACE_CONFIGURE_MUXER_BIN                                                 \
   Trace::TraceState(String("configuring MuxerBin video - ")                           +   \
@@ -135,9 +173,68 @@ String GstPadId(GstPad* a_pad)
   String server = String((is_lctv) ? "LCTV " : "") ;                          \
   Trace::TraceState("configuring " + server + "OutputBin using " + plugin_id) ;
 
-#  define DEBUG_TRACE_RECONFIGURE                                                        \
-  String value = "'"  + STRING(ConfigStore[config_key]) + "'" ;                          \
-  Trace::TraceMedia("reconfiguring pipeline - '" + String(config_key) + "' => " + value) ;
+#  define DEBUG_TRACE_RECONFIGURE_IN                                                              \
+  String state = (config_key == CONFIG::IS_PENDING_ID) ? String(AvCaster::GetIsConfigPending()) : \
+                                                         STRING(ConfigStore[config_key]) ;        \
+  String dbg = "reconfiguring pipeline ('" + String(config_key) + "' => '"  + state + "')" ;      \
+  Trace::TraceMedia(dbg)                                                                          ;
+
+#  define DEBUG_TRACE_RECONFIGURE_OUT if (is_error) Trace::TraceMedia("error " + dbg) ;
+
+#  define DEBUG_TRACE_RECREATE_BIN_IN                                                    \
+  String dbg = " bin '" + bin_id + "'" ;                                                 \
+  if (!IsInPipeline(*a_bin)) Trace::TraceWarning("can not recreate" + dbg              + \
+                                                 " - not in pipeline - will try adding") ;
+
+#  define DEBUG_TRACE_RECREATE_BIN_MID                                                        \
+  if (!IsInPipeline(new_bin)) Trace::TraceError("error re-creating" + dbg + " - restoring") ; \
+  else                        Trace::TraceMedia("re-created"        + dbg)                    ;
+
+#  define DEBUG_TRACE_RECREATE_BIN_FALLBACK                                     \
+  if (IsInPipeline(*a_bin)) Trace::TraceWarning("restored" + dbg) ;             \
+  else Trace::TraceError("error restoring" + dbg + " is still not in pipeline") ;
+
+#  define DEBUG_TRACE_CONFIGURE_FAUX_SRC                                 \
+  Trace::TraceMedia("configuring '" + GetElementId(a_faux_source) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_CAPS                                    \
+  Trace::TraceMedia("configuring '" + GetElementId(a_capsfilter) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_QUEUE                              \
+  Trace::TraceMedia("configuring '" + GetElementId(a_queue) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_SCREEN                                     \
+  Trace::TraceMedia("configuring '" + GetElementId(a_screen_source) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_CAMERA                                     \
+  Trace::TraceMedia("configuring '" + GetElementId(a_camera_source) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_TEST_VIDEO                               \
+  Trace::TraceMedia("configuring '" + GetElementId(a_test_source) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_TEXT                                     \
+  Trace::TraceMedia("configuring '" + GetElementId(a_text_source) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_FILE                                     \
+  Trace::TraceMedia("configuring '" + GetElementId(a_file_source) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR                              \
+  Trace::TraceMedia("configuring '" + GetElementId(a_compositor) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK                \
+  Trace::TraceMedia("configuring '" + GetPadId(sinkpad) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_PREVIEW                                    \
+  Trace::TraceMedia("configuring '" + GetElementId(PreviewRealSink) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_X264ENC                                    \
+  Trace::TraceMedia("configuring '" + GetElementId(an_x264_encoder) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_LAMEENC                                   \
+  Trace::TraceMedia("configuring '" + GetElementId(a_lame_encoder) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_FLVMUX                                \
+  Trace::TraceMedia("configuring '" + GetElementId(a_flvmuxer) + "'") ;
 
 #  define DEBUG_TRACE_MAKE_ELEMENT                                      \
   bool   is_err = new_element == nullptr ;                              \
@@ -151,107 +248,75 @@ String GstPadId(GstPad* a_pad)
   else        Trace::TraceMedia("created caps"      )    ;
 
 #  define DEBUG_TRACE_ADD_ELEMENT                          \
-  String dbg = " element '" + GstElementId(an_element)   + \
-               "' to '"     + GstElementId(a_bin) + "'"  ; \
+  String dbg = " element '" + GetElementId(an_element)   + \
+               "' to '"     + GetElementId(a_bin) + "'"  ; \
   if (is_err) Trace::TraceError("error adding" + dbg) ;    \
   else        Trace::TraceMedia("added"        + dbg)      ;
 
-#  define DEBUG_TRACE_ADD_BIN                                     \
-  String dbg = " bin '" + GstElementId(a_bin) + "' to Pipeline" ; \
-  if (is_err) Trace::TraceError("error adding" + dbg) ;           \
-  else        Trace::TraceMedia("added"        + dbg)             ;
+#  define DEBUG_TRACE_REMOVE_ELEMENT_IN                                         \
+  String dbg = " element '"   + GetElementId(an_element) +                      \
+               "' from bin '" + GetElementId(a_bin)      + "'" ;                \
+  if (!IsInBin(a_bin , an_element)) Trace::TraceWarning("can not remove" + dbg) ;
 
-#  define DEBUG_TRACE_REMOVE_BIN_IN                               \
-  String dbg = " bin '" + GstElementId(a_bin) + "' from Pipeline" ;
+#  define DEBUG_TRACE_REMOVE_ELEMENT_OUT                    \
+  if (is_err) Trace::TraceError("error removing"   + dbg) ; \
+  else        Trace::TraceMedia("removed"          + dbg)   ;
 
-#  define DEBUG_TRACE_REMOVE_BIN_OUT if (a_bin != nullptr) \
-  if (is_err) Trace::TraceError("error removing" + dbg) ;  \
-  else        Trace::TraceMedia("removed"        + dbg)    ;
+#  define DEBUG_TRACE_DESTROY_ELEMENT                                        \
+  Trace::TraceMedia("destroying element '" + GetElementId(an_element) + "'") ;
 
-#  define DEBUG_TRACE_RECREATE_BIN_IN Trace::TraceMedia("re-creating '" + bin_id + "'") ;
+#  define DEBUG_TRACE_ADD_BIN_IN                                                               \
+  String dbg = " bin '" + GetElementId(a_bin) + "' to pipeline" ;                              \
+  if (IsInPipeline(a_bin)) Trace::TraceWarning("can not add" + dbg + " - already in pipeline") ;
 
-#  define DEBUG_TRACE_RECREATE_BIN_OUT                                                  \
-  if (!IsInPipeline(new_bin)) Trace::TraceError("error re-creating '" + bin_id + "'") ; \
-  else                        Trace::TraceMedia("re-created '"        + bin_id + "'")   ;
+#  define DEBUG_TRACE_ADD_BIN_OUT                       \
+  if (is_err) Trace::TraceError("error adding" + dbg) ; \
+  else        Trace::TraceMedia("added"        + dbg)   ;
+
+#  define DEBUG_TRACE_REMOVE_BIN_IN                                                            \
+  String dbg = " bin '" + GetElementId(a_bin) + "' from pipeline" ;                            \
+  if (!IsInPipeline(a_bin)) Trace::TraceWarning("can not remove" + dbg + " - not in pipeline") ;
+
+#  define DEBUG_TRACE_REMOVE_BIN_OUT                      \
+  if (is_err) Trace::TraceError("error removing" + dbg) ; \
+  else        Trace::TraceMedia("removed"        + dbg)   ;
 
 #  define DEBUG_TRACE_LINK_ELEMENTS                         \
-  String dbg = " elements '" + GstElementId(source) +       \
-               "' and '"     + GstElementId(sink)   + "'" ; \
+  String dbg = " elements '" + GetElementId(source) +       \
+               "' and '"     + GetElementId(sink)   + "'" ; \
   if (is_err) Trace::TraceError("error linking" + dbg) ;    \
   else        Trace::TraceMedia("linked"        + dbg)      ;
 
 #  define DEBUG_TRACE_LINK_PADS                                            \
   GstElement* src_parent    = gst_pad_get_parent_element(srcpad ) ;        \
   GstElement* snk_parent    = gst_pad_get_parent_element(sinkpad) ;        \
-  String      src_parent_id = GstElementId(src_parent) ;                   \
-  String      snk_parent_id = GstElementId(snk_parent) ;                   \
+  String      src_parent_id = GetElementId(src_parent) ;                   \
+  String      snk_parent_id = GetElementId(snk_parent) ;                   \
   gst_object_unref(src_parent) ; gst_object_unref(snk_parent) ;            \
-  String dbg = " pads '" + src_parent_id + ":" + GstPadId(srcpad)  +       \
-               "' and '" + snk_parent_id + ":" + GstPadId(sinkpad) + "'" ; \
+  String dbg = " pads '" + src_parent_id + ":" + GetPadId(srcpad)  +       \
+               "' and '" + snk_parent_id + ":" + GetPadId(sinkpad) + "'" ; \
   if (is_err) Trace::TraceError("error linking" + dbg) ;                   \
   else        Trace::TraceMedia("linked"        + dbg)                     ;
 
 #  define DEBUG_TRACE_MAKE_GHOST_PAD                                     \
   String dbg = " ghost pad '" + public_pad_id + "' on '" + template_id + \
-               "' of '" + GstElementId(an_element) + "'" ;               \
+               "' of '" + GetElementId(an_element) + "'" ;               \
   if (is_err) Trace::TraceError("error creating" + dbg) ;                \
   else        Trace::TraceMedia("created"        + dbg)                  ;
 
 #  define DEBUG_TRACE_ADD_GHOST_PAD                     \
-  String dbg = " ghost pad '" + GstPadId(public_pad) +  \
-               "' to '" + GstElementId(a_bin) + "'" ;   \
+  String dbg = " ghost pad '" + GetPadId(public_pad) +  \
+               "' to '" + GetElementId(a_bin) + "'" ;   \
   if (is_err) Trace::TraceError("error adding" + dbg) ; \
   else        Trace::TraceMedia("added"        + dbg)   ;
 
 #  define DEBUG_TRACE_GET_PAD                              \
   String dbg = pad_avail + " pad '" + template_id        + \
-               "' of '" + GstElementId(an_element) + "'" ; \
+               "' of '" + GetElementId(an_element) + "'" ; \
   if (is_err) Trace::TraceError("error getting " + dbg) ;  \
   else        Trace::TraceMedia("got "           + dbg)    ;
 #  define DEBUG_TRACE_GET_STATIC_PAD  String pad_avail = "static " ; DEBUG_TRACE_GET_PAD
 #  define DEBUG_TRACE_GET_REQUEST_PAD String pad_avail = "request" ; DEBUG_TRACE_GET_PAD
-
-#  define DEBUG_TRACE_CONFIGURE_CAPS                                    \
-  Trace::TraceMedia("configuring '" + GstElementId(a_capsfilter) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_QUEUE                              \
-  Trace::TraceMedia("configuring '" + GstElementId(a_queue) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_SCREEN                                     \
-  Trace::TraceMedia("configuring '" + GstElementId(a_screen_source) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_CAMERA                                     \
-  Trace::TraceMedia("configuring '" + GstElementId(a_camera_source) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_FAUX_VIDEO                               \
-  Trace::TraceMedia("configuring '" + GstElementId(a_faux_source) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_TEXT                                     \
-  Trace::TraceMedia("configuring '" + GstElementId(a_text_source) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_FILE                                     \
-  Trace::TraceMedia("configuring '" + GstElementId(a_file_source) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR                              \
-  Trace::TraceMedia("configuring '" + GstElementId(a_compositor) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK                \
-  Trace::TraceMedia("configuring '" + GstPadId(sinkpad) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_PREVIEW                                \
-  Trace::TraceMedia("configuring '" + GstElementId(PreviewSink) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_FAUX_AUDIO                               \
-  Trace::TraceMedia("configuring '" + GstElementId(a_faux_source) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_X264ENC                                    \
-  Trace::TraceMedia("configuring '" + GstElementId(an_x264_encoder) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_LAMEENC                                   \
-  Trace::TraceMedia("configuring '" + GstElementId(a_lame_encoder) + "'") ;
-
-#  define DEBUG_TRACE_CONFIGURE_FLVMUX                                \
-  Trace::TraceMedia("configuring '" + GstElementId(a_flvmuxer) + "'") ;
 
 #  define DEBUG_MAKE_GRAPHVIZ                                                                  \
   String color = (DEBUG_ANSI_COLORS) ? "\033[1;34m" : "" ;                                     \
@@ -268,9 +333,21 @@ String GstPadId(GstPad* a_pad)
 #  define DEBUG_TRACE_GST_INIT_PHASE_4          ;
 #  define DEBUG_TRACE_GST_INIT_PHASE_5          ;
 #  define DEBUG_TRACE_GST_INIT_PHASE_6          ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_7          ;
+#  define DEBUG_TRACE_DISABLED_BINS             ;
+#  define DEBUG_TRACE_BUILD_SCREENCAP_BIN       ;
+#  define DEBUG_TRACE_BUILD_CAMERA_BIN          ;
+#  define DEBUG_TRACE_BUILD_TEXT_BIN            ;
+#  define DEBUG_TRACE_BUILD_IMAGE_BIN           ;
+#  define DEBUG_TRACE_BUILD_COMPOSITOR_BIN      ;
+#  define DEBUG_TRACE_BUILD_PREVIEW_BIN         ;
+#  define DEBUG_TRACE_BUILD_AUDIO_BIN           ;
+#  define DEBUG_TRACE_BUILD_MUXER_BIN           ;
+#  define DEBUG_TRACE_BUILD_OUTPUT_BIN          ;
 #  define DEBUG_TRACE_SET_GST_STATE             ;
-#  define DEBUG_TRACE_INITIALIZE_PIPELINE       ;
-#  define DEBUG_TRACE_CONFIGURE_PIPELINE        ;
+#  define DEBUG_TRACE_GST_ERROR_MESSAGE         ;
+#  define DEBUG_TRACE_UNHANDLED_MESSAGE         ;
+#  define DEBUG_TRACE_DUMP_MESSAGE_STRUCT       ;
 #  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN   ;
 #  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN      ;
 #  define DEBUG_TRACE_CONFIGURE_TEXT_BIN        ;
@@ -281,15 +358,36 @@ String GstPadId(GstPad* a_pad)
 #  define DEBUG_TRACE_CONFIGURE_MUXER_BIN       ;
 #  define DEBUG_TRACE_CONFIGURE_OUTPUT_BIN      ;
 #  define DEBUG_TRACE_RECONFIGURE               ;
+#  define DEBUG_TRACE_RECONFIGURE_IN            ;
+#  define DEBUG_TRACE_RECONFIGURE_OUT           ;
+#  define DEBUG_TRACE_RECREATE_BIN_IN           ;
+#  define DEBUG_TRACE_RECREATE_BIN_MID          ;
+#  define DEBUG_TRACE_RECREATE_BIN_RESTORE      ;
+#  define DEBUG_TRACE_RECREATE_BIN_FALLBACK     ;
+#  define DEBUG_TRACE_CONFIGURE_FAUX_SRC        ;
+#  define DEBUG_TRACE_CONFIGURE_CAPS            ;
+#  define DEBUG_TRACE_CONFIGURE_QUEUE           ;
+#  define DEBUG_TRACE_CONFIGURE_SCREEN          ;
+#  define DEBUG_TRACE_CONFIGURE_CAMERA          ;
+#  define DEBUG_TRACE_CONFIGURE_TEST_VIDEO      ;
+#  define DEBUG_TRACE_CONFIGURE_TEXT            ;
+#  define DEBUG_TRACE_CONFIGURE_FILE            ;
+#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR      ;
+#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK ;
+#  define DEBUG_TRACE_CONFIGURE_PREVIEW         ;
+#  define DEBUG_TRACE_CONFIGURE_X264ENC         ;
+#  define DEBUG_TRACE_CONFIGURE_LAMEENC         ;
+#  define DEBUG_TRACE_CONFIGURE_FLVMUX          ;
 #  define DEBUG_TRACE_MAKE_ELEMENT              ;
 #  define DEBUG_TRACE_MAKE_CAPS                 ;
 #  define DEBUG_TRACE_ADD_ELEMENT               ;
-#  define DEBUG_FILTER_BINS                     ;
-#  define DEBUG_TRACE_ADD_BIN                   ;
+#  define DEBUG_TRACE_REMOVE_ELEMENT_IN         ;
+#  define DEBUG_TRACE_REMOVE_ELEMENT_OUT        ;
+#  define DEBUG_TRACE_DESTROY_ELEMENT           ;
+#  define DEBUG_TRACE_ADD_BIN_IN                ;
+#  define DEBUG_TRACE_ADD_BIN_OUT               ;
 #  define DEBUG_TRACE_REMOVE_BIN_IN             ;
 #  define DEBUG_TRACE_REMOVE_BIN_OUT            ;
-#  define DEBUG_TRACE_RECREATE_BIN_IN           ;
-#  define DEBUG_TRACE_RECREATE_BIN_OUT          ;
 #  define DEBUG_TRACE_LINK_ELEMENTS             ;
 #  define DEBUG_TRACE_LINK_PADS                 ;
 #  define DEBUG_TRACE_MAKE_GHOST_PAD            ;
@@ -297,20 +395,6 @@ String GstPadId(GstPad* a_pad)
 #  define DEBUG_TRACE_GET_PAD                   ;
 #  define DEBUG_TRACE_GET_STATIC_PAD            ;
 #  define DEBUG_TRACE_GET_REQUEST_PAD           ;
-#  define DEBUG_TRACE_CONFIGURE_CAPS            ;
-#  define DEBUG_TRACE_CONFIGURE_QUEUE           ;
-#  define DEBUG_TRACE_CONFIGURE_SCREEN          ;
-#  define DEBUG_TRACE_CONFIGURE_CAMERA          ;
-#  define DEBUG_TRACE_CONFIGURE_FAUX_VIDEO      ;
-#  define DEBUG_TRACE_CONFIGURE_TEXT            ;
-#  define DEBUG_TRACE_CONFIGURE_FILE            ;
-#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR      ;
-#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK ;
-#  define DEBUG_TRACE_CONFIGURE_PREVIEW         ;
-#  define DEBUG_TRACE_CONFIGURE_FAUX_AUDIO      ;
-#  define DEBUG_TRACE_CONFIGURE_X264ENC         ;
-#  define DEBUG_TRACE_CONFIGURE_LAMEENC         ;
-#  define DEBUG_TRACE_CONFIGURE_FLVMUX          ;
 #  define DEBUG_MAKE_GRAPHVIZ                   ;
 
 #endif // DEBUG
