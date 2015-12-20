@@ -1,11 +1,13 @@
 #!/bin/bash
 
-SCRIPTS_DIR=`pwd`
+SCRIPTS_DIR="$(dirname "$(readlink -f "$0")")"
+PROJECT_DIR=$SCRIPTS_DIR/../../
 
 
-cd ../../
-ln -s  $SCRIPTS_DIR/dbg               .
-ln -s  $SCRIPTS_DIR/mk                .
-ln -s  $SCRIPTS_DIR/mk-clean          .
-ln -s  $SCRIPTS_DIR/mk-reset          .
-ln -s  $SCRIPTS_DIR/cppcheck-filtered .
+cp $SCRIPTS_DIR/cppcheck-filtered $PROJECT_DIR/ ; chmod a+x $PROJECT_DIR/cppcheck-filtered ;
+cp $SCRIPTS_DIR/dbg               $PROJECT_DIR/ ; chmod a+x $PROJECT_DIR/dbg               ;
+cp $SCRIPTS_DIR/mk                $PROJECT_DIR/ ; chmod a+x $PROJECT_DIR/mk                ;
+cp $SCRIPTS_DIR/mk-clean          $PROJECT_DIR/ ; chmod a+x $PROJECT_DIR/mk-clean          ;
+cp $SCRIPTS_DIR/mk-reset          $PROJECT_DIR/ ; chmod a+x $PROJECT_DIR/mk-reset          ;
+
+echo "copyied helper scripts to the project root directory - they can be now run from there"
