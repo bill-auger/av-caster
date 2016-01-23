@@ -1,20 +1,21 @@
-/*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -74,7 +75,7 @@ Controls::Controls ()
 
     addAndMakeVisible (outputToggle = new ToggleButton ("outputToggle"));
     outputToggle->setExplicitFocusOrder (7);
-    outputToggle->setButtonText (TRANS("Broadcast"));
+    outputToggle->setButtonText (TRANS("Transmit"));
     outputToggle->addListener (this);
     outputToggle->setColour (ToggleButton::textColourId, Colours::white);
 
@@ -311,8 +312,6 @@ void Controls::loadConfig()
   this->outputToggle      ->setEnabled(is_media_enabled  ) ;
 
 #ifdef DISABLE_GUI_CONTROLS_NYI
-this->screencapToggle   ->setEnabled(false) ;
-this->cameraToggle      ->setEnabled(false) ;
 this->textToggle        ->setEnabled(false) ;
 this->interstitialToggle->setEnabled(false) ;
 #endif // DISABLE_GUI_CONTROLS_NYI
@@ -366,7 +365,7 @@ BEGIN_JUCER_METADATA
                 state="0"/>
   <TOGGLEBUTTON name="outputToggle" id="22cf1f64bccae1df" memberName="outputToggle"
                 virtualName="" explicitFocusOrder="7" pos="464 36 90 24" txtcol="ffffffff"
-                buttonText="Broadcast" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                buttonText="Transmit" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <COMBOBOX name="presetsCombo" id="94d77976c2b2f37" memberName="presetsCombo"
             virtualName="" explicitFocusOrder="8" pos="560 36 128 24" editable="1"

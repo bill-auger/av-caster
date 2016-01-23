@@ -21,7 +21,6 @@
 #define _CONSTANTS_H_
 
 // enable standard features
-#define DISABLE_CHAT // TODO: add 'ircclient' dep back to jucer
 // #define DISABLE_MEDIA
 // #define SCREEN_ONLY
 // #define CAMERA_ONLY
@@ -30,10 +29,10 @@
 #define TEXT_BIN_NYI  1
 #define IMAGE_BIN_NYI 1
 #define DISABLE_GUI_CONTROLS_NYI
-#define DISABLE_PREVIEW (! JUCE_LINUX) // replace preview-sink with fakesink
-// #define DISABLE_CAMERA              // replace camera-real-source with fakesrc
-// #define DISABLE_AUDIO               // replace audio-real-source with fakesrc
-// #define DISABLE_OUTPUT              // replace filesink or rtmpsink with fakesink
+#define DISABLE_AUDIO   (! JUCE_LINUX)  // replace audio-real-source with fakesrc
+#define DISABLE_CHAT                    // TODO: add 'ircclient' dep back to jucer
+#define DISABLE_PREVIEW (! JUCE_LINUX)  // replace preview-sink with fakesink
+//#define DISABLE_OUTPUT                // replace filesink or rtmpsink with fakesink
 // #define SUPRESS_ALERTS
 
 // debugging tweaks and kludges
@@ -56,7 +55,7 @@
 #ifdef DEBUG
 #  define DEBUG_DEFINED 1
 #else // DEBUG
-#  define DEBUG_DEFINED 0
+#  define DEBUG_DEFINED 1
 #endif // DEBUG
 #define DEBUG_TRACE        (DEBUG_DEFINED && 1)
 #define DEBUG_TRACE_EVENTS (DEBUG_DEFINED && 1)
@@ -388,31 +387,34 @@ namespace CONFIG
   static const int  CONFIG_IDX_INVALID = -1 ;
 
   // config strings
-  static const StringArray AUDIO_APIS        = StringArray::fromLines("ALSA"    + newLine +
-                                                                      "Pulse"   + newLine +
-                                                                      "JACK"              ) ;
-  static const StringArray AUDIO_CODECS      = StringArray::fromLines("MP3"     + newLine +
-                                                                      "AAC"               ) ;
-  static const StringArray AUDIO_SAMPLERATES = StringArray::fromLines("11025"   + newLine +
-                                                                      "22050"   + newLine +
-                                                                      "44100"             ) ;
-  static const StringArray AUDIO_BITRATES    = StringArray::fromLines("64k"     + newLine +
-                                                                      "96k"     + newLine +
-                                                                      "128k"    + newLine +
-                                                                      "192k"              ) ;
-  static const StringArray TEXT_STYLES       = StringArray::fromLines("Static"  + newLine +
-                                                                      "Marquee"           ) ;
-  static const StringArray TEXT_POSITIONS    = StringArray::fromLines("Top"     + newLine +
-                                                                      "Bottom"            ) ;
-  static const StringArray OUTPUT_SINKS      = StringArray::fromLines("File"    + newLine +
-                                                                      "RTMP"              ) ;
-  static const StringArray OUTPUT_MUXERS     = StringArray::fromLines(".flv"              ) ;
-  static const StringArray FRAMERATES        = StringArray::fromLines("8"       + newLine +
-                                                                      "12"      + newLine +
-                                                                      "20"      + newLine +
-                                                                      "30"                ) ;
-  static const StringArray VIDEO_BITRATES    = StringArray::fromLines("800k"    + newLine +
-                                                                      "1200k"             ) ;
+  static const StringArray CAMERA_RESOLUTIONS = StringArray::fromLines("160x120" + newLine +
+                                                                       "320x240" + newLine +
+                                                                       "640x480"           ) ;
+  static const StringArray AUDIO_APIS         = StringArray::fromLines("ALSA"    + newLine +
+                                                                       "Pulse"   + newLine +
+                                                                       "JACK"              ) ;
+  static const StringArray AUDIO_CODECS       = StringArray::fromLines("MP3"     + newLine +
+                                                                       "AAC"               ) ;
+  static const StringArray AUDIO_SAMPLERATES  = StringArray::fromLines("11025"   + newLine +
+                                                                       "22050"   + newLine +
+                                                                       "44100"             ) ;
+  static const StringArray AUDIO_BITRATES     = StringArray::fromLines("64k"     + newLine +
+                                                                       "96k"     + newLine +
+                                                                       "128k"    + newLine +
+                                                                       "192k"              ) ;
+  static const StringArray TEXT_STYLES        = StringArray::fromLines("Static"  + newLine +
+                                                                       "Marquee"           ) ;
+  static const StringArray TEXT_POSITIONS     = StringArray::fromLines("Top"     + newLine +
+                                                                       "Bottom"            ) ;
+  static const StringArray OUTPUT_SINKS       = StringArray::fromLines("File"    + newLine +
+                                                                       "RTMP"              ) ;
+  static const StringArray OUTPUT_MUXERS      = StringArray::fromLines(".flv"              ) ;
+  static const StringArray FRAMERATES         = StringArray::fromLines("8"       + newLine +
+                                                                       "12"      + newLine +
+                                                                       "20"      + newLine +
+                                                                       "30"                ) ;
+  static const StringArray VIDEO_BITRATES     = StringArray::fromLines("800k"    + newLine +
+                                                                       "1200k"             ) ;
 
   // nodes
   static const Identifier STORAGE_ID             = "av-caster-config" ;
@@ -477,11 +479,11 @@ namespace CONFIG
   static const Identifier CHAT_NICK_ID           = "chat-nick" ;
 
   // root defaults
-#ifdef JUCE_LINUX
+#if JUCE_LINUX
   static const String     STORAGE_DIRNAME             = ".config/av-caster/" ;
   static const String     STORAGE_FILENAME            = "av-caster.bin" ;
 #endif // JUCE_LINUX
-#ifdef JUCE_WINDOWS
+#if JUCE_WINDOWS
   static const String     STORAGE_DIRNAME             = "AvCaster\\" ;
   static const String     STORAGE_FILENAME            = "AvCaster.bin" ;
 #endif // JUCE_WINDOWS
@@ -517,6 +519,7 @@ namespace CONFIG
   // camera defaults
   static const int        DEFAULT_CAMERA_DEVICE_IDX   = -1 ;
   static const int        DEFAULT_CAMERA_RES_IDX      = -1 ;
+  static const int        DEFAULT_CAMERA_RATE         = 30 ;
   // audio defaults
   static const int        DEFAULT_AUDIO_API_IDX       = ALSA_AUDIO_IDX ;
   static const int        DEFAULT_AUDIO_DEVICE_IDX    = -1 ;
@@ -576,20 +579,18 @@ namespace GST
   static const String MUXER_BIN_ID        = "muxer-bin" ;
   static const String OUTPUT_BIN_ID       = "output-bin" ;
   // plugin IDs
-  static const String FAUXSRC_PLUGIN_ID   = "fakesrc" ;
-  static const String FAUXSINK_PLUGIN_ID  = "fakesink" ;
 #if JUCE_LINUX
   static const String SCREEN_PLUGIN_ID    = "ximagesrc" ;
-#endif //JUCE_LINUX
-  static const String V4L2_PLUGIN_ID      = "v4l2src" ;
-  static const String TESTVIDEO_PLUGIN_ID = "videotestsrc" ;
+  static const String CAMERA_PLUGIN_ID    = "v4l2src" ;
   static const String ALSA_PLUGIN_ID      = "alsasrc" ;
   static const String PULSE_PLUGIN_ID     = "pulsesrc" ;
   static const String JACK_PLUGIN_ID      = "jackaudiosrc" ;
-  static const String TESTAUDIO_PLUGIN_ID = "audiotestsrc" ;
-#if JUCE_LINUX
   static const String PREVIEW_PLUGIN_ID   = "xvimagesink" ;
 #endif //JUCE_LINUX
+  static const String FAUXSRC_PLUGIN_ID   = "fakesrc" ;
+  static const String FAUXSINK_PLUGIN_ID  = "fakesink" ;
+  static const String TESTVIDEO_PLUGIN_ID = "videotestsrc" ;
+  static const String TESTAUDIO_PLUGIN_ID = "audiotestsrc" ;
   static const String FILESINK_PLUGIN_ID  = "filesink" ;
   static const String RTMPSINK_PLUGIN_ID  = "rtmpsink" ;
 

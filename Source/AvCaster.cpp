@@ -188,7 +188,7 @@ String AvCaster::GetCameraResolution()
   int         resolution_n = int(Store->config[CONFIG::CAMERA_RES_ID]) ;
   StringArray resolutions  = Store->getCameraResolutions() ;
 
-  return resolutions[resolution_n] ;
+  return resolutions[(~resolution_n) ? resolution_n : 0] ;
 }
 
 String AvCaster::GetCameraPath()
@@ -200,9 +200,12 @@ String AvCaster::GetCameraPath()
 
 int AvCaster::GetCameraRate()
 {
-  ValueTree camera_store = Store->getCameraConfig() ;
+  ValueTree camera_store    = Store->getCameraConfig() ;
+  int       camera_rate     = int(camera_store[CONFIG::CAMERA_RATE_ID]) ;
+//   int       output_rate_idx = int(Store->config[CONFIG::FRAMERATE_ID]) ;
+//   int       output_rate     = CONFIG::FRAMERATES[output_rate_idx].getIntValue() ;
 
-  return int(camera_store[CONFIG::CAMERA_RATE_ID]) ;
+  return (camera_store.isValid()) ? camera_rate : CONFIG::DEFAULT_CAMERA_RATE ;
 }
 
 String AvCaster::GetVersionString()

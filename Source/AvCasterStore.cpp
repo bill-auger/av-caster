@@ -75,11 +75,13 @@ AvCasterStore::AvCasterStore()
 
 DEBUG_TRACE_DUMP_CONFIG("AvCasterStore::AvCasterStore()")
 
-  // detect hardware and sanitize config
-  detectCaptureDevices() ; // detectDisplayDimensions() ; // TODO: (issue #2 issue #4)
+  // sanitize config
   verifyRoot() ;    sanitizeRoot() ;    verifyRoot() ;
   verifyPresets() ; sanitizePresets() ; verifyPresets() ; loadPreset() ;
   storeConfig() ;
+
+  // detect hardware
+  detectCaptureDevices() ; // detectDisplayDimensions() ; // TODO: (issue #2 issue #4)
 
 #ifndef DISABLE_CHAT
 storeServer(bitlbee_host , bitlbee_port) ; // TODO: GUI support
@@ -322,7 +324,7 @@ DEBUG_TRACE_DUMP_CONFIG("AvCasterStore->StoreConfig()")
 /* runtime params */
 
 void AvCasterStore::verifyProperty(ValueTree config_store    , Identifier a_key ,
-                                     var       a_default_value                    )
+                                   var       a_default_value                    )
 {
 DEBUG_TRACE_VERIFY_CONFIG_PROPERTY
 
@@ -378,8 +380,34 @@ void AvCasterStore::detectDisplayDimensions()
 
 void AvCasterStore::detectCaptureDevices()
 {
-#if JUCE_WINDOWS || JUCE_MAC
+#if JUCE_LINUX
+  // TODO: query device for framerates and resolutions
+  int         camera_rate = CONFIG::DEFAULT_CAMERA_RATE ;
+  String      resolutions = CONFIG::CAMERA_RESOLUTIONS.joinIntoString(newLine) ;
+  Array<File> device_info_dirs ;
+
+  this->cameras.removeAllChildren(nullptr) ;
+  if (APP::CAMERAS_DEV_DIR.containsSubDirectories())
+    APP::CAMERAS_DEV_DIR.findChildFiles(device_info_dirs , File::findDirectories , false) ;
+
+  File* device_info_dir = device_info_dirs.begin() ;
+  while (device_info_dir != device_info_dirs.end())
+  {
+    String    device_id     = device_info_dir->getFileName() ;
+    String    friendly_name = device_info_dir->getChildFile("name").loadFileAsString().trim() ;
+    String    device_path   = "/dev/" + device_id ;
+    ValueTree device_info   = ValueTree(Identifier(device_id)) ;
+
+    device_info.setProperty(CONFIG::CAMERA_PATH_ID        , var(device_path  ) , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var(friendly_name) , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(camera_rate  ) , nullptr) ;
+    device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions  ) , nullptr) ;
+    this->cameras.addChild(device_info , -1 , nullptr) ;
+    ++device_info_dir ;
+  }
 /* mac and windows only (issue #6 issue #8)
+#else // JUCE_LINUX
+#  if JUCE_WINDOWS || JUCE_MAC
 // Returns a list of the available cameras on this machine.
   StringArray video_devs = juce::CameraDevice::getAvailableDevices() ;
 DBG(video_devs.joinIntoString("\n")) ;
@@ -399,46 +427,8 @@ static CameraDevice* CameraDevice::openDevice   (
     int   maxWidth = 1024,
     int   maxHeight = 768
   )
+#  endif // JUCE_WINDOWS || JUCE_MAC
 */
-#endif // JUCE_WINDOWS || JUCE_MAC
-#if JUCE_LINUX
-  if (!APP::CAMERAS_DEV_DIR.isDirectory()) return ;
-
-  // TODO: query device for framerates and resolutions
-  String      resolutions      = String("160x120" + newLine + "320x240" + newLine + "640x480") ;
-  Array<File> device_info_dirs ;
-
-  this->cameras.removeAllChildren(nullptr) ;
-  if (APP::CAMERAS_DEV_DIR.containsSubDirectories())
-    APP::CAMERAS_DEV_DIR.findChildFiles(device_info_dirs , File::findDirectories , false) ;
-
-  File* device_info_dir = device_info_dirs.begin() ;
-  while (device_info_dir != device_info_dirs.end())
-  {
-    String    device_id     = device_info_dir->getFileName() ;
-    String    friendly_name = device_info_dir->getChildFile("name").loadFileAsString().trim() ;
-    String    device_path   = "/dev/" + device_id ;
-    ValueTree device_info   = ValueTree(Identifier(device_id)) ;
-
-    device_info.setProperty(CONFIG::CAMERA_PATH_ID        , var(device_path  ) , nullptr) ;
-    device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var(friendly_name) , nullptr) ;
-    device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(30           ) , nullptr) ;
-    device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions  ) , nullptr) ;
-    this->cameras.addChild(device_info , -1 , nullptr) ;
-    ++device_info_dir ;
-  }
-#ifdef INJECT_DEFAULT_CAMERA_DEVICE_INFO
-  if (device_info_dirs.size() == 0)
-  {
-    ValueTree device_info = ValueTree(Identifier("bogus-cam")) ;
-    device_info.setProperty(CONFIG::CAMERA_PATH_ID        , var(String::empty ) , nullptr) ;
-    device_info.setProperty(CONFIG::CAMERA_NAME_ID        , var("bogus-camera") , nullptr) ;
-    device_info.setProperty(CONFIG::CAMERA_RATE_ID        , var(8             ) , nullptr) ;
-    device_info.setProperty(CONFIG::CAMERA_RESOLUTIONS_ID , var(resolutions   ) , nullptr) ;
-    this->cameras.addChild(device_info , -1 , nullptr) ;
-  }
-#endif // INJECT_DEFAULT_CAMERA_DEVICE_INFO
-
 #endif // JUCE_LINUX
 
 DEBUG_TRACE_DETECT_CAPTURE_DEVICES
@@ -622,8 +612,10 @@ ValueTree AvCasterStore::getCameraConfig()
 StringArray AvCasterStore::getCameraResolutions()
 {
   ValueTree camera_store = getCameraConfig() ;
+  String    resolutions  = STRING(camera_store[CONFIG::CAMERA_RESOLUTIONS_ID]) ;
 
-  return StringArray::fromLines(STRING(camera_store[CONFIG::CAMERA_RESOLUTIONS_ID])) ;
+  return (camera_store.isValid()) ? StringArray::fromLines(resolutions) :
+                                    CONFIG::CAMERA_RESOLUTIONS          ;
 }
 
 void AvCasterStore::deactivateControl(const Identifier& a_key)

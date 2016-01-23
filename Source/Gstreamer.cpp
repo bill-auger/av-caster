@@ -30,7 +30,13 @@
 
 GstElement* Gstreamer::Pipeline         = nullptr ;
 GstElement* Gstreamer::ScreencapBin     = nullptr ;
+GstElement* Gstreamer::ScreenRealSource = nullptr ;
+GstElement* Gstreamer::ScreenFauxSource = nullptr ;
+GstElement* Gstreamer::ScreenCaps       = nullptr ;
 GstElement* Gstreamer::CameraBin        = nullptr ;
+GstElement* Gstreamer::CameraRealSource = nullptr ;
+GstElement* Gstreamer::CameraFauxSource = nullptr ;
+GstElement* Gstreamer::CameraCaps       = nullptr ;
 GstElement* Gstreamer::TextBin          = nullptr ;
 GstElement* Gstreamer::ImageBin         = nullptr ;
 GstElement* Gstreamer::CompositorBin    = nullptr ;
@@ -128,15 +134,15 @@ DEBUG_TRACE_GST_INIT_PHASE_5
   // link bins
   if (should_build_compositor_bin)
   {
-    if (!LinkElements(ScreencapBin  , CompositorBin) ||
-        !LinkElements(CameraBin     , CompositorBin) ||
+    if ((should_build_screen_bin                   &&
+        !LinkElements(ScreencapBin  , CompositorBin)) ||
+        (should_build_camera_bin                   &&
+        !LinkElements(CameraBin     , CompositorBin)) ||
 //         !LinkElements(TextBin   , CompositorBin) ||
 //         !LinkElements  (ImageBin   , CompositorBin  ) ||
-        !LinkElements(CompositorBin , MuxerBin     )  )
-    { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
-
-    if (should_build_preview_bin &&
-        !LinkElements(CompositorBin , PreviewBin))
+        !LinkElements(CompositorBin , MuxerBin     )  ||
+        (should_build_preview_bin                  &&
+        !LinkElements(CompositorBin , PreviewBin   ))  )
     { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
   }
   else
@@ -147,10 +153,9 @@ DEBUG_TRACE_GST_INIT_PHASE_5
         (should_build_image_bin  && !LinkElements(ImageBin     , MuxerBin))  )
     { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
   }
-  if (should_build_audio_bin &&
-      !LinkElements(AudioBin , MuxerBin ))
-  { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ; return false ; }
-  if (!LinkElements(MuxerBin , OutputBin))
+  if ((should_build_audio_bin           &&
+      !LinkElements(AudioBin , MuxerBin )) ||
+      !LinkElements(MuxerBin , OutputBin)   )
   { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ; return false ; }
 
 DEBUG_TRACE_GST_INIT_PHASE_6
@@ -188,12 +193,14 @@ void Gstreamer::Shutdown()
   if (!IsInPipeline(ScreencapBin) ) SetState(ScreencapBin  , GST_STATE_NULL) ;
 */
 
-  if (!IsInBin(PreviewBin , PreviewRealSink )) SetState(PreviewRealSink  , GST_STATE_NULL) ;
-  if (!IsInBin(PreviewBin , PreviewFauxSink )) SetState(PreviewFauxSink  , GST_STATE_NULL) ;
-  if (!IsInBin(AudioBin   , AudioAlsaSource )) SetState(AudioAlsaSource  , GST_STATE_NULL) ;
-  if (!IsInBin(AudioBin   , AudioPulseSource)) SetState(AudioPulseSource , GST_STATE_NULL) ;
-  if (!IsInBin(AudioBin   , AudioJackSource )) SetState(AudioJackSource  , GST_STATE_NULL) ;
-  if (!IsInBin(AudioBin   , AudioTestSource )) SetState(AudioTestSource  , GST_STATE_NULL) ;
+  SetState(ScreenRealSource , GST_STATE_NULL) ;
+  SetState(ScreenFauxSource , GST_STATE_NULL) ;
+  SetState(PreviewRealSink  , GST_STATE_NULL) ;
+  SetState(PreviewFauxSink  , GST_STATE_NULL) ;
+  SetState(AudioAlsaSource  , GST_STATE_NULL) ;
+  SetState(AudioPulseSource , GST_STATE_NULL) ;
+  SetState(AudioJackSource  , GST_STATE_NULL) ;
+  SetState(AudioTestSource  , GST_STATE_NULL) ;
   DestroyElement(Pipeline) ;
 
   ConfigStore = ValueTree::invalid ;
@@ -203,43 +210,28 @@ bool Gstreamer::BuildScreencapBin()
 {
 DEBUG_TRACE_BUILD_SCREENCAP_BIN
 
-  GstElement *source , *capsfilter , *converter , *queue ;
-  GstCaps    *caps ;
-
-  bool        is_enabled      = bool(ConfigStore[CONFIG::IS_SCREENCAP_ACTIVE_ID]) ;
-  int         screencap_w     = int (ConfigStore[CONFIG::SCREENCAP_W_ID        ]) ;
-  int         screencap_h     = int (ConfigStore[CONFIG::SCREENCAP_H_ID        ]) ;
-  int         framerate_n     = int (ConfigStore[CONFIG::FRAMERATE_ID          ]) ;
-  int         framerate       = CONFIG::FRAMERATES[framerate_n].getIntValue() ;
-  String      screen_caps_str = MakeScreenCapsString(screencap_w , screencap_h , framerate) ;
-  String      faux_caps_str   = MakeVideoCapsString (screencap_w , screencap_h , framerate) ;
-  String      caps_str        = (is_enabled) ? screen_caps_str : faux_caps_str ;
-  String      plugin_id       = (is_enabled) ? GST::SCREEN_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ;
-
+  GstElement *source , *converter , *queue ;
 
   // instantiate elements
-  if (!(source     = NewElement(plugin_id      , "screen-real-source")) ||
-      !(capsfilter = NewElement("capsfilter"   , "screen-capsfilter" )) ||
-      !(converter  = NewElement("videoconvert" , "screen-converter"  )) ||
-      !(queue      = NewElement("queue"        , "screen-queue"      )) ||
-      !(caps       = NewCaps   (caps_str)                             )  )
+  if (!(ScreenRealSource = NewElement(GST::SCREEN_PLUGIN_ID    , "screen-real-source")) ||
+      !(ScreenFauxSource = NewElement(GST::TESTVIDEO_PLUGIN_ID , "screen-faux-source")) ||
+      !(ScreenCaps       = NewElement("capsfilter"             , "screen-capsfilter" )) ||
+      !(converter        = NewElement("videoconvert"           , "screen-converter"  )) ||
+      !(queue            = NewElement("queue"                  , "screen-queue"      ))  )
   { AvCaster::Error(GUI::SCREENCAP_INIT_ERROR_MSG) ; return false ; }
 
-DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN
-
   // configure elements
-  ConfigureScreen(source     , screencap_w , screencap_h , 1 , is_enabled) ;
-  ConfigureCaps  (capsfilter , caps                                      ) ;
-  ConfigureQueue (queue      , 0           , 0           , 0             ) ;
+  source = ConfigureScreen() ;
+  ConfigureQueue(queue , 0 , 0 , 0) ;
 
   // link elements
   if (!AddElement    (ScreencapBin , source    )            ||
-      !AddElement    (ScreencapBin , capsfilter)            ||
+      !AddElement    (ScreencapBin , ScreenCaps)            ||
       !AddElement    (ScreencapBin , converter )            ||
       !AddElement    (ScreencapBin , queue     )            ||
-      !LinkElements  (source       , capsfilter   )         ||
-      !LinkElements  (capsfilter   , converter    )         ||
-      !LinkElements  (converter    , queue        )         ||
+      !LinkElements  (source     , ScreenCaps)              ||
+      !LinkElements  (ScreenCaps , converter )              ||
+      !LinkElements  (converter  , queue     )              ||
       !NewGhostSrcPad(ScreencapBin , queue , "screen-source"))
   { AvCaster::Error(GUI::SCREENCAP_LINK_ERROR_MSG) ; return false ; }
 
@@ -250,56 +242,26 @@ bool Gstreamer::BuildCameraBin()
 {
 DEBUG_TRACE_BUILD_CAMERA_BIN
 
-  GstElement* source , *capsfilter , *converter , *queue ;
-  GstCaps*    caps ;
-
-  // TODO: query device for resolutions (eliminate CONFIG::CAMERA_RESOLUTIONS)
-  String      device_path = AvCaster::GetCameraPath() ;
-  int         framerate   = AvCaster::GetCameraRate() ;
-  String      resolution  = AvCaster::GetCameraResolution() ;
-  bool        is_enabled  = bool(ConfigStore[CONFIG::IS_CAMERA_ACTIVE_ID]) &&
-                            device_path.isNotEmpty()                        ;
-  StringArray res_tokens  = StringArray::fromTokens(resolution , "x" , "") ;
-  int         camera_w    = res_tokens[0].getIntValue() ;
-  int         camera_h    = res_tokens[1].getIntValue() ;
-#if JUCE_LINUX
-  String      plugin_id   = GST::V4L2_PLUGIN_ID ;
-  String      caps_str    = MakeCameraCapsString(camera_w , camera_h , framerate) ;
-#else // JUCE_LINUX
-  UNUSED(camera_w) ; UNUSED(camera_h) ; UNUSED(framerate) ;
-#endif // JUCE_LINUX
-
-#ifdef DISABLE_CAMERA
-UNUSED(is_enabled) ; is_enabled = false ;
-#endif // DISABLE_CAMERA
-
-  if (!is_enabled)
-  {
-    plugin_id = GST::TESTVIDEO_PLUGIN_ID ;
-    caps_str  = MakeVideoCapsString(160 , 120 , 12) ;
-  }
+  GstElement *source , *converter , *queue ;
 
   // instantiate elements
-  if (!(source     = NewElement(plugin_id      , "camera-real-source")) ||
-      !(capsfilter = NewElement("capsfilter"   , "camera-capsfilter" )) ||
-      !(converter  = NewElement("videoconvert" , "camera-converter"  )) ||
-      !(queue      = NewElement("queue"        , "camera-queue"      )) ||
-      !(caps       = NewCaps   (caps_str)                             )  )
+  if (!(CameraRealSource = NewElement(GST::CAMERA_PLUGIN_ID    , "camera-real-source")) ||
+      !(CameraFauxSource = NewElement(GST::TESTVIDEO_PLUGIN_ID , "camera-faux-source")) ||
+      !(CameraCaps       = NewElement("capsfilter"   , "camera-capsfilter"           )) ||
+      !(converter        = NewElement("videoconvert" , "camera-converter"            )) ||
+      !(queue            = NewElement("queue"        , "camera-queue"                ))  )
   { AvCaster::Error(GUI::CAMERA_INIT_ERROR_MSG) ; return false ; }
 
-DEBUG_TRACE_CONFIGURE_CAMERA_BIN
-
   // configure elements
-  ConfigureCamera(source     , device_path , 0 , is_enabled) ;
-  ConfigureCaps  (capsfilter , caps                        ) ;
+  source = ConfigureCamera() ;
 
   // link elements
   if (!AddElement    (CameraBin , source    )            ||
-      !AddElement    (CameraBin , capsfilter)            ||
+      !AddElement    (CameraBin , CameraCaps)            ||
       !AddElement    (CameraBin , converter )            ||
       !AddElement    (CameraBin , queue     )            ||
-      !LinkElements  (source     , capsfilter)           ||
-      !LinkElements  (capsfilter , converter )           ||
+      !LinkElements  (source     , CameraCaps)           ||
+      !LinkElements  (CameraCaps , converter )           ||
       !LinkElements  (converter  , queue     )           ||
       !NewGhostSrcPad(CameraBin , queue , "camera-source"))
   { AvCaster::Error(GUI::CAMERA_LINK_ERROR_MSG) ; return false ; }
@@ -337,8 +299,8 @@ FcBool fontAddStatus = FcConfigAppFOntAddFile(FcConfigGetCurrent(),file);
 DEBUG_TRACE_CONFIGURE_TEXT_BIN
 
   // configure elements
-  ConfigureText(source  , "Purisa Normal 40"            ) ;
-  ConfigureFile(filesrc , "/code/av-caster/deleteme.srt") ;
+  ConfigureTextSource(source  , "Purisa Normal 40"            ) ;
+  ConfigureFileSource(filesrc , "/code/av-caster/deleteme.srt") ;
 
   // link elements
   if (!AddElement    (TextBin , filesrc  )           ||
@@ -772,7 +734,7 @@ if (sink_idx == CONFIG::RTMP_OUTPUT_IDX)
 DEBUG_TRACE_CONFIGURE_OUTPUT_BIN
 
   ConfigureQueue(queue , 0 , 0 , 0) ;
-  if (is_enabled) ConfigureFile(sink , output_url) ;
+  if (is_enabled) ConfigureFileSource(sink , output_url) ;
 
   if (!AddElement     (OutputBin , queue)               ||
       !AddElement     (OutputBin , sink )               ||
@@ -781,138 +743,6 @@ DEBUG_TRACE_CONFIGURE_OUTPUT_BIN
   { AvCaster::Error(GUI::OUTPUT_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
-}
-
-void Gstreamer::ConfigureFauxSource(GstElement* a_faux_source)
-{
-DEBUG_TRACE_CONFIGURE_FAUX_SRC
-
- g_object_set(G_OBJECT(a_faux_source) , "is_live" , true , NULL) ;
-}
-
-void Gstreamer::ConfigureCaps(GstElement* a_capsfilter , GstCaps* a_caps)
-{
-DEBUG_TRACE_CONFIGURE_CAPS
-
-  g_object_set(G_OBJECT(a_capsfilter) , "caps" , a_caps , NULL) ; gst_caps_unref(a_caps) ;
-}
-
-void Gstreamer::ConfigureQueue(GstElement* a_queue  , guint max_bytes  ,
-                               guint64     max_time , guint max_buffers)
-{
-DEBUG_TRACE_CONFIGURE_QUEUE
-
-  g_object_set(G_OBJECT(a_queue) , "max-size-bytes"   , max_bytes   , NULL) ;
-  g_object_set(G_OBJECT(a_queue) , "max-size-time"    , max_time    , NULL) ;
-  g_object_set(G_OBJECT(a_queue) , "max-size-buffers" , max_buffers , NULL) ;
-}
-
-void Gstreamer::ConfigureScreen(GstElement* a_screen_source , guint capture_w , guint capture_h ,
-                                guint       pattern_n       , bool  is_active                   )
-{
-DEBUG_TRACE_CONFIGURE_SCREEN
-
-  if (is_active)
-  {
-    g_object_set(G_OBJECT(a_screen_source) , "endx"       , capture_w - 1 , NULL) ;
-    g_object_set(G_OBJECT(a_screen_source) , "endy"       , capture_h - 1 , NULL) ;
-    g_object_set(G_OBJECT(a_screen_source) , "use-damage" , false         , NULL) ;
-  }
-  else ConfigureTestVideo(a_screen_source , pattern_n) ;
-}
-
-void Gstreamer::ConfigureCamera(GstElement* a_camera_source , String device_path ,
-                                guint       pattern_n       , bool   is_active   )
-{
-DEBUG_TRACE_CONFIGURE_CAMERA
-
-  if (is_active)
-    g_object_set(G_OBJECT(a_camera_source) , "device" , CHARSTAR(device_path) , NULL) ;
-  else ConfigureTestVideo(a_camera_source , pattern_n) ;
-}
-
-void Gstreamer::ConfigureTestVideo(GstElement* a_test_source , guint pattern_n)
-{
-DEBUG_TRACE_CONFIGURE_TEST_VIDEO
-
-  ConfigureFauxSource(a_test_source) ;
-  g_object_set(G_OBJECT(a_test_source) , "pattern" , pattern_n , NULL) ;
-}
-
-void Gstreamer::ConfigureText(GstElement* a_text_source , String font_desc)
-{
-DEBUG_TRACE_CONFIGURE_TEXT
-
-  g_object_set(G_OBJECT(a_text_source) , "font-desc" , CHARSTAR(font_desc) , NULL) ;
-}
-
-void Gstreamer::ConfigureFile(GstElement* a_file_source , String file_path)
-{
-DEBUG_TRACE_CONFIGURE_FILE
-
-  g_object_set(G_OBJECT(a_file_source) , "location" , CHARSTAR(file_path) , NULL) ;
-}
-
-void Gstreamer::ConfigureCompositor(GstElement* a_compositor , guint background_n)
-{
-DEBUG_TRACE_CONFIGURE_COMPOSITOR
-
-  g_object_set(G_OBJECT(a_compositor) , "background" , background_n , NULL) ;
-}
-
-void Gstreamer::ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h ,
-                                                          gint x , gint y )
-{
-DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK
-
-  g_object_set(G_OBJECT(sinkpad) , "width"  , w , NULL) ;
-  g_object_set(G_OBJECT(sinkpad) , "height" , h , NULL) ;
-  g_object_set(G_OBJECT(sinkpad) , "xpos"   , x , NULL) ;
-  g_object_set(G_OBJECT(sinkpad) , "ypos"   , y , NULL) ;
-}
-
-bool Gstreamer::ConfigureVideoSink(GstElement* a_video_sink)
-{
-DEBUG_TRACE_CONFIGURE_PREVIEW
-
-  if (!AvCaster::GetIsPreviewEnabled()) return true ;
-
-  Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
-  gint           preview_x      = preview_bounds.getX() ;
-  gint           preview_y      = preview_bounds.getY() ;
-  gint           preview_w      = preview_bounds.getWidth() ;
-  gint           preview_h      = preview_bounds.getHeight() ;
-
-//   g_object_set(a_video_sink , "async-handling" , TRUE , NULL) ;
-
-  return gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(a_video_sink) ,
-                                                preview_x , preview_y           ,
-                                                preview_w , preview_h           ) ;
-}
-
-void Gstreamer::ConfigureX264Encoder(GstElement* an_x264_encoder , guint bitrate)
-{
-DEBUG_TRACE_CONFIGURE_X264ENC
-
-  g_object_set(G_OBJECT(an_x264_encoder) , "bitrate" , bitrate , NULL) ;
-//   g_object_set(G_OBJECT(video_encoder)  , "tune"       , 0x00000004     , NULL) ; // may lower quality in favor of latency
-}
-
-void Gstreamer::ConfigureLameEncoder(GstElement* a_lame_encoder , guint bitrate)
-{
-DEBUG_TRACE_CONFIGURE_LAMEENC
-
-  g_object_set(G_OBJECT(a_lame_encoder) , "target"  , 1       , NULL) ;
-  g_object_set(G_OBJECT(a_lame_encoder) , "cbr"     , true    , NULL) ; // CBR
-  g_object_set(G_OBJECT(a_lame_encoder) , "bitrate" , bitrate , NULL) ; // CBR
-// g_object_set(G_OBJECT(audio_encoder) , "quality" , 2 , NULL) ; // VBR (default is 4) // VBR
-}
-
-void Gstreamer::ConfigureFlvmux(GstElement* a_flvmuxer)
-{
-DEBUG_TRACE_CONFIGURE_FLVMUX
-
-  g_object_set(G_OBJECT(a_flvmuxer) , "streamable" , true , NULL) ;
 }
 
 bool Gstreamer::Reconfigure(const Identifier& config_key)
@@ -951,9 +781,77 @@ DEBUG_TRACE_RECONFIGURE_OUT
   return !is_error ;
 }
 
-GstElement* Gstreamer::ConfigureScreen() {}
+GstElement* Gstreamer::ConfigureScreen()
+{
+  bool        is_active       = AvCaster::GetIsScreenEnabled()                   &&
+                                bool(ConfigStore[CONFIG::IS_SCREENCAP_ACTIVE_ID]) ;
+  int         screencap_w     = int (ConfigStore[CONFIG::SCREENCAP_W_ID        ]) ;
+  int         screencap_h     = int (ConfigStore[CONFIG::SCREENCAP_H_ID        ]) ;
+  int         framerate_n     = int (ConfigStore[CONFIG::FRAMERATE_ID          ]) ;
+  int         framerate       = CONFIG::FRAMERATES[framerate_n].getIntValue() ;
+  String      screen_caps_str = MakeScreenCapsString(screencap_w , screencap_h , framerate) ;
+  String      faux_caps_str   = MakeVideoCapsString (screencap_w , screencap_h , framerate) ;
+  String      caps_str        = (is_active) ? screen_caps_str : faux_caps_str ;
+  GstElement* next_source     = (is_active) ? ScreenRealSource : ScreenFauxSource ;
+  GstElement* current_source  = (IsInBin(ScreencapBin , ScreenRealSource)) ? ScreenRealSource :
+                                (IsInBin(ScreencapBin , ScreenFauxSource)) ? ScreenFauxSource :
+                                                                             nullptr          ;
 
-GstElement* Gstreamer::ConfigureCamera() {}
+DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN
+
+  // configure elements
+  ConfigureScreenSource(next_source , screencap_w , screencap_h , 0 , is_active) ;
+  ConfigureCaps        (ScreenCaps , NewCaps(caps_str)) ;
+
+  // re-link elements
+  if (current_source != nullptr)
+  {
+    if (!RemoveElement(ScreencapBin , current_source) ||
+        !AddElement   (ScreencapBin , next_source   ) ||
+        !LinkElements (next_source , ScreenCaps)       )
+    { AvCaster::Error(GUI::SCREENCAP_LINK_ERROR_MSG) ; return nullptr ; }
+  }
+
+  return next_source ;
+}
+
+GstElement* Gstreamer::ConfigureCamera()
+{
+  // TODO: query device for resolutions (eliminate CONFIG::CAMERA_RESOLUTIONS)
+  String      device_path     = AvCaster::GetCameraPath() ;
+  int         framerate       = AvCaster::GetCameraRate() ;
+  String      resolution      = AvCaster::GetCameraResolution() ;
+  bool        is_active       = AvCaster::GetIsCameraEnabled()                 &&
+                                bool(ConfigStore[CONFIG::IS_CAMERA_ACTIVE_ID]) &&
+                                device_path.isNotEmpty()                        ;
+  StringArray res_tokens      = StringArray::fromTokens(resolution , "x" , "") ;
+  int         camera_w        = res_tokens[0].getIntValue() ;
+  int         camera_h        = res_tokens[1].getIntValue() ;
+  String      camera_caps_str = MakeCameraCapsString(camera_w , camera_h , framerate) ;
+  String      faux_caps_str   = MakeVideoCapsString (camera_w , camera_h , framerate) ;
+  String      caps_str        = (is_active) ? camera_caps_str : faux_caps_str ;
+  GstElement* next_source     = (is_active) ? CameraRealSource : CameraFauxSource ;
+  GstElement* current_source  = (IsInBin(CameraBin , CameraRealSource)) ? CameraRealSource :
+                                (IsInBin(CameraBin , CameraFauxSource)) ? CameraFauxSource :
+                                                                          nullptr          ;
+
+DEBUG_TRACE_CONFIGURE_CAMERA_BIN
+
+  // configure elements
+  ConfigureCameraSource(next_source , device_path , 1 , is_active) ;
+  ConfigureCaps        (CameraCaps , NewCaps(caps_str)) ;
+
+  // re-link elements
+  if (current_source != nullptr)
+  {
+    if (!RemoveElement(CameraBin , current_source) ||
+        !AddElement   (CameraBin , next_source   ) ||
+        !LinkElements (next_source , CameraCaps)    )
+    { AvCaster::Error(GUI::CAMERA_LINK_ERROR_MSG) ; return nullptr ; }
+  }
+
+  return next_source ;
+}
 
 GstElement* Gstreamer::ConfigureText() {}
 
@@ -1039,6 +937,138 @@ DEBUG_TRACE_CONFIGURE_AUDIO_BIN
 }
 
 GstElement* Gstreamer::ConfigureOutput() {}
+
+void Gstreamer::ConfigureFauxSource(GstElement* a_faux_source)
+{
+DEBUG_TRACE_CONFIGURE_FAUX_SRC
+
+ g_object_set(G_OBJECT(a_faux_source) , "is_live" , true , NULL) ;
+}
+
+void Gstreamer::ConfigureCaps(GstElement* a_capsfilter , GstCaps* a_caps)
+{
+DEBUG_TRACE_CONFIGURE_CAPS
+
+  g_object_set(G_OBJECT(a_capsfilter) , "caps" , a_caps , NULL) ; gst_caps_unref(a_caps) ;
+}
+
+void Gstreamer::ConfigureQueue(GstElement* a_queue  , guint max_bytes  ,
+                               guint64     max_time , guint max_buffers)
+{
+DEBUG_TRACE_CONFIGURE_QUEUE
+
+  g_object_set(G_OBJECT(a_queue) , "max-size-bytes"   , max_bytes   , NULL) ;
+  g_object_set(G_OBJECT(a_queue) , "max-size-time"    , max_time    , NULL) ;
+  g_object_set(G_OBJECT(a_queue) , "max-size-buffers" , max_buffers , NULL) ;
+}
+
+void Gstreamer::ConfigureScreenSource(GstElement* a_screen_source , guint capture_w , guint capture_h ,
+                                      guint       pattern_n       , bool  is_active                   )
+{
+DEBUG_TRACE_CONFIGURE_SCREEN
+
+  if (is_active)
+  {
+    g_object_set(G_OBJECT(a_screen_source) , "endx"       , capture_w - 1 , NULL) ;
+    g_object_set(G_OBJECT(a_screen_source) , "endy"       , capture_h - 1 , NULL) ;
+    g_object_set(G_OBJECT(a_screen_source) , "use-damage" , false         , NULL) ;
+  }
+  else ConfigureTestVideo(a_screen_source , pattern_n) ;
+}
+
+void Gstreamer::ConfigureCameraSource(GstElement* a_camera_source , String device_path ,
+                                      guint       pattern_n       , bool   is_active   )
+{
+DEBUG_TRACE_CONFIGURE_CAMERA
+
+  if (is_active)
+    g_object_set(G_OBJECT(a_camera_source) , "device" , CHARSTAR(device_path) , NULL) ;
+  else ConfigureTestVideo(a_camera_source , pattern_n) ;
+}
+
+void Gstreamer::ConfigureTestVideo(GstElement* a_test_source , guint pattern_n)
+{
+DEBUG_TRACE_CONFIGURE_TEST_VIDEO
+
+  ConfigureFauxSource(a_test_source) ;
+  g_object_set(G_OBJECT(a_test_source) , "pattern" , pattern_n , NULL) ;
+}
+
+void Gstreamer::ConfigureTextSource(GstElement* a_text_source , String font_desc)
+{
+DEBUG_TRACE_CONFIGURE_TEXT
+
+  g_object_set(G_OBJECT(a_text_source) , "font-desc" , CHARSTAR(font_desc) , NULL) ;
+}
+
+void Gstreamer::ConfigureFileSource(GstElement* a_file_source , String file_path)
+{
+DEBUG_TRACE_CONFIGURE_FILE
+
+  g_object_set(G_OBJECT(a_file_source) , "location" , CHARSTAR(file_path) , NULL) ;
+}
+
+void Gstreamer::ConfigureCompositor(GstElement* a_compositor , guint background_n)
+{
+DEBUG_TRACE_CONFIGURE_COMPOSITOR
+
+  g_object_set(G_OBJECT(a_compositor) , "background" , background_n , NULL) ;
+}
+
+void Gstreamer::ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h ,
+                                                          gint x , gint y )
+{
+DEBUG_TRACE_CONFIGURE_COMPOSITOR_SINK
+
+  g_object_set(G_OBJECT(sinkpad) , "width"  , w , NULL) ;
+  g_object_set(G_OBJECT(sinkpad) , "height" , h , NULL) ;
+  g_object_set(G_OBJECT(sinkpad) , "xpos"   , x , NULL) ;
+  g_object_set(G_OBJECT(sinkpad) , "ypos"   , y , NULL) ;
+}
+
+bool Gstreamer::ConfigureVideoSink(GstElement* a_video_sink)
+{
+DEBUG_TRACE_CONFIGURE_PREVIEW
+
+  if (!AvCaster::GetIsPreviewEnabled()) return true ;
+
+  Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
+  gint           preview_x      = preview_bounds.getX() ;
+  gint           preview_y      = preview_bounds.getY() ;
+  gint           preview_w      = preview_bounds.getWidth() ;
+  gint           preview_h      = preview_bounds.getHeight() ;
+
+//   g_object_set(a_video_sink , "async-handling" , TRUE , NULL) ;
+
+  return gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(a_video_sink) ,
+                                                preview_x , preview_y           ,
+                                                preview_w , preview_h           ) ;
+}
+
+void Gstreamer::ConfigureX264Encoder(GstElement* an_x264_encoder , guint bitrate)
+{
+DEBUG_TRACE_CONFIGURE_X264ENC
+
+  g_object_set(G_OBJECT(an_x264_encoder) , "bitrate" , bitrate , NULL) ;
+//   g_object_set(G_OBJECT(video_encoder)  , "tune"       , 0x00000004     , NULL) ; // may lower quality in favor of latency
+}
+
+void Gstreamer::ConfigureLameEncoder(GstElement* a_lame_encoder , guint bitrate)
+{
+DEBUG_TRACE_CONFIGURE_LAMEENC
+
+  g_object_set(G_OBJECT(a_lame_encoder) , "target"  , 1       , NULL) ;
+  g_object_set(G_OBJECT(a_lame_encoder) , "cbr"     , true    , NULL) ; // CBR
+  g_object_set(G_OBJECT(a_lame_encoder) , "bitrate" , bitrate , NULL) ; // CBR
+// g_object_set(G_OBJECT(audio_encoder) , "quality" , 2 , NULL) ; // VBR (default is 4) // VBR
+}
+
+void Gstreamer::ConfigureFlvmux(GstElement* a_flvmuxer)
+{
+DEBUG_TRACE_CONFIGURE_FLVMUX
+
+  g_object_set(G_OBJECT(a_flvmuxer) , "streamable" , true , NULL) ;
+}
 
 bool Gstreamer::SetState(GstElement* an_element , GstState next_state)
 {

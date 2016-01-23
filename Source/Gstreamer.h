@@ -51,26 +51,8 @@ private:
   static bool BuildMuxerBin     () ;
   static bool BuildOutputBin    () ;
 
-  // element configuration
-  static void ConfigureCaps          (GstElement* a_capsfilter , GstCaps* a_caps) ;
-  static void ConfigureQueue         (GstElement* a_queue  , guint max_bytes  ,
-                                      guint64     max_time , guint max_buffers) ;
-  static void ConfigureScreen        (GstElement* a_screen_source ,
-                                      guint       capture_w       , guint capture_h ,
-                                      guint       pattern_n       , bool  is_active ) ;
-  static void ConfigureCamera        (GstElement* a_camera_source , String device_path ,
-                                      guint       pattern_n       , bool   is_active   ) ;
-  static void ConfigureTestVideo     (GstElement* a_test_source , guint pattern_n) ;
-  static void ConfigureText          (GstElement* a_text_source , String font_desc) ;
-  static void ConfigureFile          (GstElement* a_file_source , String file_path) ;
-  static void ConfigureCompositor    (GstElement* a_compositor , guint background_n) ;
-  static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
-  static bool ConfigureVideoSink     (GstElement* a_video_sink) ;
-  static void ConfigureFauxSource    (GstElement* a_faux_source) ;
-  static void ConfigureX264Encoder   (GstElement* an_x264_encoder , guint bitrate) ;
-  static void ConfigureLameEncoder   (GstElement* a_lame_encoder , guint bitrate) ;
-  static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
-  static bool Reconfigure            (const Identifier& config_key) ;
+  // bin configuration
+  static bool        Reconfigure     (const Identifier& config_key) ;
   static GstElement* ConfigureScreen () ;
   static GstElement* ConfigureCamera () ;
   static GstElement* ConfigureText   () ;
@@ -78,6 +60,26 @@ private:
   static GstElement* ConfigurePreview() ;
   static GstElement* ConfigureAudio  () ;
   static GstElement* ConfigureOutput () ;
+
+  // element configuration
+  static void ConfigureCaps          (GstElement* a_capsfilter , GstCaps* a_caps) ;
+  static void ConfigureQueue         (GstElement* a_queue  , guint max_bytes  ,
+                                      guint64     max_time , guint max_buffers) ;
+  static void ConfigureScreenSource  (GstElement* a_screen_source ,
+                                      guint       capture_w       , guint capture_h ,
+                                      guint       pattern_n       , bool  is_active ) ;
+  static void ConfigureCameraSource  (GstElement* a_camera_source , String device_path ,
+                                      guint       pattern_n       , bool   is_active   ) ;
+  static void ConfigureTestVideo     (GstElement* a_test_source , guint pattern_n) ;
+  static void ConfigureTextSource    (GstElement* a_text_source , String font_desc) ;
+  static void ConfigureFileSource    (GstElement* a_file_source , String file_path) ;
+  static void ConfigureCompositor    (GstElement* a_compositor , guint background_n) ;
+  static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
+  static bool ConfigureVideoSink     (GstElement* a_video_sink) ;
+  static void ConfigureFauxSource    (GstElement* a_faux_source) ;
+  static void ConfigureX264Encoder   (GstElement* an_x264_encoder , guint bitrate) ;
+  static void ConfigureLameEncoder   (GstElement* a_lame_encoder , guint bitrate) ;
+  static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
 
   // state
   static bool            SetState          (GstElement* an_element , GstState next_state) ;
@@ -136,7 +138,13 @@ private:
   // pipeline
   static GstElement* Pipeline ;
   static GstElement* ScreencapBin ;
+  static GstElement* ScreenRealSource ;
+  static GstElement* ScreenFauxSource ;
+  static GstElement* ScreenCaps ;
   static GstElement* CameraBin ;
+  static GstElement* CameraRealSource ;
+  static GstElement* CameraFauxSource ;
+  static GstElement* CameraCaps ;
   static GstElement* TextBin ;
   static GstElement* ImageBin ;
   static GstElement* CompositorBin ;

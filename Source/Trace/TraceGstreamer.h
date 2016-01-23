@@ -119,17 +119,19 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 
 /* configuration */
 
-#  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN                         \
-  Trace::TraceState("configuring ScreencapBin @ "                   + \
-                    String(screencap_w) + "x" + String(screencap_h) + \
-                    " using "           + plugin_id                 ) ;
+#  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN                                         \
+  String plugin_id = (is_active) ? GST::SCREEN_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ; \
+  Trace::TraceState("configuring ScreencapBin @ "                   +                 \
+                    String(screencap_w) + "x" + String(screencap_h) +                 \
+                    " using "           + plugin_id                 )                 ;
 
-#  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN                          \
-  String dev_path = (device_path.isEmpty()) ? "n/a" : device_path ; \
-  Trace::TraceState("configuring CameraBin '" + dev_path    +       \
-                    "' -> "     + resolution                +       \
-                    " @ "       + String(framerate) + "fps" +       \
-                    " using "   + plugin_id                 )       ;
+#  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN                                            \
+  String plugin_id = (is_active) ? GST::CAMERA_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ; \
+  String dev_path = (device_path.isEmpty()) ? "n/a" : device_path ;                   \
+  Trace::TraceState("configuring CameraBin '" + dev_path    +                         \
+                    "' -> "     + resolution                +                         \
+                    " @ "       + String(framerate) + "fps" +                         \
+                    " using "   + plugin_id                 )                         ;
 
 #  define DEBUG_TRACE_CONFIGURE_TEXT_BIN                                            \
   Trace::TraceState("configuring TextBin " + CONFIG::TEXT_STYLES   [text_style_n] + \
