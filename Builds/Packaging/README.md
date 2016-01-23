@@ -10,8 +10,8 @@ when merging into master, the current manual routine is as follows (perhaps we c
 * update 'path' in Builds/Packaging/_service
 * add to Builds/Packaging/debian.changelog
 * update '%changelog' date and version in Builds/Packaging/av-caster.spec
-* add any new dependencies to 'depends' and/or 'makedepends' in Builds/Packaging/PKGBUILD
-* add any new dependencies to 'Build-Depends' in Builds/Packaging/av-caster.dsc
+* add any new 'depends' and/or 'makedepends' in Builds/Packaging/PKGBUILD
+* add any new 'Build-Depends' in Builds/Packaging/av-caster.dsc
 * add any new 'BuildRequires' or 'Requires' , package '%files' , or steps/hooks to Builds/Packaging/av-caster.spec
 * add any new package files , or build steps to Builds/Packaging/debian.rules
 * commit any of the above changed files to the build server

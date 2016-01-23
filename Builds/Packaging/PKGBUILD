@@ -1,6 +1,6 @@
 # Maintainer: bill-auger <bill-auger@programmer.net>
 pkgname=av-caster
-pkgver=0.15.200
+pkgver=0.15.201
 pkgrel=1
 epoch=
 pkgdesc="A simple native gStreamer GUI for screencast, webcam, and audio streaming"
@@ -22,7 +22,7 @@ changelog=
 rootdir="$pkgname"-"$pkgver"
 source=('https://github.com/bill-auger/av-caster/archive/v'"$pkgver"'.tar.gz')
 noextract=()
-md5sums=('7bad35bea4bc167d603a95e7e3250160')
+md5sums=('c2352d8bd7ebdf7955dcdc7d2b4ff788')
 validpgpkeys=()
 
 #prepare() {}

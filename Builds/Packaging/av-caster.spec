@@ -16,7 +16,7 @@
 #
 
 Name:          av-caster
-Version:       0.15.200
+Version:       0.15.201
 Release:       1%{?dist}
 Summary:       A simple native gStreamer GUI for screencast, webcam, and audio streaming
 License:       LGPL-3.0
@@ -67,4 +67,4 @@ mv Builds/Makefile/build/%{name} %{buildroot}%{_bindir}/
 
 %changelog
 * Sat Dec 19 2015 bill-auger
-- v0.15.200
+- v0.15.201

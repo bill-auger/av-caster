@@ -4,13 +4,11 @@
 
 PROJECT_NAME = av-caster
 BUILD_DIR = Builds/Makefile
-PACKAGING_DIR=Builds/Packaging
 PACKAGE_DIR = /usr/src/packages/BUILD/debian/$(PROJECT_NAME)
 ARTIFACTS_DIR = $(BUILD_DIR)/build
 OBJECTS_DIR = $(BUILD_DIR)/build/intermediate
 PACKAGE_USR_DIR = $(PACKAGE_DIR)/usr
 PACKAGE_BIN_DIR = $(PACKAGE_DIR)/usr/bin
-PACKAGE_DOC_DIR = $(PACKAGE_USR_DIR)/share/doc/$(PROJECT_NAME)
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -56,7 +54,6 @@ install: build
 	rm -rf $(OBJECTS_DIR)
 	mkdir -p $(PACKAGE_USR_DIR)
 	mv $(ARTIFACTS_DIR) $(PACKAGE_BIN_DIR)
-	mv $(PACKAGING_DIR)/debian.copyright $(PACKAGE_DOC_DIR)/copyright
 	# --- end custom part for installing
 
 # Build architecture-independent files here.

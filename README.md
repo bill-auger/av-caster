@@ -36,9 +36,9 @@ A command-line solution is the obvious choice for such scenarios but obviously l
 *NOTE: AvCaster requires gStreamer >= v1.6.0 and the non-free 'ugly' plugins which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below)*
 #### AvCaster Package Repositories
 The [OpenSUSE Build Service][obs] hosts AvCaster x86 and x86-64 binary package repositories for the following distributions:
-  * Ubuntu 15.10
-  * Suse Tumbleweed
   * Fedora 23
+  * OpenSuse Tumbleweed , Suse SLE 12
+  * Ubuntu 15.10
 
 Follow the [instructions][obs] there to subscribe your package manager or download the latest package for your distribution directly.  Let us know if you would like packaging for another architecture.
 #### Other GNU/Linux:
