@@ -31,20 +31,15 @@
 #define IMAGE_BIN_NYI 1
 #define DISABLE_GUI_CONTROLS_NYI
 #define DISABLE_PREVIEW (! JUCE_LINUX) // replace preview-sink with fakesink
-// #define FAUX_CAMERA                 // replace camera-real-source with fakesrc
+// #define DISABLE_CAMERA              // replace camera-real-source with fakesrc
 // #define DISABLE_AUDIO               // replace audio-real-source with fakesrc
-// #define FAUX_OUTPUT                 // replace filesink or rtmpsink with fakesink
+// #define DISABLE_OUTPUT              // replace filesink or rtmpsink with fakesink
 // #define SUPRESS_ALERTS
 
 // debugging tweaks and kludges
 #define INJECT_DEFAULT_CAMERA_DEVICE_INFO
 #define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
-// #define RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-// #define DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-// #define DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
 #define NATIVE_CAMERA_RESOLUTION_ONLY
-// #define SHOW_DISABLED_PREVIEW_TINY
-#define IRCCLIENT_HAS_MULTIPLE_SESSIONS
 // #define PREFIX_CHAT_NICKS
 #define STATIC_PIPELINE
 // #define FAKE_MUX_ENCODER_SRC_AND_SINK     // isolate compositor from encoder and muxer from output

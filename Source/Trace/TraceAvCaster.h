@@ -80,7 +80,7 @@ StringArray DisabledFeatures()
 #  define DEBUG_DISABLE_FEATURES DISABLE_FEATURES                           \
   StringArray disabled_features = DisabledFeatures() ;                      \
   if (!!disabled_features.size() || !IsTextEnabled || !IsImageEnabled)      \
-    Trace::TraceState("DEBUG: disabling some features") ;                   \
+    Trace::TraceState("disabling some features per #define constants") ;    \
   CliParams.addArray(disabled_features) ; CliParams.removeDuplicates(false) ;
   // CliParams.mergeArray(DisabledFeatures()) ; // TODO: new feature after upgrade
 

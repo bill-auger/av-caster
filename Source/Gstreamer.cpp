@@ -57,6 +57,10 @@ bool Gstreamer::Initialize(void* x_window_handle)
   PreviewXwin = (guintptr)x_window_handle ;
 
   // determine static pipeline macro configuration
+  // TODO: ideally it should be robust to always build all bins
+  //       eliminating all Is*Enabled() getters - their vars merely to override Is*Active() getters
+  //       but also perhaps it is more efficient to simply not build unused bins
+  //       (ASSERT: the 'link bins' section below and Shutdown() reflect the current implementation)
   bool should_build_pipeline       = AvCaster::GetIsMediaEnabled() ;
   bool should_build_screen_bin     = AvCaster::GetIsScreenEnabled() ;
   bool should_build_camera_bin     = AvCaster::GetIsCameraEnabled() ;
@@ -64,7 +68,7 @@ bool Gstreamer::Initialize(void* x_window_handle)
   bool should_build_image_bin      = AvCaster::GetIsImageEnabled() ;
   bool should_build_compositor_bin = AvCaster::GetIsCompositorEnabled() ;
   bool should_build_preview_bin    = AvCaster::GetIsPreviewEnabled() ;
-  bool should_build_audio_bin      = should_build_pipeline ;
+  bool should_build_audio_bin      = AvCaster::GetIsAudioEnabled() ;
   bool should_build_muxer_bin      = should_build_pipeline ;
   bool should_build_output_bin     = should_build_pipeline ;
 
@@ -128,8 +132,11 @@ DEBUG_TRACE_GST_INIT_PHASE_5
         !LinkElements(CameraBin     , CompositorBin) ||
 //         !LinkElements(TextBin   , CompositorBin) ||
 //         !LinkElements  (ImageBin   , CompositorBin  ) ||
-        !LinkElements(CompositorBin , MuxerBin     ) ||
-        !LinkElements(CompositorBin , PreviewBin   )  )
+        !LinkElements(CompositorBin , MuxerBin     )  )
+    { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
+
+    if (should_build_preview_bin &&
+        !LinkElements(CompositorBin , PreviewBin))
     { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
   }
   else
@@ -140,22 +147,16 @@ DEBUG_TRACE_GST_INIT_PHASE_5
         (should_build_image_bin  && !LinkElements(ImageBin     , MuxerBin))  )
     { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
   }
-  if (!LinkElements(AudioBin , MuxerBin ) ||
-      !LinkElements(MuxerBin , OutputBin)  )
+  if (should_build_audio_bin &&
+      !LinkElements(AudioBin , MuxerBin ))
+  { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ; return false ; }
+  if (!LinkElements(MuxerBin , OutputBin))
   { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ; return false ; }
 
 DEBUG_TRACE_GST_INIT_PHASE_6
 
   // set rolling
   if (!SetState(Pipeline , GST_STATE_PLAYING)) return false ;
-
-// FIXME: this is a kludge for an exploratory implementation of Reconfigure()
-#ifdef DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-if (!bool(ConfigStore[CONFIG::IS_PREVIEW_ACTIVE_ID])) RemoveBin(PreviewBin) ;
-#endif // DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-#ifdef DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
-if (!bool(ConfigStore[CONFIG::IS_OUTPUT_ACTIVE_ID]))  RemoveBin(OutputBin) ;
-#endif // DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
 
 DEBUG_TRACE_GST_INIT_PHASE_7
 // DEBUG_MAKE_GRAPHVIZ
@@ -169,13 +170,13 @@ void Gstreamer::Shutdown()
 {
 // DEBUG_MAKE_GRAPHVIZ
 
-  // cleanup gStreamer
   // TODO: to shut down correctly (flushing the buffers)
   //       gst_element_send_event(Pipeline , gst_event_eos()) ;
   //       then wait for EOS message on bus before setting pipeline state to NULL
 // FIXME: setting (ScreencapBin to state null here causes X to throw error:
 //          "ERROR: X returned BadShmSeg (invalid shared segment parameter) for operation Unknown"
 
+/* TODO: see note in Initialize() regarding static pipeline macro configuration
   if (!IsInPipeline(OutputBin)    ) SetState(OutputBin     , GST_STATE_NULL) ;
   if (!IsInPipeline(MuxerBin)     ) SetState(MuxerBin      , GST_STATE_NULL) ;
   if (!IsInPipeline(AudioBin)     ) SetState(AudioBin      , GST_STATE_NULL) ;
@@ -185,7 +186,14 @@ void Gstreamer::Shutdown()
   if (!IsInPipeline(TextBin)      ) SetState(TextBin       , GST_STATE_NULL) ;
   if (!IsInPipeline(CameraBin)    ) SetState(CameraBin     , GST_STATE_NULL) ;
   if (!IsInPipeline(ScreencapBin) ) SetState(ScreencapBin  , GST_STATE_NULL) ;
+*/
 
+  if (!IsInBin(PreviewBin , PreviewRealSink )) SetState(PreviewRealSink  , GST_STATE_NULL) ;
+  if (!IsInBin(PreviewBin , PreviewFauxSink )) SetState(PreviewFauxSink  , GST_STATE_NULL) ;
+  if (!IsInBin(AudioBin   , AudioAlsaSource )) SetState(AudioAlsaSource  , GST_STATE_NULL) ;
+  if (!IsInBin(AudioBin   , AudioPulseSource)) SetState(AudioPulseSource , GST_STATE_NULL) ;
+  if (!IsInBin(AudioBin   , AudioJackSource )) SetState(AudioJackSource  , GST_STATE_NULL) ;
+  if (!IsInBin(AudioBin   , AudioTestSource )) SetState(AudioTestSource  , GST_STATE_NULL) ;
   DestroyElement(Pipeline) ;
 
   ConfigStore = ValueTree::invalid ;
@@ -261,9 +269,9 @@ DEBUG_TRACE_BUILD_CAMERA_BIN
   UNUSED(camera_w) ; UNUSED(camera_h) ; UNUSED(framerate) ;
 #endif // JUCE_LINUX
 
-#ifdef FAUX_CAMERA
+#ifdef DISABLE_CAMERA
 UNUSED(is_enabled) ; is_enabled = false ;
-#endif // FAUX_CAMERA
+#endif // DISABLE_CAMERA
 
   if (!is_enabled)
   {
@@ -732,12 +740,9 @@ DEBUG_TRACE_BUILD_OUTPUT_BIN
   bool   is_lctv     = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
   String rtmp_url    = (is_lctv) ? MakeLctvUrl(dest) : dest ;
 
-#ifdef FAUX_OUTPUT
+#ifdef DISABLE_OUTPUT
 UNUSED(is_enabled) ; is_enabled = false ;
-#endif // FAUX_OUTPUT
-#ifdef DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
-UNUSED(is_enabled) ; is_enabled = true ; // FIXME: no fake sink needed ?
-#endif // DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
+#endif // DISABLE_OUTPUT
 
   if (!is_enabled) sink_idx = -1 ; String plugin_id , output_url ;
   switch ((CONFIG::OutputStream)sink_idx)
@@ -872,31 +877,13 @@ DEBUG_TRACE_CONFIGURE_PREVIEW
 
   if (!AvCaster::GetIsPreviewEnabled()) return true ;
 
-#ifdef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  bool           is_active      = AvCaster::GetIsPreviewActive() ;
-  Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
-  gint           preview_x      = (is_active) ? preview_bounds.getX()      : -1 ;
-  gint           preview_y      = (is_active) ? preview_bounds.getY()      : -1 ;
-  gint           preview_w      = (is_active) ? preview_bounds.getWidth()  :  1 ;
-  gint           preview_h      = (is_active) ? preview_bounds.getHeight() :  1 ;
-#ifdef SHOW_DISABLED_PREVIEW_TINY
-preview_x = (is_active) ? preview_bounds.getX()      : 1 ;
-preview_y = (is_active) ? preview_bounds.getY()      : 1 ;
-preview_w = (is_active) ? preview_bounds.getWidth()  : 160 ;
-preview_h = (is_active) ? preview_bounds.getHeight() : 120 ;
-#endif // SHOW_DISABLED_PREVIEW_TINY
-
-#else // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-
   Rectangle<int> preview_bounds = AvCaster::GetPreviewBounds() ;
   gint           preview_x      = preview_bounds.getX() ;
   gint           preview_y      = preview_bounds.getY() ;
   gint           preview_w      = preview_bounds.getWidth() ;
   gint           preview_h      = preview_bounds.getHeight() ;
 
-#endif // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-
-// g_object_set (app->video_sink, "async-handling", TRUE, NULL);
+//   g_object_set(a_video_sink , "async-handling" , TRUE , NULL) ;
 
   return gst_video_overlay_set_render_rectangle(GST_VIDEO_OVERLAY(a_video_sink) ,
                                                 preview_x , preview_y           ,
@@ -930,95 +917,28 @@ DEBUG_TRACE_CONFIGURE_FLVMUX
 
 bool Gstreamer::Reconfigure(const Identifier& config_key)
 {
+  bool configure_all     = (config_key == CONFIG::PRESET_ID    ||
+                            config_key == CONFIG::IS_PENDING_ID ) && !AvCaster::GetIsConfigPending() ;
+  bool configure_screen  =  config_key == CONFIG::IS_SCREENCAP_ACTIVE_ID || configure_all ;
+  bool configure_camera  =  config_key == CONFIG::IS_CAMERA_ACTIVE_ID    || configure_all ;
+  bool configure_text    =  config_key == CONFIG::IS_TEXT_ACTIVE_ID      || configure_all ;
+  bool configure_image   =  config_key == CONFIG::IS_IMAGE_ACTIVE_ID     || configure_all ;
+  bool configure_preview =  config_key == CONFIG::IS_PREVIEW_ACTIVE_ID   ||
+                            config_key == CONFIG::IS_PENDING_ID          || configure_all ;
+  bool configure_audio   =  config_key == CONFIG::IS_AUDIO_ACTIVE_ID     || configure_all ;
+  bool configure_output  =  config_key == CONFIG::IS_OUTPUT_ACTIVE_ID    || configure_all ;
+
 DEBUG_TRACE_RECONFIGURE_IN
 
-// FIXME: it should be possible to handle all toggles consistently
-//        perhaps using RecreateBin()/DestroyBin() as below (currently leaky)
-//        or ReconfigureBin()
-//        or simply detaching/re-attaching bins
+  ReloadConfig() ; SetState(Pipeline , GST_STATE_READY) ;
 
-/* recreate then reconfigure bin
- * FIXME: most of these are not guarded against !Is*Enabled
-  if      (config_key == CONFIG::PRESET_ID             )
-  { if (!ConfigurePipeline())                                     return false ; }
-  else if (config_key == CONFIG::IS_PENDING_ID         )
-  { if (!is_config_pending && !ConfigurePipeline())               return false ; }
-  else if (config_key == CONFIG::IS_SCREENCAP_ACTIVE_ID)
-  { ScreencapBin    = RecreateBin(ScreencapBin    , GST::SCREENCAP_BIN_ID   ) ;
-    if (!ConfigureScreencap()   ) { DestroyBin(ScreencapBin   ) ; return false ; } }
-  else if (config_key == CONFIG::IS_CAMERA_ACTIVE_ID   )
-  { CameraBin       = RecreateBin(CameraBin       , GST::CAMERA_BIN_ID      ) ;
-    if (!ConfigureCamera()      ) { DestroyBin(CameraBin      ) ; return false ; } }
-  else if (config_key == CONFIG::IS_TEXT_ACTIVE_ID     )
-  { TextBin         = RecreateBin(TextBin         , GST::TEXT_BIN_ID        ) ;
-    if (!ConfigureText()        ) { DestroyBin(TextBin        ) ; return false ; } }
-  else if (config_key == CONFIG::IS_IMAGE_ACTIVE_ID    )
-  { ImageBin = RecreateBin(ImageBin , GST::IMAGE_BIN_ID) ;
-    if (!ConfigureImage()) { DestroyBin(ImageBin) ; return false ; } }
-  else if (config_key == CONFIG::IS_AUDIO_ACTIVE_ID    )
-  { AudioBin        = RecreateBin(AudioBin        , GST::AUDIO_BIN_ID       ) ;
-    if (!ConfigureAudio()       ) { DestroyBin(AudioBin       ) ; return false ; } }
-*/
-
-/* experiments
-  if (config_key == CONFIG::IS_PENDING_ID       ||
-      config_key == CONFIG::IS_PREVIEW_ACTIVE_ID )
-#ifdef RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  { if (!ConfigureVideoSink(PreviewSink)) return false ; }
-#else // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-#  ifdef DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  {
-    if (!is_on &&  !RemoveBin(PreviewBin) ||
-         is_on && (!AddBin   (PreviewBin) || !LinkElements(CompositorBin , PreviewBin)))
-      return false ;
-// SetState(Pipeline , GST_STATE_PLAYING) ;
-  }
-#  else // DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  { PreviewBin      = RecreateBin(PreviewBin      , GST::PREVIEW_BIN_ID     ) ;
-    if (!ConfigurePreviewBin()     ) { DestroyBin(PreviewBin     ) ; return false ; } }
-#  endif // DETACH_PREVIEW_BIN_INSTEAD_OF_RECREATE
-#endif // RESIZE_PREVIEW_BIN_INSTEAD_OF_RECREATE
-  else if (config_key == CONFIG::IS_OUTPUT_ACTIVE_ID   )
-#ifdef DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
-  {
-DBG("detachingOutputBin") ;
-    bool is_on = bool(ConfigStore[CONFIG::IS_OUTPUT_ACTIVE_ID]) ;
-    if (!is_on &&  !RemoveBin(OutputBin) ||
-         is_on && (!AddBin   (OutputBin) || !LinkElements(MuxerBin , OutputBin)))
-      return false ;
-  }
-#else // DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
-{DBG("recreating OutputBin") ;
-    OutputBin       = RecreateBin(OutputBin       , GST::OUTPUT_BIN_ID      ) ;
-    if (!ConfigureOutputBin()      ) { DestroyBin(OutputBin      ) ; return false ; } }
-#endif // DETACH_OUTPUT_BIN_INSTEAD_OF_RECREATE
-*/
-
-/* recreate then reconfigure bin
-// TODO: refactor with fn_pointer?
-  return (config_key == CONFIG::IS_SCREENCAP_ACTIVE_ID) ? RecreateBin(&ScreencapBin , nullptr) :
-         (config_key == CONFIG::IS_CAMERA_ACTIVE_ID   ) ? RecreateBin(&CameraBin    , nullptr) :
-         (config_key == CONFIG::IS_TEXT_ACTIVE_ID     ) ? RecreateBin(&TextBin      , nullptr) :
-         (config_key == CONFIG::IS_IMAGE_ACTIVE_ID    ) ? RecreateBin(&ImageBin     , nullptr) :
-         (config_key == CONFIG::IS_PREVIEW_ACTIVE_ID  ) ? RecreateBin(&PreviewBin   , nullptr) :
-         (config_key == CONFIG::IS_AUDIO_ACTIVE_ID    ) ? RecreateBin(&AudioBin     , nullptr) :
-         (config_key == CONFIG::IS_OUTPUT_ACTIVE_ID   ) ? RecreateBin(&OutputBin    , nullptr) :
-                                                          true                                 ;
-*/
-//* reconfigure internal elements only (keeping bins in place)
-
-  ReloadConfig() ;
-
-  SetState(Pipeline , GST_STATE_READY) ;
-  bool is_error =/*(config_key == CONFIG::IS_SCREENCAP_ACTIVE_ID) ? ConfigureScreen()             :
-                  (config_key == CONFIG::IS_CAMERA_ACTIVE_ID   ) ? ConfigureCamera()             :
-                  (config_key == CONFIG::IS_TEXT_ACTIVE_ID     ) ? ConfigureText()               :
-                  (config_key == CONFIG::IS_IMAGE_ACTIVE_ID    ) ? ConfigureImage()              :*/
-                  (config_key == CONFIG::IS_PENDING_ID        ||
-                   config_key == CONFIG::IS_PREVIEW_ACTIVE_ID  ) ? ConfigurePreview() == nullptr :
-                  (config_key == CONFIG::IS_AUDIO_ACTIVE_ID    ) ? ConfigureAudio()   == nullptr :
-//                   (config_key == CONFIG::IS_OUTPUT_ACTIVE_ID   ) ? ConfigureOutput()             :
-                                                                   false                         ;
+  bool is_error = (configure_screen  && ConfigureScreen()  == nullptr) ||
+                  (configure_camera  && ConfigureCamera()  == nullptr) ||
+                  (configure_text    && ConfigureText()    == nullptr) ||
+                  (configure_image   && ConfigureImage()   == nullptr) ||
+                  (configure_preview && ConfigurePreview() == nullptr) ||
+                  (configure_audio   && ConfigureAudio()   == nullptr) ||
+                  (configure_output  && ConfigureOutput()  == nullptr)  ;
 
 DEBUG_TRACE_RECONFIGURE_OUT
 
@@ -1030,21 +950,15 @@ DEBUG_TRACE_RECONFIGURE_OUT
 
   return !is_error ;
 }
-/*
-bool Gstreamer::ConfigureScreen()
-{
 
-}
+GstElement* Gstreamer::ConfigureScreen() {}
 
-bool Gstreamer::ConfigureCamera()
-{
+GstElement* Gstreamer::ConfigureCamera() {}
 
-}
+GstElement* Gstreamer::ConfigureText() {}
 
-bool Gstreamer::ConfigureText() {}
+GstElement* Gstreamer::ConfigureImage() {}
 
-bool Gstreamer::ConfigureImage() {}
-*/
 GstElement* Gstreamer::ConfigurePreview()
 {
   GstElement *current_sink , *next_sink ;
@@ -1063,6 +977,8 @@ DEBUG_TRACE_CONFIGURE_PREVIEW_BIN
     if (!ConfigureVideoSink(PreviewRealSink))
     { AvCaster::Error(GUI::GST_XWIN_ERROR_MSG) ; return nullptr ; }
   }
+  else gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(PreviewRealSink) , 0) ;
+  gst_video_overlay_expose(GST_VIDEO_OVERLAY(PreviewRealSink)) ;
 
   // re-link elements
   if (current_sink != nullptr)
@@ -1121,12 +1037,8 @@ DEBUG_TRACE_CONFIGURE_AUDIO_BIN
 
   return next_source ;
 }
-/*
-bool Gstreamer::ConfigureOutput()
-{
 
-}
-*/
+GstElement* Gstreamer::ConfigureOutput() {}
 
 bool Gstreamer::SetState(GstElement* an_element , GstState next_state)
 {

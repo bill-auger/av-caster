@@ -71,13 +71,13 @@ private:
   static void ConfigureLameEncoder   (GstElement* a_lame_encoder , guint bitrate) ;
   static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
   static bool Reconfigure            (const Identifier& config_key) ;
-// static bool        ConfigureScreen() ;
-// static bool        ConfigureCamera() ;
-// static bool        ConfigureText() ;
-// static bool        ConfigureImage() ;
+  static GstElement* ConfigureScreen () ;
+  static GstElement* ConfigureCamera () ;
+  static GstElement* ConfigureText   () ;
+  static GstElement* ConfigureImage  () ;
   static GstElement* ConfigurePreview() ;
-  static GstElement* ConfigureAudio() ;
-// static bool        ConfigureOutput() ;
+  static GstElement* ConfigureAudio  () ;
+  static GstElement* ConfigureOutput () ;
 
   // state
   static bool            SetState          (GstElement* an_element , GstState next_state) ;

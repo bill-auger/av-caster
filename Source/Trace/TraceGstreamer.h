@@ -149,7 +149,6 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 
 #  define DEBUG_TRACE_CONFIGURE_AUDIO_BIN                                                            \
   String bit_depth ; String plugin_id ;                                                              \
-  String dbg = String((current_source != nullptr) ? "re-" : "") + "configuring AudioBin " ;          \
   switch ((CONFIG::AudioApi)audio_api_idx)                                                           \
   {                                                                                                  \
     case CONFIG::ALSA_AUDIO_IDX:  bit_depth = "16" ;  plugin_id = GST::ALSA_PLUGIN_ID ;      break ; \
@@ -157,7 +156,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
     case CONFIG::JACK_AUDIO_IDX:  bit_depth = "32" ;  plugin_id = GST::JACK_PLUGIN_ID ;      break ; \
     default:                      bit_depth = "16" ;  plugin_id = GST::TESTAUDIO_PLUGIN_ID ; break ; \
   }                                                                                                  \
-  Trace::TraceState(dbg + bit_depth    + "bit @ "                           +                        \
+  Trace::TraceState("configuring AudioBin " + bit_depth    + "bit @ "       +                        \
                     String(samplerate) + "hz x "                            +                        \
                     String(n_channels) + " channels" + " using " + plugin_id)                        ;
 
@@ -173,26 +172,19 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
   String server = String((is_lctv) ? "LCTV " : "") ;                          \
   Trace::TraceState("configuring " + server + "OutputBin using " + plugin_id) ;
 
-#  define DEBUG_TRACE_RECONFIGURE_IN                                                              \
-  String state = (config_key == CONFIG::IS_PENDING_ID) ? String(AvCaster::GetIsConfigPending()) : \
-                                                         STRING(ConfigStore[config_key]) ;        \
-  String dbg = "reconfiguring pipeline ('" + String(config_key) + "' => '"  + state + "')" ;      \
-  Trace::TraceMedia(dbg)                                                                          ;
+#  define DEBUG_TRACE_RECONFIGURE_IN                                     \
+  String element = (configure_all    ) ? "pipeline" :                    \
+                   (configure_screen ) ? "screen"   :                    \
+                   (configure_camera ) ? "camera"   :                    \
+                   (configure_text   ) ? "text"     :                    \
+                   (configure_image  ) ? "image"    :                    \
+                   (configure_preview) ? "preview"  :                    \
+                   (configure_audio  ) ? "audio"    :                    \
+                   (configure_output ) ? "output"   : "none" ;           \
+  String dbg     = "reconfiguring pipeline elements (" + element + ")" ; \
+  Trace::TraceMedia(dbg)                                                 ;
 
 #  define DEBUG_TRACE_RECONFIGURE_OUT if (is_error) Trace::TraceMedia("error " + dbg) ;
-
-#  define DEBUG_TRACE_RECREATE_BIN_IN                                                    \
-  String dbg = " bin '" + bin_id + "'" ;                                                 \
-  if (!IsInPipeline(*a_bin)) Trace::TraceWarning("can not recreate" + dbg              + \
-                                                 " - not in pipeline - will try adding") ;
-
-#  define DEBUG_TRACE_RECREATE_BIN_MID                                                        \
-  if (!IsInPipeline(new_bin)) Trace::TraceError("error re-creating" + dbg + " - restoring") ; \
-  else                        Trace::TraceMedia("re-created"        + dbg)                    ;
-
-#  define DEBUG_TRACE_RECREATE_BIN_FALLBACK                                     \
-  if (IsInPipeline(*a_bin)) Trace::TraceWarning("restored" + dbg) ;             \
-  else Trace::TraceError("error restoring" + dbg + " is still not in pipeline") ;
 
 #  define DEBUG_TRACE_CONFIGURE_FAUX_SRC                                 \
   Trace::TraceMedia("configuring '" + GetElementId(a_faux_source) + "'") ;
@@ -357,13 +349,8 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_CONFIGURE_AUDIO_BIN       ;
 #  define DEBUG_TRACE_CONFIGURE_MUXER_BIN       ;
 #  define DEBUG_TRACE_CONFIGURE_OUTPUT_BIN      ;
-#  define DEBUG_TRACE_RECONFIGURE               ;
 #  define DEBUG_TRACE_RECONFIGURE_IN            ;
 #  define DEBUG_TRACE_RECONFIGURE_OUT           ;
-#  define DEBUG_TRACE_RECREATE_BIN_IN           ;
-#  define DEBUG_TRACE_RECREATE_BIN_MID          ;
-#  define DEBUG_TRACE_RECREATE_BIN_RESTORE      ;
-#  define DEBUG_TRACE_RECREATE_BIN_FALLBACK     ;
 #  define DEBUG_TRACE_CONFIGURE_FAUX_SRC        ;
 #  define DEBUG_TRACE_CONFIGURE_CAPS            ;
 #  define DEBUG_TRACE_CONFIGURE_QUEUE           ;

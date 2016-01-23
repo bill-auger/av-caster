@@ -20,12 +20,12 @@ Version:       0.15.201
 Release:       1%{?dist}
 Summary:       A simple native gStreamer GUI for screencast, webcam, and audio streaming
 License:       LGPL-3.0
-URL:           https://github.com/bill-auger/av-caster/
+URL:           https://github.com/bill-auger/%{name}/
 Source0:       https://github.com/bill-auger/%{name}/archive/v%{version}.tar.gz
 BuildRequires: freetype2-devel gcc-c++ libX11-devel libXinerama-devel libXcursor-devel
 %if 0%{?sles_version} || 0%{?suse_version}
 BuildRequires: gstreamer-plugins-base-devel
-Requires:      gstreamer-plugins-good gstreamer-plugins-bad-free gstreamer-plugins-ugly
+Requires:      gstreamer-plugins-good gstreamer-plugins-bad gstreamer-plugins-ugly
 %endif
 %if 0%{?centos_version} || 0%{?fedora_version} || 0%{?rhel_version}
 BuildRequires: gstreamer1-plugins-base-devel
