@@ -20,7 +20,7 @@
 #ifndef _TRACECONFIG_H_
 #define _TRACECONFIG_H_
 
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
 
 #  include "Trace.h"
 
@@ -29,9 +29,9 @@
   Trace::TraceConfig("loading preset '" + STRING(config_store[CONFIG::PRESET_NAME_ID]) + "'") ; \
   Trace::DumpConfig(config_store , "volatile") ;
 
-#else // DEBUG
+#else // DEBUG_TRACE
 
 #  define DEBUG_TRACE_CONFIG_LOAD_CONFIG   ;
 
-#endif // DEBUG
+#endif // DEBUG_TRACE
 #endif // _TRACECONFIG_H_

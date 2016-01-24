@@ -19,7 +19,7 @@
 #ifndef _TRACECHAT_H_
 #define _TRACECHAT_H_
 
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
 
 #  include "Trace.h"
 
@@ -65,7 +65,7 @@
                   String(list_item->getPosition().toString()) + " to " + \
                   Point<int>(list_item_x , list_item_y).toString()     ) ;
 
-#else // DEBUG
+#else // DEBUG_TRACE
 
 #  define DEBUG_TRACE_CHAT_VISIBILITY       ;
 #  define DEBUG_TRACE_LOCATE_SORTED_CHILD   ;
@@ -75,5 +75,5 @@
 #  define DEBUG_TRACE_RESIZE_CHAT_LIST      ;
 #  define DEBUG_TRACE_MOVE_CHAT_LIST_ITEM   ;
 
-#endif // DEBUG
+#endif // DEBUG_TRACE
 #endif // _TRACECHAT_H_

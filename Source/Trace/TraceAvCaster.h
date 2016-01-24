@@ -20,7 +20,7 @@
 #ifndef _TRACEAVCASTER_H_
 #define _TRACEAVCASTER_H_
 
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
 
 #  include "Trace.h"
 
@@ -194,7 +194,7 @@ StringArray DisabledFeatures()
   if      (message_type == GUI::ALERT_TYPE_WARNING) Trace::TraceWarning(message_text) ; \
   else if (message_type == GUI::ALERT_TYPE_ERROR  ) Trace::TraceError  (message_text)   ;
 
-#else // DEBUG
+#else // DEBUG_TRACE
 
 #  define DEBUG_DISABLE_FEATURES                    ;
 #  define DEBUG_TRACE_INIT_PHASE_1                  ;
@@ -217,5 +217,5 @@ StringArray DisabledFeatures()
 #  define DEBUG_TRACE_HANDLE_PRESETCOMBO            ;
 #  define DEBUG_TRACE_DISPLAY_ALERT                 ;
 
-#endif // DEBUG
+#endif // DEBUG_TRACE
 #endif // _TRACEAVCASTER_H_

@@ -20,7 +20,7 @@
 #ifndef _TRACEAVCASTERSTORE_H_
 #define _TRACEAVCASTERSTORE_H_
 
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
 
 #  include "Trace.h"
 
@@ -175,7 +175,7 @@
                        nicks.joinIntoString(",")                  + "]"         ) ; \
   }
 
-#else // DEBUG
+#else // DEBUG_TRACE
 
 #  define DEBUG_TRACE_VERIFY_CONFIG                     ;
 #  define DEBUG_TRACE_VERIFY_PRESETS_NODE               ;
@@ -211,5 +211,5 @@
 #  define DEBUG_TRACE_REMOVE_CHAT_NICK                  ;
 #  define DEBUG_TRACE_DUMP_CHAT_NICKS(chatters_store)   ;
 
-#endif // DEBUG
+#endif // DEBUG_TRACE
 #endif // _TRACEAVCASTERSTORE_H_

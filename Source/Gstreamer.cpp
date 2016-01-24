@@ -936,7 +936,10 @@ DEBUG_TRACE_CONFIGURE_AUDIO_BIN
   return next_source ;
 }
 
-GstElement* Gstreamer::ConfigureOutput() {}
+GstElement* Gstreamer::ConfigureOutput()
+{
+
+}
 
 void Gstreamer::ConfigureFauxSource(GstElement* a_faux_source)
 {
@@ -1088,7 +1091,7 @@ GstBusSyncReply Gstreamer::HandleMessage(GstBus* message_bus , GstMessage* messa
   switch (GST_MESSAGE_TYPE(message))
   {
     case GST_MESSAGE_ERROR:         HandleErrorMessage(message) ;         break ;
-    case GST_MESSAGE_EOS:           DBG("GST_MESSAGE_EOS") ;              break ;
+    case GST_MESSAGE_EOS:           LOG("GST_MESSAGE_EOS") ;              break ;
     case GST_MESSAGE_STATE_CHANGED:                                       break ;
     case GST_MESSAGE_STREAM_STATUS: /* DEBUG_TRACE_DUMP_MESSAGE_STRUCT */ break ;
     default:                        DEBUG_TRACE_UNHANDLED_MESSAGE         break ;

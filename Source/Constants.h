@@ -43,28 +43,25 @@
 #define STATIC_PIPELINE
 // #define FAKE_MUX_ENCODER_SRC_AND_SINK     // isolate compositor from encoder and muxer from output
 
+// enable tracing
+#ifdef DEBUG
+#  define DEBUG_TRACE 1
+#else // DEBUG
+#  define DEBUG_TRACE 1
+#endif // DEBUG
+#define DEBUG_TRACE_EVENTS (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_GUI    (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_MEDIA  (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_CONFIG (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_CHAT   (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_STATE  (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_VB     (DEBUG_TRACE && 0)
 
 // enable debug features
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
 #  define DEBUG_ANSI_COLORS 1
 // #  define DEBUG_QUIT_IMMEDIATELY
-#endif // DEBUG
-
-
-// tracing
-#ifdef DEBUG
-#  define DEBUG_DEFINED 1
-#else // DEBUG
-#  define DEBUG_DEFINED 1
-#endif // DEBUG
-#define DEBUG_TRACE        (DEBUG_DEFINED && 1)
-#define DEBUG_TRACE_EVENTS (DEBUG_DEFINED && 1)
-#define DEBUG_TRACE_GUI    (DEBUG_DEFINED && 1)
-#define DEBUG_TRACE_MEDIA  (DEBUG_DEFINED && 1)
-#define DEBUG_TRACE_CONFIG (DEBUG_DEFINED && 1)
-#define DEBUG_TRACE_CHAT   (DEBUG_DEFINED && 0)
-#define DEBUG_TRACE_STATE  (DEBUG_DEFINED && 1)
-#define DEBUG_TRACE_VB     (DEBUG_DEFINED && 0)
+#endif // DEBUG_TRACE
 
 
 #include "JuceHeader.h"
@@ -108,7 +105,11 @@ namespace APP
   static const String CLI_DISABLE_PREVIEW_TOKEN = "--no-preview" ;
   static const String CLI_DISABLE_AUDIO_TOKEN   = "--no-audio" ;
   static const String CLI_DISABLE_CHAT_TOKEN    = "--no-chat" ;
+#ifdef DEBUG
+  static const String CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionString) + " (DEBUG)" ;
+#else // DEBUG
   static const String CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionString) ;
+#endif // DEBUG
   static const String CLI_USAGE_MSG   = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN            + " | "                                                          +
                                                                               CLI_PRESETS_TOKEN         + " | "                                                          +
                                                                               CLI_VERSION_TOKEN         + " ]"                                                           +

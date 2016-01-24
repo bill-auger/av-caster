@@ -24,7 +24,10 @@
 #include "../Constants.h"
 
 
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
+
+#define LOG(msg) Logger::outputDebugString(msg)
+
 
 class Trace
 {
@@ -45,6 +48,6 @@ public:
   static void DumpConfig          (ValueTree config_store , String node_desc) ;
 } ;
 
-#endif // DEBUG
+#endif // DEBUG_TRACE
 
 #endif // _TRACE_H_

@@ -410,10 +410,10 @@ void AvCasterStore::detectCaptureDevices()
 #  if JUCE_WINDOWS || JUCE_MAC
 // Returns a list of the available cameras on this machine.
   StringArray video_devs = juce::CameraDevice::getAvailableDevices() ;
-DBG(video_devs.joinIntoString("\n")) ;
+LOG(video_devs.joinIntoString("\n")) ;
   while (video_devs.size())
   {
-DBG("video_devs=" + video_devs[0]) ;
+LOG("video_devs=" + video_devs[0]) ;
 
     video_devs.remove(0) ;
   }

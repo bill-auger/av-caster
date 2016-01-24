@@ -20,7 +20,7 @@
 #ifndef _TRACEGSTREAMER_H_
 #define _TRACEGSTREAMER_H_
 
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
 
 #  include "Trace.h"
 
@@ -104,7 +104,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 {
   gchar* gvalue_str = g_strdup_value_contents(gvalue) ;
 
-  DBG("DumpMessage() gvalue='" + String(gvalue_str) + "'") ;
+  LOG("DumpMessage() gvalue='" + String(gvalue_str) + "'") ;
 
   g_free(gvalue_str) ;
 }
@@ -319,7 +319,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
   Trace::TraceConfig(color +  "creating graph " + String(graph_name) + cend) ;                 \
   GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(Pipeline) , GST_DEBUG_GRAPH_SHOW_ALL , graph_name) ;
 
-#else // DEBUG
+#else // DEBUG_TRACE
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_1          ;
 #  define DEBUG_TRACE_GST_INIT_PHASE_2          ;
@@ -386,5 +386,5 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_GET_REQUEST_PAD           ;
 #  define DEBUG_MAKE_GRAPHVIZ                   ;
 
-#endif // DEBUG
+#endif // DEBUG_TRACE
 #endif // _TRACEGSTREAMER_H_

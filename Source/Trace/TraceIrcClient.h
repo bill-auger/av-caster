@@ -19,7 +19,7 @@
 #ifndef _TRACEIRCCLIENT_H_
 #define _TRACEIRCCLIENT_H_
 
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
 
 #  include "Trace.h"
 
@@ -100,7 +100,7 @@
 #  define DEBUG_TRACE_THREAD_RUN_OUT                                   \
   Trace::TraceState("stopping '" + this->getThreadName() + "' thread") ;
 
-#else // DEBUG
+#else // DEBUG_TRACE
 
 #  define DEBUG_TRACE_SERVER_INFO    ;
 #  define DEBUG_TRACE_CREATE_SESSION ;
@@ -116,5 +116,5 @@
 #  define DEBUG_TRACE_THREAD_RUN_IN  ;
 #  define DEBUG_TRACE_THREAD_RUN_OUT ;
 
-#endif // DEBUG
+#endif // DEBUG_TRACE
 #endif // _TRACEIRCCLIENT_H_

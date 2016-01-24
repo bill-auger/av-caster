@@ -11,14 +11,15 @@ export DOT_DIR=/code/dot
 export GST_DEBUG_DUMP_DOT_DIR=$DOT_DIR
 
 # validate specified build configuration
-if   [ "$CONFIG" == "Release" ] ; then BINARY=./build/av-caster
-elif [ "$CONFIG" == "Debug"   ] ; then BINARY=./build/av-caster-dbg
-elif [ "$CONFIG" == ""        ] ; then BINARY=./build/av-caster-dbg
-else                              echo "invlaid CONFIG" ; exit ;
+if   [ "$CONFIG" == "Release" ] ; then BINARY=./build/av-caster     ; TARGET="Release" ;
+elif [ "$CONFIG" == "Debug"   ] ; then BINARY=./build/av-caster-dbg ; TARGET="Debug" ;
+elif [ "$CONFIG" == ""        ] ; then BINARY=./build/av-caster-dbg ; TARGET="Debug" ;
+else                              echo "Invlaid target CONFIG '$CONFIG'" ; exit ;
 fi
 
 # build project
-cd Builds/Makefile && make && $BINARY $*
+echo "Building $TARGET target"
+CONFIG=$CONFIG cd Builds/Makefile && make && $BINARY $*
 
 # convert dot graphs to images
 cd $DOT_DIR

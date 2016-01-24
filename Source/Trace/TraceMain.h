@@ -20,24 +20,24 @@
 #ifndef _TRACEMAIN_H_
 #define _TRACEMAIN_H_
 
-#ifdef DEBUG
+#ifdef DEBUG_TRACE
 
 #  include "Trace.h"
 
 
 /* state */
 
-#  define DEBUG_TRACE_INIT_VERSION printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ;
+#  define DEBUG_TRACE_INIT_VERSION LOG(APP::CLI_VERSION_MSG) ;
 
 #  define DEBUG_TRACE_SHUTDOWN_IN  Trace::TraceState("shutting down") ;
 
 #  define DEBUG_TRACE_SHUTDOWN_OUT Trace::TraceState("clean shutdown - bye") ;
 
-#else // DEBUG
+#else // DEBUG_TRACE
 
 #  define DEBUG_TRACE_INIT_VERSION ;
 #  define DEBUG_TRACE_SHUTDOWN_IN  ;
 #  define DEBUG_TRACE_SHUTDOWN_OUT ;
 
-#endif // DEBUG
+#endif // DEBUG_TRACE
 #endif // _TRACEMAIN_H_
