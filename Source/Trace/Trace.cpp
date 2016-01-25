@@ -51,8 +51,8 @@ void Trace::TraceMissingProperty(ValueTree config_store    , Identifier a_proper
                                  var       a_default_value                            )
 {
   // supress transient nodes
-  if (a_property_id == CONFIG::IS_PENDING_ID      ||
-      a_property_id == CONFIG::IS_OUTPUT_ACTIVE_ID ) return ;
+  if (a_property_id == CONFIG::IS_PENDING_ID ||
+      a_property_id == CONFIG::OUTPUT_ID      ) return ;
 
   if (!config_store.hasProperty(a_property_id))
   {

@@ -28,11 +28,11 @@
 // #define IMAGE_ONLY
 #define TEXT_BIN_NYI  1
 #define IMAGE_BIN_NYI 1
-#define DISABLE_GUI_CONTROLS_NYI
-#define DISABLE_AUDIO   (! JUCE_LINUX)  // replace audio-real-source with fakesrc
-#define DISABLE_CHAT                    // TODO: add 'ircclient' dep back to jucer
-#define DISABLE_PREVIEW (! JUCE_LINUX)  // replace preview-sink with fakesink
-//#define DISABLE_OUTPUT                // replace filesink or rtmpsink with fakesink
+#define DISABLE_GUI_CONFIG_NYI
+#define DISABLE_AUDIO   (! JUCE_LINUX) // replace audio-real-source with fakesrc
+#define DISABLE_CHAT                   // TODO: add 'ircclient' dep back to jucer
+#define DISABLE_PREVIEW (! JUCE_LINUX) // replace preview-sink with fakesink
+//#define DISABLE_OUTPUT               // replace filesink or rtmpsink with fakesink
 // #define SUPRESS_ALERTS
 
 // debugging tweaks and kludges
@@ -41,7 +41,7 @@
 #define NATIVE_CAMERA_RESOLUTION_ONLY
 // #define PREFIX_CHAT_NICKS
 #define STATIC_PIPELINE
-// #define FAKE_MUX_ENCODER_SRC_AND_SINK     // isolate compositor from encoder and muxer from output
+// #define FAKE_MUX_ENCODER_SRC_AND_SINK // isolate compositor from encoder and muxer from output
 
 // enable tracing
 #ifdef DEBUG
@@ -79,7 +79,7 @@ namespace APP
   static const String LETTERS          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ;
   static const String ALPHANUMERIC     = DIGITS + LETTERS ;
   static const String VALID_ID_CHARS   = ALPHANUMERIC + "_- " ;
-  static const String VALID_URI_CHARS  = ALPHANUMERIC + "_-.:/?= " ;
+  static const String VALID_URI_CHARS  = ALPHANUMERIC + "_-.:/?=@#& " ;
   static const String VALID_NICK_CHARS = ALPHANUMERIC + "_-@#&[] " ;
   static const String FILTER_CHARS     = "_-.:/?=@#&[] " ;
   static const String REPLACE_CHARS    = String::repeatedString("-" , FILTER_CHARS.length()) ;
@@ -160,19 +160,21 @@ namespace APP
 namespace GUI
 {
   // common
-  static const int    PAD                 = 4 ;
-  static const int    PAD3                = (PAD * 3) ;
-  static const int    PAD4                = (PAD * 4) ;
-  static const int    PAD6                = (PAD * 6) ;
-  static const int    PAD8                = (PAD * 8) ;
-  static const Colour TEXT_BG_COLOR       = Colour(0xFF000000) ;
-  static const Colour TEXT_EMPTY_COLOR    = Colour(0x80808080) ;
-  static const Colour TEXT_NORMAL_COLOR   = Colour(0xFFC0C0C0) ;
-  static const Colour TEXT_HILITE_COLOR   = Colour(0xFFFFFFFF) ;
-  static const Colour TEXT_HILITEBG_COLOR = Colour(0xFF000040) ;
-  static const Colour TEXT_CARET_COLOR    = Colour(0xFFFFFFFF) ;
-  static const Colour TEXT_FOCUS_COLOR    = Colour(0xFF000000) ;
-  static const Colour TEXT_SHADOW_COLOR   = Colour(0xFF000000) ;
+  static const int    PAD                   = 4 ;
+  static const int    PAD3                  = (PAD * 3) ;
+  static const int    PAD4                  = (PAD * 4) ;
+  static const int    PAD6                  = (PAD * 6) ;
+  static const int    PAD8                  = (PAD * 8) ;
+  static const Colour TEXT_EMPTY_COLOR      = Colour(0x80808080) ;
+  static const Colour TEXT_NORMAL_COLOR     = Colour(0xFFC0C0C0) ;
+  static const Colour TEXT_INVALID_COLOR    = Colour(0xFFFF0000) ;
+  static const Colour TEXT_HILITE_COLOR     = Colour(0xFFFFFFFF) ;
+  static const Colour TEXT_HILITEBG_COLOR   = Colour(0xFF000040) ;
+  static const Colour TEXT_CARET_COLOR      = Colour(0xFFFFFFFF) ;
+  static const Colour TEXT_FOCUS_COLOR      = Colour(0xFF000000) ;
+  static const Colour TEXT_SHADOW_COLOR     = Colour(0xFF000000) ;
+  static const Colour TEXT_BG_COLOR         = Colour(0xFF000000) ;
+  static const Colour TEXT_INVALID_BG_COLOR = Colour(0xFF200000) ;
 
   // MainWindow
   static const int    TITLEBAR_H      = 24 ;
@@ -180,6 +182,10 @@ namespace GUI
   static const String IDLE_TITLE_TEXT = "(Idle)" ;
   static const String FILE_TITLE_TEXT = "(Recording)" ;
   static const String RTMP_TITLE_TEXT = "(Broadcasting)" ;
+
+  // Controls
+  static const String FILE_XMIT_TEXT = "Record" ;
+  static const String RTMP_XMIT_TEXT = "Transmit" ;
 
   // Chat
   static const int    N_STATIC_CHATLIST_CHILDREN = 2 ;
@@ -255,6 +261,7 @@ namespace GUI
   static const String STORAGE_WRITE_ERROR_MSG     = "I/O error storing configuration." ;
   static const String PRESET_NAME_ERROR_MSG       = "Enter a name for this preset in the \"Preset\" box then press \"Save\" again." ;
   static const String PRESET_RENAME_ERROR_MSG     = "A preset already exists with that name." ;
+  static const String CONFIG_INVALID_ERROR_MSG    = "Invalid paramenter(s) - correct the errors indicated in red." ;
   static const String CONFIG_CHANGE_ERROR_MSG     = "Can not re-configure while the stream is active." ;
   static const String ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture device.\n\n" ;
   static const String PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
@@ -267,6 +274,8 @@ namespace GUI
 namespace CONFIG
 {
 /*\ CAVEATS:
+|*|  the application data model is implemented in the AvCasterStore class as JUCE ValueTrees
+|*|      with a JUCE binary file-out for persistence (STORAGE_FILENAME)
 |*|  when defining new nodes or properties be sure to:
 |*|    * update the SCHEMA below
 |*|    * if new property        -> define *_ID and DEFAULT_* below
@@ -299,13 +308,13 @@ namespace CONFIG
 |*| {
 |*|   // control IDs
 |*|   PRESET_NAME_ID:         a_string ,
-|*|   IS_SCREENCAP_ACTIVE_ID: a_bool   ,
-|*|   IS_CAMERA_ACTIVE_ID:    a_bool   ,
-|*|   IS_TEXT_ACTIVE_ID:      a_bool   ,
-|*|   IS_IMAGE_ACTIVE_ID:     a_bool   ,
-|*|   IS_PREVIEW_ACTIVE_ID:   a_bool   ,
-|*|   IS_AUDIO_ACTIVE_ID:     a_bool   ,
-|*|   IS_OUTPUT_ACTIVE_ID:    a_bool   ,
+|*|   SCREENCAP_ID:           a_bool   ,
+|*|   CAMERA_ID:              a_bool   ,
+|*|   TEXT_ID:                a_bool   ,
+|*|   IMAGE_ID:               a_bool   ,
+|*|   PREVIEW_ID:             a_bool   ,
+|*|   AUDIO_ID:               a_bool   ,
+|*|   OUTPUT_ID:              a_bool   ,
 |*|   // screen IDs
 |*|   DISPLAY_N_ID:           an_int   ,
 |*|   SCREEN_N_ID:            an_int   ,
@@ -328,7 +337,7 @@ namespace CONFIG
 |*|   TEXT_STYLE_ID:          an_int   ,
 |*|   TEXT_POSITION_ID:       an_int   ,
 |*|   // image IDs
-|*|   IMAGE_ID:               a_string ,
+|*|   IMAGE_LOC_ID:           a_string ,
 |*|   // output IDs
 |*|   OUTPUT_SINK_ID:         an_int   ,
 |*|   OUTPUT_MUXER_ID:        an_int   ,
@@ -352,7 +361,7 @@ namespace CONFIG
 |*| }
 |*|
 |*| // AvCasterStore->audios
-|*| AUDIO_DEVICES_ID: { nyi }
+|*| AUDIO_DEVICES_ID: [] // nyi
 |*|
 |*| // AvCasterStore->servers
 |*| SERVERS_ID: [ a_server  , ... ] // a_server as below
@@ -428,58 +437,58 @@ namespace CONFIG
   static const Identifier AUDIO_DEVICES_ID       = "audio-devices" ;
   static const Identifier SERVERS_ID             = "irc-servers" ;
   // config root IDs
-  static const Identifier CONFIG_VERSION_ID      = "config-version" ;
-  static const Identifier PRESET_ID              = "current-preset-idx" ;
-  static const Identifier IS_PENDING_ID          = "is-config-pending" ;
+  static const Identifier CONFIG_VERSION_ID     = "config-version" ;
+  static const Identifier PRESET_ID             = "current-preset-idx" ;
+  static const Identifier IS_PENDING_ID         = "is-config-pending" ;
   // control IDs
-  static const Identifier PRESET_NAME_ID         = "preset-name" ;
-  static const Identifier IS_SCREENCAP_ACTIVE_ID = "is-screencap-on" ;
-  static const Identifier IS_CAMERA_ACTIVE_ID    = "is-camera-on" ;
-  static const Identifier IS_TEXT_ACTIVE_ID      = "is-text-on" ;
-  static const Identifier IS_PREVIEW_ACTIVE_ID   = "is-preview-on" ;
-  static const Identifier IS_AUDIO_ACTIVE_ID     = "is-audio-on" ;
-  static const Identifier IS_IMAGE_ACTIVE_ID     = "is-interstitial-on" ;
-  static const Identifier IS_OUTPUT_ACTIVE_ID    = "is-output-on" ;
+  static const Identifier PRESET_NAME_ID        = "preset-name" ;
+  static const Identifier SCREENCAP_ID          = "is-screencap-on" ;
+  static const Identifier CAMERA_ID             = "is-camera-on" ;
+  static const Identifier TEXT_ID               = "is-text-on" ;
+  static const Identifier PREVIEW_ID            = "is-preview-on" ;
+  static const Identifier AUDIO_ID              = "is-audio-on" ;
+  static const Identifier IMAGE_ID              = "is-interstitial-on" ;
+  static const Identifier OUTPUT_ID             = "is-output-on" ;
   // screen IDs
-  static const Identifier DISPLAY_N_ID           = "display-n" ;
-  static const Identifier SCREEN_N_ID            = "screen-n" ;
-  static const Identifier SCREENCAP_W_ID         = "sceencap-w" ;
-  static const Identifier SCREENCAP_H_ID         = "sceencap-h" ;
-  static const Identifier OFFSET_X_ID            = "offset-x" ;
-  static const Identifier OFFSET_Y_ID            = "offset-y" ;
+  static const Identifier DISPLAY_N_ID          = "display-n" ;
+  static const Identifier SCREEN_N_ID           = "screen-n" ;
+  static const Identifier SCREENCAP_W_ID        = "sceencap-w" ;
+  static const Identifier SCREENCAP_H_ID        = "sceencap-h" ;
+  static const Identifier OFFSET_X_ID           = "offset-x" ;
+  static const Identifier OFFSET_Y_ID           = "offset-y" ;
   // camera IDs
-  static const Identifier CAMERA_DEVICE_ID       = "camera-dev-idx" ;
-  static const Identifier CAMERA_RES_ID          = "camera-res-idx" ;
-  static const Identifier CAMERA_PATH_ID         = "camera-dev-path" ;
-  static const Identifier CAMERA_NAME_ID         = "camera-dev-name" ;
-  static const Identifier CAMERA_RATE_ID         = "camera-framerate" ;
-  static const Identifier CAMERA_RESOLUTIONS_ID  = "camera-resolutions" ;
+  static const Identifier CAMERA_DEVICE_ID      = "camera-dev-idx" ;
+  static const Identifier CAMERA_RES_ID         = "camera-res-idx" ;
+  static const Identifier CAMERA_PATH_ID        = "camera-dev-path" ;
+  static const Identifier CAMERA_NAME_ID        = "camera-dev-name" ;
+  static const Identifier CAMERA_RATE_ID        = "camera-framerate" ;
+  static const Identifier CAMERA_RESOLUTIONS_ID = "camera-resolutions" ;
   // audio IDs
-  static const Identifier AUDIO_API_ID           = "audio-api-idx" ;
-  static const Identifier AUDIO_DEVICE_ID        = "audio-dev-idx" ;
-  static const Identifier AUDIO_CODEC_ID         = "audio-codec-idx" ;
-  static const Identifier N_CHANNELS_ID          = "n-channels" ;
-  static const Identifier SAMPLERATE_ID          = "samplerate-idx" ;
-  static const Identifier AUDIO_BITRATE_ID       = "audio-bitrate-idx" ;
+  static const Identifier AUDIO_API_ID          = "audio-api-idx" ;
+  static const Identifier AUDIO_DEVICE_ID       = "audio-dev-idx" ;
+  static const Identifier AUDIO_CODEC_ID        = "audio-codec-idx" ;
+  static const Identifier N_CHANNELS_ID         = "n-channels" ;
+  static const Identifier SAMPLERATE_ID         = "samplerate-idx" ;
+  static const Identifier AUDIO_BITRATE_ID      = "audio-bitrate-idx" ;
   // text IDs
-  static const Identifier MOTD_TEXT_ID           = "motd-text" ;
-  static const Identifier TEXT_STYLE_ID          = "text-style-idx" ;
-  static const Identifier TEXT_POSITION_ID       = "text-pos-idx" ;
+  static const Identifier MOTD_TEXT_ID          = "motd-text" ;
+  static const Identifier TEXT_STYLE_ID         = "text-style-idx" ;
+  static const Identifier TEXT_POSITION_ID      = "text-pos-idx" ;
   // interstitial IDs
-  static const Identifier IMAGE_ID               = "interstitial-img" ;
+  static const Identifier IMAGE_LOC_ID          = "interstitial-img" ;
   // output IDs
-  static const Identifier OUTPUT_SINK_ID         = "output-sink-idx" ;
-  static const Identifier OUTPUT_MUXER_ID        = "output-muxer-idx" ;
-  static const Identifier OUTPUT_W_ID            = "output-w" ;
-  static const Identifier OUTPUT_H_ID            = "output-h" ;
-  static const Identifier FRAMERATE_ID           = "framerate-idx" ;
-  static const Identifier VIDEO_BITRATE_ID       = "video-bitrate-idx" ;
-  static const Identifier OUTPUT_DEST_ID         = "output-dest" ;
-  // output IDs
-  static const Identifier CHAT_NICK_ID           = "chat-nick" ;
+  static const Identifier OUTPUT_SINK_ID        = "output-sink-idx" ;
+  static const Identifier OUTPUT_MUXER_ID       = "output-muxer-idx" ;
+  static const Identifier OUTPUT_W_ID           = "output-w" ;
+  static const Identifier OUTPUT_H_ID           = "output-h" ;
+  static const Identifier FRAMERATE_ID          = "framerate-idx" ;
+  static const Identifier VIDEO_BITRATE_ID      = "video-bitrate-idx" ;
+  static const Identifier OUTPUT_DEST_ID        = "output-dest" ;
   // chat IDs
   static const Identifier HOST_ID                = "chat-host" ;
   static const Identifier PORT_ID                = "chat-port" ;
+// TODO: replace this with NICK_ID
+  static const Identifier CHAT_NICK_ID           = "chat-nick" ;
   static const Identifier NICK_ID                = "chat-nick" ;
   static const Identifier PASS_ID                = "chat-pass" ;
   static const Identifier CHANNEL_ID             = "chat-channel" ;
@@ -507,11 +516,11 @@ namespace CONFIG
   static const String     LCTV_PRESET_NAME            = "livecoding.tv" ;
   static const String     DEFAULT_PRESET_NAME         = FILE_PRESET_NAME ;
   static const Identifier DEFAULT_PRESET_ID           = FilterId(DEFAULT_PRESET_NAME , APP::VALID_ID_CHARS) ;
-#ifdef DISABLE_GUI_CONTROLS_NYI
+#ifdef DISABLE_GUI_CONFIG_NYI
   static const bool       DEFAULT_IS_SCREENCAP_ACTIVE = true ;
-#else // DISABLE_GUI_CONTROLS_NYI
+#else // DISABLE_GUI_CONFIG_NYI
   static const bool       DEFAULT_IS_SCREENCAP_ACTIVE = false ;
-#endif // DISABLE_GUI_CONTROLS_NYI
+#endif // DISABLE_GUI_CONFIG_NYI
   static const bool       DEFAULT_IS_CAMERA_ACTIVE    = false ;
   static const bool       DEFAULT_IS_TEXT_ACTIVE      = false ;
   static const bool       DEFAULT_IS_IMAGE_ACTIVE     = true ;

@@ -56,12 +56,11 @@ AvCasterStore::~AvCasterStore() { }
 
 AvCasterStore::AvCasterStore()
 {
-  // load stored configs
+  // load persistent storage
   this->configDir                = APP::APPDATA_DIR.getChildFile(CONFIG::STORAGE_DIRNAME ) ;
   this->configFile               = this->configDir .getChildFile(CONFIG::STORAGE_FILENAME) ;
   FileInputStream* config_stream = new FileInputStream(this->configFile) ;
   ValueTree        stored_config = ValueTree::invalid ;
-
   if (config_stream->openedOk()) stored_config = ValueTree::readFromStream(*config_stream) ;
   delete config_stream ;
 
@@ -182,13 +181,13 @@ DEBUG_TRACE_VERIFY_CONFIG_PRESET
 
   // transfer missing properties
   verifyPresetProperty(CONFIG::PRESET_NAME_ID         , var(CONFIG::DEFAULT_PRESET_NAME        )) ;
-  verifyPresetProperty(CONFIG::IS_SCREENCAP_ACTIVE_ID , var(CONFIG::DEFAULT_IS_SCREENCAP_ACTIVE)) ;
-  verifyPresetProperty(CONFIG::IS_CAMERA_ACTIVE_ID    , var(CONFIG::DEFAULT_IS_CAMERA_ACTIVE   )) ;
-  verifyPresetProperty(CONFIG::IS_TEXT_ACTIVE_ID      , var(CONFIG::DEFAULT_IS_TEXT_ACTIVE     )) ;
-  verifyPresetProperty(CONFIG::IS_IMAGE_ACTIVE_ID     , var(CONFIG::DEFAULT_IS_IMAGE_ACTIVE    )) ;
-  verifyPresetProperty(CONFIG::IS_PREVIEW_ACTIVE_ID   , var(CONFIG::DEFAULT_IS_PREVIEW_ACTIVE  )) ;
-  verifyPresetProperty(CONFIG::IS_AUDIO_ACTIVE_ID     , var(CONFIG::DEFAULT_IS_AUDIO_ACTIVE    )) ;
-  verifyPresetProperty(CONFIG::IS_OUTPUT_ACTIVE_ID    , var(CONFIG::DEFAULT_IS_OUTPUT_ACTIVE   )) ;
+  verifyPresetProperty(CONFIG::SCREENCAP_ID        , var(CONFIG::DEFAULT_IS_SCREENCAP_ACTIVE)) ;
+  verifyPresetProperty(CONFIG::CAMERA_ID           , var(CONFIG::DEFAULT_IS_CAMERA_ACTIVE   )) ;
+  verifyPresetProperty(CONFIG::TEXT_ID             , var(CONFIG::DEFAULT_IS_TEXT_ACTIVE     )) ;
+  verifyPresetProperty(CONFIG::IMAGE_ID            , var(CONFIG::DEFAULT_IS_IMAGE_ACTIVE    )) ;
+  verifyPresetProperty(CONFIG::PREVIEW_ID          , var(CONFIG::DEFAULT_IS_PREVIEW_ACTIVE  )) ;
+  verifyPresetProperty(CONFIG::AUDIO_ID            , var(CONFIG::DEFAULT_IS_AUDIO_ACTIVE    )) ;
+  verifyPresetProperty(CONFIG::OUTPUT_ID           , var(CONFIG::DEFAULT_IS_OUTPUT_ACTIVE   )) ;
   verifyPresetProperty(CONFIG::DISPLAY_N_ID           , var(CONFIG::DEFAULT_DISPLAY_N          )) ;
   verifyPresetProperty(CONFIG::SCREEN_N_ID            , var(CONFIG::DEFAULT_SCREEN_N           )) ;
   verifyPresetProperty(CONFIG::SCREENCAP_W_ID         , var(CONFIG::DEFAULT_SCREENCAP_W        )) ;
@@ -206,7 +205,7 @@ DEBUG_TRACE_VERIFY_CONFIG_PRESET
   verifyPresetProperty(CONFIG::MOTD_TEXT_ID           , var(CONFIG::DEFAULT_MOTD_TEXT          )) ;
   verifyPresetProperty(CONFIG::TEXT_STYLE_ID          , var(CONFIG::DEFAULT_TEXT_STYLE_IDX     )) ;
   verifyPresetProperty(CONFIG::TEXT_POSITION_ID       , var(CONFIG::DEFAULT_TEXT_POSITION_IDX  )) ;
-  verifyPresetProperty(CONFIG::IMAGE_ID               , var(CONFIG::DEFAULT_IMAGE_LOCATION     )) ;
+  verifyPresetProperty(CONFIG::IMAGE_LOC_ID           , var(CONFIG::DEFAULT_IMAGE_LOCATION     )) ;
   verifyPresetProperty(CONFIG::OUTPUT_SINK_ID         , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX    )) ;
   verifyPresetProperty(CONFIG::OUTPUT_MUXER_ID        , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX   )) ;
   verifyPresetProperty(CONFIG::OUTPUT_W_ID            , var(CONFIG::DEFAULT_OUTPUT_W           )) ;
@@ -289,10 +288,10 @@ DEBUG_TRACE_STORE_CONFIG
   listen(false) ;
 
   // filter transient data
-  var is_config_pending = this->root  [CONFIG::IS_PENDING_ID      ] ;
-  var is_output_on      = this->config[CONFIG::IS_OUTPUT_ACTIVE_ID] ;
-  this->root  .removeProperty(CONFIG::IS_PENDING_ID       , nullptr) ;
-  this->config.removeProperty(CONFIG::IS_OUTPUT_ACTIVE_ID , nullptr) ;
+  var is_config_pending = this->root  [CONFIG::IS_PENDING_ID] ;
+  var is_output_on      = this->config[CONFIG::OUTPUT_ID    ] ;
+  this->root  .removeProperty(CONFIG::IS_PENDING_ID , nullptr) ;
+  this->config.removeProperty(CONFIG::OUTPUT_ID     , nullptr) ;
 
   // append presets and servers to persistent storage (ignoring chatters)
   int n_servers = this->servers.getNumChildren() ; UndoManager undo_manager ;
@@ -313,8 +312,8 @@ DEBUG_TRACE_DUMP_CONFIG("AvCasterStore->StoreConfig()")
   while (undo_manager.canUndo()) undo_manager.undo() ;
 
   // restore transient data
-  this->root  .setProperty(CONFIG::IS_PENDING_ID       , is_config_pending , nullptr) ;
-  this->config.setProperty(CONFIG::IS_OUTPUT_ACTIVE_ID , is_output_on      , nullptr) ;
+  this->root  .setProperty(CONFIG::IS_PENDING_ID , is_config_pending , nullptr) ;
+  this->config.setProperty(CONFIG::OUTPUT_ID     , is_output_on      , nullptr) ;
 
   // re-subscribe to model change events
   listen(true) ;
@@ -519,11 +518,11 @@ void AvCasterStore::resetPreset()
   AvCaster::RefreshGui() ;
 }
 
-// TODO: GUI and model support
-// void AvCasterStore::storeServer(String host , String port , String nick , String pass)
+// TODO: GUI and model support for host , port , nick , pass , channel
+// void AvCasterStore::storeServer(String host , String port , String nick , String pass , String channel)
 void AvCasterStore::storeServer(String host , String port)
 {
-String channel = xmpp_chat ; // TODOI: GUI support for host , port , channel
+String channel = xmpp_chat ; // TODO:
 DEBUG_TRACE_STORE_SERVER
 
   Identifier server_id    = CONFIG::FilterId(host , APP::VALID_URI_CHARS) ;
@@ -544,7 +543,7 @@ DEBUG_TRACE_STORE_SERVER
 
 void AvCasterStore::listen(bool should_listen)
 {
-  if (!AvCaster::GetIsInitialized()) return ;
+  if (!AvCaster::IsInitialized) return ;
 
 DEBUG_TRACE_LISTEN
 
@@ -576,15 +575,15 @@ ValueTree AvCasterStore::getKeyNode(const Identifier& a_key)
 bool AvCasterStore::isControlKey(const Identifier& a_key)
 {
   // TODO: this could be a static Array<Identifier>
-  return a_key == CONFIG::IS_SCREENCAP_ACTIVE_ID ||
-         a_key == CONFIG::IS_CAMERA_ACTIVE_ID    ||
-         a_key == CONFIG::IS_TEXT_ACTIVE_ID      ||
-         a_key == CONFIG::IS_IMAGE_ACTIVE_ID     ||
-         a_key == CONFIG::IS_PREVIEW_ACTIVE_ID   ||
-         a_key == CONFIG::IS_AUDIO_ACTIVE_ID     ||
-         a_key == CONFIG::IS_OUTPUT_ACTIVE_ID    ||
-         a_key == CONFIG::IS_PENDING_ID          ||
-         a_key == CONFIG::PRESET_ID               ;
+  return a_key == CONFIG::SCREENCAP_ID  ||
+         a_key == CONFIG::CAMERA_ID     ||
+         a_key == CONFIG::TEXT_ID       ||
+         a_key == CONFIG::IMAGE_ID      ||
+         a_key == CONFIG::PREVIEW_ID    ||
+         a_key == CONFIG::AUDIO_ID      ||
+         a_key == CONFIG::OUTPUT_ID     ||
+         a_key == CONFIG::IS_PENDING_ID ||
+         a_key == CONFIG::PRESET_ID      ;
 }
 
 StringArray AvCasterStore::presetsNames()
@@ -651,18 +650,19 @@ DEBUG_TRACE_UPDATE_IRC_HOST
 
 #ifdef PREFIX_CHAT_NICKS
 void AvCasterStore::updateChatNicks(String host , String channel , StringArray nicks)
+#else // PREFIX_CHAT_NICKS
+void AvCasterStore::updateChatNicks(String host , StringArray nicks)
+#endif // PREFIX_CHAT_NICKS
 {
-// TODO: GUI support for bitlbee_host , xmpp_chat
+#ifdef PREFIX_CHAT_NICKS
+  // TODO: GUI support for bitlbee_host , xmpp_chat
   bool   is_lctv  = host == bitlbee_host && channel == xmpp_chat ;
   String network  = (is_lctv) ? GUI::LCTV_USER_PREFIX : GUI::IRC_USER_PREFIX ;
   String prefixed = network + "["  + nicks.joinIntoString("] " +
                     network + "[") +                      "]"  ;
   nicks           = StringArray::fromTokens(prefixed , false) ;
-
-#else // PREFIX_CHAT_NICKS
-void AvCasterStore::updateChatNicks(String host , StringArray nicks)
-{
 #endif // PREFIX_CHAT_NICKS
+
   ValueTree   server_store   = this->servers.getChildWithProperty(CONFIG::HOST_ID , host) ;
   ValueTree   chatters_store = server_store.getChildWithName(CONFIG::CHATTERS_ID) ;
   StringArray current_nicks  = getChatNicks(chatters_store) ;

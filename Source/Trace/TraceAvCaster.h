@@ -64,24 +64,24 @@ StringArray DisabledFeatures()
 
 #  if TEXT_BIN_NYI && IMAGE_BIN_NYI
 #    define DISABLE_FEATURES \
-  IsTextEnabled = false ;    \
-  IsImageEnabled = false     ;
+  Gstreamer::IsTextEnabled = false ;    \
+  Gstreamer::IsImageEnabled = false     ;
 #  else // TEXT_BIN_NYI && IMAGE_BIN_NYI
 #    if TEXT_BIN_NYI
 #      define DISABLE_FEATURES \
-  IsTextEnabled = false        ;
+  Gstreamer::IsTextEnabled = false        ;
 #    endif // TEXT_BIN_NYI
 #    if IMAGE_BIN_NYI
 #      define DISABLE_FEATURES \
-  IsImageEnabled = false       ;
+  Gstreamer::IsImageEnabled = false       ;
 #    endif // IMAGE_BIN_NYI
 #  endif // TEXT_BIN_NYI && IMAGE_BIN_NYI
 
-#  define DEBUG_DISABLE_FEATURES DISABLE_FEATURES                           \
-  StringArray disabled_features = DisabledFeatures() ;                      \
-  if (!!disabled_features.size() || !IsTextEnabled || !IsImageEnabled)      \
-    Trace::TraceState("disabling some features per #define constants") ;    \
-  CliParams.addArray(disabled_features) ; CliParams.removeDuplicates(false) ;
+#  define DEBUG_DISABLE_FEATURES DISABLE_FEATURES                                            \
+  StringArray disabled_features = DisabledFeatures() ;                                       \
+  if (!!disabled_features.size() || !Gstreamer::IsTextEnabled || !Gstreamer::IsImageEnabled) \
+    Trace::TraceState("disabling some features per #define constants") ;                     \
+  CliParams.addArray(disabled_features) ; CliParams.removeDuplicates(false)                  ;
   // CliParams.mergeArray(DisabledFeatures()) ; // TODO: new feature after upgrade
 
 
@@ -128,13 +128,13 @@ StringArray DisabledFeatures()
                       "\n\tAPP::N_COMPOSITOR_INPUTS=" + String(APP::N_COMPOSITOR_INPUTS) + \
                       "\n\tn_video_inputs="           + String(n_video_inputs          ) + \
                       "\n\tIsMediaEnabled="           + String(IsMediaEnabled          ) + \
-                      "\n\tIsScreenEnabled="          + String(IsScreenEnabled         ) + \
-                      "\n\tIsCameraEnabled="          + String(IsCameraEnabled         ) + \
-                      "\n\tIsTextEnabled="            + String(IsTextEnabled           ) + \
-                      "\n\tIsImageEnabled="           + String(IsImageEnabled          ) + \
-                      "\n\tIsCompositorEnabled="      + String(IsCompositorEnabled     ) + \
-                      "\n\tIsPreviewEnabled="         + String(IsPreviewEnabled        ) + \
-                      "\n\tIsAudioEnabled="           + String(IsAudioEnabled          ) + \
+                      "\n\tis_screen_enabled="        + String(is_screen_enabled       ) + \
+                      "\n\tis_camera_enabled="        + String(is_camera_enabled       ) + \
+                      "\n\tis_text_enabled="          + String(is_text_enabled         ) + \
+                      "\n\tis_image_enabled="         + String(is_image_enabled        ) + \
+                      "\n\tis_compositor_enabled="    + String(is_compositor_enabled   ) + \
+                      "\n\tis_preview_enabled="       + String(is_preview_enabled      ) + \
+                      "\n\tis_audio_enabled="         + String(is_audio_enabled        ) + \
                       "\n\tIsChatEnabled="            + String(IsChatEnabled           ) + \
                       "\n\tis_sane="                  + String(is_sane                 ) ) ;
 
@@ -158,7 +158,7 @@ StringArray DisabledFeatures()
 
 /* config */
 
-#  define DEBUG_TRACE_SET_CONFIG                                              \
+#  define DEBUG_TRACE_GUI_SET_CONFIG                                          \
   String    key        = (a_key.isValid()) ? String(a_key) : String("NULL") ; \
   ValueTree node       = Store->getKeyNode(a_key) ;                           \
   String    change_msg = "key '"             + key                 +          \

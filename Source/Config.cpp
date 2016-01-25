@@ -1041,7 +1041,7 @@ void Config::buttonClicked (Button* buttonThatWasClicked)
       FileChooser chooser(GUI::IMAGE_CHOOSER_TEXT , APP::HOME_DIR , APP::IMG_FILE_EXTS) ;
       if (!chooser.browseForFileToOpen()) return ;
 
-      key   = CONFIG::IMAGE_ID ;
+      key   = CONFIG::IMAGE_LOC_ID ;
       value = var(chooser.getResult().getFullPathName()) ;
 
         //[/UserButtonCode_browseButton]
@@ -1069,23 +1069,28 @@ void Config::buttonClicked (Button* buttonThatWasClicked)
 
 void Config::broughtToFront() { loadConfig() ; }
 
+void Config::textEditorTextChanged(TextEditor& a_text_editor)
+{
+  if (&a_text_editor == this->outputDestText) validateOutputDest() ;
+}
+
 void Config::textEditorFocusLost(TextEditor& a_text_editor)
 {
   TextEditor* ed      = &a_text_editor ;
-  var         str_var = var(ed->getText()) ;
-  var         int_var = var(ed->getText().getIntValue()) ;
+  var         str_val = var(ed->getText()) ;
+  var         int_val = var(ed->getText().getIntValue()) ;
   Identifier  key ;
   var         value ;
 
-  if      (ed == this->screenWidthText ) { key = CONFIG::SCREENCAP_W_ID ;  value = int_var ; }
-  else if (ed == this->screenHeightText) { key = CONFIG::SCREENCAP_H_ID ;  value = int_var ; }
-  else if (ed == this->xOffsetText     ) { key = CONFIG::OFFSET_X_ID ;     value = int_var ; }
-  else if (ed == this->yOffsetText     ) { key = CONFIG::OFFSET_Y_ID ;     value = int_var ; }
-  else if (ed == this->motdText        ) { key = CONFIG::MOTD_TEXT_ID ;    value = str_var ; }
-  else if (ed == this->interstitialText) { key = CONFIG::IMAGE_ID ; value = str_var ; }
-  else if (ed == this->outputWidthText ) { key = CONFIG::OUTPUT_W_ID ;     value = int_var ; }
-  else if (ed == this->outputHeightText) { key = CONFIG::OUTPUT_H_ID ;     value = int_var ; }
-  else if (ed == this->outputDestText  ) { key = CONFIG::OUTPUT_DEST_ID ;  value = str_var ; }
+  if      (ed == this->screenWidthText ) { key = CONFIG::SCREENCAP_W_ID ;  value = int_val ; }
+  else if (ed == this->screenHeightText) { key = CONFIG::SCREENCAP_H_ID ;  value = int_val ; }
+  else if (ed == this->xOffsetText     ) { key = CONFIG::OFFSET_X_ID ;     value = int_val ; }
+  else if (ed == this->yOffsetText     ) { key = CONFIG::OFFSET_Y_ID ;     value = int_val ; }
+  else if (ed == this->motdText        ) { key = CONFIG::MOTD_TEXT_ID ;    value = str_val ; }
+  else if (ed == this->interstitialText) { key = CONFIG::IMAGE_LOC_ID ;    value = str_val ; }
+  else if (ed == this->outputWidthText ) { key = CONFIG::OUTPUT_W_ID ;     value = int_val ; }
+  else if (ed == this->outputHeightText) { key = CONFIG::OUTPUT_H_ID ;     value = int_val ; }
+  else if (ed == this->outputDestText  ) { key = CONFIG::OUTPUT_DEST_ID ;  value = str_val ; }
   else                                   return ;
 
   AvCaster::SetConfig(key , value) ;
@@ -1146,7 +1151,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   int    text_style_idx    = int   (config_store[CONFIG::TEXT_STYLE_ID   ]) ;
   int    text_pos_idx      = int   (config_store[CONFIG::TEXT_POSITION_ID]) ;
   String motd_text         = STRING(config_store[CONFIG::MOTD_TEXT_ID    ]) ;
-  String interstitial_text = STRING(config_store[CONFIG::IMAGE_ID ]) ;
+  String interstitial_text = STRING(config_store[CONFIG::IMAGE_LOC_ID    ]) ;
   int    output_idx        = int   (config_store[CONFIG::OUTPUT_SINK_ID  ]) ;
   String output_w_text     = STRING(config_store[CONFIG::OUTPUT_W_ID     ]) ;
   String output_h_text     = STRING(config_store[CONFIG::OUTPUT_H_ID     ]) ;
@@ -1219,7 +1224,7 @@ void Config::enableComponents()
   this->audioCodecCombo->setEnabled(!is_static_preset) ; // TODO: videoCodecCombo
   this->outputSinkCombo->setEnabled(!is_static_preset) ; // TODO: outputMuxerCombo
 
-#ifdef DISABLE_GUI_CONTROLS_NYI
+#ifdef DISABLE_GUI_CONFIG_NYI
 this->displaySlider   ->setEnabled(false) ;
 this->screenSlider    ->setEnabled(false) ;
 this->xOffsetText     ->setEnabled(false) ;
@@ -1232,7 +1237,28 @@ this->textStyleCombo  ->setEnabled(false) ;
 this->textPosCombo    ->setEnabled(false) ;
 this->interstitialText->setEnabled(false) ;
 this->browseButton    ->setEnabled(false) ;
-#endif // DISABLE_GUI_CONTROLS_NYI
+#endif // DISABLE_GUI_CONFIG_NYI
+}
+
+bool Config::validateOutputDest()
+{
+  String dest_text = this->outputDestText->getText()  ;
+  bool   is_valid  = dest_text.containsOnly(APP::VALID_URI_CHARS) ;
+  Colour fg_color  = (is_valid) ? GUI::TEXT_NORMAL_COLOR : GUI::TEXT_INVALID_COLOR ;
+  Colour bg_color  = (is_valid) ? GUI::TEXT_BG_COLOR     : GUI::TEXT_INVALID_BG_COLOR ;
+
+  this->outputDestText->setText  (dest_text.trim()) ;
+  this->outputDestText->setColour(ComboBox::textColourId       , fg_color) ;
+  this->outputDestText->setColour(ComboBox::backgroundColourId , bg_color) ;
+
+  return is_valid ;
+}
+
+bool Config::validateConfigGui()
+{
+  bool is_sane = validateOutputDest() ;
+
+  return is_sane ;
 }
 
 //[/MiscUserCode]

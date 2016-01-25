@@ -1,21 +1,20 @@
-/*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Introjucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Introjucer version: 3.1.1
-
-  ------------------------------------------------------------------------------
-
-  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
-
-  ==============================================================================
-*/
+/*\
+|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|
+|*|  This file is part of the AvCaster program.
+|*|
+|*|  AvCaster is free software: you can redistribute it and/or modify
+|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  as published by the Free Software Foundation.
+|*|
+|*|  AvCaster is distributed in the hope that it will be useful,
+|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
+|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+|*|  GNU Lesser General Public License for more details.
+|*|
+|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
+\*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -175,7 +174,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_screencapToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_SCREENCAP_ACTIVE_ID ;
+      key = CONFIG::SCREENCAP_ID ;
 
         //[/UserButtonCode_screencapToggle]
     }
@@ -183,7 +182,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_cameraToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_CAMERA_ACTIVE_ID ;
+      key = CONFIG::CAMERA_ID ;
 
         //[/UserButtonCode_cameraToggle]
     }
@@ -191,7 +190,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_textToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_TEXT_ACTIVE_ID ;
+      key = CONFIG::TEXT_ID ;
 
         //[/UserButtonCode_textToggle]
     }
@@ -199,7 +198,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_interstitialToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_IMAGE_ACTIVE_ID ;
+      key = CONFIG::IMAGE_ID ;
 
         //[/UserButtonCode_interstitialToggle]
     }
@@ -207,7 +206,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_previewToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_PREVIEW_ACTIVE_ID ;
+      key = CONFIG::PREVIEW_ID ;
 
         //[/UserButtonCode_previewToggle]
     }
@@ -215,7 +214,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_audioToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_AUDIO_ACTIVE_ID ;
+      key = CONFIG::AUDIO_ID ;
 
         //[/UserButtonCode_audioToggle]
     }
@@ -223,7 +222,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_outputToggle] -- add your button handler code here..
 
-      key = CONFIG::IS_OUTPUT_ACTIVE_ID ;
+      key = CONFIG::OUTPUT_ID ;
 
         //[/UserButtonCode_outputToggle]
     }
@@ -278,20 +277,17 @@ void Controls::broughtToFront() { loadConfig() ; }
 void Controls::loadConfig()
 {
   ValueTree config_store       = AvCaster::GetConfigStore() ;
-  bool      is_media_enabled   = AvCaster::GetIsMediaEnabled() ;
-  bool      is_screen_enabled  = AvCaster::GetIsScreenEnabled() ;
-  bool      is_camera_enabled  = AvCaster::GetIsCameraEnabled() ;
-  bool      is_text_enabled    = AvCaster::GetIsTextEnabled() ;
-  bool      is_image_enabled   = AvCaster::GetIsImageEnabled() ;
-  bool      is_preview_enabled = AvCaster::GetIsPreviewEnabled() ;
-  bool      is_audio_enabled   = AvCaster::GetIsAudioEnabled() ;
-  bool      is_screencap_on    = bool(config_store[CONFIG::IS_SCREENCAP_ACTIVE_ID]) ;
-  bool      is_camera_on       = bool(config_store[CONFIG::IS_CAMERA_ACTIVE_ID   ]) ;
-  bool      is_text_on         = bool(config_store[CONFIG::IS_TEXT_ACTIVE_ID     ]) ;
-  bool      is_interstitial_on = bool(config_store[CONFIG::IS_IMAGE_ACTIVE_ID    ]) ;
-  bool      is_preview_on      = bool(config_store[CONFIG::IS_PREVIEW_ACTIVE_ID  ]) ;
-  bool      is_audio_on        = bool(config_store[CONFIG::IS_AUDIO_ACTIVE_ID    ]) ;
-  bool      is_output_on       = bool(config_store[CONFIG::IS_OUTPUT_ACTIVE_ID   ]) ;
+  bool      is_screencap_on    = bool(config_store[CONFIG::SCREENCAP_ID  ]) ;
+  bool      is_camera_on       = bool(config_store[CONFIG::CAMERA_ID     ]) ;
+  bool      is_text_on         = bool(config_store[CONFIG::TEXT_ID       ]) ;
+  bool      is_interstitial_on = bool(config_store[CONFIG::IMAGE_ID      ]) ;
+  bool      is_preview_on      = bool(config_store[CONFIG::PREVIEW_ID    ]) ;
+  bool      is_audio_on        = bool(config_store[CONFIG::AUDIO_ID      ]) ;
+  bool      is_output_on       = bool(config_store[CONFIG::OUTPUT_ID     ]) ;
+  int       sink_idx           = int (config_store[CONFIG::OUTPUT_SINK_ID]) ;
+  String    xmit_btn_text      = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
+                                 (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
+                                                                         String::empty       ;
 
   this->screencapToggle   ->setToggleState  (is_screencap_on    , juce::dontSendNotification) ;
   this->cameraToggle      ->setToggleState  (is_camera_on       , juce::dontSendNotification) ;
@@ -300,21 +296,8 @@ void Controls::loadConfig()
   this->previewToggle     ->setToggleState  (is_preview_on      , juce::dontSendNotification) ;
   this->audioToggle       ->setToggleState  (is_audio_on        , juce::dontSendNotification) ;
   this->outputToggle      ->setToggleState  (is_output_on       , juce::dontSendNotification) ;
+  this->outputToggle      ->setButtonText   (xmit_btn_text) ;
   this->mainContent       ->loadPresetsCombo(this->presetsCombo) ;
-
-  // disable controls per cli args
-  this->screencapToggle   ->setEnabled(is_screen_enabled ) ;
-  this->cameraToggle      ->setEnabled(is_camera_enabled ) ;
-  this->textToggle        ->setEnabled(is_text_enabled   ) ;
-  this->interstitialToggle->setEnabled(is_image_enabled  ) ;
-  this->previewToggle     ->setEnabled(is_preview_enabled) ;
-  this->audioToggle       ->setEnabled(is_audio_enabled  ) ;
-  this->outputToggle      ->setEnabled(is_media_enabled  ) ;
-
-#ifdef DISABLE_GUI_CONTROLS_NYI
-this->textToggle        ->setEnabled(false) ;
-this->interstitialToggle->setEnabled(false) ;
-#endif // DISABLE_GUI_CONTROLS_NYI
 }
 
 //[/MiscUserCode]

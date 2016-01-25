@@ -61,8 +61,9 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  void broughtToFront() override ;
-  void textEditorFocusLost(TextEditor& a_text_editor) override ;
+  void broughtToFront       ()                          override ;
+  void textEditorTextChanged(TextEditor& a_text_editor) override ;
+  void textEditorFocusLost  (TextEditor& a_text_editor) override ;
 
   void configureSlider    (Slider* a_slider) ;
   void configureTextEditor(TextEditor*  a_text_editor , int max_n_chars ,
@@ -70,6 +71,15 @@ private:
   void configureCombobox  (ComboBox* a_combobox) ;
   void loadConfig         () ;
   void enableComponents   () ;
+  bool validateOutputDest () ;
+
+
+public:
+
+  bool validateConfigGui() ;
+
+
+private:
 
     //[/UserVariables]
 

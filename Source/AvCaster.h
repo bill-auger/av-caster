@@ -69,46 +69,37 @@ public:
   static void                             OnModalDismissed(int result , int unused) ;
 
   // getters/setters
-  static bool           GetIsInitialized      () ;
-  static bool           GetIsMediaEnabled     () ;
-  static bool           GetIsScreenEnabled    () ;
-  static bool           GetIsCameraEnabled    () ;
-  static bool           GetIsTextEnabled      () ;
-  static bool           GetIsImageEnabled     () ;
-  static bool           GetIsCompositorEnabled() ;
-  static bool           GetIsPreviewEnabled   () ;
-  static bool           GetIsAudioEnabled     () ;
-  static bool           GetIsChatEnabled      () ;
-  static Rectangle<int> GetPreviewBounds      () ;
-  static void           SetConfig             (const Identifier& a_key , var a_value) ;
-  static ValueTree      GetConfigStore        () ;
-  static void           DeactivateControl     (const Identifier& a_key) ;
-  static void           StorePreset           (String preset_name) ;
-  static void           RenamePreset          (String preset_name) ;
-  static void           DeletePreset          () ;
-  static void           ResetPreset           () ;
-  static bool           SetPreset             (String preset_name , int option_n) ;
-  static bool           RejectPresetChange    () ;
-  static bool           IsStaticPreset        () ;
-  static int            GetPresetIdx          () ;
-  static String         GetPresetName         () ;
-  static bool           GetIsPreviewActive    () ;
-  static bool           GetIsConfigPending    () ;
-  static StringArray    GetPresetsNames       () ;
-  static StringArray    GetCameraNames        () ;
-  static StringArray    GetAudioNames         () ;
-  static StringArray    GetCameraResolutions  () ;
-  static String         GetCameraResolution   () ;
-  static String         GetCameraPath         () ;
-  static int            GetCameraRate         () ;
-  static String         GetVersionString      () ;
-  static void           UpdateIrcHost         (StringArray alias_uris , String actual_host) ;
+  static Rectangle<int> GetPreviewBounds    () ;
+  static void           SetConfig           (const Identifier& a_key , var a_value) ;
+  static ValueTree      GetConfigStore      () ;
+  static void           DeactivateControl   (const Identifier& a_key) ;
+  static void           StorePreset         (String preset_name) ;
+  static void           RenamePreset        (String preset_name) ;
+  static void           DeletePreset        () ;
+  static void           ResetPreset         () ;
+  static bool           SetPreset           (String preset_name , int option_n) ;
+  static bool           RejectPresetChange  () ;
+  static bool           IsConfigGuiSane     () ;
+  static bool           IsStaticPreset      () ;
+  static int            GetPresetIdx        () ;
+  static String         GetPresetName       () ;
+  static bool           GetIsPreviewActive  () ;
+  static bool           GetIsConfigPending  () ;
+  static StringArray    GetPresetsNames     () ;
+  static StringArray    GetCameraNames      () ;
+  static StringArray    GetAudioNames       () ;
+  static StringArray    GetCameraResolutions() ;
+  static String         GetCameraResolution () ;
+  static String         GetCameraPath       () ;
+  static int            GetCameraRate       () ;
+  static String         GetVersionString    () ;
+  static void           UpdateIrcHost       (StringArray alias_uris , String actual_host) ;
 #ifdef PREFIX_CHAT_NICKS
-  static void           UpdateChatNicks       (String host , String channel , StringArray nicks) ;
+  static void           UpdateChatNicks     (String host , String channel , StringArray nicks) ;
 #else // PREFIX_CHAT_NICKS
-  static void           UpdateChatNicks       (String host , StringArray nicks) ;
+  static void           UpdateChatNicks     (String host , StringArray nicks) ;
 #endif // PREFIX_CHAT_NICKS
-  static StringArray    GetChatNicks          (ValueTree chatters_store) ;
+  static StringArray    GetChatNicks        (ValueTree chatters_store) ;
 
 
 private:
@@ -145,13 +136,6 @@ private:
   // runtime features
   static bool IsInitialized ;
   static bool IsMediaEnabled ;
-  static bool IsScreenEnabled ;
-  static bool IsCameraEnabled ;
-  static bool IsTextEnabled ;
-  static bool IsImageEnabled ;
-  static bool IsCompositorEnabled ;
-  static bool IsPreviewEnabled ;
-  static bool IsAudioEnabled ;
   static bool IsChatEnabled ;
 } ;
 

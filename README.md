@@ -76,10 +76,11 @@ $ makepkg --install ./PKGCONFIG
 ### build dependencies ###
 $ sudo apt-get install build-essential libfreetype6-dev libgstreamer-plugins-base1.0-dev \
                        libx11-dev libxcursor-dev libxinerama-dev
-### runtime dependencies (Debian 'unstable' , Ubuntu 'wily universe') ###
-$ sudo apt-get install freeglut3 gstreamer1.0-plugins-bad gstreamer1.0-plugins-good \
-                       gstreamer1.0-plugins-ugly libfreetype6 libgl1-mesa-glx       \
-                       libx11-6 libxcomposite1 libxcursor1 libxext6                 \
+### runtime dependencies (Debian 'testing/unstable' , Ubuntu 'wily universe') ###
+$ sudo apt-get install freeglut3 gstreamer1.0-alsa gstreamer1.0-plugins-bad \
+                       gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly  \
+                       gstreamer1.0-pulseaudio libfreetype6 libgl1-mesa-glx \
+                       libx11-6 libxcomposite1 libxcursor1 libxext6         \
                        libxinerama1 libxrender1
 ### compile ###
 $ cd Builds/Makefile

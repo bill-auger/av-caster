@@ -29,23 +29,16 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 /* AvCaster private class variables */
 
-MainContent*             AvCaster::Gui                 = nullptr ; // Initialize()
+MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
 #ifndef DISABLE_CHAT
-ScopedPointer<IrcClient> AvCaster::Irc                 = nullptr ; // Initialize()
+ScopedPointer<IrcClient> AvCaster::Irc            = nullptr ; // Initialize()
 #endif // DISABLE_CHAT
-StringArray              AvCaster::CliParams ;                     // Initialize()
-bool                     AvCaster::IsInitialized       = false ;   // Initialize()
-bool                     AvCaster::IsMediaEnabled      = true ;    // HandleCliParamsPreInit()
-bool                     AvCaster::IsScreenEnabled     = true ;    // HandleCliParamsPreInit()
-bool                     AvCaster::IsCameraEnabled     = true ;    // HandleCliParamsPreInit()
-bool                     AvCaster::IsTextEnabled       = true ;    // HandleCliParamsPreInit()
-bool                     AvCaster::IsImageEnabled      = true ;    // HandleCliParamsPreInit()
-bool                     AvCaster::IsCompositorEnabled = true ;    // HandleCliParamsPreInit()
-bool                     AvCaster::IsPreviewEnabled    = true ;    // HandleCliParamsPreInit()
-bool                     AvCaster::IsAudioEnabled      = true ;    // HandleCliParamsPreInit()
-bool                     AvCaster::IsChatEnabled       = true ;    // HandleCliParamsPreInit()
-Array<Alert*>            AvCaster::Alerts ;                        // Warning() , Error()
-bool                     AvCaster::IsAlertModal        = false ;   // GetModalCb() , OnModalDismissed()
+StringArray              AvCaster::CliParams ;                // Initialize()
+bool                     AvCaster::IsInitialized  = false ;   // Initialize()
+bool                     AvCaster::IsMediaEnabled = true ;    // ProcessCliParams()
+bool                     AvCaster::IsChatEnabled  = true ;    // ProcessCliParams()
+Array<Alert*>            AvCaster::Alerts ;                   // Warning() , Error()
+bool                     AvCaster::IsAlertModal   = false ;   // GetModalCb() , OnModalDismissed()
 
 
 /* AvCaster public class methods */
@@ -80,31 +73,11 @@ ModalComponentManager::Callback* AvCaster::GetModalCb()
 
 void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
-bool AvCaster::GetIsInitialized() { return IsInitialized ; }
-
-bool AvCaster::GetIsMediaEnabled() { return IsMediaEnabled ; }
-
-bool AvCaster::GetIsScreenEnabled() { return IsScreenEnabled ; }
-
-bool AvCaster::GetIsCameraEnabled() { return IsCameraEnabled ; }
-
-bool AvCaster::GetIsTextEnabled() { return IsTextEnabled ; }
-
-bool AvCaster::GetIsImageEnabled() { return IsImageEnabled ; }
-
-bool AvCaster::GetIsCompositorEnabled() { return IsCompositorEnabled ; }
-
-bool AvCaster::GetIsPreviewEnabled() { return IsPreviewEnabled ; }
-
-bool AvCaster::GetIsAudioEnabled() { return IsAudioEnabled ; }
-
-bool AvCaster::GetIsChatEnabled() { return IsChatEnabled ; }
-
 Rectangle<int> AvCaster::GetPreviewBounds() { return Gui->getPreviewBounds() ; }
 
 void AvCaster::SetConfig(const Identifier& a_key , var a_value)
 {
-DEBUG_TRACE_SET_CONFIG
+DEBUG_TRACE_GUI_SET_CONFIG
 
   Store->setConfig(a_key , a_value) ;
 }
@@ -148,7 +121,7 @@ DEBUG_TRACE_HANDLE_PRESETCOMBO
 
 bool AvCaster::RejectPresetChange()
 {
-  bool is_output_on = bool(Store->config[CONFIG::IS_OUTPUT_ACTIVE_ID]) ;
+  bool is_output_on = bool(Store->config[CONFIG::OUTPUT_ID]) ;
 
 DEBUG_TRACE_REJECT_CONFIG_CHANGE
 
@@ -156,6 +129,8 @@ DEBUG_TRACE_REJECT_CONFIG_CHANGE
 
   return is_output_on ;
 }
+
+bool AvCaster::IsConfigGuiSane() { return Gui->config->validateConfigGui() ; }
 
 bool AvCaster::IsStaticPreset() { return AvCaster::GetPresetIdx() < CONFIG::N_STATIC_PRESETS ; }
 
@@ -170,7 +145,7 @@ String AvCaster::GetPresetName()
 
 bool AvCaster::GetIsPreviewActive()
 {
-  return bool(Store->config[CONFIG::IS_PREVIEW_ACTIVE_ID]) && !GetIsConfigPending() ;
+  return bool(Store->config[CONFIG::PREVIEW_ID]) && !GetIsConfigPending() ;
 }
 
 bool AvCaster::GetIsConfigPending() { return bool(Store->root[CONFIG::IS_PENDING_ID]) ; }
@@ -239,14 +214,15 @@ void AvCaster::RenameServer(String requested_host , String actual_host)
 void AvCaster::UpdateChatNicks(String host , String channel , StringArray nicks)
 {
   Store->updateChatNicks(host , channel , nicks) ;
+  const MessageManagerLock mmLock ; Gui->chat->updateVisiblilty() ;
+}
 #else // PREFIX_CHAT_NICKS
 void AvCaster::UpdateChatNicks(String host , StringArray nicks)
 {
   Store->updateChatNicks(host , nicks) ;
-#endif // PREFIX_CHAT_NICKS
-
   const MessageManagerLock mmLock ; Gui->chat->updateVisiblilty() ;
 }
+#endif // PREFIX_CHAT_NICKS
 
 StringArray AvCaster::GetChatNicks(ValueTree chatters_store)
 {
@@ -286,13 +262,13 @@ DEBUG_TRACE_INIT_PHASE_3
 DEBUG_TRACE_INIT_PHASE_4
 
   // initialize libgtreamer
-  if (GetIsMediaEnabled() && !Gstreamer::Initialize(Gui->getWindowHandle())) return false ;
+  if (IsMediaEnabled && !Gstreamer::Initialize(Gui->getWindowHandle())) return false ;
 
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libircclient
 #ifndef DISABLE_CHAT
-  if (GetIsChatEnabled() && (Irc = new IrcClient(Store->servers)) == nullptr) return false ;
+  if (IsChatEnabled && (Irc = new IrcClient(Store->servers)) == nullptr) return false ;
 #endif // DISABLE_CHAT
 
 DEBUG_TRACE_INIT_PHASE_6
@@ -316,14 +292,14 @@ DEBUG_TRACE_SHUTDOWN_PHASE_1
 
 #ifndef DISABLE_CHAT
   // shutdown network
-  if (GetIsChatEnabled() && Irc != nullptr && Irc->isThreadRunning()) Irc->stopThread(500) ;
+  if (IsChatEnabled && Irc != nullptr && Irc->isThreadRunning()) Irc->stopThread(500) ;
   Irc = nullptr ;
 #endif // DISABLE_CHAT
 
 DEBUG_TRACE_SHUTDOWN_PHASE_2
 
   // shutdown media
-  if (GetIsMediaEnabled()) Gstreamer::Shutdown() ;
+  if (IsMediaEnabled) Gstreamer::Shutdown() ;
 
 DEBUG_TRACE_SHUTDOWN_PHASE_3
 
@@ -373,8 +349,9 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 
 void AvCaster::RefreshGui()
 {
-  bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID       ]) ;
-  bool       is_preview_on     = bool(Store->config[CONFIG::IS_PREVIEW_ACTIVE_ID]) && IsPreviewEnabled ;
+  bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID]) ;
+  bool       is_preview_on     = bool(Store->config[CONFIG::PREVIEW_ID   ]) &&
+                                 Gstreamer::IsPreviewEnabled                 ;
   Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets ) :
                                                        static_cast<Component*>(Gui->controls) ;
   Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config ) :
@@ -393,10 +370,10 @@ DEBUG_TRACE_REFRESH_GUI
 
 void AvCaster::RefreshStatus()
 {
-  bool   is_output_active = bool(Store->config[CONFIG::IS_OUTPUT_ACTIVE_ID]) ;
-  int    sink_idx         = int (Store->config[CONFIG::OUTPUT_SINK_ID     ]) ;
+  bool   is_output_active = bool(Store->config[CONFIG::OUTPUT_ID     ]) ;
+  int    sink_idx         = int (Store->config[CONFIG::OUTPUT_SINK_ID]) ;
   String title_text       = APP::APP_NAME + " - " ;
-  String status_text ;
+  String status_text      = String::empty ;
 
   // titlebar text
   if      (!is_output_active                  ) title_text += GUI::IDLE_TITLE_TEXT ;
@@ -405,7 +382,7 @@ void AvCaster::RefreshStatus()
   else                                          return ;
 
   // statusbar text
-  if (GetIsInitialized()) status_text = GUI::READY_STATUS_TEXT ;
+  if (IsInitialized) status_text = GUI::READY_STATUS_TEXT ;
 
   Gui->getTopLevelComponent()->setName   (title_text ) ;
   Gui->statusbar             ->setStatusL(status_text) ;
@@ -455,29 +432,39 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
   }
 
   // disable features
+  bool& is_screen_enabled     = Gstreamer::IsScreenEnabled ;
+  bool& is_camera_enabled     = Gstreamer::IsCameraEnabled ;
+  bool& is_text_enabled       = Gstreamer::IsTextEnabled ;
+  bool& is_image_enabled      = Gstreamer::IsImageEnabled ;
+  bool& is_compositor_enabled = Gstreamer::IsCompositorEnabled ;
+  bool& is_preview_enabled    = Gstreamer::IsPreviewEnabled ;
+  bool& is_audio_enabled      = Gstreamer::IsAudioEnabled ;
   for (String* token = CliParams.begin() ; token != CliParams.end() ; ++token)
     if      (*token == APP::CLI_DISABLE_MEDIA_TOKEN  )
-      IsMediaEnabled = IsScreenEnabled     = IsCameraEnabled  = IsTextEnabled  =
-      IsImageEnabled = IsCompositorEnabled = IsPreviewEnabled = IsAudioEnabled = false ;
+      IsMediaEnabled   = is_screen_enabled     = is_camera_enabled  = is_text_enabled  =
+      is_image_enabled = is_compositor_enabled = is_preview_enabled = is_audio_enabled = false ;
     else if (*token == APP::CLI_SCREEN_ONLY_TOKEN    )
-      IsCameraEnabled = IsTextEnabled   = IsImageEnabled = false ;
+      is_camera_enabled = is_text_enabled   = is_image_enabled = false ;
     else if (*token == APP::CLI_CAMERA_ONLY_TOKEN    )
-      IsScreenEnabled = IsTextEnabled   = IsImageEnabled = false ;
-//     else if (*token == APP::CLI_TEXT_ONLY_TOKEN      )
-//       IsScreenEnabled = IsCameraEnabled = IsImageEnabled = false ;
-//     else if (*token == APP::CLI_IMAGE_ONLY_TOKEN     )
-//       IsScreenEnabled = IsCameraEnabled = IsTextEnabled  = false ;
-    else if (*token == APP::CLI_DISABLE_PREVIEW_TOKEN) IsPreviewEnabled = false ;
-    else if (*token == APP::CLI_DISABLE_AUDIO_TOKEN  ) IsAudioEnabled   = false ;
-    else if (*token == APP::CLI_DISABLE_CHAT_TOKEN   ) IsChatEnabled    = false ;
+      is_screen_enabled = is_text_enabled   = is_image_enabled = false ;
+    else if (*token == APP::CLI_TEXT_ONLY_TOKEN      )
+      is_screen_enabled = is_camera_enabled = is_image_enabled = false ;
+    else if (*token == APP::CLI_IMAGE_ONLY_TOKEN     )
+      is_screen_enabled = is_camera_enabled = is_text_enabled  = false ;
+    else if (*token == APP::CLI_DISABLE_PREVIEW_TOKEN) is_preview_enabled = false ;
+    else if (*token == APP::CLI_DISABLE_AUDIO_TOKEN  ) is_audio_enabled   = false ;
+    else if (*token == APP::CLI_DISABLE_CHAT_TOKEN   ) IsChatEnabled      = false ;
 
   // assert dependent compositor elements (TODO: remove these restrictions allowing any configuration)
-  int n_video_inputs  = static_cast<int>(IsScreenEnabled) + static_cast<int>(IsCameraEnabled) +
-                        static_cast<int>(IsTextEnabled  ) + static_cast<int>(IsImageEnabled ) ;
-  IsCompositorEnabled = n_video_inputs == APP::N_COMPOSITOR_INPUTS ;
-  IsPreviewEnabled    = IsCompositorEnabled && IsPreviewEnabled ;
-  bool is_sane        = !IsMediaEnabled || IsCompositorEnabled || n_video_inputs == 1 ;
+  int n_video_inputs    = ((is_screen_enabled) ? 1 : 0) + ((is_camera_enabled) ? 1 : 0) +
+                          ((is_text_enabled  ) ? 1 : 0) + ((is_image_enabled ) ? 1 : 0) ;
+  is_compositor_enabled = n_video_inputs == APP::N_COMPOSITOR_INPUTS ;
+  is_preview_enabled    = is_preview_enabled && is_compositor_enabled ;
+  bool is_sane          = !IsMediaEnabled || is_compositor_enabled || n_video_inputs == 1 ;
 
+  Gui->disableControls(IsMediaEnabled   , is_screen_enabled , is_camera_enabled  ,
+                       is_text_enabled  , is_image_enabled  , is_preview_enabled ,
+                       is_audio_enabled                                          ) ;
 
 DUMP_DEBUG_MEDIA_SWITCHES
 

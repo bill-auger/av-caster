@@ -62,21 +62,19 @@ private:
   static GstElement* ConfigureOutput () ;
 
   // element configuration
-  static void ConfigureCaps          (GstElement* a_capsfilter , GstCaps* a_caps) ;
+  static void ConfigureCaps          (GstElement* a_capsfilter , String caps_str) ;
   static void ConfigureQueue         (GstElement* a_queue  , guint max_bytes  ,
                                       guint64     max_time , guint max_buffers) ;
   static void ConfigureScreenSource  (GstElement* a_screen_source ,
-                                      guint       capture_w       , guint capture_h ,
-                                      guint       pattern_n       , bool  is_active ) ;
-  static void ConfigureCameraSource  (GstElement* a_camera_source , String device_path ,
-                                      guint       pattern_n       , bool   is_active   ) ;
+                                      guint       capture_w       , guint capture_h) ;
+  static void ConfigureCameraSource  (GstElement* a_camera_source , String device_path) ;
   static void ConfigureTestVideo     (GstElement* a_test_source , guint pattern_n) ;
   static void ConfigureTextSource    (GstElement* a_text_source , String font_desc) ;
   static void ConfigureFileSource    (GstElement* a_file_source , String file_path) ;
   static void ConfigureCompositor    (GstElement* a_compositor , guint background_n) ;
   static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
   static bool ConfigureVideoSink     (GstElement* a_video_sink) ;
-  static void ConfigureFauxSource    (GstElement* a_faux_source) ;
+  static void ConfigureTestAudio     (GstElement* a_test_source) ;
   static void ConfigureX264Encoder   (GstElement* an_x264_encoder , guint bitrate) ;
   static void ConfigureLameEncoder   (GstElement* a_lame_encoder , guint bitrate) ;
   static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
@@ -123,7 +121,7 @@ private:
   static String MakeAudioCapsString (String format , int samplerate , int n_channels) ;
   static String MakeH264CapsString  (int output_w , int output_h , int framerate) ;
   static String MakeMp3CapsString   (int samplerate , int n_channels) ;
-  static String MakeLctvUrl         (String dest) ;
+  static String MakeRtmpUrl         (String dest) ;
 
   // getters/setters
   static String GetElementId(GstElement* an_element) ;
@@ -157,7 +155,7 @@ private:
   static GstElement* AudioAlsaSource ;
   static GstElement* AudioPulseSource ;
   static GstElement* AudioJackSource ;
-  static GstElement* AudioTestSource ;
+  static GstElement* AudioFauxSource ;
   static GstElement* AudioCaps ;
   static GstElement* MuxerBin ;
   static GstElement* OutputBin ;
@@ -165,6 +163,14 @@ private:
 
   // configuration
   static ValueTree ConfigStore ;
+  static bool      IsMediaEnabled ;
+  static bool      IsScreenEnabled ;
+  static bool      IsCameraEnabled ;
+  static bool      IsTextEnabled ;
+  static bool      IsImageEnabled ;
+  static bool      IsCompositorEnabled ;
+  static bool      IsPreviewEnabled ;
+  static bool      IsAudioEnabled ;
 } ;
 
 #endif // _GSTREAMER_H_

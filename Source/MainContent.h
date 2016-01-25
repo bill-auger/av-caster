@@ -49,8 +49,23 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 
+  friend class AvCaster ;
+
+
   void configureCombobox(ComboBox* a_combobox) ;
   void loadPresetsCombo (ComboBox* a_combobox) ;
+
+
+private:
+
+  void           initialize      (ValueTree servers_store) ;
+  void           disableControls (bool is_media_enabled  , bool is_screen_enabled  ,
+                                  bool is_camera_enabled , bool is_text_enabled    ,
+                                  bool is_image_enabled  , bool is_preview_enabled ,
+                                  bool is_audio_enabled                            ) ;
+  void           warning         (String message_text) ;
+  void           error           (String message_text) ;
+  Rectangle<int> getPreviewBounds() ;
 
     //[/UserMethods]
 
@@ -61,15 +76,6 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-
-  friend class AvCaster ;
-
-
-  void           initialize      (ValueTree servers_store) ;
-  void           warning         (String message_text) ;
-  void           error           (String message_text) ;
-  Rectangle<int> getPreviewBounds() ;
-
     //[/UserVariables]
 
     //==============================================================================

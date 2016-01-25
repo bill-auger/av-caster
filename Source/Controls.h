@@ -48,6 +48,16 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+
+  friend class MainContent ;
+
+
+private:
+
+  void broughtToFront() override ;
+
+  void loadConfig() ;
+
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -66,11 +76,6 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-
-  void broughtToFront() override ;
-
-  void loadConfig() ;
-
 
   MainContent* mainContent ;
 

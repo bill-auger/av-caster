@@ -143,6 +143,21 @@ void MainContent::initialize(ValueTree servers_store)
   this->chat->initialize(servers_store) ;
 }
 
+void MainContent::disableControls(bool is_media_enabled  , bool is_screen_enabled  ,
+                                  bool is_camera_enabled , bool is_text_enabled    ,
+                                  bool is_image_enabled  , bool is_preview_enabled ,
+                                  bool is_audio_enabled                            )
+{
+  // disable controls per cli args
+  this->controls->screencapToggle   ->setEnabled(is_screen_enabled ) ;
+  this->controls->cameraToggle      ->setEnabled(is_camera_enabled ) ;
+  this->controls->textToggle        ->setEnabled(is_text_enabled   ) ;
+  this->controls->interstitialToggle->setEnabled(is_image_enabled  ) ;
+  this->controls->previewToggle     ->setEnabled(is_preview_enabled) ;
+  this->controls->audioToggle       ->setEnabled(is_audio_enabled  ) ;
+  this->controls->outputToggle      ->setEnabled(is_media_enabled  ) ;
+}
+
 void MainContent::warning(String message_text)
 {
   if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
