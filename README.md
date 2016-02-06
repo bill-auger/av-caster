@@ -60,7 +60,7 @@ If AvCaster refuses to launch after changing some parameters in the GUI you can 
 
 Please report any problems on the [AvCaster Issue Tracker][tracker].
 
-Feel free join the [gitter chat][gitter] to post any questions or comments or, well ... just chat.
+Feel free join the [Gitter Chat][gitter] to post any questions or comments or, well ... just chat.
 
 
 ### Building from Source
@@ -122,24 +122,7 @@ Install the corresponding libraries as above for your system and compile similar
 
 
 ### Developers and Designers
-You will find in the Builds/Scripts directory some helper scripts to aid in building and debugging this application. Simply run ```./Builds/Scripts/setup-build-helpers``` to install them. Note that we are currently locked at JUCE v3.1.1 until [an issue affecting scaled monitor resolutions](http://www.juce.com/forum/topic/juce-v320-and-v401-apps-window-not-visible-scaled-monitor-resolutions) is resolved. This is not relevant to most development tasks, but if you must use the Introjucer GUI builder for design or project maintenance, please compile it from [this branch](https://github.com/bill-auger/JUCE/tree/v3-1-1).
-```
-### Build the Introjucer GUI builder and project manager ###
-$ git clone --depth 1 https://github.com/bill-auger/JUCE.git
-$ git checkout v3-1-1
-$ cd JUCE/extras/Introjucer/Builds/Linux/
-$ make
-$ ./build/Introjucer
-
-### Then select "Open" from the Introjucer "File" menu and browse to the AvCaster.jucer file in this project root directory. ###
-```
-Note that branches other than 'master' tend to be rebased often so you may need to force pull those.  Please rebase all pull requests on/into the latest development HEAD.  Ideally, all branches should be a fast-foreward from master so that in most cases the cleanest way to re-sync is like:
-```
-$ git fetch all
-$ git checkout development
-$ git reset --hard master
-$ git merge upstream/development
-```
+Please read the contribution guidelines in [CONTRIBUTING.md](https://github.com/bill-auger/av-caster/blob/master/CONTRIBUTING.md).
 
 
 ### Similar Projects
