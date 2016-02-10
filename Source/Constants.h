@@ -1,5 +1,5 @@
 /*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
 |*|
 |*|  This file is part of the AvCaster program.
 |*|
@@ -210,6 +210,7 @@ namespace GUI
   static const String DEST_FILE_TEXT         = "Location:" ;
   static const String DEST_RTMP_TEXT         = "URI:" ;
   static const String DEST_LCTV_TEXT         = "Stream Key:" ;
+  static const int    MAX_PORT_N_CHARS       = 5 ;
 
   // StatusBar
   static const String INIT_STATUS_TEXT  = "Initializing" ;
@@ -223,6 +224,7 @@ namespace GUI
   // user error messages
   static const String GST_INIT_ERROR_MSG          = "Error initializing gStreamer." ;
   static const String GST_PIPELINE_INST_ERROR_MSG = "Error creating static GstElements." ;
+  static const String GST_BUS_INST_ERROR_MSG      = "Error initializing pipelie message handler." ;
   static const String GST_ADD_ERROR_MSG           = "Error adding static GstElements to the pipeline." ;
   static const String GST_PIPELINE_INIT_ERROR_MSG = "Error initializing dynamic GstElements." ;
   static const String GST_CONFIG_ERROR_MSG        = "Error configuring dynamic GstElements." ;
@@ -398,7 +400,8 @@ namespace CONFIG
                                                                        "AAC"               ) ;
   static const StringArray AUDIO_SAMPLERATES  = StringArray::fromLines("11025"   + newLine +
                                                                        "22050"   + newLine +
-                                                                       "44100"             ) ;
+                                                                       "44100"   + newLine +
+                                                                       "48000"             ) ;
   static const StringArray AUDIO_BITRATES     = StringArray::fromLines("64k"     + newLine +
                                                                        "96k"     + newLine +
                                                                        "128k"    + newLine +
@@ -424,10 +427,6 @@ namespace CONFIG
   static const Identifier CAMERA_DEVICES_ID      = "camera-devices" ;
   static const Identifier AUDIO_DEVICES_ID       = "audio-devices" ;
   static const Identifier SERVERS_ID             = "irc-servers" ;
-  static const Identifier HOST_ID                = "irc-host" ;
-  static const Identifier PORT_ID                = "irc-port" ;
-  static const Identifier CHANNEL_ID             = "irc-channel" ;
-  static const Identifier CHATTERS_ID            = "active-chatters" ;
   // config root IDs
   static const Identifier CONFIG_VERSION_ID      = "config-version" ;
   static const Identifier PRESET_ID              = "current-preset-idx" ;
@@ -478,6 +477,15 @@ namespace CONFIG
   static const Identifier OUTPUT_DEST_ID         = "output-dest" ;
   // output IDs
   static const Identifier CHAT_NICK_ID           = "chat-nick" ;
+  // chat IDs
+  static const Identifier HOST_ID                = "chat-host" ;
+  static const Identifier PORT_ID                = "chat-port" ;
+  static const Identifier NICK_ID                = "chat-nick" ;
+  static const Identifier PASS_ID                = "chat-pass" ;
+  static const Identifier CHANNEL_ID             = "chat-channel" ;
+  static const Identifier GREETING_ID            = "chat-greeting" ;
+  static const Identifier JOINPART_ID            = "show-joins-parts" ;
+  static const Identifier CHATTERS_ID            = "active-chatters" ;
 
   // root defaults
 #if JUCE_LINUX

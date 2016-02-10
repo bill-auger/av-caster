@@ -1,5 +1,5 @@
 /*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
 |*|
 |*|  This file is part of the AvCaster program.
 |*|
@@ -81,7 +81,7 @@ bool Gstreamer::Initialize(void* x_window_handle)
 DEBUG_TRACE_GST_INIT_PHASE_1
 
   // initialize gStreamer (NOTE: this will terminate the app on failure)
-  gst_init(nullptr , nullptr) ;
+  InitializeGst(nullptr , nullptr) ;
 
 DEBUG_TRACE_GST_INIT_PHASE_2
 
@@ -1085,6 +1085,7 @@ DEBUG_TRACE_SET_GST_STATE
   return !is_err ;
 }
 
+bool Gstreamer::InitializeGst(int *argc , char **argv[]) { gst_init(nullptr , nullptr) ; }
 
 GstBusSyncReply Gstreamer::HandleMessage(GstBus* message_bus , GstMessage* message , GstPipeline* pipeline)
 {
@@ -1183,7 +1184,11 @@ DEBUG_TRACE_MAKE_CAPS
 
 void Gstreamer::SetMessageHandler(GstPipeline* pipeline , GstBusSyncHandler on_message_cb)
 {
-  GstBus* message_bus = gst_pipeline_get_bus(pipeline) ;
+  GstBus* message_bus ;
+
+  if (!GST_IS_ELEMENT(pipeline)                               ||
+      !GST_IS_BUS(message_bus = gst_pipeline_get_bus(pipeline)))
+  { AvCaster::Error(GUI::GST_BUS_INST_ERROR_MSG) ; return ; }
 
   gst_bus_set_sync_handler(message_bus , on_message_cb , pipeline , NULL) ;
   gst_object_unref(message_bus) ;

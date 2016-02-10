@@ -83,7 +83,7 @@ Controls::Controls ()
     presetsCombo->setExplicitFocusOrder (8);
     presetsCombo->setEditableText (true);
     presetsCombo->setJustificationType (Justification::centredLeft);
-    presetsCombo->setTextWhenNothingSelected (TRANS("livecoding.tv"));
+    presetsCombo->setTextWhenNothingSelected (String::empty);
     presetsCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     presetsCombo->addListener (this);
 
@@ -369,7 +369,7 @@ BEGIN_JUCER_METADATA
                 state="0"/>
   <COMBOBOX name="presetsCombo" id="94d77976c2b2f37" memberName="presetsCombo"
             virtualName="" explicitFocusOrder="8" pos="560 36 128 24" editable="1"
-            layout="33" items="" textWhenNonSelected="livecoding.tv" textWhenNoItems="(no choices)"/>
+            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
                virtualName="" explicitFocusOrder="9" pos="696 36 24 24" buttonText="configButton"
                connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="1"

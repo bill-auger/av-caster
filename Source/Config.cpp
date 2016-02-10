@@ -1,5 +1,5 @@
 /*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
 |*|
 |*|  This file is part of the AvCaster program.
 |*|
@@ -490,6 +490,132 @@ Config::Config ()
     outputDestText->setPopupMenuEnabled (true);
     outputDestText->setText (String::empty);
 
+    addAndMakeVisible (chatGroup = new GroupComponent ("chatGroup",
+                                                       TRANS("Chat")));
+    chatGroup->setColour (GroupComponent::outlineColourId, Colours::white);
+    chatGroup->setColour (GroupComponent::textColourId, Colours::white);
+
+    addAndMakeVisible (hostLabel = new Label ("hostLabel",
+                                              TRANS("Host:")));
+    hostLabel->setFont (Font (15.00f, Font::plain));
+    hostLabel->setJustificationType (Justification::centredLeft);
+    hostLabel->setEditable (false, false, false);
+    hostLabel->setColour (Label::textColourId, Colours::white);
+    hostLabel->setColour (TextEditor::textColourId, Colours::black);
+    hostLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (hostText = new TextEditor ("hostText"));
+    hostText->setExplicitFocusOrder (26);
+    hostText->setMultiLine (false);
+    hostText->setReturnKeyStartsNewLine (false);
+    hostText->setReadOnly (false);
+    hostText->setScrollbarsShown (true);
+    hostText->setCaretVisible (true);
+    hostText->setPopupMenuEnabled (true);
+    hostText->setText (String::empty);
+
+    addAndMakeVisible (portLabel = new Label ("portLabel",
+                                              TRANS("Port:")));
+    portLabel->setFont (Font (15.00f, Font::plain));
+    portLabel->setJustificationType (Justification::centredLeft);
+    portLabel->setEditable (false, false, false);
+    portLabel->setColour (Label::textColourId, Colours::white);
+    portLabel->setColour (TextEditor::textColourId, Colours::black);
+    portLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (portText = new TextEditor ("portText"));
+    portText->setExplicitFocusOrder (27);
+    portText->setMultiLine (false);
+    portText->setReturnKeyStartsNewLine (false);
+    portText->setReadOnly (false);
+    portText->setScrollbarsShown (true);
+    portText->setCaretVisible (true);
+    portText->setPopupMenuEnabled (true);
+    portText->setText (String::empty);
+
+    addAndMakeVisible (nickLabel = new Label ("nickLabel",
+                                              TRANS("Nick:")));
+    nickLabel->setFont (Font (15.00f, Font::plain));
+    nickLabel->setJustificationType (Justification::centredLeft);
+    nickLabel->setEditable (false, false, false);
+    nickLabel->setColour (Label::textColourId, Colours::white);
+    nickLabel->setColour (TextEditor::textColourId, Colours::black);
+    nickLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (nickText = new TextEditor ("nickText"));
+    nickText->setExplicitFocusOrder (28);
+    nickText->setMultiLine (false);
+    nickText->setReturnKeyStartsNewLine (false);
+    nickText->setReadOnly (false);
+    nickText->setScrollbarsShown (true);
+    nickText->setCaretVisible (true);
+    nickText->setPopupMenuEnabled (true);
+    nickText->setText (String::empty);
+
+    addAndMakeVisible (passLabel = new Label ("passLabel",
+                                              TRANS("Password:")));
+    passLabel->setFont (Font (15.00f, Font::plain));
+    passLabel->setJustificationType (Justification::centredLeft);
+    passLabel->setEditable (false, false, false);
+    passLabel->setColour (Label::textColourId, Colours::white);
+    passLabel->setColour (TextEditor::textColourId, Colours::black);
+    passLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (passText = new TextEditor ("passText"));
+    passText->setExplicitFocusOrder (29);
+    passText->setMultiLine (false);
+    passText->setReturnKeyStartsNewLine (false);
+    passText->setReadOnly (false);
+    passText->setScrollbarsShown (true);
+    passText->setCaretVisible (true);
+    passText->setPopupMenuEnabled (true);
+    passText->setText (String::empty);
+
+    addAndMakeVisible (channelLabel = new Label ("channelLabel",
+                                                 TRANS("Channel:")));
+    channelLabel->setFont (Font (15.00f, Font::plain));
+    channelLabel->setJustificationType (Justification::centredLeft);
+    channelLabel->setEditable (false, false, false);
+    channelLabel->setColour (Label::textColourId, Colours::white);
+    channelLabel->setColour (TextEditor::textColourId, Colours::black);
+    channelLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (channelText = new TextEditor ("channelText"));
+    channelText->setExplicitFocusOrder (30);
+    channelText->setMultiLine (false);
+    channelText->setReturnKeyStartsNewLine (false);
+    channelText->setReadOnly (false);
+    channelText->setScrollbarsShown (true);
+    channelText->setCaretVisible (true);
+    channelText->setPopupMenuEnabled (true);
+    channelText->setText (String::empty);
+
+    addAndMakeVisible (greetingLabel = new Label ("greetingLabel",
+                                                  TRANS("Greeting:")));
+    greetingLabel->setFont (Font (15.00f, Font::plain));
+    greetingLabel->setJustificationType (Justification::centredLeft);
+    greetingLabel->setEditable (false, false, false);
+    greetingLabel->setColour (Label::textColourId, Colours::white);
+    greetingLabel->setColour (TextEditor::textColourId, Colours::black);
+    greetingLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (greetingText = new TextEditor ("greetingText"));
+    greetingText->setExplicitFocusOrder (31);
+    greetingText->setMultiLine (false);
+    greetingText->setReturnKeyStartsNewLine (false);
+    greetingText->setReadOnly (false);
+    greetingText->setScrollbarsShown (true);
+    greetingText->setCaretVisible (true);
+    greetingText->setPopupMenuEnabled (true);
+    greetingText->setText (String::empty);
+
+    addAndMakeVisible (joinPartToggle = new ToggleButton ("joinPartToggle"));
+    joinPartToggle->setExplicitFocusOrder (32);
+    joinPartToggle->setButtonText (TRANS("Show Join/Part"));
+    joinPartToggle->addListener (this);
+    joinPartToggle->setToggleState (true, dontSendNotification);
+    joinPartToggle->setColour (ToggleButton::textColourId, Colours::white);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -503,15 +629,21 @@ Config::Config ()
   configureSlider(this->screenSlider   ) ;
   configureSlider(this->nChannelsSlider) ;
 
-  configureTextEditor(this->screenWidthText  , GUI::MAX_RES_N_CHARS   , APP::DIGITS         ) ;
-  configureTextEditor(this->screenHeightText , GUI::MAX_RES_N_CHARS   , APP::DIGITS         ) ;
-  configureTextEditor(this->xOffsetText      , GUI::MAX_RES_N_CHARS   , APP::DIGITS         ) ;
-  configureTextEditor(this->yOffsetText      , GUI::MAX_RES_N_CHARS   , APP::DIGITS         ) ;
-  configureTextEditor(this->motdText         , GUI::MAX_MOTD_LEN      , ""                  ) ;
-  configureTextEditor(this->interstitialText , GUI::MAX_FILENAME_LEN  , APP::VALID_ID_CHARS ) ;
-  configureTextEditor(this->outputWidthText  , GUI::MAX_RES_N_CHARS   , APP::DIGITS         ) ;
-  configureTextEditor(this->outputHeightText , GUI::MAX_RES_N_CHARS   , APP::DIGITS         ) ;
-  configureTextEditor(this->outputDestText   , GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS) ;
+  configureTextEditor(this->screenWidthText  , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  configureTextEditor(this->screenHeightText , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  configureTextEditor(this->xOffsetText      , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  configureTextEditor(this->yOffsetText      , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  configureTextEditor(this->motdText         , GUI::MAX_MOTD_LEN      , ""                   ) ;
+  configureTextEditor(this->interstitialText , GUI::MAX_FILENAME_LEN  , APP::VALID_ID_CHARS  ) ;
+  configureTextEditor(this->outputWidthText  , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  configureTextEditor(this->outputHeightText , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  configureTextEditor(this->outputDestText   , GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
+  configureTextEditor(this->hostText         , GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
+  configureTextEditor(this->portText         , GUI::MAX_PORT_N_CHARS  , APP::DIGITS          ) ;
+  configureTextEditor(this->nickText         , GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
+  configureTextEditor(this->passText         , GUI::MAX_MOTD_LEN      , ""                   ) ;
+  configureTextEditor(this->channelText      , GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
+  configureTextEditor(this->greetingText     , GUI::MAX_MOTD_LEN      , ""                   ) ;
 
   configureCombobox(this->cameraDevCombo   ) ;
   configureCombobox(this->cameraResCombo   ) ;
@@ -592,6 +724,20 @@ Config::~Config()
     videoBitrateCombo = nullptr;
     outputDestLabel = nullptr;
     outputDestText = nullptr;
+    chatGroup = nullptr;
+    hostLabel = nullptr;
+    hostText = nullptr;
+    portLabel = nullptr;
+    portText = nullptr;
+    nickLabel = nullptr;
+    nickText = nullptr;
+    passLabel = nullptr;
+    passText = nullptr;
+    channelLabel = nullptr;
+    channelText = nullptr;
+    greetingLabel = nullptr;
+    greetingText = nullptr;
+    joinPartToggle = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -621,6 +767,9 @@ void Config::paint (Graphics& g)
 
     g.setColour (Colour (0xff303030));
     g.fillRoundedRectangle (20.0f, 450.0f, static_cast<float> (getWidth() - 40), 86.0f, 4.000f);
+
+    g.setColour (Colour (0xff303030));
+    g.fillRoundedRectangle (20.0f, 558.0f, static_cast<float> (getWidth() - 40), 86.0f, 4.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -686,6 +835,20 @@ void Config::resized()
     videoBitrateCombo->setBounds (640, 464, 80, 24);
     outputDestLabel->setBounds (32, 500, 80, 24);
     outputDestText->setBounds (120, 500, 600, 24);
+    chatGroup->setBounds (16, 548, getWidth() - 32, 100);
+    hostLabel->setBounds (32, 570, 80, 24);
+    hostText->setBounds (120, 570, 104, 24);
+    portLabel->setBounds (232, 570, 40, 24);
+    portText->setBounds (280, 570, 48, 24);
+    nickLabel->setBounds (344, 570, 40, 24);
+    nickText->setBounds (392, 570, 120, 24);
+    passLabel->setBounds (520, 570, 72, 24);
+    passText->setBounds (600, 570, 120, 24);
+    channelLabel->setBounds (32, 608, 80, 24);
+    channelText->setBounds (120, 608, 104, 24);
+    greetingLabel->setBounds (232, 608, 72, 24);
+    greetingText->setBounds (312, 608, 288, 24);
+    joinPartToggle->setBounds (608, 608, 112, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -882,6 +1045,15 @@ void Config::buttonClicked (Button* buttonThatWasClicked)
       value = var(chooser.getResult().getFullPathName()) ;
 
         //[/UserButtonCode_browseButton]
+    }
+    else if (buttonThatWasClicked == joinPartToggle)
+    {
+        //[UserButtonCode_joinPartToggle] -- add your button handler code here..
+
+      key   = CONFIG::JOINPART_ID ;
+      value = var(buttonThatWasClicked->getToggleState()) ;
+
+        //[/UserButtonCode_joinPartToggle]
     }
 
     //[UserbuttonClicked_Post]
@@ -1087,6 +1259,7 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 304 40M 52" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
     <ROUNDRECT pos="20 376 40M 54" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
     <ROUNDRECT pos="20 450 40M 86" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="20 558 40M 86" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="screenGroup" id="3d078232c622c691" memberName="screenGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 8 32M 100" outlinecol="ffffffff"
@@ -1314,6 +1487,63 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="25" pos="120 500 600 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
+  <GROUPCOMPONENT name="chatGroup" id="663f214b14c4a321" memberName="chatGroup"
+                  virtualName="" explicitFocusOrder="0" pos="16 548 32M 100" outlinecol="ffffffff"
+                  textcol="ffffffff" title="Chat"/>
+  <LABEL name="hostLabel" id="17d2e75add77ef88" memberName="hostLabel"
+         virtualName="" explicitFocusOrder="0" pos="32 570 80 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Host:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="hostText" id="ba3bb196ff4cbcdd" memberName="hostText" virtualName=""
+              explicitFocusOrder="26" pos="120 570 104 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
+  <LABEL name="portLabel" id="c9766d1550ca03d" memberName="portLabel"
+         virtualName="" explicitFocusOrder="0" pos="232 570 40 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Port:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="portText" id="884822c04a8baf5b" memberName="portText" virtualName=""
+              explicitFocusOrder="27" pos="280 570 48 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
+  <LABEL name="nickLabel" id="2762611946169823" memberName="nickLabel"
+         virtualName="" explicitFocusOrder="0" pos="344 570 40 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Nick:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="nickText" id="33c730fea5d389aa" memberName="nickText" virtualName=""
+              explicitFocusOrder="28" pos="392 570 120 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
+  <LABEL name="passLabel" id="f5de0cc5921d9a6a" memberName="passLabel"
+         virtualName="" explicitFocusOrder="0" pos="520 570 72 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Password:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="passText" id="af6a1e14762cfebf" memberName="passText" virtualName=""
+              explicitFocusOrder="29" pos="600 570 120 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
+  <LABEL name="channelLabel" id="64c9a775a77af61c" memberName="channelLabel"
+         virtualName="" explicitFocusOrder="0" pos="32 608 80 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Channel:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="channelText" id="ca5aa4f4a77b4469" memberName="channelText"
+              virtualName="" explicitFocusOrder="30" pos="120 608 104 24" initialText=""
+              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
+              caret="1" popupmenu="1"/>
+  <LABEL name="greetingLabel" id="460772215644ef5" memberName="greetingLabel"
+         virtualName="" explicitFocusOrder="0" pos="232 608 72 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Greeting:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="greetingText" id="7d47de6dcee921f5" memberName="greetingText"
+              virtualName="" explicitFocusOrder="31" pos="312 608 288 24" initialText=""
+              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
+              caret="1" popupmenu="1"/>
+  <TOGGLEBUTTON name="joinPartToggle" id="b365bf54ac5a17da" memberName="joinPartToggle"
+                virtualName="" explicitFocusOrder="32" pos="608 608 112 24" txtcol="ffffffff"
+                buttonText="Show Join/Part" connectedEdges="0" needsCallback="1"
+                radioGroupId="0" state="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

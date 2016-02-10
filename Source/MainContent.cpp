@@ -1,5 +1,5 @@
 /*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
 |*|
 |*|  This file is part of the AvCaster program.
 |*|
@@ -57,7 +57,7 @@ MainContent::MainContent ()
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (758, 694);
+    setSize (876, 762);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -189,7 +189,7 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="MainContent" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="758" initialHeight="694">
+                 fixedSize="1" initialWidth="876" initialHeight="762">
   <BACKGROUND backgroundColour="ff101010"/>
   <GENERICCOMPONENT name="background" id="4d43eef09b00fdf4" memberName="background"
                     virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" class="Background"

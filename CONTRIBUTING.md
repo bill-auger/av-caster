@@ -9,13 +9,23 @@ Any contributions that are under the terms of a GPL-incompatible license will no
 
 
 ### Developers
-You will find in the Builds/Scripts directory some helper scripts to aid in building and debugging this application. Simply run ```./Builds/Scripts/setup-build-helpers``` to install them. Note that we are currently locked at JUCE v3.1.1 until [an issue affecting scaled monitor resolutions](http://www.juce.com/forum/topic/juce-v320-and-v401-apps-window-not-visible-scaled-monitor-resolutions) is resolved. This is not relevant to most development tasks, but if you must use the Introjucer GUI builder for design or project maintenance, please compile it from [this branch](https://github.com/bill-auger/JUCE/tree/v3-1-1).
+You will find in the Builds/Scripts directory some helper scripts to aid in building and debugging this application. Simply run ```./Builds/Scripts/setup-build-helpers``` to install them. Note that we are currently locked at JUCE v3.1.1 until [an issue affecting scaled monitor resolutions](http://www.juce.com/forum/topic/juce-v320-and-v401-apps-window-not-visible-scaled-monitor-resolutions) is resolved. This is not relevant to most development tasks, but if you must use the Introjucer GUI builder for design or project maintenance, please compile it from [this branch](https://github.com/bill-auger/JUCE/tree/v3-1-1) and note that he av-caster and JUCE-3-1-1 directories should be siblings in order for the AvCaster.jucer project to locate the JUCE sources.
 
 
 ### Designers
 ```bash
+### If you want to work with the AvCaster sources directly -
+        first install the build dependencies above for your system
+            as noted in the README.md
+        then fork the AvCaster repo, clone the design branch,
+            and compile as noted in the README.md
+        then clone and compile the Introjucer GUI builder and project manager ###
+
+### Clone the design branch locally ###
+$ git clone -b design https://github.com/YOUR_GITHUB_NICK/av-caster
+### then compile AvCaster as noted in the README.md ###
+
 ### Compile the Introjucer GUI builder and project manager ###
-### NOTE: first install the build dependencies above for your system ###
 $ git clone -b v3-1-1 --depth 1 https://github.com/bill-auger/JUCE.git JUCE-3-1-1
 ### or ###
 $ wget https://github.com/bill-auger/JUCE/archive/v3-1-1.tar.gz

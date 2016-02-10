@@ -1,5 +1,5 @@
 /*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
 |*|
 |*|  This file is part of the AvCaster program.
 |*|
@@ -15,7 +15,6 @@
 |*|  You should have received a copy of the GNU Lesser General Public License
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
-
 
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
@@ -130,6 +129,20 @@ private:
     ScopedPointer<ComboBox> videoBitrateCombo;
     ScopedPointer<Label> outputDestLabel;
     ScopedPointer<TextEditor> outputDestText;
+    ScopedPointer<GroupComponent> chatGroup;
+    ScopedPointer<Label> hostLabel;
+    ScopedPointer<TextEditor> hostText;
+    ScopedPointer<Label> portLabel;
+    ScopedPointer<TextEditor> portText;
+    ScopedPointer<Label> nickLabel;
+    ScopedPointer<TextEditor> nickText;
+    ScopedPointer<Label> passLabel;
+    ScopedPointer<TextEditor> passText;
+    ScopedPointer<Label> channelLabel;
+    ScopedPointer<TextEditor> channelText;
+    ScopedPointer<Label> greetingLabel;
+    ScopedPointer<TextEditor> greetingText;
+    ScopedPointer<ToggleButton> joinPartToggle;
 
 
     //==============================================================================

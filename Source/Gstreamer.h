@@ -1,5 +1,5 @@
 /*\
-|*|  Copyright 2015 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
 |*|
 |*|  This file is part of the AvCaster program.
 |*|
@@ -82,6 +82,7 @@ private:
   static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
 
   // state
+  static bool            InitializeGst     (int *argc , char **argv[]) ;
   static bool            SetState          (GstElement* an_element , GstState next_state) ;
   static void            SetMessageHandler (GstPipeline*      pipeline     ,
                                             GstBusSyncHandler on_message_cb) ;
