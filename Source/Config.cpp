@@ -1,20 +1,21 @@
-/*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -30,591 +31,96 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-Config::Config ()
+Config::Config (MainContent* main_content)
+    : mainContent(main_content)
 {
-    addAndMakeVisible (screenGroup = new GroupComponent ("screenGroup",
-                                                         TRANS("Screen")));
-    screenGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    screenGroup->setColour (GroupComponent::textColourId, Colours::white);
-
-    addAndMakeVisible (displayLabel = new Label ("displayLabel",
-                                                 TRANS("Display #:")));
-    displayLabel->setFont (Font (15.00f, Font::plain));
-    displayLabel->setJustificationType (Justification::centredLeft);
-    displayLabel->setEditable (false, false, false);
-    displayLabel->setColour (Label::textColourId, Colours::white);
-    displayLabel->setColour (TextEditor::textColourId, Colours::black);
-    displayLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (displaySlider = new Slider ("displaySlider"));
-    displaySlider->setExplicitFocusOrder (1);
-    displaySlider->setRange (0, 10, 0);
-    displaySlider->setSliderStyle (Slider::IncDecButtons);
-    displaySlider->setTextBoxStyle (Slider::TextBoxLeft, false, 24, 20);
-    displaySlider->addListener (this);
-
-    addAndMakeVisible (screenLabel = new Label ("screenLabel",
-                                                TRANS("Screen #:")));
-    screenLabel->setFont (Font (15.00f, Font::plain));
-    screenLabel->setJustificationType (Justification::centredLeft);
-    screenLabel->setEditable (false, false, false);
-    screenLabel->setColour (Label::textColourId, Colours::white);
-    screenLabel->setColour (TextEditor::textColourId, Colours::black);
-    screenLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (screenSlider = new Slider ("screenSlider"));
-    screenSlider->setExplicitFocusOrder (2);
-    screenSlider->setRange (0, 10, 0);
-    screenSlider->setSliderStyle (Slider::IncDecButtons);
-    screenSlider->setTextBoxStyle (Slider::TextBoxLeft, false, 24, 20);
-    screenSlider->addListener (this);
-
-    addAndMakeVisible (screenWidthLabel = new Label ("screenWidthLabel",
-                                                     TRANS("Width:")));
-    screenWidthLabel->setFont (Font (15.00f, Font::plain));
-    screenWidthLabel->setJustificationType (Justification::centredLeft);
-    screenWidthLabel->setEditable (false, false, false);
-    screenWidthLabel->setColour (Label::textColourId, Colours::white);
-    screenWidthLabel->setColour (TextEditor::textColourId, Colours::black);
-    screenWidthLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (screenWidthText = new TextEditor ("screenWidthText"));
-    screenWidthText->setExplicitFocusOrder (3);
-    screenWidthText->setMultiLine (false);
-    screenWidthText->setReturnKeyStartsNewLine (false);
-    screenWidthText->setReadOnly (false);
-    screenWidthText->setScrollbarsShown (false);
-    screenWidthText->setCaretVisible (true);
-    screenWidthText->setPopupMenuEnabled (true);
-    screenWidthText->setText (String::empty);
-
-    addAndMakeVisible (screenHeightLabel = new Label ("screenHeightLabel",
-                                                      TRANS("Height:")));
-    screenHeightLabel->setFont (Font (15.00f, Font::plain));
-    screenHeightLabel->setJustificationType (Justification::centredLeft);
-    screenHeightLabel->setEditable (false, false, false);
-    screenHeightLabel->setColour (Label::textColourId, Colours::white);
-    screenHeightLabel->setColour (TextEditor::textColourId, Colours::black);
-    screenHeightLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (screenHeightText = new TextEditor ("screenHeightText"));
-    screenHeightText->setExplicitFocusOrder (4);
-    screenHeightText->setMultiLine (false);
-    screenHeightText->setReturnKeyStartsNewLine (false);
-    screenHeightText->setReadOnly (false);
-    screenHeightText->setScrollbarsShown (false);
-    screenHeightText->setCaretVisible (true);
-    screenHeightText->setPopupMenuEnabled (true);
-    screenHeightText->setText (String::empty);
-
-    addAndMakeVisible (xOffsetLabel = new Label ("xOffsetLabel",
-                                                 TRANS("Offset X:")));
-    xOffsetLabel->setFont (Font (15.00f, Font::plain));
-    xOffsetLabel->setJustificationType (Justification::centredLeft);
-    xOffsetLabel->setEditable (false, false, false);
-    xOffsetLabel->setColour (Label::textColourId, Colours::white);
-    xOffsetLabel->setColour (TextEditor::textColourId, Colours::black);
-    xOffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (xOffsetText = new TextEditor ("xOffsetText"));
-    xOffsetText->setExplicitFocusOrder (5);
-    xOffsetText->setMultiLine (false);
-    xOffsetText->setReturnKeyStartsNewLine (false);
-    xOffsetText->setReadOnly (false);
-    xOffsetText->setScrollbarsShown (true);
-    xOffsetText->setCaretVisible (true);
-    xOffsetText->setPopupMenuEnabled (true);
-    xOffsetText->setText (String::empty);
-
-    addAndMakeVisible (yOffsetLabel = new Label ("yOffsetLabel",
-                                                 TRANS("Offset Y:")));
-    yOffsetLabel->setFont (Font (15.00f, Font::plain));
-    yOffsetLabel->setJustificationType (Justification::centredLeft);
-    yOffsetLabel->setEditable (false, false, false);
-    yOffsetLabel->setColour (Label::textColourId, Colours::white);
-    yOffsetLabel->setColour (TextEditor::textColourId, Colours::black);
-    yOffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (yOffsetText = new TextEditor ("yOffsetText"));
-    yOffsetText->setExplicitFocusOrder (6);
-    yOffsetText->setMultiLine (false);
-    yOffsetText->setReturnKeyStartsNewLine (false);
-    yOffsetText->setReadOnly (false);
-    yOffsetText->setScrollbarsShown (true);
-    yOffsetText->setCaretVisible (true);
-    yOffsetText->setPopupMenuEnabled (true);
-    yOffsetText->setText (String::empty);
-
-    addAndMakeVisible (cameraGroup = new GroupComponent ("cameraGroup",
-                                                         TRANS("Camera")));
-    cameraGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    cameraGroup->setColour (GroupComponent::textColourId, Colours::white);
-
-    addAndMakeVisible (cameraDevLabel = new Label ("cameraDevLabel",
-                                                   TRANS("Device:")));
-    cameraDevLabel->setFont (Font (15.00f, Font::plain));
-    cameraDevLabel->setJustificationType (Justification::centredLeft);
-    cameraDevLabel->setEditable (false, false, false);
-    cameraDevLabel->setColour (Label::textColourId, Colours::white);
-    cameraDevLabel->setColour (TextEditor::textColourId, Colours::black);
-    cameraDevLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (cameraDevCombo = new ComboBox ("cameraDevCombo"));
-    cameraDevCombo->setExplicitFocusOrder (7);
-    cameraDevCombo->setEditableText (false);
-    cameraDevCombo->setJustificationType (Justification::centredLeft);
-    cameraDevCombo->setTextWhenNothingSelected (TRANS("(no camera devices)"));
-    cameraDevCombo->setTextWhenNoChoicesAvailable (TRANS("(no camera devices)"));
-    cameraDevCombo->addListener (this);
-
-    addAndMakeVisible (cameraResLabel = new Label ("cameraResLabel",
-                                                   TRANS("Resolution:")));
-    cameraResLabel->setFont (Font (15.00f, Font::plain));
-    cameraResLabel->setJustificationType (Justification::centredLeft);
-    cameraResLabel->setEditable (false, false, false);
-    cameraResLabel->setColour (Label::textColourId, Colours::white);
-    cameraResLabel->setColour (TextEditor::textColourId, Colours::black);
-    cameraResLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (cameraResCombo = new ComboBox ("cameraResCombo"));
-    cameraResCombo->setExplicitFocusOrder (8);
-    cameraResCombo->setEditableText (false);
-    cameraResCombo->setJustificationType (Justification::centredLeft);
-    cameraResCombo->setTextWhenNothingSelected (String::empty);
-    cameraResCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    cameraResCombo->addListener (this);
-
-    addAndMakeVisible (audioGroup = new GroupComponent ("audioGroup",
-                                                        TRANS("Audio")));
-    audioGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    audioGroup->setColour (GroupComponent::textColourId, Colours::white);
-
-    addAndMakeVisible (audioApiLabel = new Label ("audioApiLabel",
-                                                  TRANS("Interface:")));
-    audioApiLabel->setFont (Font (15.00f, Font::plain));
-    audioApiLabel->setJustificationType (Justification::centredLeft);
-    audioApiLabel->setEditable (false, false, false);
-    audioApiLabel->setColour (Label::textColourId, Colours::white);
-    audioApiLabel->setColour (TextEditor::textColourId, Colours::black);
-    audioApiLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (audioApiCombo = new ComboBox ("audioApiCombo"));
-    audioApiCombo->setExplicitFocusOrder (9);
-    audioApiCombo->setEditableText (false);
-    audioApiCombo->setJustificationType (Justification::centredLeft);
-    audioApiCombo->setTextWhenNothingSelected (String::empty);
-    audioApiCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    audioApiCombo->addListener (this);
-
-    addAndMakeVisible (audioDevLabel = new Label ("audioDevLabel",
-                                                  TRANS("Device:")));
-    audioDevLabel->setFont (Font (15.00f, Font::plain));
-    audioDevLabel->setJustificationType (Justification::centredLeft);
-    audioDevLabel->setEditable (false, false, false);
-    audioDevLabel->setColour (Label::textColourId, Colours::white);
-    audioDevLabel->setColour (TextEditor::textColourId, Colours::black);
-    audioDevLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (audioDevCombo = new ComboBox ("audioDevCombo"));
-    audioDevCombo->setExplicitFocusOrder (10);
-    audioDevCombo->setEditableText (false);
-    audioDevCombo->setJustificationType (Justification::centredLeft);
-    audioDevCombo->setTextWhenNothingSelected (TRANS("(no audio devices)"));
-    audioDevCombo->setTextWhenNoChoicesAvailable (TRANS("(no audio devices)"));
-    audioDevCombo->addListener (this);
-
-    addAndMakeVisible (audioCodecLabel = new Label ("audioCodecLabel",
-                                                    TRANS("Codec:")));
-    audioCodecLabel->setFont (Font (15.00f, Font::plain));
-    audioCodecLabel->setJustificationType (Justification::centredLeft);
-    audioCodecLabel->setEditable (false, false, false);
-    audioCodecLabel->setColour (Label::textColourId, Colours::white);
-    audioCodecLabel->setColour (TextEditor::textColourId, Colours::black);
-    audioCodecLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (audioCodecCombo = new ComboBox ("audioCodecCombo"));
-    audioCodecCombo->setExplicitFocusOrder (11);
-    audioCodecCombo->setEditableText (false);
-    audioCodecCombo->setJustificationType (Justification::centredLeft);
-    audioCodecCombo->setTextWhenNothingSelected (String::empty);
-    audioCodecCombo->setTextWhenNoChoicesAvailable (TRANS("(no devices)"));
-    audioCodecCombo->addListener (this);
-
-    addAndMakeVisible (nChannelsLabel = new Label ("nChannelsLabel",
-                                                   TRANS("Channels:")));
-    nChannelsLabel->setFont (Font (15.00f, Font::plain));
-    nChannelsLabel->setJustificationType (Justification::centredLeft);
-    nChannelsLabel->setEditable (false, false, false);
-    nChannelsLabel->setColour (Label::textColourId, Colours::white);
-    nChannelsLabel->setColour (TextEditor::textColourId, Colours::black);
-    nChannelsLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (nChannelsSlider = new Slider ("nChannelsSlider"));
-    nChannelsSlider->setExplicitFocusOrder (12);
-    nChannelsSlider->setRange (0, 10, 0);
-    nChannelsSlider->setSliderStyle (Slider::IncDecButtons);
-    nChannelsSlider->setTextBoxStyle (Slider::TextBoxLeft, false, 24, 20);
-    nChannelsSlider->addListener (this);
-
-    addAndMakeVisible (samplerateLabel = new Label ("samplerateLabel",
-                                                    TRANS("Samplerate:")));
-    samplerateLabel->setFont (Font (15.00f, Font::plain));
-    samplerateLabel->setJustificationType (Justification::centredLeft);
-    samplerateLabel->setEditable (false, false, false);
-    samplerateLabel->setColour (Label::textColourId, Colours::white);
-    samplerateLabel->setColour (TextEditor::textColourId, Colours::black);
-    samplerateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (samplerateCombo = new ComboBox ("samplerateCombo"));
-    samplerateCombo->setExplicitFocusOrder (13);
-    samplerateCombo->setEditableText (false);
-    samplerateCombo->setJustificationType (Justification::centredLeft);
-    samplerateCombo->setTextWhenNothingSelected (String::empty);
-    samplerateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    samplerateCombo->addListener (this);
-
-    addAndMakeVisible (audioBitrateLabel = new Label ("audioBitrateLabel",
-                                                      TRANS("Bitrate:")));
-    audioBitrateLabel->setFont (Font (15.00f, Font::plain));
-    audioBitrateLabel->setJustificationType (Justification::centredLeft);
-    audioBitrateLabel->setEditable (false, false, false);
-    audioBitrateLabel->setColour (Label::textColourId, Colours::white);
-    audioBitrateLabel->setColour (TextEditor::textColourId, Colours::black);
-    audioBitrateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (audioBitrateCombo = new ComboBox ("audioBitrateCombo"));
-    audioBitrateCombo->setExplicitFocusOrder (14);
-    audioBitrateCombo->setEditableText (false);
-    audioBitrateCombo->setJustificationType (Justification::centredLeft);
-    audioBitrateCombo->setTextWhenNothingSelected (String::empty);
-    audioBitrateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    audioBitrateCombo->addListener (this);
-
-    addAndMakeVisible (textGroup = new GroupComponent ("textGroup",
-                                                       TRANS("Text")));
-    textGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    textGroup->setColour (GroupComponent::textColourId, Colours::white);
-
-    addAndMakeVisible (motdLabel = new Label ("motdLabel",
-                                              TRANS("Message:")));
-    motdLabel->setFont (Font (15.00f, Font::plain));
-    motdLabel->setJustificationType (Justification::centredLeft);
-    motdLabel->setEditable (false, false, false);
-    motdLabel->setColour (Label::textColourId, Colours::white);
-    motdLabel->setColour (TextEditor::textColourId, Colours::black);
-    motdLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (motdText = new TextEditor ("motdText"));
-    motdText->setExplicitFocusOrder (15);
-    motdText->setMultiLine (false);
-    motdText->setReturnKeyStartsNewLine (false);
-    motdText->setReadOnly (false);
-    motdText->setScrollbarsShown (true);
-    motdText->setCaretVisible (true);
-    motdText->setPopupMenuEnabled (true);
-    motdText->setText (String::empty);
-
-    addAndMakeVisible (textStyleLabel = new Label ("textStyleLabel",
-                                                   TRANS("Style:")));
-    textStyleLabel->setFont (Font (15.00f, Font::plain));
-    textStyleLabel->setJustificationType (Justification::centredLeft);
-    textStyleLabel->setEditable (false, false, false);
-    textStyleLabel->setColour (Label::textColourId, Colours::white);
-    textStyleLabel->setColour (TextEditor::textColourId, Colours::black);
-    textStyleLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (textStyleCombo = new ComboBox ("textStyleCombo"));
-    textStyleCombo->setExplicitFocusOrder (16);
-    textStyleCombo->setEditableText (false);
-    textStyleCombo->setJustificationType (Justification::centredLeft);
-    textStyleCombo->setTextWhenNothingSelected (String::empty);
-    textStyleCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    textStyleCombo->addListener (this);
-
-    addAndMakeVisible (textPosLabel = new Label ("textPosLabel",
-                                                 TRANS("Position:")));
-    textPosLabel->setFont (Font (15.00f, Font::plain));
-    textPosLabel->setJustificationType (Justification::centredLeft);
-    textPosLabel->setEditable (false, false, false);
-    textPosLabel->setColour (Label::textColourId, Colours::white);
-    textPosLabel->setColour (TextEditor::textColourId, Colours::black);
-    textPosLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (textPosCombo = new ComboBox ("textPosCombo"));
-    textPosCombo->setExplicitFocusOrder (17);
-    textPosCombo->setEditableText (false);
-    textPosCombo->setJustificationType (Justification::centredLeft);
-    textPosCombo->setTextWhenNothingSelected (String::empty);
-    textPosCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    textPosCombo->addListener (this);
-
-    addAndMakeVisible (interstitialGroup = new GroupComponent ("interstitialGroup",
-                                                               TRANS("Interstitial")));
-    interstitialGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    interstitialGroup->setColour (GroupComponent::textColourId, Colours::white);
-
-    addAndMakeVisible (locationLabel = new Label ("locationLabel",
-                                                  TRANS("Location:")));
-    locationLabel->setFont (Font (15.00f, Font::plain));
-    locationLabel->setJustificationType (Justification::centredLeft);
-    locationLabel->setEditable (false, false, false);
-    locationLabel->setColour (Label::textColourId, Colours::white);
-    locationLabel->setColour (TextEditor::textColourId, Colours::black);
-    locationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (interstitialText = new TextEditor ("interstitialText"));
-    interstitialText->setExplicitFocusOrder (18);
-    interstitialText->setMultiLine (false);
-    interstitialText->setReturnKeyStartsNewLine (false);
-    interstitialText->setReadOnly (false);
-    interstitialText->setScrollbarsShown (true);
-    interstitialText->setCaretVisible (true);
-    interstitialText->setPopupMenuEnabled (true);
-    interstitialText->setText (String::empty);
-
-    addAndMakeVisible (browseButton = new TextButton ("browseButton"));
-    browseButton->setExplicitFocusOrder (19);
-    browseButton->setButtonText (TRANS("Browse"));
-    browseButton->addListener (this);
-
-    addAndMakeVisible (outputGroup = new GroupComponent ("outputGroup",
-                                                         TRANS("Output")));
-    outputGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    outputGroup->setColour (GroupComponent::textColourId, Colours::white);
-
-    addAndMakeVisible (outputStreamLabel = new Label ("outputStreamLabel",
-                                                      TRANS("Destination:")));
-    outputStreamLabel->setFont (Font (15.00f, Font::plain));
-    outputStreamLabel->setJustificationType (Justification::centredLeft);
-    outputStreamLabel->setEditable (false, false, false);
-    outputStreamLabel->setColour (Label::textColourId, Colours::white);
-    outputStreamLabel->setColour (TextEditor::textColourId, Colours::black);
-    outputStreamLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (outputSinkCombo = new ComboBox ("outputSinkCombo"));
-    outputSinkCombo->setExplicitFocusOrder (20);
-    outputSinkCombo->setEditableText (false);
-    outputSinkCombo->setJustificationType (Justification::centredLeft);
-    outputSinkCombo->setTextWhenNothingSelected (String::empty);
-    outputSinkCombo->setTextWhenNoChoicesAvailable (TRANS("(no devices)"));
-    outputSinkCombo->addListener (this);
-
-    addAndMakeVisible (outputWidthLabel = new Label ("outputWidthLabel",
-                                                     TRANS("Width:")));
-    outputWidthLabel->setFont (Font (15.00f, Font::plain));
-    outputWidthLabel->setJustificationType (Justification::centredLeft);
-    outputWidthLabel->setEditable (false, false, false);
-    outputWidthLabel->setColour (Label::textColourId, Colours::white);
-    outputWidthLabel->setColour (TextEditor::textColourId, Colours::black);
-    outputWidthLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (outputWidthText = new TextEditor ("outputWidthText"));
-    outputWidthText->setExplicitFocusOrder (21);
-    outputWidthText->setMultiLine (false);
-    outputWidthText->setReturnKeyStartsNewLine (false);
-    outputWidthText->setReadOnly (false);
-    outputWidthText->setScrollbarsShown (false);
-    outputWidthText->setCaretVisible (false);
-    outputWidthText->setPopupMenuEnabled (true);
-    outputWidthText->setText (String::empty);
-
-    addAndMakeVisible (outputHeightLabel = new Label ("outputHeightLabel",
-                                                      TRANS("Height:")));
-    outputHeightLabel->setFont (Font (15.00f, Font::plain));
-    outputHeightLabel->setJustificationType (Justification::centredLeft);
-    outputHeightLabel->setEditable (false, false, false);
-    outputHeightLabel->setColour (Label::textColourId, Colours::white);
-    outputHeightLabel->setColour (TextEditor::textColourId, Colours::black);
-    outputHeightLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (outputHeightText = new TextEditor ("outputHeightText"));
-    outputHeightText->setExplicitFocusOrder (22);
-    outputHeightText->setMultiLine (false);
-    outputHeightText->setReturnKeyStartsNewLine (false);
-    outputHeightText->setReadOnly (false);
-    outputHeightText->setScrollbarsShown (false);
-    outputHeightText->setCaretVisible (false);
-    outputHeightText->setPopupMenuEnabled (true);
-    outputHeightText->setText (String::empty);
-
-    addAndMakeVisible (framerateLabel = new Label ("framerateLabel",
-                                                   TRANS("FPS:")));
-    framerateLabel->setFont (Font (15.00f, Font::plain));
-    framerateLabel->setJustificationType (Justification::centredLeft);
-    framerateLabel->setEditable (false, false, false);
-    framerateLabel->setColour (Label::textColourId, Colours::white);
-    framerateLabel->setColour (TextEditor::textColourId, Colours::black);
-    framerateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (framerateCombo = new ComboBox ("framerateCombo"));
-    framerateCombo->setExplicitFocusOrder (23);
-    framerateCombo->setEditableText (false);
-    framerateCombo->setJustificationType (Justification::centredLeft);
-    framerateCombo->setTextWhenNothingSelected (String::empty);
-    framerateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    framerateCombo->addListener (this);
-
-    addAndMakeVisible (bitrateLabel = new Label ("bitrateLabel",
-                                                 TRANS("Bitrate:")));
-    bitrateLabel->setFont (Font (15.00f, Font::plain));
-    bitrateLabel->setJustificationType (Justification::centredLeft);
-    bitrateLabel->setEditable (false, false, false);
-    bitrateLabel->setColour (Label::textColourId, Colours::white);
-    bitrateLabel->setColour (TextEditor::textColourId, Colours::black);
-    bitrateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (videoBitrateCombo = new ComboBox ("videoBitrateCombo"));
-    videoBitrateCombo->setExplicitFocusOrder (24);
-    videoBitrateCombo->setEditableText (false);
-    videoBitrateCombo->setJustificationType (Justification::centredLeft);
-    videoBitrateCombo->setTextWhenNothingSelected (String::empty);
-    videoBitrateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    videoBitrateCombo->addListener (this);
-
-    addAndMakeVisible (outputDestLabel = new Label ("outputDestLabel",
-                                                    TRANS("Location:")));
-    outputDestLabel->setFont (Font (15.00f, Font::plain));
-    outputDestLabel->setJustificationType (Justification::centredLeft);
-    outputDestLabel->setEditable (false, false, false);
-    outputDestLabel->setColour (Label::textColourId, Colours::white);
-    outputDestLabel->setColour (TextEditor::textColourId, Colours::black);
-    outputDestLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (outputDestText = new TextEditor ("outputDestText"));
-    outputDestText->setExplicitFocusOrder (25);
-    outputDestText->setMultiLine (false);
-    outputDestText->setReturnKeyStartsNewLine (false);
-    outputDestText->setReadOnly (false);
-    outputDestText->setScrollbarsShown (true);
-    outputDestText->setCaretVisible (true);
-    outputDestText->setPopupMenuEnabled (true);
-    outputDestText->setText (String::empty);
-
-    addAndMakeVisible (chatGroup = new GroupComponent ("chatGroup",
-                                                       TRANS("Chat")));
-    chatGroup->setColour (GroupComponent::outlineColourId, Colours::white);
-    chatGroup->setColour (GroupComponent::textColourId, Colours::white);
-
-    addAndMakeVisible (hostLabel = new Label ("hostLabel",
-                                              TRANS("Host:")));
-    hostLabel->setFont (Font (15.00f, Font::plain));
-    hostLabel->setJustificationType (Justification::centredLeft);
-    hostLabel->setEditable (false, false, false);
-    hostLabel->setColour (Label::textColourId, Colours::white);
-    hostLabel->setColour (TextEditor::textColourId, Colours::black);
-    hostLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (hostText = new TextEditor ("hostText"));
-    hostText->setExplicitFocusOrder (26);
-    hostText->setMultiLine (false);
-    hostText->setReturnKeyStartsNewLine (false);
-    hostText->setReadOnly (false);
-    hostText->setScrollbarsShown (true);
-    hostText->setCaretVisible (true);
-    hostText->setPopupMenuEnabled (true);
-    hostText->setText (String::empty);
-
-    addAndMakeVisible (portLabel = new Label ("portLabel",
-                                              TRANS("Port:")));
-    portLabel->setFont (Font (15.00f, Font::plain));
-    portLabel->setJustificationType (Justification::centredLeft);
-    portLabel->setEditable (false, false, false);
-    portLabel->setColour (Label::textColourId, Colours::white);
-    portLabel->setColour (TextEditor::textColourId, Colours::black);
-    portLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (portText = new TextEditor ("portText"));
-    portText->setExplicitFocusOrder (27);
-    portText->setMultiLine (false);
-    portText->setReturnKeyStartsNewLine (false);
-    portText->setReadOnly (false);
-    portText->setScrollbarsShown (true);
-    portText->setCaretVisible (true);
-    portText->setPopupMenuEnabled (true);
-    portText->setText (String::empty);
-
-    addAndMakeVisible (nickLabel = new Label ("nickLabel",
-                                              TRANS("Nick:")));
-    nickLabel->setFont (Font (15.00f, Font::plain));
-    nickLabel->setJustificationType (Justification::centredLeft);
-    nickLabel->setEditable (false, false, false);
-    nickLabel->setColour (Label::textColourId, Colours::white);
-    nickLabel->setColour (TextEditor::textColourId, Colours::black);
-    nickLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (nickText = new TextEditor ("nickText"));
-    nickText->setExplicitFocusOrder (28);
-    nickText->setMultiLine (false);
-    nickText->setReturnKeyStartsNewLine (false);
-    nickText->setReadOnly (false);
-    nickText->setScrollbarsShown (true);
-    nickText->setCaretVisible (true);
-    nickText->setPopupMenuEnabled (true);
-    nickText->setText (String::empty);
-
-    addAndMakeVisible (passLabel = new Label ("passLabel",
-                                              TRANS("Password:")));
-    passLabel->setFont (Font (15.00f, Font::plain));
-    passLabel->setJustificationType (Justification::centredLeft);
-    passLabel->setEditable (false, false, false);
-    passLabel->setColour (Label::textColourId, Colours::white);
-    passLabel->setColour (TextEditor::textColourId, Colours::black);
-    passLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (passText = new TextEditor ("passText"));
-    passText->setExplicitFocusOrder (29);
-    passText->setMultiLine (false);
-    passText->setReturnKeyStartsNewLine (false);
-    passText->setReadOnly (false);
-    passText->setScrollbarsShown (true);
-    passText->setCaretVisible (true);
-    passText->setPopupMenuEnabled (true);
-    passText->setText (String::empty);
-
-    addAndMakeVisible (channelLabel = new Label ("channelLabel",
-                                                 TRANS("Channel:")));
-    channelLabel->setFont (Font (15.00f, Font::plain));
-    channelLabel->setJustificationType (Justification::centredLeft);
-    channelLabel->setEditable (false, false, false);
-    channelLabel->setColour (Label::textColourId, Colours::white);
-    channelLabel->setColour (TextEditor::textColourId, Colours::black);
-    channelLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (channelText = new TextEditor ("channelText"));
-    channelText->setExplicitFocusOrder (30);
-    channelText->setMultiLine (false);
-    channelText->setReturnKeyStartsNewLine (false);
-    channelText->setReadOnly (false);
-    channelText->setScrollbarsShown (true);
-    channelText->setCaretVisible (true);
-    channelText->setPopupMenuEnabled (true);
-    channelText->setText (String::empty);
-
-    addAndMakeVisible (greetingLabel = new Label ("greetingLabel",
-                                                  TRANS("Greeting:")));
-    greetingLabel->setFont (Font (15.00f, Font::plain));
-    greetingLabel->setJustificationType (Justification::centredLeft);
-    greetingLabel->setEditable (false, false, false);
-    greetingLabel->setColour (Label::textColourId, Colours::white);
-    greetingLabel->setColour (TextEditor::textColourId, Colours::black);
-    greetingLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (greetingText = new TextEditor ("greetingText"));
-    greetingText->setExplicitFocusOrder (31);
-    greetingText->setMultiLine (false);
-    greetingText->setReturnKeyStartsNewLine (false);
-    greetingText->setReadOnly (false);
-    greetingText->setScrollbarsShown (true);
-    greetingText->setCaretVisible (true);
-    greetingText->setPopupMenuEnabled (true);
-    greetingText->setText (String::empty);
-
-    addAndMakeVisible (joinPartToggle = new ToggleButton ("joinPartToggle"));
-    joinPartToggle->setExplicitFocusOrder (32);
-    joinPartToggle->setButtonText (TRANS("Show Join/Part"));
-    joinPartToggle->addListener (this);
-    joinPartToggle->setToggleState (true, dontSendNotification);
-    joinPartToggle->setColour (ToggleButton::textColourId, Colours::white);
+    addAndMakeVisible (configGroup = new GroupComponent ("configGroup",
+                                                         TRANS("Configuration")));
+    configGroup->setColour (GroupComponent::outlineColourId, Colours::white);
+    configGroup->setColour (GroupComponent::textColourId, Colours::white);
+
+    addAndMakeVisible (screenButton = new TextButton ("screenButton"));
+    screenButton->setExplicitFocusOrder (1);
+    screenButton->setButtonText (TRANS("Screen"));
+    screenButton->setConnectedEdges (Button::ConnectedOnBottom);
+
+    addAndMakeVisible (cameraButton = new TextButton ("cameraButton"));
+    cameraButton->setExplicitFocusOrder (2);
+    cameraButton->setButtonText (TRANS("Camera"));
+    cameraButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
+
+    addAndMakeVisible (audioButton = new TextButton ("audioButton"));
+    audioButton->setExplicitFocusOrder (3);
+    audioButton->setButtonText (TRANS("Audio"));
+    audioButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
+
+    addAndMakeVisible (textButton = new TextButton ("textButton"));
+    textButton->setExplicitFocusOrder (4);
+    textButton->setButtonText (TRANS("Text"));
+    textButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
+
+    addAndMakeVisible (imageButton = new TextButton ("imageButton"));
+    imageButton->setExplicitFocusOrder (5);
+    imageButton->setButtonText (TRANS("Image"));
+    imageButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
+
+    addAndMakeVisible (outputButton = new TextButton ("outputButton"));
+    outputButton->setExplicitFocusOrder (6);
+    outputButton->setButtonText (TRANS("Output"));
+    outputButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
+
+    addAndMakeVisible (chatButton = new TextButton ("chatButton"));
+    chatButton->setExplicitFocusOrder (7);
+    chatButton->setButtonText (TRANS("Chat"));
+    chatButton->setConnectedEdges (Button::ConnectedOnTop);
+
+    addAndMakeVisible (configPaneGroup = new GroupComponent ("configPaneGroup",
+                                                             TRANS("Screen")));
+    configPaneGroup->setColour (GroupComponent::outlineColourId, Colours::white);
+    configPaneGroup->setColour (GroupComponent::textColourId, Colours::white);
+
+    addAndMakeVisible (configScreen = new ConfigScreen());
+    configScreen->setName ("configScreen");
+
+    addAndMakeVisible (configCamera = new ConfigCamera());
+    configCamera->setName ("configCamera");
+
+    addAndMakeVisible (configAudio = new ConfigAudio());
+    configAudio->setName ("configAudio");
+
+    addAndMakeVisible (configText = new ConfigText());
+    configText->setName ("configText");
+
+    addAndMakeVisible (configImage = new ConfigImage());
+    configImage->setName ("configImage");
+
+    addAndMakeVisible (configOutput = new ConfigOutput());
+    configOutput->setName ("configOutput");
+
+    addAndMakeVisible (configChat = new ConfigChat());
+    configChat->setName ("configChat");
+
+    addAndMakeVisible (configSpacer = new Component());
+    configSpacer->setName ("configSpacer");
+
+    addAndMakeVisible (hintsGroup = new GroupComponent ("hintsGroup",
+                                                        TRANS("Hints")));
+    hintsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
+    hintsGroup->setColour (GroupComponent::textColourId, Colours::white);
+
+    addAndMakeVisible (hintsText = new TextEditor ("hintsText"));
+    hintsText->setMultiLine (true);
+    hintsText->setReturnKeyStartsNewLine (false);
+    hintsText->setReadOnly (true);
+    hintsText->setScrollbarsShown (true);
+    hintsText->setCaretVisible (false);
+    hintsText->setPopupMenuEnabled (false);
+    hintsText->setColour (TextEditor::textColourId, Colours::white);
+    hintsText->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    hintsText->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+    hintsText->setColour (TextEditor::outlineColourId, Colour (0x00000000));
+    hintsText->setColour (TextEditor::shadowColourId, Colour (0x00000000));
+    hintsText->setText (String::empty);
 
 
     //[UserPreSize]
@@ -625,41 +131,112 @@ Config::Config ()
 
     //[Constructor] You can add your own custom stuff here..
 
-  configureSlider(this->displaySlider  ) ;
-  configureSlider(this->screenSlider   ) ;
-  configureSlider(this->nChannelsSlider) ;
+  // establish local handles to child Component widgets
+  this->displaySlider     = this->configScreen->displaySlider ;
+  this->screenSlider      = this->configScreen->screenSlider ;
+  this->screenWidthText   = this->configScreen->screenWidthText ;
+  this->screenHeightText  = this->configScreen->screenHeightText ;
+  this->xOffsetText       = this->configScreen->xOffsetText ;
+  this->yOffsetText       = this->configScreen->yOffsetText ;
+  this->cameraDevCombo    = this->configCamera->cameraDevCombo ;
+  this->cameraResCombo    = this->configCamera->cameraResCombo ;
+  this->audioApiCombo     = this->configAudio ->audioApiCombo ;
+  this->audioDevCombo     = this->configAudio ->audioDevCombo ;
+  this->audioCodecCombo   = this->configAudio ->audioCodecCombo ;
+  this->nChannelsSlider   = this->configAudio ->nChannelsSlider ;
+  this->samplerateCombo   = this->configAudio ->samplerateCombo ;
+  this->audioBitrateCombo = this->configAudio ->audioBitrateCombo ;
+  this->motdText          = this->configText  ->motdText ;
+  this->textStyleCombo    = this->configText  ->textStyleCombo ;
+  this->textPosCombo      = this->configText  ->textPosCombo ;
+  this->interstitialText  = this->configImage ->interstitialText ;
+  this->browseButton      = this->configImage ->browseButton ;
+  this->outputSinkCombo   = this->configOutput->outputSinkCombo ;
+  this->outputWidthText   = this->configOutput->outputWidthText ;
+  this->outputHeightText  = this->configOutput->outputHeightText ;
+  this->framerateCombo    = this->configOutput->framerateCombo ;
+  this->videoBitrateCombo = this->configOutput->videoBitrateCombo ;
+  this->outputDestLabel   = this->configOutput->outputDestLabel ;
+  this->outputDestText    = this->configOutput->outputDestText ;
+  this->serverButton      = this->configChat  ->serverButton ;
+  this->hostCombo         = this->configChat  ->hostCombo ;
+  this->portText          = this->configChat  ->portText ;
+  this->nickText          = this->configChat  ->nickText ;
+  this->passText          = this->configChat  ->passText ;
+  this->channelText       = this->configChat  ->channelText ;
+  this->greetingText      = this->configChat  ->greetingText ;
+  this->joinPartToggle    = this->configChat  ->joinPartToggle ;
 
-  configureTextEditor(this->screenWidthText  , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
-  configureTextEditor(this->screenHeightText , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
-  configureTextEditor(this->xOffsetText      , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
-  configureTextEditor(this->yOffsetText      , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
-  configureTextEditor(this->motdText         , GUI::MAX_MOTD_LEN      , ""                   ) ;
-  configureTextEditor(this->interstitialText , GUI::MAX_FILENAME_LEN  , APP::VALID_ID_CHARS  ) ;
-  configureTextEditor(this->outputWidthText  , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
-  configureTextEditor(this->outputHeightText , GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
-  configureTextEditor(this->outputDestText   , GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
-  configureTextEditor(this->hostText         , GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
-  configureTextEditor(this->portText         , GUI::MAX_PORT_N_CHARS  , APP::DIGITS          ) ;
-  configureTextEditor(this->nickText         , GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
-  configureTextEditor(this->passText         , GUI::MAX_MOTD_LEN      , ""                   ) ;
-  configureTextEditor(this->channelText      , GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
-  configureTextEditor(this->greetingText     , GUI::MAX_MOTD_LEN      , ""                   ) ;
+  // configure
+  Button    ::Listener* this_button_listener   = static_cast<Button    ::Listener*>(this) ;
+  Slider    ::Listener* this_slider_listener   = static_cast<Slider    ::Listener*>(this) ;
+  TextEditor::Listener* this_text_listener     = static_cast<TextEditor::Listener*>(this) ;
+  ComboBox  ::Listener* this_combobox_listener = static_cast<ComboBox  ::Listener*>(this) ;
+  this->mainContent->configureButton(this->screenButton   , this_button_listener) ;
+  this->mainContent->configureButton(this->cameraButton   , this_button_listener) ;
+  this->mainContent->configureButton(this->audioButton    , this_button_listener) ;
+  this->mainContent->configureButton(this->textButton     , this_button_listener) ;
+  this->mainContent->configureButton(this->imageButton    , this_button_listener) ;
+  this->mainContent->configureButton(this->outputButton   , this_button_listener) ;
+  this->mainContent->configureButton(this->chatButton     , this_button_listener) ;
+  this->mainContent->configureButton(this->browseButton   , this_button_listener) ;
+  this->mainContent->configureButton(this->serverButton   , this_button_listener) ;
+  this->mainContent->configureButton(this->joinPartToggle , this_button_listener) ;
+  this->mainContent->configureSlider(this->displaySlider   , this_slider_listener ,
+                                     GUI::MIN_DISPLAY_N    , GUI::MAX_DISPLAY_N   , 1.0) ;
+  this->mainContent->configureSlider(this->screenSlider    , this_slider_listener ,
+                                     GUI::MIN_SCREEN_N     , GUI::MAX_SCREEN_N    , 1.0) ;
+  this->mainContent->configureSlider(this->nChannelsSlider , this_slider_listener ,
+                                     GUI::MIN_N_CHANNELS   , GUI::MAX_N_CHANNELS  , 1.0) ;
+  this->mainContent->configureTextEditor(this->screenWidthText  , this_text_listener   ,
+                                         GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  this->mainContent->configureTextEditor(this->screenHeightText , this_text_listener   ,
+                                         GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  this->mainContent->configureTextEditor(this->xOffsetText      , this_text_listener   ,
+                                         GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  this->mainContent->configureTextEditor(this->yOffsetText      , this_text_listener   ,
+                                         GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  this->mainContent->configureTextEditor(this->motdText         , this_text_listener   ,
+                                         GUI::MAX_MOTD_LEN      , ""                   ) ;
+  this->mainContent->configureTextEditor(this->interstitialText , this_text_listener   ,
+                                         GUI::MAX_FILENAME_LEN  , APP::VALID_ID_CHARS  ) ;
+  this->mainContent->configureTextEditor(this->hintsText        , this_text_listener   ,
+                                         0                      , String::empty        ) ;
+  this->mainContent->configureTextEditor(this->outputWidthText  , this_text_listener   ,
+                                         GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  this->mainContent->configureTextEditor(this->outputHeightText , this_text_listener   ,
+                                         GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
+  this->mainContent->configureTextEditor(this->outputDestText   , this_text_listener   ,
+                                         GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
+  this->mainContent->configureTextEditor(this->portText         , this_text_listener   ,
+                                         GUI::MAX_PORT_N_CHARS  , APP::DIGITS          ) ;
+  this->mainContent->configureTextEditor(this->nickText         , this_text_listener   ,
+                                         GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
+  this->mainContent->configureTextEditor(this->passText         , this_text_listener   ,
+                                         GUI::MAX_MOTD_LEN      , ""                   ) ;
+  this->mainContent->configureTextEditor(this->channelText      , this_text_listener   ,
+                                         GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
+  this->mainContent->configureTextEditor(this->greetingText     , this_text_listener   ,
+                                         GUI::MAX_MOTD_LEN      , ""                   ) ;
+  this->mainContent->configureCombobox(this->cameraDevCombo    , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->cameraResCombo    , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->audioApiCombo     , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->audioDevCombo     , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->audioCodecCombo   , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->samplerateCombo   , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->audioBitrateCombo , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->textStyleCombo    , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->textPosCombo      , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->outputSinkCombo   , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->framerateCombo    , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->videoBitrateCombo , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->hostCombo         , this_combobox_listener) ;
 
-  configureCombobox(this->cameraDevCombo   ) ;
-  configureCombobox(this->cameraResCombo   ) ;
-  configureCombobox(this->audioApiCombo    ) ;
-  configureCombobox(this->audioDevCombo    ) ;
-  configureCombobox(this->audioCodecCombo  ) ;
-  configureCombobox(this->samplerateCombo  ) ;
-  configureCombobox(this->audioBitrateCombo) ;
-  configureCombobox(this->textStyleCombo   ) ;
-  configureCombobox(this->textPosCombo     ) ;
-  configureCombobox(this->outputSinkCombo  ) ;
-  configureCombobox(this->framerateCombo   ) ;
-  configureCombobox(this->videoBitrateCombo) ;
+  // NOTE: configSpacer is a non-functional dummy - most siblings bounds are coupled to it
+  configSpacer   ->toBack() ;
+  configPaneGroup->setText(GUI::SCREEN_GROUP_TEXT) ;
 
-  // TODO: validations here or AvCasterStore->sanitizeConfig()
-  //this->displaySlider->setRange(0 , GUI::MAX_DISPLAY_N , 1) ;
+  updateVisibility(static_cast<Component*>(this->configScreen)) ;
 
     //[/Constructor]
 }
@@ -669,75 +246,25 @@ Config::~Config()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    screenGroup = nullptr;
-    displayLabel = nullptr;
-    displaySlider = nullptr;
-    screenLabel = nullptr;
-    screenSlider = nullptr;
-    screenWidthLabel = nullptr;
-    screenWidthText = nullptr;
-    screenHeightLabel = nullptr;
-    screenHeightText = nullptr;
-    xOffsetLabel = nullptr;
-    xOffsetText = nullptr;
-    yOffsetLabel = nullptr;
-    yOffsetText = nullptr;
-    cameraGroup = nullptr;
-    cameraDevLabel = nullptr;
-    cameraDevCombo = nullptr;
-    cameraResLabel = nullptr;
-    cameraResCombo = nullptr;
-    audioGroup = nullptr;
-    audioApiLabel = nullptr;
-    audioApiCombo = nullptr;
-    audioDevLabel = nullptr;
-    audioDevCombo = nullptr;
-    audioCodecLabel = nullptr;
-    audioCodecCombo = nullptr;
-    nChannelsLabel = nullptr;
-    nChannelsSlider = nullptr;
-    samplerateLabel = nullptr;
-    samplerateCombo = nullptr;
-    audioBitrateLabel = nullptr;
-    audioBitrateCombo = nullptr;
-    textGroup = nullptr;
-    motdLabel = nullptr;
-    motdText = nullptr;
-    textStyleLabel = nullptr;
-    textStyleCombo = nullptr;
-    textPosLabel = nullptr;
-    textPosCombo = nullptr;
-    interstitialGroup = nullptr;
-    locationLabel = nullptr;
-    interstitialText = nullptr;
-    browseButton = nullptr;
-    outputGroup = nullptr;
-    outputStreamLabel = nullptr;
-    outputSinkCombo = nullptr;
-    outputWidthLabel = nullptr;
-    outputWidthText = nullptr;
-    outputHeightLabel = nullptr;
-    outputHeightText = nullptr;
-    framerateLabel = nullptr;
-    framerateCombo = nullptr;
-    bitrateLabel = nullptr;
-    videoBitrateCombo = nullptr;
-    outputDestLabel = nullptr;
-    outputDestText = nullptr;
-    chatGroup = nullptr;
-    hostLabel = nullptr;
-    hostText = nullptr;
-    portLabel = nullptr;
-    portText = nullptr;
-    nickLabel = nullptr;
-    nickText = nullptr;
-    passLabel = nullptr;
-    passText = nullptr;
-    channelLabel = nullptr;
-    channelText = nullptr;
-    greetingLabel = nullptr;
-    greetingText = nullptr;
-    joinPartToggle = nullptr;
+    configGroup = nullptr;
+    screenButton = nullptr;
+    cameraButton = nullptr;
+    audioButton = nullptr;
+    textButton = nullptr;
+    imageButton = nullptr;
+    outputButton = nullptr;
+    chatButton = nullptr;
+    configPaneGroup = nullptr;
+    configScreen = nullptr;
+    configCamera = nullptr;
+    configAudio = nullptr;
+    configText = nullptr;
+    configImage = nullptr;
+    configOutput = nullptr;
+    configChat = nullptr;
+    configSpacer = nullptr;
+    hintsGroup = nullptr;
+    hintsText = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -750,26 +277,14 @@ void Config::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (20.0f, 18.0f, static_cast<float> (getWidth() - 40), 86.0f, 4.000f);
+    g.setColour (Colour (0xff282828));
+    g.fillRoundedRectangle (18.0f, 14.0f, static_cast<float> (getWidth() - 36), static_cast<float> (getHeight() - 32), 5.000f);
 
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (20.0f, 126.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
+    g.setColour (Colour (0xff404040));
+    g.fillRoundedRectangle (194.0f, 30.0f, static_cast<float> (getWidth() - 226), static_cast<float> (getHeight() - 66), 4.000f);
 
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (20.0f, 198.0f, static_cast<float> (getWidth() - 40), 88.0f, 4.000f);
-
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (20.0f, 304.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
-
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (20.0f, 376.0f, static_cast<float> (getWidth() - 40), 54.0f, 4.000f);
-
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (20.0f, 450.0f, static_cast<float> (getWidth() - 40), 86.0f, 4.000f);
-
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (20.0f, 558.0f, static_cast<float> (getWidth() - 40), 86.0f, 4.000f);
+    g.setColour (Colour (0xff585858));
+    g.fillRoundedRectangle (204.0f, 298.0f, static_cast<float> (getWidth() - 246), static_cast<float> (getHeight() - 342), 4.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -780,294 +295,213 @@ void Config::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    screenGroup->setBounds (16, 8, getWidth() - 32, 100);
-    displayLabel->setBounds (32, 32, 80, 24);
-    displaySlider->setBounds (120, 32, 64, 24);
-    screenLabel->setBounds (32, 64, 80, 24);
-    screenSlider->setBounds (120, 64, 64, 24);
-    screenWidthLabel->setBounds (200, 32, 64, 24);
-    screenWidthText->setBounds (264, 32, 48, 24);
-    screenHeightLabel->setBounds (200, 64, 64, 24);
-    screenHeightText->setBounds (264, 64, 48, 24);
-    xOffsetLabel->setBounds (326, 32, 64, 24);
-    xOffsetText->setBounds (390, 32, 48, 24);
-    yOffsetLabel->setBounds (326, 64, 64, 24);
-    yOffsetText->setBounds (390, 64, 48, 24);
-    cameraGroup->setBounds (16, 116, getWidth() - 32, 64);
-    cameraDevLabel->setBounds (32, 140, 80, 24);
-    cameraDevCombo->setBounds (120, 140, 200, 24);
-    cameraResLabel->setBounds (332, 140, 80, 24);
-    cameraResCombo->setBounds (420, 140, 200, 24);
-    audioGroup->setBounds (16, 188, getWidth() - 32, 100);
-    audioApiLabel->setBounds (32, 212, 64, 24);
-    audioApiCombo->setBounds (120, 212, 200, 24);
-    audioDevLabel->setBounds (332, 212, 80, 24);
-    audioDevCombo->setBounds (420, 212, 200, 24);
-    audioCodecLabel->setBounds (33, 248, 80, 24);
-    audioCodecCombo->setBounds (121, 248, 96, 24);
-    nChannelsLabel->setBounds (232, 248, 80, 24);
-    nChannelsSlider->setBounds (320, 248, 64, 24);
-    samplerateLabel->setBounds (395, 248, 76, 24);
-    samplerateCombo->setBounds (478, 248, 80, 24);
-    audioBitrateLabel->setBounds (574, 248, 64, 24);
-    audioBitrateCombo->setBounds (640, 248, 80, 24);
-    textGroup->setBounds (16, 296, getWidth() - 32, 64);
-    motdLabel->setBounds (32, 320, 80, 24);
-    motdText->setBounds (120, 320, 284, 24);
-    textStyleLabel->setBounds (420, 320, 52, 24);
-    textStyleCombo->setBounds (480, 320, 80, 24);
-    textPosLabel->setBounds (568, 320, 64, 24);
-    textPosCombo->setBounds (640, 320, 80, 24);
-    interstitialGroup->setBounds (18, 368, getWidth() - 32, 64);
-    locationLabel->setBounds (34, 392, 80, 24);
-    interstitialText->setBounds (122, 392, 486, 24);
-    browseButton->setBounds (640, 392, 80, 24);
-    outputGroup->setBounds (16, 440, getWidth() - 32, 100);
-    outputStreamLabel->setBounds (32, 464, 80, 24);
-    outputSinkCombo->setBounds (120, 464, 64, 24);
-    outputWidthLabel->setBounds (204, 464, 64, 24);
-    outputWidthText->setBounds (268, 464, 48, 24);
-    outputHeightLabel->setBounds (332, 464, 64, 24);
-    outputHeightText->setBounds (396, 464, 48, 24);
-    framerateLabel->setBounds (460, 464, 40, 24);
-    framerateCombo->setBounds (506, 464, 48, 24);
-    bitrateLabel->setBounds (572, 464, 64, 24);
-    videoBitrateCombo->setBounds (640, 464, 80, 24);
-    outputDestLabel->setBounds (32, 500, 80, 24);
-    outputDestText->setBounds (120, 500, 600, 24);
-    chatGroup->setBounds (16, 548, getWidth() - 32, 100);
-    hostLabel->setBounds (32, 570, 80, 24);
-    hostText->setBounds (120, 570, 104, 24);
-    portLabel->setBounds (232, 570, 40, 24);
-    portText->setBounds (280, 570, 48, 24);
-    nickLabel->setBounds (344, 570, 40, 24);
-    nickText->setBounds (392, 570, 120, 24);
-    passLabel->setBounds (520, 570, 72, 24);
-    passText->setBounds (600, 570, 120, 24);
-    channelLabel->setBounds (32, 608, 80, 24);
-    channelText->setBounds (120, 608, 104, 24);
-    greetingLabel->setBounds (232, 608, 72, 24);
-    greetingText->setBounds (312, 608, 288, 24);
-    joinPartToggle->setBounds (608, 608, 112, 24);
+    configGroup->setBounds (16, 4, getWidth() - 32, getHeight() - 20);
+    screenButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.0000f), 150, roundFloatToInt (252 * 0.1429f));
+    cameraButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.1429f), 150, roundFloatToInt (252 * 0.1429f));
+    audioButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.2857f), 150, roundFloatToInt (252 * 0.1429f));
+    textButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.4286f), 150, roundFloatToInt (252 * 0.1429f));
+    imageButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.5714f), 150, roundFloatToInt (252 * 0.1429f));
+    outputButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.7143f), 150, roundFloatToInt (252 * 0.1429f));
+    chatButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.8571f), 150, roundFloatToInt (252 * 0.1429f));
+    configPaneGroup->setBounds (16 + 174, 4 + 16, (getWidth() - 32) - 186, roundFloatToInt ((getHeight() - 20) * 0.9534f));
+    configScreen->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
+    configCamera->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
+    configAudio->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
+    configText->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
+    configImage->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
+    configOutput->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
+    configChat->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
+    configSpacer->setBounds ((16 + 174) + 12, (4 + 16) + 16, ((getWidth() - 32) - 186) - 24, 252);
+    hintsGroup->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 252, (((getWidth() - 32) - 186) - 24) - 0, (roundFloatToInt ((getHeight() - 20) * 0.9534f)) - 278);
+    hintsText->setBounds ((((16 + 174) + 12) + 0) + 14, (((4 + 16) + 16) + 252) + 20, ((((getWidth() - 32) - 186) - 24) - 0) - 28, ((roundFloatToInt ((getHeight() - 20) * 0.9534f)) - 278) - 32);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
-}
-
-void Config::sliderValueChanged (Slider* sliderThatWasMoved)
-{
-    //[UsersliderValueChanged_Pre]
-
-  Identifier key ;
-  var        value = var((int)sliderThatWasMoved->getValue()) ;
-
-    //[/UsersliderValueChanged_Pre]
-
-    if (sliderThatWasMoved == displaySlider)
-    {
-        //[UserSliderCode_displaySlider] -- add your slider handling code here..
-
-      key = CONFIG::DISPLAY_N_ID ;
-
-        //[/UserSliderCode_displaySlider]
-    }
-    else if (sliderThatWasMoved == screenSlider)
-    {
-        //[UserSliderCode_screenSlider] -- add your slider handling code here..
-
-      key = CONFIG::SCREEN_N_ID ;
-
-        //[/UserSliderCode_screenSlider]
-    }
-    else if (sliderThatWasMoved == nChannelsSlider)
-    {
-        //[UserSliderCode_nChannelsSlider] -- add your slider handling code here..
-
-      key = CONFIG::N_CHANNELS_ID ;
-
-        //[/UserSliderCode_nChannelsSlider]
-    }
-
-    //[UsersliderValueChanged_Post]
-
-  AvCaster::SetConfig(key , value) ;
-
-    //[/UsersliderValueChanged_Post]
-}
-
-void Config::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
-{
-    //[UsercomboBoxChanged_Pre]
-
-  int        option_n    = comboBoxThatHasChanged->getSelectedItemIndex() ;
-  int        default_idx ;
-  Identifier key ;
-  var        value ;
-
-    //[/UsercomboBoxChanged_Pre]
-
-    if (comboBoxThatHasChanged == cameraDevCombo)
-    {
-        //[UserComboBoxCode_cameraDevCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::CAMERA_DEVICE_ID ;
-      default_idx = CONFIG::DEFAULT_CAMERA_DEVICE_IDX ;
-
-        //[/UserComboBoxCode_cameraDevCombo]
-    }
-    else if (comboBoxThatHasChanged == cameraResCombo)
-    {
-        //[UserComboBoxCode_cameraResCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::CAMERA_RES_ID ;
-      default_idx = CONFIG::DEFAULT_CAMERA_RES_IDX ;
-
-        //[/UserComboBoxCode_cameraResCombo]
-    }
-    else if (comboBoxThatHasChanged == audioApiCombo)
-    {
-        //[UserComboBoxCode_audioApiCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::AUDIO_API_ID ;
-      default_idx = CONFIG::DEFAULT_AUDIO_API_IDX ;
-
-        //[/UserComboBoxCode_audioApiCombo]
-    }
-    else if (comboBoxThatHasChanged == audioDevCombo)
-    {
-        //[UserComboBoxCode_audioDevCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::AUDIO_DEVICE_ID ;
-      default_idx = CONFIG::DEFAULT_AUDIO_DEVICE_IDX ;
-
-        //[/UserComboBoxCode_audioDevCombo]
-    }
-    else if (comboBoxThatHasChanged == audioCodecCombo)
-    {
-        //[UserComboBoxCode_audioCodecCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::AUDIO_CODEC_ID ;
-      default_idx = CONFIG::DEFAULT_AUDIO_CODEC_IDX ;
-
-        //[/UserComboBoxCode_audioCodecCombo]
-    }
-    else if (comboBoxThatHasChanged == samplerateCombo)
-    {
-        //[UserComboBoxCode_samplerateCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::SAMPLERATE_ID ;
-      default_idx = CONFIG::DEFAULT_SAMPLERATE_IDX ;
-
-        //[/UserComboBoxCode_samplerateCombo]
-    }
-    else if (comboBoxThatHasChanged == audioBitrateCombo)
-    {
-        //[UserComboBoxCode_audioBitrateCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::AUDIO_BITRATE_ID ;
-      default_idx = CONFIG::DEFAULT_AUDIO_BITRATE_IDX ;
-
-        //[/UserComboBoxCode_audioBitrateCombo]
-    }
-    else if (comboBoxThatHasChanged == textStyleCombo)
-    {
-        //[UserComboBoxCode_textStyleCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::TEXT_STYLE_ID ;
-      default_idx = CONFIG::DEFAULT_TEXT_STYLE_IDX ;
-
-        //[/UserComboBoxCode_textStyleCombo]
-    }
-    else if (comboBoxThatHasChanged == textPosCombo)
-    {
-        //[UserComboBoxCode_textPosCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::TEXT_POSITION_ID ;
-      default_idx = CONFIG::DEFAULT_TEXT_POSITION_IDX ;
-
-        //[/UserComboBoxCode_textPosCombo]
-    }
-    else if (comboBoxThatHasChanged == outputSinkCombo)
-    {
-        //[UserComboBoxCode_outputSinkCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::OUTPUT_SINK_ID ;
-      default_idx = CONFIG::DEFAULT_OUTPUT_SINK_IDX ;
-
-        //[/UserComboBoxCode_outputSinkCombo]
-    }
-    else if (comboBoxThatHasChanged == framerateCombo)
-    {
-        //[UserComboBoxCode_framerateCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::FRAMERATE_ID ;
-      default_idx = CONFIG::DEFAULT_FRAMERATE_IDX ;
-
-        //[/UserComboBoxCode_framerateCombo]
-    }
-    else if (comboBoxThatHasChanged == videoBitrateCombo)
-    {
-        //[UserComboBoxCode_videoBitrateCombo] -- add your combo box handling code here..
-
-      key         = CONFIG::VIDEO_BITRATE_ID ;
-      default_idx = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
-
-        //[/UserComboBoxCode_videoBitrateCombo]
-    }
-
-    //[UsercomboBoxChanged_Post]
-
-  else return ;
-
-  value = var((~option_n) ? option_n : default_idx) ;
-  comboBoxThatHasChanged->setSelectedItemIndex(int(value) , juce::dontSendNotification) ;
-  AvCaster::SetConfig(key , value) ;
-
-    //[/UsercomboBoxChanged_Post]
-}
-
-void Config::buttonClicked (Button* buttonThatWasClicked)
-{
-    //[UserbuttonClicked_Pre]
-
-  Identifier key ;
-  var        value ;
-
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == browseButton)
-    {
-        //[UserButtonCode_browseButton] -- add your button handler code here..
-
-      FileChooser chooser(GUI::IMAGE_CHOOSER_TEXT , APP::HOME_DIR , APP::IMG_FILE_EXTS) ;
-      if (!chooser.browseForFileToOpen()) return ;
-
-      key   = CONFIG::IMAGE_LOC_ID ;
-      value = var(chooser.getResult().getFullPathName()) ;
-
-        //[/UserButtonCode_browseButton]
-    }
-    else if (buttonThatWasClicked == joinPartToggle)
-    {
-        //[UserButtonCode_joinPartToggle] -- add your button handler code here..
-
-      key   = CONFIG::JOINPART_ID ;
-      value = var(buttonThatWasClicked->getToggleState()) ;
-
-        //[/UserButtonCode_joinPartToggle]
-    }
-
-    //[UserbuttonClicked_Post]
-
-  AvCaster::SetConfig(key , value) ;
-
-    //[/UserbuttonClicked_Post]
 }
 
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void Config::broughtToFront() { loadConfig() ; }
+void Config::broughtToFront() { loadConfig() ;
+/* FIXME: testing
+hostCombo->clear               (juce::dontSendNotification) ;
+hostCombo->addItemList         (AvCaster::GetPresetsNames() , 1) ;
+hostCombo->setSelectedItemIndex(0 , juce::dontSendNotification) ;
+*/
+}
+
+void Config::sliderValueChanged(Slider* a_slider)
+{
+  Identifier key ;
+  var        value = var((int)a_slider->getValue()) ;
+
+  if      (a_slider == displaySlider  ) key = CONFIG::DISPLAY_N_ID ;
+  else if (a_slider == screenSlider   ) key = CONFIG::SCREEN_N_ID ;
+  else if (a_slider == nChannelsSlider) key = CONFIG::N_CHANNELS_ID ;
+
+  AvCaster::SetConfig(key , value) ;
+}
+
+void Config::comboBoxChanged(ComboBox* a_combobox)
+{
+  int        option_n    = a_combobox->getSelectedItemIndex() ;
+  int        default_idx ;
+  Identifier key ;
+  var        value ;
+
+  if      (a_combobox == this->cameraDevCombo)
+  {
+    key         = CONFIG::CAMERA_DEVICE_ID ;
+    default_idx = CONFIG::DEFAULT_CAMERA_DEVICE_IDX ;
+  }
+  else if (a_combobox == this->cameraResCombo)
+  {
+    key         = CONFIG::CAMERA_RES_ID ;
+    default_idx = CONFIG::DEFAULT_CAMERA_RES_IDX ;
+  }
+  else if (a_combobox == this->audioApiCombo)
+  {
+    key         = CONFIG::AUDIO_API_ID ;
+    default_idx = CONFIG::DEFAULT_AUDIO_API_IDX ;
+  }
+  else if (a_combobox == this->audioDevCombo)
+  {
+    key         = CONFIG::AUDIO_DEVICE_ID ;
+    default_idx = CONFIG::DEFAULT_AUDIO_DEVICE_IDX ;
+  }
+  else if (a_combobox == this->audioCodecCombo)
+  {
+    key         = CONFIG::AUDIO_CODEC_ID ;
+    default_idx = CONFIG::DEFAULT_AUDIO_CODEC_IDX ;
+  }
+  else if (a_combobox == this->samplerateCombo)
+  {
+    key         = CONFIG::SAMPLERATE_ID ;
+    default_idx = CONFIG::DEFAULT_SAMPLERATE_IDX ;
+  }
+  else if (a_combobox == this->audioBitrateCombo)
+  {
+    key         = CONFIG::AUDIO_BITRATE_ID ;
+    default_idx = CONFIG::DEFAULT_AUDIO_BITRATE_IDX ;
+  }
+  else if (a_combobox == this->textStyleCombo)
+  {
+    key         = CONFIG::TEXT_STYLE_ID ;
+    default_idx = CONFIG::DEFAULT_TEXT_STYLE_IDX ;
+  }
+  else if (a_combobox == this->textPosCombo)
+  {
+    key         = CONFIG::TEXT_POSITION_ID ;
+    default_idx = CONFIG::DEFAULT_TEXT_POSITION_IDX ;
+  }
+  else if (a_combobox == this->outputSinkCombo)
+  {
+    key         = CONFIG::OUTPUT_SINK_ID ;
+    default_idx = CONFIG::DEFAULT_OUTPUT_SINK_IDX ;
+  }
+  else if (a_combobox == this->framerateCombo)
+  {
+    key         = CONFIG::FRAMERATE_ID ;
+    default_idx = CONFIG::DEFAULT_FRAMERATE_IDX ;
+  }
+  else if (a_combobox == this->videoBitrateCombo)
+  {
+    key         = CONFIG::VIDEO_BITRATE_ID ;
+    default_idx = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
+  }
+  else if (a_combobox == this->hostCombo)
+  {
+// TODO: nyi
+DBG("Config::comboBoxChanged() hostCombo option_n=" + String(option_n) + " text=" + a_combobox->getText()) ;
+if (!(~option_n))
+{
+DBG("Config::comboBoxChanged() hostCombo text changed=" + a_combobox->getText()) ;
+// TODO: validate: GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
+}
+    return ;
+//     key         = CONFIG::HOST_ID ;
+//     default_idx = CONFIG::DEFAULT_HOST_IDX ;
+  }
+  else return ;
+
+  value = var((~option_n) ? option_n : default_idx) ;
+  a_combobox->setSelectedItemIndex(int(value) , juce::dontSendNotification) ;
+  AvCaster::SetConfig(key , value) ;
+}
+
+void Config::buttonClicked(Button* a_button)
+{
+  Component* config_component = nullptr ; // local buttons
+  String     config_group_text ;          // local buttons
+  Identifier key ;                        // child buttons
+  var        value ;                      // child buttons
+
+  // Config buttons
+  if      (a_button == screenButton)
+  {
+    config_component  = static_cast<Component*>(this->configScreen) ;
+    config_group_text = GUI::SCREEN_GROUP_TEXT ;
+  }
+  else if (a_button == cameraButton)
+  {
+    config_component = static_cast<Component*>(this->configCamera) ;
+    config_group_text = GUI::CAMERA_GROUP_TEXT ;
+  }
+  else if (a_button == audioButton)
+  {
+    config_component = static_cast<Component*>(this->configAudio) ;
+    config_group_text = GUI::AUDIO_GROUP_TEXT ;
+  }
+  else if (a_button == textButton)
+  {
+    config_component = static_cast<Component*>(this->configText) ;
+    config_group_text = GUI::TEXT_GROUP_TEXT ;
+  }
+  else if (a_button == imageButton)
+  {
+    config_component = static_cast<Component*>(this->configImage) ;
+    config_group_text = GUI::IMAGE_GROUP_TEXT ;
+  }
+  else if (a_button == outputButton)
+  {
+    config_component = static_cast<Component*>(this->configOutput) ;
+    config_group_text = GUI::OUTPUT_GROUP_TEXT ;
+  }
+  else if (a_button == chatButton)
+  {
+    config_component = static_cast<Component*>(this->configChat) ;
+    config_group_text = GUI::CHAT_GROUP_TEXT ;
+  }
+  // Image buttons
+  else if (a_button == browseButton)
+  {
+    FileChooser           file_chooser(GUI::IMAGE_CHOOSER_TEXT  , APP::PICTURES_DIR ,
+                                       GUI::IMG_FILE_EXTENSIONS , false             ) ;
+    ImagePreviewComponent image_preview ;
+//     image_preview.setSize(GUI::IMG_PREVIEW_W , GUI::IMG_PREVIEW_H) ; // NFG
+
+    if (!file_chooser.browseForFileToOpen(&image_preview)) return ;
+
+    String image_loc = file_chooser.getResult().getFullPathName() ;
+
+    key   = CONFIG::IMAGE_LOC_ID ;
+    value = var(image_loc) ;
+  }
+  // Chat buttons
+  else if (a_button == serverButton) { DBG("Config::buttonClicked() serverButton") ; return ; } // TODO: nyi
+  else if (a_button == joinPartToggle)
+  {
+    key   = CONFIG::JOINPART_ID ;
+    value = var(a_button->getToggleState()) ;
+  }
+
+  if (config_component != nullptr)        // local buttons
+  {
+    configPaneGroup->setText(config_group_text) ;
+    updateVisibility(config_component) ;
+  }
+  else AvCaster::SetConfig(key , value) ; // child buttons
+}
 
 void Config::textEditorTextChanged(TextEditor& a_text_editor)
 {
@@ -1094,35 +528,6 @@ void Config::textEditorFocusLost(TextEditor& a_text_editor)
   else                                   return ;
 
   AvCaster::SetConfig(key , value) ;
-}
-
-void Config::configureSlider(Slider* a_slider)
-{
-  a_slider->setColour(Slider::textBoxBackgroundColourId   , GUI::TEXT_BG_COLOR      ) ;
-  a_slider->setColour(Slider::textBoxTextColourId         , GUI::TEXT_NORMAL_COLOR  ) ;
-  a_slider->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
-  a_slider->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
-  a_slider->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
-}
-
-void Config::configureTextEditor(TextEditor*  a_text_editor , int max_n_chars ,
-                                 const String allowed_chars                   )
-{
-  a_text_editor->setSelectAllWhenFocused(true) ;
-  a_text_editor->setInputRestrictions(max_n_chars , allowed_chars) ;
-  a_text_editor->setColour(TextEditor::backgroundColourId      , GUI::TEXT_BG_COLOR      ) ;
-  a_text_editor->setColour(TextEditor::textColourId            , GUI::TEXT_NORMAL_COLOR  ) ;
-  a_text_editor->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
-  a_text_editor->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
-  a_text_editor->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
-
-  a_text_editor->addListener(this) ;
-}
-
-void Config::configureCombobox(ComboBox* a_combobox)
-{
-  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_NORMAL_COLOR) ;
-  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR    ) ;
 }
 
 void Config::loadConfig()
@@ -1240,6 +645,19 @@ this->browseButton    ->setEnabled(false) ;
 #endif // DISABLE_GUI_CONFIG_NYI
 }
 
+void Config::updateVisibility(Component* config_component)
+{
+  configAudio     ->setVisible(false) ;
+  configCamera    ->setVisible(false) ;
+  configChat      ->setVisible(false) ;
+  configImage     ->setVisible(false) ;
+  configOutput    ->setVisible(false) ;
+  configScreen    ->setVisible(false) ;
+  configText      ->setVisible(false) ;
+  configSpacer    ->setVisible(false) ;
+  config_component->setVisible(true ) ;
+}
+
 bool Config::validateOutputDest()
 {
   String dest_text = this->outputDestText->getText()  ;
@@ -1274,302 +692,102 @@ bool Config::validateConfigGui()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Config" componentName=""
-                 parentClasses="public Component, public TextEditor::Listener"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
-                 initialHeight="1">
+                 parentClasses="public Component, public Button::Listener, public Slider::Listener, public TextEditor::Listener, public ComboBox::Listener"
+                 constructorParams="MainContent* main_content" variableInitialisers="mainContent(main_content)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="20 18 40M 86" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
-    <ROUNDRECT pos="20 126 40M 52" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
-    <ROUNDRECT pos="20 198 40M 88" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
-    <ROUNDRECT pos="20 304 40M 52" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
-    <ROUNDRECT pos="20 376 40M 54" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
-    <ROUNDRECT pos="20 450 40M 86" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
-    <ROUNDRECT pos="20 558 40M 86" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="18 14 36M 32M" cornerSize="5" fill="solid: ff282828" hasStroke="0"/>
+    <ROUNDRECT pos="194 30 226M 66M" cornerSize="4" fill="solid: ff404040" hasStroke="0"/>
+    <ROUNDRECT pos="204 298 246M 342M" cornerSize="4" fill="solid: ff585858"
+               hasStroke="0"/>
   </BACKGROUND>
-  <GROUPCOMPONENT name="screenGroup" id="3d078232c622c691" memberName="screenGroup"
-                  virtualName="" explicitFocusOrder="0" pos="16 8 32M 100" outlinecol="ffffffff"
-                  textcol="ffffffff" title="Screen"/>
-  <LABEL name="displayLabel" id="47dccaa09248b15c" memberName="displayLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 32 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Display #:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <SLIDER name="displaySlider" id="2250b6248ed28fc6" memberName="displaySlider"
-          virtualName="" explicitFocusOrder="1" pos="120 32 64 24" min="0"
-          max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="screenLabel" id="68a950dbc12277f7" memberName="screenLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 64 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Screen #:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <SLIDER name="screenSlider" id="74df429060e256ad" memberName="screenSlider"
-          virtualName="" explicitFocusOrder="2" pos="120 64 64 24" min="0"
-          max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="screenWidthLabel" id="1a8ebe15d549d3a2" memberName="screenWidthLabel"
-         virtualName="" explicitFocusOrder="0" pos="200 32 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Width:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="screenWidthText" id="179a2a3eef834bff" memberName="screenWidthText"
-              virtualName="" explicitFocusOrder="3" pos="264 32 48 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
-              caret="1" popupmenu="1"/>
-  <LABEL name="screenHeightLabel" id="778bbd3e6ce86ce2" memberName="screenHeightLabel"
-         virtualName="" explicitFocusOrder="0" pos="200 64 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Height:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="screenHeightText" id="fabfd798833e0222" memberName="screenHeightText"
-              virtualName="" explicitFocusOrder="4" pos="264 64 48 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
-              caret="1" popupmenu="1"/>
-  <LABEL name="xOffsetLabel" id="fca78bd84d691a86" memberName="xOffsetLabel"
-         virtualName="" explicitFocusOrder="0" pos="326 32 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Offset X:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="xOffsetText" id="a370562e4f63e34" memberName="xOffsetText"
-              virtualName="" explicitFocusOrder="5" pos="390 32 48 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
-  <LABEL name="yOffsetLabel" id="f2efae168df49c68" memberName="yOffsetLabel"
-         virtualName="" explicitFocusOrder="0" pos="326 64 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Offset Y:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="yOffsetText" id="e4bb3613f81dc5f4" memberName="yOffsetText"
-              virtualName="" explicitFocusOrder="6" pos="390 64 48 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
-  <GROUPCOMPONENT name="cameraGroup" id="5f4ffe47101cb73b" memberName="cameraGroup"
-                  virtualName="" explicitFocusOrder="0" pos="16 116 32M 64" outlinecol="ffffffff"
-                  textcol="ffffffff" title="Camera"/>
-  <LABEL name="cameraDevLabel" id="b00161e3a7f27d06" memberName="cameraDevLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 140 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Device:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="cameraDevCombo" id="f143a9d8fad92dd2" memberName="cameraDevCombo"
-            virtualName="" explicitFocusOrder="7" pos="120 140 200 24" editable="0"
-            layout="33" items="" textWhenNonSelected="(no camera devices)"
-            textWhenNoItems="(no camera devices)"/>
-  <LABEL name="cameraResLabel" id="e2a00639ad344d6" memberName="cameraResLabel"
-         virtualName="" explicitFocusOrder="0" pos="332 140 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Resolution:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="cameraResCombo" id="bcc0c59e13c46f76" memberName="cameraResCombo"
-            virtualName="" explicitFocusOrder="8" pos="420 140 200 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <GROUPCOMPONENT name="audioGroup" id="bd120721f1c416c8" memberName="audioGroup"
-                  virtualName="" explicitFocusOrder="0" pos="16 188 32M 100" outlinecol="ffffffff"
-                  textcol="ffffffff" title="Audio"/>
-  <LABEL name="audioApiLabel" id="70eaf09dd19cec91" memberName="audioApiLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 212 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Interface:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="audioApiCombo" id="1534dd6f247fe207" memberName="audioApiCombo"
-            virtualName="" explicitFocusOrder="9" pos="120 212 200 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="audioDevLabel" id="12df9ce40ba72b7a" memberName="audioDevLabel"
-         virtualName="" explicitFocusOrder="0" pos="332 212 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Device:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="audioDevCombo" id="899e83b4b547b630" memberName="audioDevCombo"
-            virtualName="" explicitFocusOrder="10" pos="420 212 200 24" editable="0"
-            layout="33" items="" textWhenNonSelected="(no audio devices)"
-            textWhenNoItems="(no audio devices)"/>
-  <LABEL name="audioCodecLabel" id="7994dcfae467506e" memberName="audioCodecLabel"
-         virtualName="" explicitFocusOrder="0" pos="33 248 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Codec:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="audioCodecCombo" id="2a7a7ebbdd0e6d60" memberName="audioCodecCombo"
-            virtualName="" explicitFocusOrder="11" pos="121 248 96 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no devices)"/>
-  <LABEL name="nChannelsLabel" id="96c39fde349e5dd5" memberName="nChannelsLabel"
-         virtualName="" explicitFocusOrder="0" pos="232 248 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Channels:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <SLIDER name="nChannelsSlider" id="f465840b69633eb" memberName="nChannelsSlider"
-          virtualName="" explicitFocusOrder="12" pos="320 248 64 24" min="0"
-          max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="samplerateLabel" id="9744752cbe30d209" memberName="samplerateLabel"
-         virtualName="" explicitFocusOrder="0" pos="395 248 76 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Samplerate:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="samplerateCombo" id="6adde69b5cba6e32" memberName="samplerateCombo"
-            virtualName="" explicitFocusOrder="13" pos="478 248 80 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="audioBitrateLabel" id="166d559a6691cadc" memberName="audioBitrateLabel"
-         virtualName="" explicitFocusOrder="0" pos="574 248 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Bitrate:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="audioBitrateCombo" id="7a1546dc1bcc36" memberName="audioBitrateCombo"
-            virtualName="" explicitFocusOrder="14" pos="640 248 80 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <GROUPCOMPONENT name="textGroup" id="223402a4fb961517" memberName="textGroup"
-                  virtualName="" explicitFocusOrder="0" pos="16 296 32M 64" outlinecol="ffffffff"
-                  textcol="ffffffff" title="Text"/>
-  <LABEL name="motdLabel" id="e26a158d569b8f" memberName="motdLabel" virtualName=""
-         explicitFocusOrder="0" pos="32 320 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Message:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="motdText" id="fb4f8a059431ce61" memberName="motdText" virtualName=""
-              explicitFocusOrder="15" pos="120 320 284 24" initialText="" multiline="0"
-              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
-  <LABEL name="textStyleLabel" id="3e58deec4ea2f148" memberName="textStyleLabel"
-         virtualName="" explicitFocusOrder="0" pos="420 320 52 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Style:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="textStyleCombo" id="1d3707271064fb55" memberName="textStyleCombo"
-            virtualName="" explicitFocusOrder="16" pos="480 320 80 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="textPosLabel" id="6dd629239c17c38b" memberName="textPosLabel"
-         virtualName="" explicitFocusOrder="0" pos="568 320 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Position:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="textPosCombo" id="3074c311575e36ac" memberName="textPosCombo"
-            virtualName="" explicitFocusOrder="17" pos="640 320 80 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <GROUPCOMPONENT name="interstitialGroup" id="21b5d7e16b61393b" memberName="interstitialGroup"
-                  virtualName="" explicitFocusOrder="0" pos="18 368 32M 64" outlinecol="ffffffff"
-                  textcol="ffffffff" title="Interstitial"/>
-  <LABEL name="locationLabel" id="d9e5b9eda1c0b4fe" memberName="locationLabel"
-         virtualName="" explicitFocusOrder="0" pos="34 392 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Location:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="interstitialText" id="7634583caff4457b" memberName="interstitialText"
-              virtualName="" explicitFocusOrder="18" pos="122 392 486 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
-  <TEXTBUTTON name="browseButton" id="b593253ef702db73" memberName="browseButton"
-              virtualName="" explicitFocusOrder="19" pos="640 392 80 24" buttonText="Browse"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GROUPCOMPONENT name="outputGroup" id="1fdfd2606ad4d79b" memberName="outputGroup"
-                  virtualName="" explicitFocusOrder="0" pos="16 440 32M 100" outlinecol="ffffffff"
-                  textcol="ffffffff" title="Output"/>
-  <LABEL name="outputStreamLabel" id="dac22e20ce0dd8e" memberName="outputStreamLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 464 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Destination:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="outputSinkCombo" id="12e0750a2c746a13" memberName="outputSinkCombo"
-            virtualName="" explicitFocusOrder="20" pos="120 464 64 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no devices)"/>
-  <LABEL name="outputWidthLabel" id="f42b11722ea56a92" memberName="outputWidthLabel"
-         virtualName="" explicitFocusOrder="0" pos="204 464 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Width:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="outputWidthText" id="57d131f0667f6b73" memberName="outputWidthText"
-              virtualName="" explicitFocusOrder="21" pos="268 464 48 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
-              caret="0" popupmenu="1"/>
-  <LABEL name="outputHeightLabel" id="786372012685b65a" memberName="outputHeightLabel"
-         virtualName="" explicitFocusOrder="0" pos="332 464 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Height:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="outputHeightText" id="7e14834485ae7a91" memberName="outputHeightText"
-              virtualName="" explicitFocusOrder="22" pos="396 464 48 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
-              caret="0" popupmenu="1"/>
-  <LABEL name="framerateLabel" id="45b2235a7a1f9614" memberName="framerateLabel"
-         virtualName="" explicitFocusOrder="0" pos="460 464 40 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="FPS:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="framerateCombo" id="2560e172b011e11c" memberName="framerateCombo"
-            virtualName="" explicitFocusOrder="23" pos="506 464 48 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="bitrateLabel" id="bc6b3717e710f16c" memberName="bitrateLabel"
-         virtualName="" explicitFocusOrder="0" pos="572 464 64 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Bitrate:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="videoBitrateCombo" id="54c30dff37473763" memberName="videoBitrateCombo"
-            virtualName="" explicitFocusOrder="24" pos="640 464 80 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <LABEL name="outputDestLabel" id="a1c19ea70cf15d1b" memberName="outputDestLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 500 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Location:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="outputDestText" id="569abe636085fb4a" memberName="outputDestText"
-              virtualName="" explicitFocusOrder="25" pos="120 500 600 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
-  <GROUPCOMPONENT name="chatGroup" id="663f214b14c4a321" memberName="chatGroup"
-                  virtualName="" explicitFocusOrder="0" pos="16 548 32M 100" outlinecol="ffffffff"
-                  textcol="ffffffff" title="Chat"/>
-  <LABEL name="hostLabel" id="17d2e75add77ef88" memberName="hostLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 570 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Host:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="hostText" id="ba3bb196ff4cbcdd" memberName="hostText" virtualName=""
-              explicitFocusOrder="26" pos="120 570 104 24" initialText="" multiline="0"
-              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
-  <LABEL name="portLabel" id="c9766d1550ca03d" memberName="portLabel"
-         virtualName="" explicitFocusOrder="0" pos="232 570 40 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Port:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="portText" id="884822c04a8baf5b" memberName="portText" virtualName=""
-              explicitFocusOrder="27" pos="280 570 48 24" initialText="" multiline="0"
-              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
-  <LABEL name="nickLabel" id="2762611946169823" memberName="nickLabel"
-         virtualName="" explicitFocusOrder="0" pos="344 570 40 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Nick:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="nickText" id="33c730fea5d389aa" memberName="nickText" virtualName=""
-              explicitFocusOrder="28" pos="392 570 120 24" initialText="" multiline="0"
-              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
-  <LABEL name="passLabel" id="f5de0cc5921d9a6a" memberName="passLabel"
-         virtualName="" explicitFocusOrder="0" pos="520 570 72 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Password:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="passText" id="af6a1e14762cfebf" memberName="passText" virtualName=""
-              explicitFocusOrder="29" pos="600 570 120 24" initialText="" multiline="0"
-              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
-  <LABEL name="channelLabel" id="64c9a775a77af61c" memberName="channelLabel"
-         virtualName="" explicitFocusOrder="0" pos="32 608 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Channel:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="channelText" id="ca5aa4f4a77b4469" memberName="channelText"
-              virtualName="" explicitFocusOrder="30" pos="120 608 104 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
-  <LABEL name="greetingLabel" id="460772215644ef5" memberName="greetingLabel"
-         virtualName="" explicitFocusOrder="0" pos="232 608 72 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Greeting:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="greetingText" id="7d47de6dcee921f5" memberName="greetingText"
-              virtualName="" explicitFocusOrder="31" pos="312 608 288 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
-  <TOGGLEBUTTON name="joinPartToggle" id="b365bf54ac5a17da" memberName="joinPartToggle"
-                virtualName="" explicitFocusOrder="32" pos="608 608 112 24" txtcol="ffffffff"
-                buttonText="Show Join/Part" connectedEdges="0" needsCallback="1"
-                radioGroupId="0" state="1"/>
+  <GROUPCOMPONENT name="configGroup" id="6607ba656d5c8919" memberName="configGroup"
+                  virtualName="" explicitFocusOrder="0" pos="16 4 32M 20M" outlinecol="ffffffff"
+                  textcol="ffffffff" title="Configuration"/>
+  <TEXTBUTTON name="screenButton" id="100ccdbe8e5db3ab" memberName="screenButton"
+              virtualName="" explicitFocusOrder="1" pos="16 0% 150 14.286%"
+              posRelativeX="6607ba656d5c8919" posRelativeY="7ab6ee7eab27ae3e"
+              posRelativeW="6607ba656d5c8919" posRelativeH="7ab6ee7eab27ae3e"
+              buttonText="Screen" connectedEdges="8" needsCallback="0" radioGroupId="0"/>
+  <TEXTBUTTON name="cameraButton" id="a4094321ed5d0e5e" memberName="cameraButton"
+              virtualName="" explicitFocusOrder="2" pos="16 14.286% 150 14.286%"
+              posRelativeX="6607ba656d5c8919" posRelativeY="7ab6ee7eab27ae3e"
+              posRelativeW="6607ba656d5c8919" posRelativeH="7ab6ee7eab27ae3e"
+              buttonText="Camera" connectedEdges="12" needsCallback="0" radioGroupId="0"/>
+  <TEXTBUTTON name="audioButton" id="7b29583a640ebd35" memberName="audioButton"
+              virtualName="" explicitFocusOrder="3" pos="16 28.571% 150 14.286%"
+              posRelativeX="6607ba656d5c8919" posRelativeY="7ab6ee7eab27ae3e"
+              posRelativeW="6607ba656d5c8919" posRelativeH="7ab6ee7eab27ae3e"
+              buttonText="Audio" connectedEdges="12" needsCallback="0" radioGroupId="0"/>
+  <TEXTBUTTON name="textButton" id="b042999a8c4d0ee5" memberName="textButton"
+              virtualName="" explicitFocusOrder="4" pos="16 42.857% 150 14.286%"
+              posRelativeX="6607ba656d5c8919" posRelativeY="7ab6ee7eab27ae3e"
+              posRelativeW="6607ba656d5c8919" posRelativeH="7ab6ee7eab27ae3e"
+              buttonText="Text" connectedEdges="12" needsCallback="0" radioGroupId="0"/>
+  <TEXTBUTTON name="imageButton" id="3d8666e0ed316005" memberName="imageButton"
+              virtualName="" explicitFocusOrder="5" pos="16 57.143% 150 14.286%"
+              posRelativeX="6607ba656d5c8919" posRelativeY="7ab6ee7eab27ae3e"
+              posRelativeW="6607ba656d5c8919" posRelativeH="7ab6ee7eab27ae3e"
+              buttonText="Image" connectedEdges="12" needsCallback="0" radioGroupId="0"/>
+  <TEXTBUTTON name="outputButton" id="3068eaa718dd476b" memberName="outputButton"
+              virtualName="" explicitFocusOrder="6" pos="16 71.429% 150 14.286%"
+              posRelativeX="6607ba656d5c8919" posRelativeY="7ab6ee7eab27ae3e"
+              posRelativeW="6607ba656d5c8919" posRelativeH="7ab6ee7eab27ae3e"
+              buttonText="Output" connectedEdges="12" needsCallback="0" radioGroupId="0"/>
+  <TEXTBUTTON name="chatButton" id="6e15e064df96f39b" memberName="chatButton"
+              virtualName="" explicitFocusOrder="7" pos="16 85.714% 150 14.286%"
+              posRelativeX="6607ba656d5c8919" posRelativeY="7ab6ee7eab27ae3e"
+              posRelativeW="6607ba656d5c8919" posRelativeH="7ab6ee7eab27ae3e"
+              buttonText="Chat" connectedEdges="4" needsCallback="0" radioGroupId="0"/>
+  <GROUPCOMPONENT name="configPaneGroup" id="3d078232c622c691" memberName="configPaneGroup"
+                  virtualName="" explicitFocusOrder="0" pos="174 16 186M 95.335%"
+                  posRelativeX="6607ba656d5c8919" posRelativeY="6607ba656d5c8919"
+                  posRelativeW="6607ba656d5c8919" posRelativeH="6607ba656d5c8919"
+                  outlinecol="ffffffff" textcol="ffffffff" title="Screen"/>
+  <GENERICCOMPONENT name="configScreen" id="e89c0f3c223ab737" memberName="configScreen"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" posRelativeX="7ab6ee7eab27ae3e"
+                    posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
+                    posRelativeH="7ab6ee7eab27ae3e" class="ConfigScreen" params=""/>
+  <GENERICCOMPONENT name="configCamera" id="eb987e4a398d67b3" memberName="configCamera"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" posRelativeX="7ab6ee7eab27ae3e"
+                    posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
+                    posRelativeH="7ab6ee7eab27ae3e" class="ConfigCamera" params=""/>
+  <GENERICCOMPONENT name="configAudio" id="a97a529009013839" memberName="configAudio"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" posRelativeX="7ab6ee7eab27ae3e"
+                    posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
+                    posRelativeH="7ab6ee7eab27ae3e" class="ConfigAudio" params=""/>
+  <GENERICCOMPONENT name="configText" id="46d2ff75060de9b1" memberName="configText"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" posRelativeX="7ab6ee7eab27ae3e"
+                    posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
+                    posRelativeH="7ab6ee7eab27ae3e" class="ConfigText" params=""/>
+  <GENERICCOMPONENT name="configImage" id="df20966cb9e5cfa1" memberName="configImage"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" posRelativeX="7ab6ee7eab27ae3e"
+                    posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
+                    posRelativeH="7ab6ee7eab27ae3e" class="ConfigImage" params=""/>
+  <GENERICCOMPONENT name="configOutput" id="dbe527be33400926" memberName="configOutput"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" posRelativeX="7ab6ee7eab27ae3e"
+                    posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
+                    posRelativeH="7ab6ee7eab27ae3e" class="ConfigOutput" params=""/>
+  <GENERICCOMPONENT name="configChat" id="6363efd2d63fdee4" memberName="configChat"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" posRelativeX="7ab6ee7eab27ae3e"
+                    posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
+                    posRelativeH="7ab6ee7eab27ae3e" class="ConfigChat" params=""/>
+  <GENERICCOMPONENT name="configSpacer" id="7ab6ee7eab27ae3e" memberName="configSpacer"
+                    virtualName="" explicitFocusOrder="0" pos="12 16 24M 252" posRelativeX="3d078232c622c691"
+                    posRelativeY="3d078232c622c691" posRelativeW="3d078232c622c691"
+                    posRelativeH="6607ba656d5c8919" class="Component" params=""/>
+  <GROUPCOMPONENT name="hintsGroup" id="2ef603e605c1ac5d" memberName="hintsGroup"
+                  virtualName="" explicitFocusOrder="0" pos="0 252 0M 278M" posRelativeX="7ab6ee7eab27ae3e"
+                  posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
+                  posRelativeH="3d078232c622c691" outlinecol="ffffffff" textcol="ffffffff"
+                  title="Hints"/>
+  <TEXTEDITOR name="hintsText" id="f3411ac6aaf06395" memberName="hintsText"
+              virtualName="" explicitFocusOrder="0" pos="14 20 28M 32M" posRelativeX="2ef603e605c1ac5d"
+              posRelativeY="2ef603e605c1ac5d" posRelativeW="2ef603e605c1ac5d"
+              posRelativeH="2ef603e605c1ac5d" textcol="ffffffff" bkgcol="0"
+              hilitecol="0" outlinecol="0" shadowcol="0" initialText="" multiline="1"
+              retKeyStartsLine="0" readonly="1" scrollbars="1" caret="0" popupmenu="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

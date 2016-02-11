@@ -1,20 +1,21 @@
-/*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -29,7 +30,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-Controls::Controls ()
+Controls::Controls (MainContent* main_content)
+    : mainContent(main_content)
 {
     addAndMakeVisible (controlsGroup = new GroupComponent ("controlsGroup",
                                                            TRANS("Controls")));
@@ -135,7 +137,7 @@ void Controls::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff303030));
+    g.setColour (Colour (0xff282828));
     g.fillRoundedRectangle (20.0f, 22.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
 
     //[UserPaint] Add your own custom painting code here..
@@ -274,6 +276,21 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 void Controls::broughtToFront() { loadConfig() ; }
 
+void Controls::disableControls(bool is_media_enabled  , bool is_screen_enabled  ,
+                               bool is_camera_enabled , bool is_text_enabled    ,
+                               bool is_image_enabled  , bool is_preview_enabled ,
+                               bool is_audio_enabled                            )
+{
+  // disable controls per cli args
+  this->screencapToggle   ->setEnabled(is_screen_enabled ) ;
+  this->cameraToggle      ->setEnabled(is_camera_enabled ) ;
+  this->textToggle        ->setEnabled(is_text_enabled   ) ;
+  this->interstitialToggle->setEnabled(is_image_enabled  ) ;
+  this->previewToggle     ->setEnabled(is_preview_enabled) ;
+  this->audioToggle       ->setEnabled(is_audio_enabled  ) ;
+  this->outputToggle      ->setEnabled(is_media_enabled  ) ;
+}
+
 void Controls::loadConfig()
 {
   ValueTree config_store       = AvCaster::GetConfigStore() ;
@@ -313,11 +330,12 @@ void Controls::loadConfig()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Controls" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="1" initialHeight="1">
+                 parentClasses="public Component" constructorParams="MainContent* main_content"
+                 variableInitialisers="mainContent(main_content)" snapPixels="8"
+                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="0"
+                 initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="20 22 40M 52" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="20 22 40M 52" cornerSize="4" fill="solid: ff282828" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="controlsGroup" id="5f4ffe47101cb73b" memberName="controlsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"

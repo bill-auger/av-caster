@@ -60,7 +60,7 @@ ChatListItem::ChatListItem (ValueTree chatter_store)
 
     //[Constructor] You can add your own custom stuff here..
 
-  String nick    = STRING(this->chatterStore[CONFIG::CHAT_NICK_ID]) ;
+  String nick    = STRING(this->chatterStore[CONFIG::NICK_ID]) ;
   String user_id = String(chatter_store.getType()) ;
 
   this->banButton->setVisible(false) ;

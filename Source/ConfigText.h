@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_7E49606CC1E6A40__
-#define __JUCE_HEADER_7E49606CC1E6A40__
+#ifndef __JUCE_HEADER_89BBC0574CFF63D6__
+#define __JUCE_HEADER_89BBC0574CFF63D6__
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -34,76 +34,53 @@ class MainContent ;
 //==============================================================================
 /**
                                                                     //[Comments]
-  Controls is the media selection and preview GUI for the AvCaster application.
-  It serves only as a consistent backdrop and/or interstitial.
+    An auto-generated component, created by the Introjucer.
+
+    Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class Controls  : public Component,
-                  public ButtonListener,
-                  public ComboBoxListener
+class ConfigText  : public Component,
+                    public ComboBoxListener
 {
 public:
     //==============================================================================
-    Controls (MainContent* main_content);
-    ~Controls();
+    ConfigText ();
+    ~ConfigText();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-
-private:
-
-  friend class MainContent ;
-
-
-  void broughtToFront() override ;
-
-  void disableControls(bool is_media_enabled  , bool is_screen_enabled  ,
-                       bool is_camera_enabled , bool is_text_enabled    ,
-                       bool is_image_enabled  , bool is_preview_enabled ,
-                       bool is_audio_enabled                            ) ;
-  void loadConfig() ;
-
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
-    // Binary resources:
-    static const char* preferencessystem_png;
-    static const int preferencessystem_pngSize;
-    static const char* confighover_png;
-    static const int confighover_pngSize;
-    static const char* configpushed_png;
-    static const int configpushed_pngSize;
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+
+  friend class Config ;
+
 
   MainContent* mainContent ;
 
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> controlsGroup;
-    ScopedPointer<ToggleButton> screencapToggle;
-    ScopedPointer<ToggleButton> cameraToggle;
-    ScopedPointer<ToggleButton> textToggle;
-    ScopedPointer<ToggleButton> interstitialToggle;
-    ScopedPointer<ToggleButton> previewToggle;
-    ScopedPointer<ToggleButton> audioToggle;
-    ScopedPointer<ToggleButton> outputToggle;
-    ScopedPointer<ComboBox> presetsCombo;
-    ScopedPointer<ImageButton> configButton;
+    ScopedPointer<Label> motdLabel;
+    ScopedPointer<TextEditor> motdText;
+    ScopedPointer<Label> textStyleLabel;
+    ScopedPointer<ComboBox> textStyleCombo;
+    ScopedPointer<Label> textPosLabel;
+    ScopedPointer<ComboBox> textPosCombo;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Controls)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ConfigText)
 };
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_7E49606CC1E6A40__
+#endif   // __JUCE_HEADER_89BBC0574CFF63D6__

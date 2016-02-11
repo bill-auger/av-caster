@@ -1,23 +1,24 @@
-/*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
 
-#ifndef _MAINCONTENT_H_
-#define _MAINCONTENT_H_
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
+
+#ifndef __JUCE_HEADER_262A4C4094138A40__
+#define __JUCE_HEADER_262A4C4094138A40__
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -52,8 +53,14 @@ public:
   friend class AvCaster ;
 
 
-  void configureCombobox(ComboBox* a_combobox) ;
-  void loadPresetsCombo (ComboBox* a_combobox) ;
+  void configureButton    (Button* a_button , Button::Listener* a_button_listener) ;
+  void configureSlider    (Slider* a_slider , Slider::Listener* a_slider_listener ,
+                           double  min_val  , double            max_val           ,
+                           double  step                                           ) ;
+  void configureTextEditor(TextEditor* a_text_editor , TextEditor::Listener* a_text_listener ,
+                           int         max_n_chars   , const String          allowed_chars   ) ;
+  void configureCombobox  (ComboBox* a_combobox , ComboBox::Listener* a_combobox_listener = nullptr) ;
+  void loadPresetsCombo   (ComboBox* a_combobox) ;
 
 
 private:
@@ -95,4 +102,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _MAINCONTENT_H_
+#endif   // __JUCE_HEADER_262A4C4094138A40__

@@ -93,7 +93,7 @@ DEBUG_TRACE_SHUTDOWN_OUT
       setTitleBarButtonsRequired(DocumentWindow::allButtons , true) ;
 #endif // JUCE_MAC
       setTitleBarHeight(GUI::TITLEBAR_H) ;
-//      setIcon(const Image &imageToUse) ;
+      setIcon(ImageFileFormat::loadFrom(File(GUI::LOGO_IMG_LOC))) ;
       centreWithSize(getWidth() , getHeight()) ;
       setVisible(true) ;
     }

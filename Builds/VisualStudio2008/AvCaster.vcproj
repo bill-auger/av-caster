@@ -32,7 +32,7 @@
             BufferSecurityCheck=""
             DebugInformationFormat="4"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.15.201;JUCE_APP_VERSION_HEX=0xfc9"
+            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.15.202;JUCE_APP_VERSION_HEX=0xfca"
             RuntimeLibrary="1"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -88,7 +88,7 @@
             InlineFunctionExpansion="1"
             StringPooling="true"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.15.201;JUCE_APP_VERSION_HEX=0xfc9"
+            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.15.202;JUCE_APP_VERSION_HEX=0xfca"
             RuntimeLibrary="0"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -145,6 +145,13 @@
         <File RelativePath="..\..\Source\ChatList.h"/>
         <File RelativePath="..\..\Source\ChatListItem.h"/>
         <File RelativePath="..\..\Source\Config.h"/>
+        <File RelativePath="..\..\Source\ConfigAudio.h"/>
+        <File RelativePath="..\..\Source\ConfigCamera.h"/>
+        <File RelativePath="..\..\Source\ConfigChat.h"/>
+        <File RelativePath="..\..\Source\ConfigImage.h"/>
+        <File RelativePath="..\..\Source\ConfigOutput.h"/>
+        <File RelativePath="..\..\Source\ConfigScreen.h"/>
+        <File RelativePath="..\..\Source\ConfigText.h"/>
         <File RelativePath="..\..\Source\Constants.h"/>
         <File RelativePath="..\..\Source\Controls.h"/>
         <File RelativePath="..\..\Source\Gstreamer.h"/>
@@ -163,6 +170,13 @@
         <File RelativePath="..\..\Source\ChatList.cpp"/>
         <File RelativePath="..\..\Source\ChatListItem.cpp"/>
         <File RelativePath="..\..\Source\Config.cpp"/>
+        <File RelativePath="..\..\Source\ConfigAudio.cpp"/>
+        <File RelativePath="..\..\Source\ConfigCamera.cpp"/>
+        <File RelativePath="..\..\Source\ConfigChat.cpp"/>
+        <File RelativePath="..\..\Source\ConfigImage.cpp"/>
+        <File RelativePath="..\..\Source\ConfigOutput.cpp"/>
+        <File RelativePath="..\..\Source\ConfigScreen.cpp"/>
+        <File RelativePath="..\..\Source\ConfigText.cpp"/>
         <File RelativePath="..\..\Source\Controls.cpp"/>
         <File RelativePath="..\..\Source\Gstreamer.cpp"/>
         <File RelativePath="..\..\Source\IrcClient.cpp"/>

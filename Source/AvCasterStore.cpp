@@ -682,7 +682,7 @@ DEBUG_TRACE_ADD_CHAT_NICK
       current_nicks.add(*nick) ; current_nicks.sort(true) ;
 
       chatter_store = ValueTree(user_id) ;
-      chatter_store.setProperty(CONFIG::CHAT_NICK_ID , var(*nick) , nullptr) ;
+      chatter_store.setProperty(CONFIG::NICK_ID , var(*nick) , nullptr) ;
       chatters_store.addChild(chatter_store , current_nicks.indexOf(*nick) , nullptr) ;
     }
   }
@@ -691,7 +691,7 @@ DEBUG_TRACE_ADD_CHAT_NICK
   for (int chatter_n = 0 ; chatter_n < chatters_store.getNumChildren() ; ++chatter_n)
   {
     ValueTree chatter_store = chatters_store.getChild(chatter_n) ;
-    String    nick          = STRING(chatter_store[CONFIG::CHAT_NICK_ID]) ;
+    String    nick          = STRING(chatter_store[CONFIG::NICK_ID]) ;
 
 DEBUG_TRACE_REMOVE_CHAT_NICK
 
@@ -703,5 +703,5 @@ DEBUG_TRACE_DUMP_CHAT_NICKS(chatters_store)
 
 StringArray AvCasterStore::getChatNicks(ValueTree chatters_store)
 {
-  return AvCasterStore::PropertyValues(chatters_store , CONFIG::CHAT_NICK_ID) ;
+  return AvCasterStore::PropertyValues(chatters_store , CONFIG::NICK_ID) ;
 }

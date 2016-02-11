@@ -130,10 +130,10 @@ namespace APP
                                                      "\n\n\t\t"             + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstarts " + APP_NAME + " with initial preset number n" +
                                                      "\n\n\n\tFEATURE SWITCHES:"                                                                                         +
                                                      "\n\n\t\t"             + CLI_DISABLE_MEDIA_TOKEN   + "\n\t\t\tdisables all media and stream output"                 +
-                                                     "\n\n\t\t"             + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and uses screen capture only"    +
-                                                     "\n\n\t\t"             + CLI_CAMERA_ONLY_TOKEN     + "\n\t\t\tdisables compositing and uses webcam capture only"    +
-//                                                      "\n\n\t\t"             + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and uses text overlay only"      +
-//                                                      "\n\n\t\t"             + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and uses static image only"      +
+                                                     "\n\n\t\t"             + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders screen only"         +
+                                                     "\n\n\t\t"             + CLI_CAMERA_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders webcam only"         +
+//                                                      "\n\n\t\t"             + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and renders text overlay only"   +
+//                                                      "\n\n\t\t"             + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and renders static image only"   +
                                                      "\n\n\t\t"             + CLI_DISABLE_PREVIEW_TOKEN + "\n\t\t\tdisables realtime preview"                            +
                                                      "\n\n\t\t"             + CLI_DISABLE_AUDIO_TOKEN   + "\n\t\t\tdisables audio capture"                               +
                                                      "\n\n\t\t"             + CLI_DISABLE_CHAT_TOKEN    + "\n\t\t\tdisables chat"                                        ;
@@ -149,9 +149,12 @@ namespace APP
   static const File   HOME_DIR        = File::getSpecialLocation(File::userHomeDirectory           ) ;
   static const File   APPDATA_DIR     = File::getSpecialLocation(File::userApplicationDataDirectory) ;
   static const File   VIDEOS_DIR      = File::getSpecialLocation(File::userMoviesDirectory         ) ;
+  static const File   PICTURES_DIR    = File::getSpecialLocation(File::userPicturesDirectory       ) ;
   static const File   CAMERAS_DEV_DIR = File("/sys/class/video4linux") ;
   static const String PNG_FILE_EXT    = ".png" ;
-  static const String IMG_FILE_EXTS   = "*" + APP::PNG_FILE_EXT + ",*" + APP::PNG_FILE_EXT ;
+//   static const String JPG_FILE_EXT    = ".jpg" ;
+//   static const String JPEG_FILE_EXT   = ".jpeg" ;
+//   static const String GIF_FILE_EXT    = ".gif" ;
 }
 
 
@@ -177,7 +180,11 @@ namespace GUI
   static const Colour TEXT_INVALID_BG_COLOR = Colour(0xFF200000) ;
 
   // MainWindow
+  static const int    BORDERS_W       = 2 ;
   static const int    TITLEBAR_H      = 24 ;
+  static const int    WINDOW_W        = 760 - BORDERS_W ;              // jucer 758
+  static const int    WINDOW_H        = 788 - BORDERS_W - TITLEBAR_H ; // jucer 762
+  static const String LOGO_IMG_LOC    = "Assets/logo.png" ; // ASSERT: this file exists
   static const int    TITLEBAR_BTNS   = DocumentWindow::minimiseButton | DocumentWindow::closeButton ;
   static const String IDLE_TITLE_TEXT = "(Idle)" ;
   static const String FILE_TITLE_TEXT = "(Recording)" ;
@@ -188,7 +195,7 @@ namespace GUI
   static const String RTMP_XMIT_TEXT = "Transmit" ;
 
   // Chat
-  static const int    N_STATIC_CHATLIST_CHILDREN = 2 ;
+  static const int    N_STATIC_CHATLIST_CHILDREN = 2 ; // ASSERT: num ChatList static widgets
   static const int    SCROLLBAR_W                = 12 ;
   static const int    CHATLIST_W                 = 128 ;
   static const int    CHATLIST_X                 = CHATLIST_W + SCROLLBAR_W + PAD8 + PAD ;
@@ -206,16 +213,33 @@ namespace GUI
   static const String LCTV_USER_PREFIX           = "LCTV" ;
 
   // Config
+  static const String SCREEN_GROUP_TEXT      = "Screen" ;
+  static const String CAMERA_GROUP_TEXT      = "Camera" ;
+  static const String AUDIO_GROUP_TEXT       = "Audio" ;
+  static const String TEXT_GROUP_TEXT        = "Text" ;
+  static const String IMAGE_GROUP_TEXT       = "Image" ;
+  static const String OUTPUT_GROUP_TEXT      = "Output" ;
+  static const String CHAT_GROUP_TEXT        = "Chat" ;
   static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
   static const String DELETE_BTN_DELETE_TEXT = "Delete" ;
   static const String DELETE_BTN_RESET_TEXT  = "Reset" ;
-  static const int    MAX_RES_N_CHARS        = 4 ;
-  static const int    MAX_MOTD_LEN           = 2048 ;
-  static const int    MAX_FILENAME_LEN       = 255 ;
-  static const String IMAGE_CHOOSER_TEXT     = "Select an image file ..." ;
   static const String DEST_FILE_TEXT         = "Location:" ;
   static const String DEST_RTMP_TEXT         = "URI:" ;
   static const String DEST_LCTV_TEXT         = "Stream Key:" ;
+  static const String IMAGE_CHOOSER_TEXT     = "Select an image file ..." ;
+  static const String IMG_FILE_EXTENSIONS    = "*" + APP::PNG_FILE_EXT ;
+//   static const String IMG_FILE_EXTS          = "*" + APP::PNG_FILE_EXT  + ",*" +
+//                                                      APP::JPEG_FILE_EXT + ",*" +
+//                                                      APP::GIF_FILE_EXT         ;
+  static const double MIN_DISPLAY_N          = 0.0 ;
+  static const double MAX_DISPLAY_N          = 4.0 ;
+  static const double MIN_SCREEN_N           = 0.0 ;
+  static const double MAX_SCREEN_N           = 4.0 ;
+  static const double MIN_N_CHANNELS         = 0.0 ;
+  static const double MAX_N_CHANNELS         = 2.0 ;
+  static const int    MAX_RES_N_CHARS        = 4 ;
+  static const int    MAX_MOTD_LEN           = 2048 ;
+  static const int    MAX_FILENAME_LEN       = 255 ;
   static const int    MAX_PORT_N_CHARS       = 5 ;
 
   // StatusBar
@@ -378,7 +402,7 @@ namespace CONFIG
 |*| // a_chatter
 |*| user-id:                 // e.g. "-fred-stone" via FilterId("@fred stone")
 |*| {
-|*|   CHAT_NICK_ID: a_string // e.g. "@fred stone"
+|*|   NICK_ID: a_string // e.g. "@fred stone"
 |*| }
 \*/
 
@@ -485,15 +509,13 @@ namespace CONFIG
   static const Identifier VIDEO_BITRATE_ID      = "video-bitrate-idx" ;
   static const Identifier OUTPUT_DEST_ID        = "output-dest" ;
   // chat IDs
+  static const Identifier GREETING_ID            = "chat-greeting" ;
+  static const Identifier JOINPART_ID            = "show-joins-parts" ;
   static const Identifier HOST_ID                = "chat-host" ;
   static const Identifier PORT_ID                = "chat-port" ;
-// TODO: replace this with NICK_ID
-  static const Identifier CHAT_NICK_ID           = "chat-nick" ;
   static const Identifier NICK_ID                = "chat-nick" ;
   static const Identifier PASS_ID                = "chat-pass" ;
   static const Identifier CHANNEL_ID             = "chat-channel" ;
-  static const Identifier GREETING_ID            = "chat-greeting" ;
-  static const Identifier JOINPART_ID            = "show-joins-parts" ;
   static const Identifier CHATTERS_ID            = "active-chatters" ;
 
   // root defaults
@@ -559,6 +581,8 @@ namespace CONFIG
   static const int        DEFAULT_FRAMERATE_IDX       = 0 ;
   static const int        DEFAULT_VIDEO_BITRATE_IDX   = 0 ;
   static const String     DEFAULT_OUTPUT_DEST         = APP::APP_NAME + ".flv" ;
+  // chat defaults
+  static const int        DEFAULT_HOST_IDX            = -1 ;
 
 
   static ValueTree DefaultStore()

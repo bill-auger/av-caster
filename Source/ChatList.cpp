@@ -137,7 +137,7 @@ DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM
 int ChatList::sortedChildIdx(ValueTree& chatters_store , ValueTree& chatter_store)
 {
   StringArray nicks    = AvCaster::GetChatNicks(chatters_store) ;
-  String      nick     = STRING(chatter_store[CONFIG::CHAT_NICK_ID]) ;
+  String      nick     = STRING(chatter_store[CONFIG::NICK_ID]) ;
   int         item_idx = nicks.indexOf(nick) + GUI::N_STATIC_CHATLIST_CHILDREN ;
 
 DEBUG_TRACE_LOCATE_SORTED_CHILD

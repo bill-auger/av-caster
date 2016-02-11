@@ -1,0 +1,142 @@
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
+
+//[Headers] You can add your own extra header files here...
+//[/Headers]
+
+#include "ConfigImage.h"
+
+
+//[MiscUserDefs] You can add your own user definitions and misc code here...
+//[/MiscUserDefs]
+
+//==============================================================================
+ConfigImage::ConfigImage ()
+{
+    addAndMakeVisible (locationLabel = new Label ("locationLabel",
+                                                  TRANS("Location:")));
+    locationLabel->setFont (Font (15.00f, Font::plain));
+    locationLabel->setJustificationType (Justification::centredLeft);
+    locationLabel->setEditable (false, false, false);
+    locationLabel->setColour (Label::textColourId, Colours::white);
+    locationLabel->setColour (TextEditor::textColourId, Colours::black);
+    locationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (interstitialText = new TextEditor ("interstitialText"));
+    interstitialText->setExplicitFocusOrder (1);
+    interstitialText->setMultiLine (false);
+    interstitialText->setReturnKeyStartsNewLine (false);
+    interstitialText->setReadOnly (false);
+    interstitialText->setScrollbarsShown (true);
+    interstitialText->setCaretVisible (true);
+    interstitialText->setPopupMenuEnabled (true);
+    interstitialText->setText (String::empty);
+
+    addAndMakeVisible (browseButton = new TextButton ("browseButton"));
+    browseButton->setExplicitFocusOrder (2);
+    browseButton->setButtonText (TRANS("Browse"));
+
+
+    //[UserPreSize]
+    //[/UserPreSize]
+
+    setSize (1, 1);
+
+
+    //[Constructor] You can add your own custom stuff here..
+    //[/Constructor]
+}
+
+ConfigImage::~ConfigImage()
+{
+    //[Destructor_pre]. You can add your own custom destruction code here..
+    //[/Destructor_pre]
+
+    locationLabel = nullptr;
+    interstitialText = nullptr;
+    browseButton = nullptr;
+
+
+    //[Destructor]. You can add your own custom destruction code here..
+    //[/Destructor]
+}
+
+//==============================================================================
+void ConfigImage::paint (Graphics& g)
+{
+    //[UserPrePaint] Add your own custom painting code here..
+    //[/UserPrePaint]
+
+    //[UserPaint] Add your own custom painting code here..
+    //[/UserPaint]
+}
+
+void ConfigImage::resized()
+{
+    //[UserPreResize] Add your own custom resize code here..
+    //[/UserPreResize]
+
+    locationLabel->setBounds (0, 8, 80, 24);
+    interstitialText->setBounds (88, 8, 312, 24);
+    browseButton->setBounds (416, 8, 80, 24);
+    //[UserResized] Add your own custom resize handling here..
+    //[/UserResized]
+}
+
+
+
+//[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+//[/MiscUserCode]
+
+
+//==============================================================================
+#if 0
+/*  -- Introjucer information section --
+
+    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    make changes in here at your peril!
+
+BEGIN_JUCER_METADATA
+
+<JUCER_COMPONENT documentType="Component" className="ConfigImage" componentName=""
+                 parentClasses="public Component" constructorParams="" variableInitialisers=""
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="0" initialWidth="1" initialHeight="1">
+  <BACKGROUND backgroundColour="0"/>
+  <LABEL name="locationLabel" id="d9e5b9eda1c0b4fe" memberName="locationLabel"
+         virtualName="" explicitFocusOrder="0" pos="0 8 80 24" textCol="ffffffff"
+         edTextCol="ff000000" edBkgCol="0" labelText="Location:" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="interstitialText" id="7634583caff4457b" memberName="interstitialText"
+              virtualName="" explicitFocusOrder="1" pos="88 8 312 24" initialText=""
+              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
+              caret="1" popupmenu="1"/>
+  <TEXTBUTTON name="browseButton" id="b593253ef702db73" memberName="browseButton"
+              virtualName="" explicitFocusOrder="2" pos="416 8 80 24" buttonText="Browse"
+              connectedEdges="0" needsCallback="0" radioGroupId="0"/>
+</JUCER_COMPONENT>
+
+END_JUCER_METADATA
+*/
+#endif
+
+
+//[EndFile] You can add extra defines here...
+//[/EndFile]

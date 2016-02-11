@@ -1,20 +1,21 @@
-/*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
+
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -35,7 +36,7 @@ MainContent::MainContent ()
     addAndMakeVisible (background = new Background());
     background->setName ("background");
 
-    addAndMakeVisible (controls = new Controls());
+    addAndMakeVisible (controls = new Controls (this));
     controls->setName ("controls");
 
     addAndMakeVisible (chat = new Chat());
@@ -44,10 +45,10 @@ MainContent::MainContent ()
     addAndMakeVisible (preview = new Preview());
     preview->setName ("preview");
 
-    addAndMakeVisible (presets = new Presets());
+    addAndMakeVisible (presets = new Presets (this));
     presets->setName ("presets");
 
-    addAndMakeVisible (config = new Config());
+    addAndMakeVisible (config = new Config (this));
     config->setName ("config");
 
     addAndMakeVisible (statusbar = new Statusbar());
@@ -57,10 +58,12 @@ MainContent::MainContent ()
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (876, 762);
+    setSize (758, 762);
 
 
     //[Constructor] You can add your own custom stuff here..
+
+  setSize(GUI::WINDOW_W , GUI::WINDOW_H) ;
 
   this->statusbar->setAlwaysOnTop(true) ;
   this->statusbar->setStatusL(GUI::INIT_STATUS_TEXT) ;
@@ -118,18 +121,53 @@ void MainContent::resized()
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void MainContent::configureCombobox(ComboBox* a_combobox)
+void MainContent::configureButton(Button* a_button , Button::Listener* a_button_listener)
+{
+  a_button->addListener(a_button_listener) ;
+}
+
+void MainContent::configureSlider(Slider* a_slider , Slider::Listener* a_slider_listener ,
+                                  double  min_val  , double            max_val           ,
+                                  double  step                                           )
+{
+  a_slider->setColour(Slider::textBoxBackgroundColourId   , GUI::TEXT_BG_COLOR      ) ;
+  a_slider->setColour(Slider::textBoxTextColourId         , GUI::TEXT_NORMAL_COLOR  ) ;
+  a_slider->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
+  a_slider->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
+  a_slider->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
+  a_slider->setRange(min_val , max_val , step) ;
+  a_slider->addListener(a_slider_listener) ;
+}
+
+void MainContent::configureTextEditor(TextEditor*           a_text_editor   ,
+                                      TextEditor::Listener* a_text_listener ,
+                                      int                   max_n_chars     ,
+                                      const String          allowed_chars   )
+{
+  a_text_editor->setSelectAllWhenFocused(true) ;
+  a_text_editor->setInputRestrictions(max_n_chars , allowed_chars) ;
+  a_text_editor->setColour(TextEditor::backgroundColourId      , GUI::TEXT_BG_COLOR      ) ;
+  a_text_editor->setColour(TextEditor::textColourId            , GUI::TEXT_NORMAL_COLOR  ) ;
+  a_text_editor->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
+  a_text_editor->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
+  a_text_editor->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
+  a_text_editor->addListener(a_text_listener) ;
+}
+
+void MainContent::configureCombobox(ComboBox* a_combobox , ComboBox::Listener* a_combobox_listener)
 {
   a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_NORMAL_COLOR) ;
   a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR    ) ;
   a_combobox->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
   a_combobox->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
   a_combobox->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
+  if (a_combobox_listener == nullptr) return ;
+
+  a_combobox->addListener(a_combobox_listener) ;
 }
 
 void MainContent::loadPresetsCombo(ComboBox* a_combobox)
 {
-  ValueTree   config_store = AvCaster::GetConfigStore() ;
   StringArray preset_names = AvCaster::GetPresetsNames() ;
   int         preset_idx   = AvCaster::GetPresetIdx() ;
 
@@ -148,14 +186,10 @@ void MainContent::disableControls(bool is_media_enabled  , bool is_screen_enable
                                   bool is_image_enabled  , bool is_preview_enabled ,
                                   bool is_audio_enabled                            )
 {
-  // disable controls per cli args
-  this->controls->screencapToggle   ->setEnabled(is_screen_enabled ) ;
-  this->controls->cameraToggle      ->setEnabled(is_camera_enabled ) ;
-  this->controls->textToggle        ->setEnabled(is_text_enabled   ) ;
-  this->controls->interstitialToggle->setEnabled(is_image_enabled  ) ;
-  this->controls->previewToggle     ->setEnabled(is_preview_enabled) ;
-  this->controls->audioToggle       ->setEnabled(is_audio_enabled  ) ;
-  this->controls->outputToggle      ->setEnabled(is_media_enabled  ) ;
+  this->controls->disableControls(is_media_enabled  , is_screen_enabled  ,
+                                  is_camera_enabled , is_text_enabled    ,
+                                  is_image_enabled  , is_preview_enabled ,
+                                  is_audio_enabled                       ) ;
 }
 
 void MainContent::warning(String message_text)
@@ -204,21 +238,21 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="MainContent" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="876" initialHeight="762">
+                 fixedSize="1" initialWidth="758" initialHeight="762">
   <BACKGROUND backgroundColour="ff101010"/>
   <GENERICCOMPONENT name="background" id="4d43eef09b00fdf4" memberName="background"
                     virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" class="Background"
                     params=""/>
   <GENERICCOMPONENT name="controls" id="7a0ffc87dbd1f2a3" memberName="controls" virtualName=""
-                    explicitFocusOrder="0" pos="0 0 0M 76" class="Controls" params=""/>
+                    explicitFocusOrder="0" pos="0 0 0M 76" class="Controls" params="this"/>
   <GENERICCOMPONENT name="chat" id="ac9a4042c98734e2" memberName="chat" virtualName=""
                     explicitFocusOrder="0" pos="0 76 0M 100M" class="Chat" params=""/>
   <GENERICCOMPONENT name="preview" id="75e8b11c95e2efaf" memberName="preview" virtualName=""
                     explicitFocusOrder="0" pos="0 76 0M 100M" class="Preview" params=""/>
   <GENERICCOMPONENT name="presets" id="c3256eaa517d34eb" memberName="presets" virtualName=""
-                    explicitFocusOrder="0" pos="0 0 0M 76" class="Presets" params=""/>
+                    explicitFocusOrder="0" pos="0 0 0M 76" class="Presets" params="this"/>
   <GENERICCOMPONENT name="config" id="4f3cab5613666ef6" memberName="config" virtualName=""
-                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Config" params=""/>
+                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Config" params="this"/>
   <GENERICCOMPONENT name="statusbar" id="2dc0514b582b96cb" memberName="statusbar"
                     virtualName="" explicitFocusOrder="0" pos="0 0Rr 0M 24" class="Statusbar"
                     params=""/>

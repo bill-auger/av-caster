@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.15.201"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.15.202"
               bundleIdentifier="com.bill-auger.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
@@ -21,10 +21,17 @@
       <FILE id="IHfl77" name="AvCaster.h" compile="0" resource="0" file="Source/AvCaster.h"/>
       <FILE id="y9Co3C" name="AvCasterStore.h" compile="0" resource="0" file="Source/AvCasterStore.h"/>
       <FILE id="DrBwb8" name="Background.h" compile="0" resource="0" file="Source/Background.h"/>
-      <FILE id="qFUIyX" name="Chat.h" compile="0" resource="0" file="Source/Chat.h"/>
+      <FILE id="DXlvqs" name="Chat.h" compile="0" resource="0" file="Source/Chat.h"/>
       <FILE id="u48sjw" name="ChatList.h" compile="0" resource="0" file="Source/ChatList.h"/>
       <FILE id="DJ4nMG" name="ChatListItem.h" compile="0" resource="0" file="Source/ChatListItem.h"/>
       <FILE id="uoYh4l" name="Config.h" compile="0" resource="0" file="Source/Config.h"/>
+      <FILE id="j4K0YH" name="ConfigAudio.h" compile="0" resource="0" file="Source/ConfigAudio.h"/>
+      <FILE id="uW4054" name="ConfigCamera.h" compile="0" resource="0" file="Source/ConfigCamera.h"/>
+      <FILE id="qFUIyX" name="ConfigChat.h" compile="0" resource="0" file="Source/ConfigChat.h"/>
+      <FILE id="IIcdyq" name="ConfigImage.h" compile="0" resource="0" file="Source/ConfigImage.h"/>
+      <FILE id="X6W4rM" name="ConfigOutput.h" compile="0" resource="0" file="Source/ConfigOutput.h"/>
+      <FILE id="PFaUxv" name="ConfigScreen.h" compile="0" resource="0" file="Source/ConfigScreen.h"/>
+      <FILE id="umJrEp" name="ConfigText.h" compile="0" resource="0" file="Source/ConfigText.h"/>
       <FILE id="zCkODj" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
       <FILE id="mkIaLi" name="Controls.h" compile="0" resource="0" file="Source/Controls.h"/>
       <FILE id="o1VbMJ" name="Gstreamer.h" compile="0" resource="0" file="Source/Gstreamer.h"/>
@@ -45,6 +52,16 @@
       <FILE id="ZeuPdR" name="ChatListItem.cpp" compile="1" resource="0"
             file="Source/ChatListItem.cpp"/>
       <FILE id="nRcwV3" name="Config.cpp" compile="1" resource="0" file="Source/Config.cpp"/>
+      <FILE id="l95AtA" name="ConfigAudio.cpp" compile="1" resource="0" file="Source/ConfigAudio.cpp"/>
+      <FILE id="TpXZpv" name="ConfigCamera.cpp" compile="1" resource="0"
+            file="Source/ConfigCamera.cpp"/>
+      <FILE id="fl0C4R" name="ConfigChat.cpp" compile="1" resource="0" file="Source/ConfigChat.cpp"/>
+      <FILE id="YrMWef" name="ConfigImage.cpp" compile="1" resource="0" file="Source/ConfigImage.cpp"/>
+      <FILE id="YD8GAL" name="ConfigOutput.cpp" compile="1" resource="0"
+            file="Source/ConfigOutput.cpp"/>
+      <FILE id="Zl8uMX" name="ConfigScreen.cpp" compile="1" resource="0"
+            file="Source/ConfigScreen.cpp"/>
+      <FILE id="I5UpGq" name="ConfigText.cpp" compile="1" resource="0" file="Source/ConfigText.cpp"/>
       <FILE id="hx0s0h" name="Controls.cpp" compile="1" resource="0" file="Source/Controls.cpp"/>
       <FILE id="z1biaf" name="Gstreamer.cpp" compile="1" resource="0" file="Source/Gstreamer.cpp"/>
       <FILE id="V586WS" name="IrcClient.cpp" compile="1" resource="0" file="Source/IrcClient.cpp"/>

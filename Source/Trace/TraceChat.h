@@ -40,11 +40,11 @@
                                 ") nicks on '" + String(server_id)              + \
                                 "' nicks=["    + nicks.joinIntoString(",") + "]") ;
 
-#  define DEBUG_TRACE_ADD_CHAT_LIST_ITEM                                                  \
-  Trace::TraceGui("adding chatter '" + STRING(chatter_store[CONFIG::CHAT_NICK_ID]) + "'") ;
+#  define DEBUG_TRACE_ADD_CHAT_LIST_ITEM                                             \
+  Trace::TraceGui("adding chatter '" + STRING(chatter_store[CONFIG::NICK_ID]) + "'") ;
 
 #  define DEBUG_TRACE_REMOVE_CHAT_LIST_ITEM                                       \
-  String nick = STRING(chatter_store[CONFIG::CHAT_NICK_ID]) ;                     \
+  String nick = STRING(chatter_store[CONFIG::NICK_ID]) ;                          \
   String dbg  = "removing chatter '" + nick + "' at index " + String(item_idx) ;  \
   if (!a_list_item) Trace::TraceError("error " + dbg) ; else Trace::TraceGui(dbg) ;
 

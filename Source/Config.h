@@ -1,28 +1,39 @@
-/*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
 
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
+
+#ifndef __JUCE_HEADER_21AE3B746DB36E0C__
+#define __JUCE_HEADER_21AE3B746DB36E0C__
 
 //[Headers]     -- You can add your own extra header files here --
 
 #include "JuceHeader.h"
 #include "Constants.h"
+#include "ConfigAudio.h"
+#include "ConfigCamera.h"
+#include "ConfigChat.h"
+#include "ConfigImage.h"
+#include "ConfigOutput.h"
+#include "ConfigScreen.h"
+#include "ConfigText.h"
+
+
+class MainContent ;
 
 //[/Headers]
 
@@ -36,43 +47,18 @@
                                                                     //[/Comments]
 */
 class Config  : public Component,
+                public Button::Listener,
+                public Slider::Listener,
                 public TextEditor::Listener,
-                public SliderListener,
-                public ComboBoxListener,
-                public ButtonListener
+                public ComboBox::Listener
 {
 public:
     //==============================================================================
-    Config ();
+    Config (MainContent* main_content);
     ~Config();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    //[/UserMethods]
-
-    void paint (Graphics& g);
-    void resized();
-    void sliderValueChanged (Slider* sliderThatWasMoved);
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void buttonClicked (Button* buttonThatWasClicked);
-
-
-
-private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-
-  void broughtToFront       ()                          override ;
-  void textEditorTextChanged(TextEditor& a_text_editor) override ;
-  void textEditorFocusLost  (TextEditor& a_text_editor) override ;
-
-  void configureSlider    (Slider* a_slider) ;
-  void configureTextEditor(TextEditor*  a_text_editor , int max_n_chars ,
-                           const String allowed_chars                   ) ;
-  void configureCombobox  (ComboBox* a_combobox) ;
-  void loadConfig         () ;
-  void enableComponents   () ;
-  bool validateOutputDest () ;
-
 
 public:
 
@@ -81,78 +67,86 @@ public:
 
 private:
 
+  void broughtToFront       ()                          override ;
+  void sliderValueChanged   (Slider* a_slider)          override ;
+  void comboBoxChanged      (ComboBox* a_combobox)      override ;
+  void buttonClicked        (Button* a_button)          override ;
+  void textEditorTextChanged(TextEditor& a_text_editor) override ;
+  void textEditorFocusLost  (TextEditor& a_text_editor) override ;
+
+  void loadConfig        () ;
+  void enableComponents  () ;
+  void updateVisibility  (Component* config_component) ;
+  bool validateOutputDest() ;
+
+    //[/UserMethods]
+
+    void paint (Graphics& g);
+    void resized();
+
+
+
+private:
+    //[UserVariables]   -- You can add your own custom variables in this section.
+
+  MainContent*  mainContent ;
+  Slider*       displaySlider ;
+  Slider*       screenSlider ;
+  TextEditor*   screenWidthText ;
+  TextEditor*   screenHeightText ;
+  TextEditor*   xOffsetText ;
+  TextEditor*   yOffsetText ;
+  ComboBox*     cameraDevCombo ;
+  ComboBox*     cameraResCombo ;
+  ComboBox*     audioApiCombo ;
+  ComboBox*     audioDevCombo ;
+  ComboBox*     audioCodecCombo ;
+  Slider*       nChannelsSlider ;
+  ComboBox*     samplerateCombo ;
+  ComboBox*     audioBitrateCombo ;
+  TextEditor*   motdText ;
+  ComboBox*     textStyleCombo ;
+  ComboBox*     textPosCombo ;
+  TextEditor*   interstitialText ;
+  TextButton*   browseButton ;
+  ComboBox*     outputSinkCombo ;
+  TextEditor*   outputWidthText ;
+  TextEditor*   outputHeightText ;
+  ComboBox*     framerateCombo ;
+  ComboBox*     videoBitrateCombo ;
+  Label*        outputDestLabel ;
+  TextEditor*   outputDestText ;
+  TextButton*   serverButton ;
+  ComboBox*     hostCombo ;
+  TextEditor*   portText ;
+  TextEditor*   nickText ;
+  TextEditor*   passText ;
+  TextEditor*   channelText ;
+  TextEditor*   greetingText ;
+  ToggleButton* joinPartToggle ;
+
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> screenGroup;
-    ScopedPointer<Label> displayLabel;
-    ScopedPointer<Slider> displaySlider;
-    ScopedPointer<Label> screenLabel;
-    ScopedPointer<Slider> screenSlider;
-    ScopedPointer<Label> screenWidthLabel;
-    ScopedPointer<TextEditor> screenWidthText;
-    ScopedPointer<Label> screenHeightLabel;
-    ScopedPointer<TextEditor> screenHeightText;
-    ScopedPointer<Label> xOffsetLabel;
-    ScopedPointer<TextEditor> xOffsetText;
-    ScopedPointer<Label> yOffsetLabel;
-    ScopedPointer<TextEditor> yOffsetText;
-    ScopedPointer<GroupComponent> cameraGroup;
-    ScopedPointer<Label> cameraDevLabel;
-    ScopedPointer<ComboBox> cameraDevCombo;
-    ScopedPointer<Label> cameraResLabel;
-    ScopedPointer<ComboBox> cameraResCombo;
-    ScopedPointer<GroupComponent> audioGroup;
-    ScopedPointer<Label> audioApiLabel;
-    ScopedPointer<ComboBox> audioApiCombo;
-    ScopedPointer<Label> audioDevLabel;
-    ScopedPointer<ComboBox> audioDevCombo;
-    ScopedPointer<Label> audioCodecLabel;
-    ScopedPointer<ComboBox> audioCodecCombo;
-    ScopedPointer<Label> nChannelsLabel;
-    ScopedPointer<Slider> nChannelsSlider;
-    ScopedPointer<Label> samplerateLabel;
-    ScopedPointer<ComboBox> samplerateCombo;
-    ScopedPointer<Label> audioBitrateLabel;
-    ScopedPointer<ComboBox> audioBitrateCombo;
-    ScopedPointer<GroupComponent> textGroup;
-    ScopedPointer<Label> motdLabel;
-    ScopedPointer<TextEditor> motdText;
-    ScopedPointer<Label> textStyleLabel;
-    ScopedPointer<ComboBox> textStyleCombo;
-    ScopedPointer<Label> textPosLabel;
-    ScopedPointer<ComboBox> textPosCombo;
-    ScopedPointer<GroupComponent> interstitialGroup;
-    ScopedPointer<Label> locationLabel;
-    ScopedPointer<TextEditor> interstitialText;
-    ScopedPointer<TextButton> browseButton;
-    ScopedPointer<GroupComponent> outputGroup;
-    ScopedPointer<Label> outputStreamLabel;
-    ScopedPointer<ComboBox> outputSinkCombo;
-    ScopedPointer<Label> outputWidthLabel;
-    ScopedPointer<TextEditor> outputWidthText;
-    ScopedPointer<Label> outputHeightLabel;
-    ScopedPointer<TextEditor> outputHeightText;
-    ScopedPointer<Label> framerateLabel;
-    ScopedPointer<ComboBox> framerateCombo;
-    ScopedPointer<Label> bitrateLabel;
-    ScopedPointer<ComboBox> videoBitrateCombo;
-    ScopedPointer<Label> outputDestLabel;
-    ScopedPointer<TextEditor> outputDestText;
-    ScopedPointer<GroupComponent> chatGroup;
-    ScopedPointer<Label> hostLabel;
-    ScopedPointer<TextEditor> hostText;
-    ScopedPointer<Label> portLabel;
-    ScopedPointer<TextEditor> portText;
-    ScopedPointer<Label> nickLabel;
-    ScopedPointer<TextEditor> nickText;
-    ScopedPointer<Label> passLabel;
-    ScopedPointer<TextEditor> passText;
-    ScopedPointer<Label> channelLabel;
-    ScopedPointer<TextEditor> channelText;
-    ScopedPointer<Label> greetingLabel;
-    ScopedPointer<TextEditor> greetingText;
-    ScopedPointer<ToggleButton> joinPartToggle;
+    ScopedPointer<GroupComponent> configGroup;
+    ScopedPointer<TextButton> screenButton;
+    ScopedPointer<TextButton> cameraButton;
+    ScopedPointer<TextButton> audioButton;
+    ScopedPointer<TextButton> textButton;
+    ScopedPointer<TextButton> imageButton;
+    ScopedPointer<TextButton> outputButton;
+    ScopedPointer<TextButton> chatButton;
+    ScopedPointer<GroupComponent> configPaneGroup;
+    ScopedPointer<ConfigScreen> configScreen;
+    ScopedPointer<ConfigCamera> configCamera;
+    ScopedPointer<ConfigAudio> configAudio;
+    ScopedPointer<ConfigText> configText;
+    ScopedPointer<ConfigImage> configImage;
+    ScopedPointer<ConfigOutput> configOutput;
+    ScopedPointer<ConfigChat> configChat;
+    ScopedPointer<Component> configSpacer;
+    ScopedPointer<GroupComponent> hintsGroup;
+    ScopedPointer<TextEditor> hintsText;
 
 
     //==============================================================================
@@ -162,4 +156,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIG_H_
+#endif   // __JUCE_HEADER_21AE3B746DB36E0C__

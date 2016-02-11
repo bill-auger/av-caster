@@ -1,21 +1,21 @@
-/*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
 
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -142,7 +142,7 @@ void Chat::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff303030));
+    g.setColour (Colour (0xff282828));
     g.fillRoundedRectangle (20.0f, 18.0f, static_cast<float> (getWidth() - 40), static_cast<float> (getHeight() - 36), 4.000f);
 
     //[UserPaint] Add your own custom painting code here..
@@ -302,7 +302,7 @@ BEGIN_JUCER_METADATA
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
                  initialHeight="1">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="20 18 40M 36M" cornerSize="4" fill="solid: ff303030" hasStroke="0"/>
+    <ROUNDRECT pos="20 18 40M 36M" cornerSize="4" fill="solid: ff282828" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="chatGroup" id="6607ba656d5c8919" memberName="chatGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 8 32M 24M" outlinecol="ffffffff"

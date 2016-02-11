@@ -58,7 +58,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.15.201;JUCE_APP_VERSION_HEX=0xfc9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.15.202;JUCE_APP_VERSION_HEX=0xfca;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -99,7 +99,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.15.201;JUCE_APP_VERSION_HEX=0xfc9;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.15.202;JUCE_APP_VERSION_HEX=0xfca;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -138,6 +138,13 @@
     <ClCompile Include="..\..\Source\ChatList.cpp"/>
     <ClCompile Include="..\..\Source\ChatListItem.cpp"/>
     <ClCompile Include="..\..\Source\Config.cpp"/>
+    <ClCompile Include="..\..\Source\ConfigAudio.cpp"/>
+    <ClCompile Include="..\..\Source\ConfigCamera.cpp"/>
+    <ClCompile Include="..\..\Source\ConfigChat.cpp"/>
+    <ClCompile Include="..\..\Source\ConfigImage.cpp"/>
+    <ClCompile Include="..\..\Source\ConfigOutput.cpp"/>
+    <ClCompile Include="..\..\Source\ConfigScreen.cpp"/>
+    <ClCompile Include="..\..\Source\ConfigText.cpp"/>
     <ClCompile Include="..\..\Source\Controls.cpp"/>
     <ClCompile Include="..\..\Source\Gstreamer.cpp"/>
     <ClCompile Include="..\..\Source\IrcClient.cpp"/>
@@ -917,6 +924,13 @@
     <ClInclude Include="..\..\Source\ChatList.h"/>
     <ClInclude Include="..\..\Source\ChatListItem.h"/>
     <ClInclude Include="..\..\Source\Config.h"/>
+    <ClInclude Include="..\..\Source\ConfigAudio.h"/>
+    <ClInclude Include="..\..\Source\ConfigCamera.h"/>
+    <ClInclude Include="..\..\Source\ConfigChat.h"/>
+    <ClInclude Include="..\..\Source\ConfigImage.h"/>
+    <ClInclude Include="..\..\Source\ConfigOutput.h"/>
+    <ClInclude Include="..\..\Source\ConfigScreen.h"/>
+    <ClInclude Include="..\..\Source\ConfigText.h"/>
     <ClInclude Include="..\..\Source\Constants.h"/>
     <ClInclude Include="..\..\Source\Controls.h"/>
     <ClInclude Include="..\..\Source\Gstreamer.h"/>

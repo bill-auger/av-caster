@@ -130,7 +130,8 @@ DEBUG_TRACE_REJECT_CONFIG_CHANGE
   return is_output_on ;
 }
 
-bool AvCaster::IsConfigGuiSane() { return Gui->config->validateConfigGui() ; }
+// bool AvCaster::IsConfigGuiSane() { return Gui->config->validateConfigGui() ; }
+bool AvCaster::IsConfigGuiSane() { return true ; }
 
 bool AvCaster::IsStaticPreset() { return AvCaster::GetPresetIdx() < CONFIG::N_STATIC_PRESETS ; }
 

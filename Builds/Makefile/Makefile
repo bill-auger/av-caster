@@ -18,12 +18,12 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := -march=native
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.201" -D "JUCE_APP_VERSION_HEX=0xfc9" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.202" -D "JUCE_APP_VERSION_HEX=0xfca" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.201" -D "JUCE_APP_VERSION_HEX=0xfc9" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.202" -D "JUCE_APP_VERSION_HEX=0xfca" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := av-caster-dbg
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -39,12 +39,12 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := -march=native
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.201" -D "JUCE_APP_VERSION_HEX=0xfc9" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  CPPFLAGS := $(DEPFLAGS) -std=c++11 -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.202" -D "JUCE_APP_VERSION_HEX=0xfca" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -O3 `pkg-config --cflags gstreamer-1.0`
   CXXFLAGS += $(CFLAGS)
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -lX11 -lXext -lXinerama -ldl -lfreetype -lpthread -lrt `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.201" -D "JUCE_APP_VERSION_HEX=0xfc9" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
+  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_9CCEB774=1" -D "JUCE_APP_VERSION=0.15.202" -D "JUCE_APP_VERSION_HEX=0xfca" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../JuceLibraryCode/modules
   TARGET := av-caster
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
   CLEANCMD = rm -rf $(OUTDIR)/$(TARGET) $(OBJDIR)
@@ -58,6 +58,13 @@ OBJECTS := \
   $(OBJDIR)/ChatList_12048b9f.o \
   $(OBJDIR)/ChatListItem_84b82452.o \
   $(OBJDIR)/Config_5aed31cb.o \
+  $(OBJDIR)/ConfigAudio_37708215.o \
+  $(OBJDIR)/ConfigCamera_e5008e10.o \
+  $(OBJDIR)/ConfigChat_4ec74243.o \
+  $(OBJDIR)/ConfigImage_f7e1451a.o \
+  $(OBJDIR)/ConfigOutput_110195ec.o \
+  $(OBJDIR)/ConfigScreen_440e8fd7.o \
+  $(OBJDIR)/ConfigText_bd480198.o \
   $(OBJDIR)/Controls_28d2363f.o \
   $(OBJDIR)/Gstreamer_49eed0f5.o \
   $(OBJDIR)/IrcClient_17c5f7a6.o \
@@ -124,6 +131,41 @@ $(OBJDIR)/ChatListItem_84b82452.o: ../../Source/ChatListItem.cpp
 $(OBJDIR)/Config_5aed31cb.o: ../../Source/Config.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Config.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ConfigAudio_37708215.o: ../../Source/ConfigAudio.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ConfigAudio.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ConfigCamera_e5008e10.o: ../../Source/ConfigCamera.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ConfigCamera.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ConfigChat_4ec74243.o: ../../Source/ConfigChat.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ConfigChat.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ConfigImage_f7e1451a.o: ../../Source/ConfigImage.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ConfigImage.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ConfigOutput_110195ec.o: ../../Source/ConfigOutput.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ConfigOutput.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ConfigScreen_440e8fd7.o: ../../Source/ConfigScreen.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ConfigScreen.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ConfigText_bd480198.o: ../../Source/ConfigText.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ConfigText.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Controls_28d2363f.o: ../../Source/Controls.cpp
