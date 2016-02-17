@@ -16,6 +16,7 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+
 #ifndef _PREVIEW_H_
 #define _PREVIEW_H_
 
@@ -28,9 +29,8 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-    An auto-generated component, created by the Introjucer.
-
-    Describe your class and how it works here!
+    Preview is the live preview GUI for the AvCaster application.
+    It is essentially a dummy widget for the media to be drawn within.
                                                                     //[/Comments]
 */
 class Preview  : public Component

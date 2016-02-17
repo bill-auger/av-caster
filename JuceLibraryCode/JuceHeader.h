@@ -19,6 +19,7 @@
 #include "modules/juce_events/juce_events.h"
 #include "modules/juce_graphics/juce_graphics.h"
 #include "modules/juce_gui_basics/juce_gui_basics.h"
+#include "BinaryData.h"
 
 #if ! DONT_SET_USING_JUCE_NAMESPACE
  // If your code uses a lot of JUCE classes, then this will obviously save you
@@ -30,8 +31,8 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "AvCaster";
-    const char* const  versionString  = "0.15.202";
-    const int          versionNumber  = 0xfca;
+    const char* const  versionString  = "0.15.203";
+    const int          versionNumber  = 0xfcb;
 }
 #endif
 

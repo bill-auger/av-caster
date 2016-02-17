@@ -366,10 +366,10 @@ DEBUG_TRACE_REFRESH_GUI
   control_component->toFront(true) ;
   view_component   ->toFront(true) ;
 
-  RefreshStatus() ;
+  UpdateStatus() ;
 }
 
-void AvCaster::RefreshStatus()
+void AvCaster::UpdateStatus()
 {
   bool   is_output_active = bool(Store->config[CONFIG::OUTPUT_ID     ]) ;
   int    sink_idx         = int (Store->config[CONFIG::OUTPUT_SINK_ID]) ;
@@ -385,8 +385,11 @@ void AvCaster::RefreshStatus()
   // statusbar text
   if (IsInitialized) status_text = GUI::READY_STATUS_TEXT ;
 
-  Gui->getTopLevelComponent()->setName   (title_text ) ;
-  Gui->statusbar             ->setStatusL(status_text) ;
+  Gui->mainWindow->setName       (title_text ) ;
+  Gui->statusbar ->setStatusL    (status_text) ;
+#ifdef TRAY_ICON
+  Gui->trayIcon  ->setIconTooltip(title_text + GUI::TRAY_TOOTIP) ;
+#endif // TRAY_ICON
 }
 
 bool AvCaster::HandleCliParamsTerminating()

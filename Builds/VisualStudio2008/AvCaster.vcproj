@@ -32,7 +32,7 @@
             BufferSecurityCheck=""
             DebugInformationFormat="4"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.15.202;JUCE_APP_VERSION_HEX=0xfca"
+            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.15.203;JUCE_APP_VERSION_HEX=0xfcb"
             RuntimeLibrary="1"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -88,7 +88,7 @@
             InlineFunctionExpansion="1"
             StringPooling="true"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.15.202;JUCE_APP_VERSION_HEX=0xfca"
+            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.15.203;JUCE_APP_VERSION_HEX=0xfcb"
             RuntimeLibrary="0"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -127,6 +127,18 @@
   <References/>
   <Files>
     <Filter Name="AvCaster">
+      <Filter Name="Assets">
+        <File RelativePath="..\..\Assets\av-caster.png">
+          <FileConfiguration Name="Debug|Win32"
+                             ExcludedFromBuild="true">
+            <Tool Name="VCCLCompilerTool"/>
+          </FileConfiguration>
+          <FileConfiguration Name="Release|Win32"
+                             ExcludedFromBuild="true">
+            <Tool Name="VCCLCompilerTool"/>
+          </FileConfiguration>
+        </File>
+      </Filter>
       <Filter Name="Headers">
         <Filter Name="Trace">
           <File RelativePath="..\..\Source\Trace\Trace.h"/>
@@ -3171,6 +3183,8 @@
     </Filter>
     <Filter Name="Juce Library Code">
       <File RelativePath="..\..\JuceLibraryCode\AppConfig.h"/>
+      <File RelativePath="..\..\JuceLibraryCode\BinaryData.cpp"/>
+      <File RelativePath="..\..\JuceLibraryCode\BinaryData.h"/>
       <File RelativePath="..\..\JuceLibraryCode\modules\juce_core\juce_core.cpp"/>
       <File RelativePath="..\..\JuceLibraryCode\modules\juce_data_structures\juce_data_structures.cpp"/>
       <File RelativePath="..\..\JuceLibraryCode\modules\juce_events\juce_events.cpp"/>

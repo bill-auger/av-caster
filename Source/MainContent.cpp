@@ -1,21 +1,21 @@
-/*
-  ==============================================================================
+/*\
+|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|
+|*|  This file is part of the AvCaster program.
+|*|
+|*|  AvCaster is free software: you can redistribute it and/or modify
+|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  as published by the Free Software Foundation.
+|*|
+|*|  AvCaster is distributed in the hope that it will be useful,
+|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
+|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+|*|  GNU Lesser General Public License for more details.
+|*|
+|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
+\*/
 
-  This is an automatically generated GUI class created by the Introjucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Introjucer version: 3.1.1
-
-  ------------------------------------------------------------------------------
-
-  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
-
-  ==============================================================================
-*/
 
 //[Headers] You can add your own extra header files here...
 
@@ -64,6 +64,11 @@ MainContent::MainContent ()
     //[Constructor] You can add your own custom stuff here..
 
   setSize(GUI::WINDOW_W , GUI::WINDOW_H) ;
+
+  this->mainWindow = static_cast<DocumentWindow*>(getTopLevelComponent()) ;
+#ifdef TRAY_ICON
+  this->trayIcon = new AvCasterTrayIconComponent(this->mainWindow) ;
+#endif // TRAY_ICON
 
   this->statusbar->setAlwaysOnTop(true) ;
   this->statusbar->setStatusL(GUI::INIT_STATUS_TEXT) ;
@@ -222,6 +227,23 @@ Rectangle<int> MainContent::getPreviewBounds()
 
   return preview_bounds ;
 }
+
+
+#ifdef TRAY_ICON
+void AvCasterTrayIconComponent::mouseDown(const MouseEvent& mouse_event)
+{
+  if      (mouse_event.mods.isLeftButtonDown())
+    this->mainWindow->setMinimised(!this->mainWindow->isMinimised()) ;
+  else if (mouse_event.mods.isRightButtonDown()) ;
+// Juce Note: that for detecting popupmenu clicks, you should be using isPopupMenu()
+}
+
+
+private:
+
+  ResizableWindow* mainWindow ;
+} ;
+#endif // TRAY_ICON
 
 //[/MiscUserCode]
 

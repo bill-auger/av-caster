@@ -21,7 +21,6 @@
 #include "./Trace/TraceMain.h"
 
 
-//==============================================================================
 class AvCasterApplication : public JUCEApplication , public MultiTimer
 {
 public:
@@ -36,6 +35,21 @@ DEBUG_TRACE_INIT_VERSION
 
     if (AvCaster::Initialize(this->mainWindow->mainContent))
     {
+#ifdef JUCE_LINUX
+      if (APP::DESKTOP_FILE.loadFileAsString() != APP::DESKTOP_TEXT)
+        APP::DESKTOP_FILE.replaceWithText(APP::DESKTOP_TEXT) ;
+      if (APP::ICON_FILE.getSize() != APP::LOGO_FILE.getSize())
+      {
+        PNGImageFormat    image_format = PNGImageFormat() ;
+        Image             icon_image   = ImageCache::getFromMemory(BinaryData::avcaster_png    ,
+                                                                   BinaryData::avcaster_pngSize) ;
+        FileOutputStream* icon_stream  = new FileOutputStream(APP::ICON_FILE) ;
+        if (!icon_stream->failedToOpen())
+          image_format.writeImageToStream(icon_image , *icon_stream) ;
+        delete icon_stream ;
+      }
+#endif // JUCE_LINUX
+
       // start runtime timers
       for (int timer_n = 0 ; timer_n < APP::N_TIMERS ; ++timer_n)
         startTimer(APP::TIMER_IDS[timer_n] , APP::TIMER_IVLS[timer_n]) ;
@@ -70,14 +84,14 @@ DEBUG_TRACE_SHUTDOWN_OUT
   bool         moreThanOneInstanceAllowed() override { return false ; }
 
 
-  //==============================================================================
-  /*
-      This class implements the desktop window that contains an instance of
-      our MainContent class.
+  /**
+    MainWindow is the top-level ancestor class of all Components.
+    It implements the desktop window that contains an instance of our MainContent class.
   */
   class MainWindow : public DocumentWindow
   {
     friend class AvCasterApplication ;
+    friend class MainContent ;
 
 
   public:
@@ -89,11 +103,20 @@ DEBUG_TRACE_SHUTDOWN_OUT
       setContentOwned(this->mainContent , true) ;
 
       // this main desktop window
+      // TODO: load from BinaryData
+      setUsingNativeTitleBar(false) ;
+      setResizable(true , false) ;
+      Image icon_image = ImageCache::getFromMemory(BinaryData::avcaster_png    ,
+                                                   BinaryData::avcaster_pngSize) ;
+      setIcon(icon_image) ; getPeer()->setIcon(icon_image) ;
+#ifdef TRAY_ICON
+        this->mainContent->trayIcon->setIconImage(icon_image) ;
+#endif // TRAY_ICON
+
 #ifdef JUCE_MAC
       setTitleBarButtonsRequired(DocumentWindow::allButtons , true) ;
 #endif // JUCE_MAC
       setTitleBarHeight(GUI::TITLEBAR_H) ;
-      setIcon(ImageFileFormat::loadFrom(File(GUI::LOGO_IMG_LOC))) ;
       centreWithSize(getWidth() , getHeight()) ;
       setVisible(true) ;
     }
@@ -104,6 +127,13 @@ DEBUG_TRACE_SHUTDOWN_OUT
     {
       JUCEApplicationBase::getInstance()->systemRequestedQuit() ;
     }
+
+#ifdef TRAY_ICON
+    void userTriedToCloseWindow()
+    {
+      JUCEApplicationBase::getInstance()->systemRequestedQuit() ;
+    } // FIXME: this avoids assertion in juce_Component.cpp:737
+#endif // TRAY_ICON
 
 
   private:
@@ -129,6 +159,6 @@ private:
   ScopedPointer<MainWindow> mainWindow ;
 } ;
 
-//==============================================================================
+
 // This macro generates the main() routine that launches the app.
 START_JUCE_APPLICATION(AvCasterApplication)

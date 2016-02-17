@@ -5,6 +5,9 @@
     <Filter Include="AvCaster">
       <UniqueIdentifier>{D37B5EB6-3ABF-BE1F-1451-FC3FCB29131C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AvCaster\Assets">
+      <UniqueIdentifier>{6699A38E-48C7-AC95-72D5-BA764DCA1717}</UniqueIdentifier>
+    </Filter>
     <Filter Include="AvCaster\Headers">
       <UniqueIdentifier>{F7EC2F34-0A47-6CA9-C26A-387406BEF86F}</UniqueIdentifier>
     </Filter>
@@ -1057,6 +1060,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_gui_basics\native\juce_win32_Windowing.cpp">
       <Filter>Juce Modules\juce_gui_basics\native</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\juce_core.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
@@ -2100,11 +2106,17 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
       <Filter>Juce Library Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h">
+      <Filter>Juce Library Code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>Juce Library Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Assets\av-caster.png">
+      <Filter>AvCaster\Assets</Filter>
+    </None>
     <None Include="..\..\JuceLibraryCode\modules\juce_core\juce_module_info">
       <Filter>Juce Modules\juce_core</Filter>
     </None>

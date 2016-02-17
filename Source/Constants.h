@@ -26,6 +26,7 @@
 // #define CAMERA_ONLY
 // #define TEXT_ONLY
 // #define IMAGE_ONLY
+// #define TRAY_ICON // TODO: requires juce_gui_extras package
 #define TEXT_BIN_NYI  1
 #define IMAGE_BIN_NYI 1
 #define DISABLE_GUI_CONFIG_NYI
@@ -73,6 +74,7 @@ namespace APP
 {
   // names and IDs
   static const String APP_NAME         = "AvCaster" ;
+  static const String APP_CMD          = "av-caster" ;
   static const String JACK_CLIENT_NAME = APP_NAME ;
   static const String IRC_THREAD_NAME  = "av-caster-irc" ;
   static const String DIGITS           = "0123456789" ;
@@ -110,33 +112,33 @@ namespace APP
 #else // DEBUG
   static const String CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionString) ;
 #endif // DEBUG
-  static const String CLI_USAGE_MSG   = "AvCaster Usage:\n\n\tav-caster [ " + CLI_HELP_TOKEN            + " | "                                                          +
-                                                                              CLI_PRESETS_TOKEN         + " | "                                                          +
-                                                                              CLI_VERSION_TOKEN         + " ]"                                                           +
-                                                       "\n\n\tav-caster [ " + CLI_PRESET_TOKEN          + " n    ] "                                                     +
-                                                         "\n\t          [ " + CLI_DISABLE_MEDIA_TOKEN   + "    ] "                                                       +
-                                                                       "[ " + CLI_DISABLE_PREVIEW_TOKEN + "  ] "                                                         +
-                                                                       "[ " + CLI_DISABLE_AUDIO_TOKEN   + "  ] "                                                         +
-                                                                       "[ " + CLI_DISABLE_CHAT_TOKEN    + "    ]"                                                        +
-                                                         "\n\t          [ " + CLI_SCREEN_ONLY_TOKEN     + " | "                                                          +
-                                                                       "  " + CLI_CAMERA_ONLY_TOKEN     + " | "                                                          +
-//                                                                        "  " + CLI_TEXT_ONLY_TOKEN       + " | "                                                          +
-//                                                                        "  " + CLI_IMAGE_ONLY_TOKEN      + " ] "                                                          +
-                                                     "\n\n\n\tINFORMATION:"                                                                                              +
-                                                     "\n\n\t\t"             + CLI_HELP_TOKEN            + "\n\t\t\tprints this message and exits"                        +
-                                                     "\n\n\t\t"             + CLI_PRESETS_TOKEN         + "\n\t\t\tlist stored presets and exits"                        +
-                                                     "\n\n\t\t"             + CLI_VERSION_TOKEN         + "\n\t\t\tprints the application version string and exits"      +
-                                                     "\n\n\n\tCONFIGURATION:"                                                                                            +
-                                                     "\n\n\t\t"             + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstarts " + APP_NAME + " with initial preset number n" +
-                                                     "\n\n\n\tFEATURE SWITCHES:"                                                                                         +
-                                                     "\n\n\t\t"             + CLI_DISABLE_MEDIA_TOKEN   + "\n\t\t\tdisables all media and stream output"                 +
-                                                     "\n\n\t\t"             + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders screen only"         +
-                                                     "\n\n\t\t"             + CLI_CAMERA_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders webcam only"         +
-//                                                      "\n\n\t\t"             + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and renders text overlay only"   +
-//                                                      "\n\n\t\t"             + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and renders static image only"   +
-                                                     "\n\n\t\t"             + CLI_DISABLE_PREVIEW_TOKEN + "\n\t\t\tdisables realtime preview"                            +
-                                                     "\n\n\t\t"             + CLI_DISABLE_AUDIO_TOKEN   + "\n\t\t\tdisables audio capture"                               +
-                                                     "\n\n\t\t"             + CLI_DISABLE_CHAT_TOKEN    + "\n\t\t\tdisables chat"                                        ;
+  static const String CLI_USAGE_MSG   = "AvCaster Usage:\n\n\t" + APP_CMD + "   [ " + CLI_HELP_TOKEN            + " | "                                                          +
+                                                                                      CLI_PRESETS_TOKEN         + " | "                                                          +
+                                                                                      CLI_VERSION_TOKEN         + " ]"                                                           +
+                                                       "\n\n\t" + APP_CMD + " [ "   + CLI_PRESET_TOKEN          + " n    ] "                                                     +
+                                                         "\n\t          [ "         + CLI_DISABLE_MEDIA_TOKEN   + "    ] "                                                       +
+                                                                       "[ "         + CLI_DISABLE_PREVIEW_TOKEN + "  ] "                                                         +
+                                                                       "[ "         + CLI_DISABLE_AUDIO_TOKEN   + "  ] "                                                         +
+                                                                       "[ "         + CLI_DISABLE_CHAT_TOKEN    + "    ]"                                                        +
+                                                         "\n\t          [ "         + CLI_SCREEN_ONLY_TOKEN     + " | "                                                          +
+                                                                       "  "         + CLI_CAMERA_ONLY_TOKEN     + " | "                                                          +
+//                                                                        "  "         + CLI_TEXT_ONLY_TOKEN       + " | "                                                          +
+//                                                                        "  "         + CLI_IMAGE_ONLY_TOKEN      + " ] "                                                          +
+                                                     "\n\n\n\tINFORMATION:"                                                                                                      +
+                                                     "\n\n\t\t"                     + CLI_HELP_TOKEN            + "\n\t\t\tprints this message and exits"                        +
+                                                     "\n\n\t\t"                     + CLI_PRESETS_TOKEN         + "\n\t\t\tlist stored presets and exits"                        +
+                                                     "\n\n\t\t"                     + CLI_VERSION_TOKEN         + "\n\t\t\tprints the application version string and exits"      +
+                                                     "\n\n\n\tCONFIGURATION:"                                                                                                    +
+                                                     "\n\n\t\t"                     + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstarts " + APP_NAME + " with initial preset number n" +
+                                                     "\n\n\n\tFEATURE SWITCHES:"                                                                                                 +
+                                                     "\n\n\t\t"                     + CLI_DISABLE_MEDIA_TOKEN   + "\n\t\t\tdisables all media and stream output"                 +
+                                                     "\n\n\t\t"                     + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders screen only"         +
+                                                     "\n\n\t\t"                     + CLI_CAMERA_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders webcam only"         +
+//                                                      "\n\n\t\t"                     + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and renders text overlay only"   +
+//                                                      "\n\n\t\t        "             + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and renders static image only"   +
+                                                     "\n\n\t\t"                     + CLI_DISABLE_PREVIEW_TOKEN + "\n\t\t\tdisables realtime preview"                            +
+                                                     "\n\n\t\t"                     + CLI_DISABLE_AUDIO_TOKEN   + "\n\t\t\tdisables audio capture"                               +
+                                                     "\n\n\t\t"                     + CLI_DISABLE_CHAT_TOKEN    + "\n\t\t\tdisables chat"                                        ;
 
 // NOTE: INPUTS are either mutually exclusive (compositor disabled) or must all be enabled (compositor enabled)
 //       N_COMPOSITOR_INPUTS is coupled to AvCaster::Is*Enabled flags in AvCaster::ProcessCliParams()
@@ -146,15 +148,33 @@ namespace APP
   static const int N_COMPOSITOR_INPUTS = StringArray::fromLines(INPUTS).size() ;
 
   // filesystem
-  static const File   HOME_DIR        = File::getSpecialLocation(File::userHomeDirectory           ) ;
-  static const File   APPDATA_DIR     = File::getSpecialLocation(File::userApplicationDataDirectory) ;
-  static const File   VIDEOS_DIR      = File::getSpecialLocation(File::userMoviesDirectory         ) ;
-  static const File   PICTURES_DIR    = File::getSpecialLocation(File::userPicturesDirectory       ) ;
-  static const File   CAMERAS_DEV_DIR = File("/sys/class/video4linux") ;
-  static const String PNG_FILE_EXT    = ".png" ;
+  static const String PNG_FILE_EXT     = ".png" ;
 //   static const String JPG_FILE_EXT    = ".jpg" ;
 //   static const String JPEG_FILE_EXT   = ".jpeg" ;
 //   static const String GIF_FILE_EXT    = ".gif" ;
+  static const String ICONS_PATH       = ".local/share/icons/hicolor/48x48/apps/" ;
+  static const String APPS_PATH        = ".local/share/applications/" ;
+  static const String ICON_FILENAME    = APP_CMD + PNG_FILE_EXT ;
+  static const String DESKTOP_FILENAME = APP_CMD + ".desktop" ;
+  static const File   BIN_FILE         = File::getSpecialLocation(File::currentExecutableFile       ) ;
+  static const File   HOME_DIR         = File::getSpecialLocation(File::userHomeDirectory           ) ;
+  static const File   APPDATA_DIR      = File::getSpecialLocation(File::userApplicationDataDirectory) ;
+  static const File   VIDEOS_DIR       = File::getSpecialLocation(File::userMoviesDirectory         ) ;
+  static const File   PICTURES_DIR     = File::getSpecialLocation(File::userPicturesDirectory       ) ;
+  static const File   LOGO_FILE        = BIN_FILE.getSiblingFile(ICON_FILENAME                ) ;
+  static const File   ICON_FILE        = HOME_DIR.getChildFile  (ICONS_PATH + ICON_FILENAME   ) ;
+  static const File   DESKTOP_FILE     = HOME_DIR.getChildFile  (APPS_PATH  + DESKTOP_FILENAME) ;
+  static const File   CAMERAS_DEV_DIR  = File("/sys/class/video4linux") ;
+  static const String DESKTOP_TEXT     = String("[Desktop Entry]\r\n")                           +
+                                         "Name=AvCaster\r\n"                                     +
+                                         "GenericName=\r\n"                                      +
+                                         "Comment=Desktop, webcam, and audio streaming tool\r\n" +
+                                         "Categories=AudioVideo;\r\n"                            +
+                                         "Exec=" + BIN_FILE .getFullPathName() + "\r\n" +        +
+                                         "Icon=" + ICON_FILE.getFullPathName() + "\r\n" +        +
+                                         "StartupNotify=true\r\n"                                +
+                                         "Terminal=false\r\n"                                    +
+                                         "Type=Application\r\n"                                  ;
 }
 
 
@@ -184,11 +204,13 @@ namespace GUI
   static const int    TITLEBAR_H      = 24 ;
   static const int    WINDOW_W        = 760 - BORDERS_W ;              // jucer 758
   static const int    WINDOW_H        = 788 - BORDERS_W - TITLEBAR_H ; // jucer 762
-  static const String LOGO_IMG_LOC    = "Assets/logo.png" ; // ASSERT: this file exists
   static const int    TITLEBAR_BTNS   = DocumentWindow::minimiseButton | DocumentWindow::closeButton ;
   static const String IDLE_TITLE_TEXT = "(Idle)" ;
   static const String FILE_TITLE_TEXT = "(Recording)" ;
   static const String RTMP_TITLE_TEXT = "(Broadcasting)" ;
+#ifdef TRAY_ICON
+  static const String TRAY_TOOTIP     = "\nClick to show/hide\nRight-click for menu" ;
+#endif // TRAY_ICON
 
   // Controls
   static const String FILE_XMIT_TEXT = "Record" ;
@@ -520,12 +542,12 @@ namespace CONFIG
 
   // root defaults
 #if JUCE_LINUX
-  static const String     STORAGE_DIRNAME             = ".config/av-caster/" ;
-  static const String     STORAGE_FILENAME            = "av-caster.bin" ;
+  static const String     STORAGE_DIRNAME             = ".config/" + APP::APP_CMD + "/" ;
+  static const String     STORAGE_FILENAME            = APP::APP_CMD + ".bin" ;
 #endif // JUCE_LINUX
 #if JUCE_WINDOWS
-  static const String     STORAGE_DIRNAME             = "AvCaster\\" ;
-  static const String     STORAGE_FILENAME            = "AvCaster.bin" ;
+  static const String     STORAGE_DIRNAME             = APP::APP_NAME + "\\" ;
+  static const String     STORAGE_FILENAME            = APP::APP_NAME + ".bin" ;
 #endif // JUCE_WINDOWS
   static const double     CONFIG_VERSION              = 0.3 ;
   static const int        DEFAULT_PRESET_IDX          = FILE_PRESET_IDX ; // ASSERT: must be 0
@@ -604,7 +626,7 @@ namespace CONFIG
 namespace GST
 {
   static const unsigned int MIN_MAJOR_VERSION = 1 ;
-  static const unsigned int MIN_MINOR_VERSION = 4 ;
+  static const unsigned int MIN_MINOR_VERSION = 6 ;
 
   // element IDs
   static const String PIPELINE_ID         = "pipeline" ;

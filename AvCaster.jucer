@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.15.202"
-              bundleIdentifier="com.bill-auger.AvCaster" includeBinaryInAppConfig="1"
-              jucerVersion="3.1.1">
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.15.203"
+              bundleIdentifier="" includeBinaryInAppConfig="1" jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
+    <GROUP id="{B968229C-6218-718C-8F23-4791DDD13A93}" name="Assets">
+      <FILE id="ytyANP" name="av-caster.png" compile="0" resource="1" file="Assets/av-caster.png"/>
+    </GROUP>
     <GROUP id="{12F99024-8A51-4F04-3891-07F59C6B6881}" name="Headers">
       <GROUP id="{E5A092F4-256B-C2BA-D268-F46AC54BD85A}" name="Trace">
         <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>

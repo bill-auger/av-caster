@@ -38,6 +38,18 @@ Builds/*/*
 !Builds/VisualStudio2015/AvCaster.vcxproj.filters
 !Builds/VisualStudio2015/resources.rc
 
+# JUCE 4
+JuceLibraryCode/modules/juce_core/native/juce_curl_Network.cpp
+JuceLibraryCode/modules/juce_core/text/juce_Base64.cpp
+JuceLibraryCode/modules/juce_core/text/juce_Base64.h
+JuceLibraryCode/modules/juce_data_structures/values/juce_ValueTreeSynchroniser.cpp
+JuceLibraryCode/modules/juce_data_structures/values/juce_ValueTreeSynchroniser.h
+JuceLibraryCode/modules/juce_core/containers/juce_ListenerList.h
+JuceLibraryCode/modules/juce_core/maths/juce_StatisticsAccumulator.h
+JuceLibraryCode/modules/juce_core/native/java/AndroidMidi.java
+JuceLibraryCode/modules/juce_core/native/java/AndroidMidiFallback.java
+JuceLibraryCode/modules/juce_core/native/juce_mac_ClangBugWorkaround.h
+
 # nix
 *~
 *.kate-swp
