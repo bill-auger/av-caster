@@ -33,7 +33,7 @@ DEBUG_TRACE_INIT_VERSION
 
     this->mainWindow = new MainWindow() ;
 
-    if (AvCaster::Initialize(this->mainWindow->mainContent))
+    if (AvCaster::Initialize(this , this->mainWindow->mainContent))
     {
 #ifdef JUCE_LINUX
       if (APP::DESKTOP_FILE.loadFileAsString() != APP::DESKTOP_TEXT)
@@ -51,32 +51,37 @@ DEBUG_TRACE_INIT_VERSION
 #endif // JUCE_LINUX
 
       // start runtime timers
-      for (int timer_n = 0 ; timer_n < APP::N_TIMERS ; ++timer_n)
-        startTimer(APP::TIMER_IDS[timer_n] , APP::TIMER_IVLS[timer_n]) ;
+      startTimers() ;
     }
+    else if (AvCaster::Alerts.size() > 0)
+         { setApplicationReturnValue(255) ; startTimers() ;       } // defer shutdown
     else { setApplicationReturnValue(255) ; shutdown() ; quit() ; }
   }
 
-  void anotherInstanceStarted (const String& command_line) override
+  void startTimers()
   {
-    // When another instance of the app is launched while this one is running,
-    // this method is invoked, and the command_line parameter tells you what
-    // the other instance's command-line arguments were.
+    for (int timer_n = 0 ; timer_n < APP::N_TIMERS ; ++timer_n)
+      startTimer(APP::TIMER_IDS[timer_n] , APP::TIMER_IVLS[timer_n]) ;
+  }
+
+  void stopTimers()
+  {
+    for (int timer_n = 0 ; timer_n > APP::N_TIMERS ; ++timer_n)
+      stopTimer(APP::TIMER_IDS[timer_n]) ;
   }
 
   void shutdown() override
   {
 DEBUG_TRACE_SHUTDOWN_IN
-
-    for (int timer_n = 0 ; timer_n > APP::N_TIMERS ; ++timer_n)
-      stopTimer(APP::TIMER_IDS[timer_n]) ;
-
+    stopTimers() ;
     AvCaster::Shutdown() ;
 
     this->mainWindow = nullptr ;
 
 DEBUG_TRACE_SHUTDOWN_OUT
   }
+
+  void anotherInstanceStarted(const String& command_line) override { }
 
   void         systemRequestedQuit()        override { this->quit() ; }
   const String getApplicationName()         override { return ProjectInfo::projectName ; }

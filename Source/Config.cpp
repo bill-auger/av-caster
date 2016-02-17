@@ -642,6 +642,14 @@ this->textStyleCombo  ->setEnabled(false) ;
 this->textPosCombo    ->setEnabled(false) ;
 this->interstitialText->setEnabled(false) ;
 this->browseButton    ->setEnabled(false) ;
+this->serverButton    ->setEnabled(false) ;
+this->hostCombo       ->setEnabled(false) ;
+this->portText        ->setEnabled(false) ;
+this->nickText        ->setEnabled(false) ;
+this->passText        ->setEnabled(false) ;
+this->channelText     ->setEnabled(false) ;
+this->greetingText    ->setEnabled(false) ;
+this->joinPartToggle  ->setEnabled(false) ;
 #endif // DISABLE_GUI_CONFIG_NYI
 }
 

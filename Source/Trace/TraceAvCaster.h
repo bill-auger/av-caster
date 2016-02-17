@@ -138,16 +138,20 @@ StringArray DisabledFeatures()
                       "\n\tIsChatEnabled="            + String(IsChatEnabled           ) + \
                       "\n\tis_sane="                  + String(is_sane                 ) ) ;
 
-#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT                                                 \
-  bool is_err = false ; String dbg = "" ;                                                  \
-  if (!APP::HOME_DIR   .isDirectory()) { is_err = true ; dbg += " invlaid HOME_DIR" ;    } \
-  if (!APP::APPDATA_DIR.isDirectory()) { is_err = true ; dbg += " invlaid APPDATA_DIR" ; } \
-  if (!APP::VIDEOS_DIR .isDirectory()) { is_err = true ; dbg += " invlaid VIDEOS_DIR" ;  } \
-  if (is_err) Trace::TraceError(dbg) ; else Trace::TraceState("environment is sane")       ;
+#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT                                                          \
+  bool is_err = false ; String dbg = "" ;                                                           \
+  if (!is_sufficient_gst_version) { is_err = true ; dbg += " insufficient libgstreamer version" ; } \
+  if (!is_sufficient_irc_version) { is_err = true ; dbg += " insufficient libircclient version" ; } \
+  if (!is_valid_home_dir        ) { is_err = true ; dbg += " invlaid HOME_DIR" ;                  } \
+  if (!is_valid_appdata_dir     ) { is_err = true ; dbg += " invlaid APPDATA_DIR" ;               } \
+  if (!is_valid_videos_dir      ) { is_err = true ; dbg += " invlaid VIDEOS_DIR" ;                } \
+  if (is_err) Trace::TraceError(dbg) ; else Trace::TraceState("environment is sane")                ;
 
-#  define DEBUG_TRACE_REFRESH_GUI                                                      \
-  String gui = (is_config_pending) ? "Config" : (is_preview_on) ? "Preview" : "Chat" ; \
-  Trace::TraceState("showing " + gui + " GUI")                                         ;
+#  define DEBUG_TRACE_REFRESH_GUI                            \
+  String gui = (!IsInitialized   ) ? "Background" :          \
+               (is_config_pending) ? "Config"     :          \
+               (is_preview_on    ) ? "Preview"    : "Chat" ; \
+  Trace::TraceState("showing " + gui + " GUI")               ;
 
 #  define DEBUG_TRACE_SHUTDOWN_PHASE_1 Trace::TraceState("shutting down network") ;
 

@@ -70,8 +70,9 @@ MainContent::MainContent ()
   this->trayIcon = new AvCasterTrayIconComponent(this->mainWindow) ;
 #endif // TRAY_ICON
 
-  this->statusbar->setAlwaysOnTop(true) ;
-  this->statusbar->setStatusL(GUI::INIT_STATUS_TEXT) ;
+  this->background->toFront(true) ;
+  this->statusbar ->setAlwaysOnTop(true) ;
+  this->statusbar ->setStatusL(GUI::INIT_STATUS_TEXT) ;
 
     //[/Constructor]
 }

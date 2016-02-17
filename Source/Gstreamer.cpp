@@ -1400,6 +1400,8 @@ bool Gstreamer::IsSufficientVersion()
 
   gst_version(&major_version , &minor_version , &micro_version , &nano_version) ;
 
+DEBUG_TRACE_VERSION
+
   return major_version >= GST::MIN_MAJOR_VERSION &&
          minor_version >= GST::MIN_MINOR_VERSION  ;
 }

@@ -178,143 +178,6 @@ namespace APP
 }
 
 
-/** the GUI namespace defines configuration and runtime constants
-        pertaining to graphical elements                          */
-namespace GUI
-{
-  // common
-  static const int    PAD                   = 4 ;
-  static const int    PAD3                  = (PAD * 3) ;
-  static const int    PAD4                  = (PAD * 4) ;
-  static const int    PAD6                  = (PAD * 6) ;
-  static const int    PAD8                  = (PAD * 8) ;
-  static const Colour TEXT_EMPTY_COLOR      = Colour(0x80808080) ;
-  static const Colour TEXT_NORMAL_COLOR     = Colour(0xFFC0C0C0) ;
-  static const Colour TEXT_INVALID_COLOR    = Colour(0xFFFF0000) ;
-  static const Colour TEXT_HILITE_COLOR     = Colour(0xFFFFFFFF) ;
-  static const Colour TEXT_HILITEBG_COLOR   = Colour(0xFF000040) ;
-  static const Colour TEXT_CARET_COLOR      = Colour(0xFFFFFFFF) ;
-  static const Colour TEXT_FOCUS_COLOR      = Colour(0xFF000000) ;
-  static const Colour TEXT_SHADOW_COLOR     = Colour(0xFF000000) ;
-  static const Colour TEXT_BG_COLOR         = Colour(0xFF000000) ;
-  static const Colour TEXT_INVALID_BG_COLOR = Colour(0xFF200000) ;
-
-  // MainWindow
-  static const int    BORDERS_W       = 2 ;
-  static const int    TITLEBAR_H      = 24 ;
-  static const int    WINDOW_W        = 760 - BORDERS_W ;              // jucer 758
-  static const int    WINDOW_H        = 788 - BORDERS_W - TITLEBAR_H ; // jucer 762
-  static const int    TITLEBAR_BTNS   = DocumentWindow::minimiseButton | DocumentWindow::closeButton ;
-  static const String IDLE_TITLE_TEXT = "(Idle)" ;
-  static const String FILE_TITLE_TEXT = "(Recording)" ;
-  static const String RTMP_TITLE_TEXT = "(Broadcasting)" ;
-#ifdef TRAY_ICON
-  static const String TRAY_TOOTIP     = "\nClick to show/hide\nRight-click for menu" ;
-#endif // TRAY_ICON
-
-  // Controls
-  static const String FILE_XMIT_TEXT = "Record" ;
-  static const String RTMP_XMIT_TEXT = "Transmit" ;
-
-  // Chat
-  static const int    N_STATIC_CHATLIST_CHILDREN = 2 ; // ASSERT: num ChatList static widgets
-  static const int    SCROLLBAR_W                = 12 ;
-  static const int    CHATLIST_W                 = 128 ;
-  static const int    CHATLIST_X                 = CHATLIST_W + SCROLLBAR_W + PAD8 + PAD ;
-  static const int    CHATLIST_Y                 = PAD8 + PAD ;
-  static const int    OFFSET_CHATLIST_X          = CHATLIST_X + SCROLLBAR_W + PAD ;
-  static const int    EMPTY_CHATLIST_H           = 24 ;
-  static const int    CHATLIST_ITEM_H            = 24 ;
-  static const int    CHATLIST_ITEM_W            = CHATLIST_W - PAD6 ;
-  static const int    PADDED_CHATLIST_ITEM_H     = CHATLIST_ITEM_H + PAD ;
-  static const String CHAT_GROUP_TITLE           = "Chat" ;
-  static const String CHAT_PROMPT_TEXT           = "<type some chat here - then press ENTER key to send>" ;
-  static const String CLIENT_NICK                = "AvCaster" ;
-  static const String SERVER_NICK                = "SERVER" ;
-  static const String IRC_USER_PREFIX            = "IRC" ;
-  static const String LCTV_USER_PREFIX           = "LCTV" ;
-
-  // Config
-  static const String SCREEN_GROUP_TEXT      = "Screen" ;
-  static const String CAMERA_GROUP_TEXT      = "Camera" ;
-  static const String AUDIO_GROUP_TEXT       = "Audio" ;
-  static const String TEXT_GROUP_TEXT        = "Text" ;
-  static const String IMAGE_GROUP_TEXT       = "Image" ;
-  static const String OUTPUT_GROUP_TEXT      = "Output" ;
-  static const String CHAT_GROUP_TEXT        = "Chat" ;
-  static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
-  static const String DELETE_BTN_DELETE_TEXT = "Delete" ;
-  static const String DELETE_BTN_RESET_TEXT  = "Reset" ;
-  static const String DEST_FILE_TEXT         = "Location:" ;
-  static const String DEST_RTMP_TEXT         = "URI:" ;
-  static const String DEST_LCTV_TEXT         = "Stream Key:" ;
-  static const String IMAGE_CHOOSER_TEXT     = "Select an image file ..." ;
-  static const String IMG_FILE_EXTENSIONS    = "*" + APP::PNG_FILE_EXT ;
-//   static const String IMG_FILE_EXTS          = "*" + APP::PNG_FILE_EXT  + ",*" +
-//                                                      APP::JPEG_FILE_EXT + ",*" +
-//                                                      APP::GIF_FILE_EXT         ;
-  static const double MIN_DISPLAY_N          = 0.0 ;
-  static const double MAX_DISPLAY_N          = 4.0 ;
-  static const double MIN_SCREEN_N           = 0.0 ;
-  static const double MAX_SCREEN_N           = 4.0 ;
-  static const double MIN_N_CHANNELS         = 0.0 ;
-  static const double MAX_N_CHANNELS         = 2.0 ;
-  static const int    MAX_RES_N_CHARS        = 4 ;
-  static const int    MAX_MOTD_LEN           = 2048 ;
-  static const int    MAX_FILENAME_LEN       = 255 ;
-  static const int    MAX_PORT_N_CHARS       = 5 ;
-
-  // StatusBar
-  static const String INIT_STATUS_TEXT  = "Initializing" ;
-  static const String READY_STATUS_TEXT = "Ready" ;
-
-  // alerts
-  enum         AlertType { ALERT_TYPE_WARNING , ALERT_TYPE_ERROR } ;
-  static const String    MODAL_WARNING_TITLE = APP::APP_NAME + " Warning" ;
-  static const String    MODAL_ERROR_TITLE   = APP::APP_NAME + " Error" ;
-
-  // user error messages
-  static const String GST_INIT_ERROR_MSG          = "Error initializing gStreamer." ;
-  static const String GST_PIPELINE_INST_ERROR_MSG = "Error creating static GstElements." ;
-  static const String GST_BUS_INST_ERROR_MSG      = "Error initializing pipelie message handler." ;
-  static const String GST_ADD_ERROR_MSG           = "Error adding static GstElements to the pipeline." ;
-  static const String GST_PIPELINE_INIT_ERROR_MSG = "Error initializing dynamic GstElements." ;
-  static const String GST_CONFIG_ERROR_MSG        = "Error configuring dynamic GstElements." ;
-  static const String GST_XWIN_ERROR_MSG          = "Error attaching gStreamer to native x-window." ;
-  static const String SCREENCAP_INIT_ERROR_MSG    = "Error creating ScreencapBin GstElements." ;
-  static const String CAMERA_INIT_ERROR_MSG       = "Error creating CameraBin GstElements." ;
-  static const String TEXT_INIT_ERROR_MSG         = "Error creating TextBin GstElements." ;
-  static const String IMAGE_INIT_ERROR_MSG        = "Error creating ImageBin GstElements." ;
-  static const String MIXER_INIT_ERROR_MSG        = "Error creating CompositorBin GstElements." ;
-  static const String MIXER_PAD_INIT_ERROR_MSG    = "Error creating CompositorBin GstPads." ;
-  static const String PREVIEW_INIT_ERROR_MSG      = "Error creating PreviewBin GstElements." ;
-  static const String AUDIO_INIT_ERROR_MSG        = "Error creating AudioBin GstElements." ;
-  static const String MUXER_INIT_ERROR_MSG        = "Error creating MuxerBin GstElements." ;
-  static const String OUTPUT_INIT_ERROR_MSG       = "Error creating OutputBin GstElements." ;
-  static const String SCREENCAP_LINK_ERROR_MSG    = "Error linking ScreencapBin GstElements." ;
-  static const String CAMERA_LINK_ERROR_MSG       = "Error linking CameraBin GstElements." ;
-  static const String TEXT_LINK_ERROR_MSG         = "Error linking TextBin GstElements." ;
-  static const String IMAGE_LINK_ERROR_MSG        = "Error linking ImageBin GstElements." ;
-  static const String MIXER_LINK_ERROR_MSG        = "Error linking CompositorBin GstElements." ;
-  static const String MIXER_PAD_LINK_ERROR_MSG    = "Error linking CompositorBin GstPads." ;
-  static const String MIXER_BIN_LINK_ERROR_MSG    = "Error linking CompositorBin to other bins." ;
-  static const String PREVIEW_LINK_ERROR_MSG      = "Error linking PreviewBin GstElements." ;
-  static const String AUDIO_LINK_ERROR_MSG        = "Error linking AudioBin GstElements." ;
-  static const String MUXER_LINK_ERROR_MSG        = "Error linking MuxerBin GstElements." ;
-  static const String MUXER_BIN_LINK_ERROR_MSG    = "Error linking MuxerBin to other bins." ;
-  static const String OUTPUT_LINK_ERROR_MSG       = "Error linking OutputBin GstElements." ;
-  static const String GST_STATE_ERROR_MSG         = "Invalid configuration." ;
-  static const String STORAGE_WRITE_ERROR_MSG     = "I/O error storing configuration." ;
-  static const String PRESET_NAME_ERROR_MSG       = "Enter a name for this preset in the \"Preset\" box then press \"Save\" again." ;
-  static const String PRESET_RENAME_ERROR_MSG     = "A preset already exists with that name." ;
-  static const String CONFIG_INVALID_ERROR_MSG    = "Invalid paramenter(s) - correct the errors indicated in red." ;
-  static const String CONFIG_CHANGE_ERROR_MSG     = "Can not re-configure while the stream is active." ;
-  static const String ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture device.\n\n" ;
-  static const String PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
-  static const String JACK_INIT_ERROR_MSG         = "Error connecting to Jack server.\n\n" ;
-}
-
-
 /** the CONFIG namespace defines keys/value pairs and default value constants
         pertaining to the configuration/persistence model                     */
 namespace CONFIG
@@ -621,7 +484,8 @@ namespace CONFIG
 }
 
 
-/** the GUI namespace defines configuration and runtime constants
+
+/** the GST namespace defines configuration and runtime constants
         pertaining to the gStreamer media backend                 */
 namespace GST
 {
@@ -700,6 +564,153 @@ namespace IRC
   static const String      DEBIAN_URI      = "irc.debian.org" ;
   static const StringArray OFTC_ALIAS_URIS = StringArray::fromLines(OFTC_URI   + newLine +
                                                                     DEBIAN_URI           ) ;
+}
+
+
+/** the GUI namespace defines configuration and runtime constants
+        pertaining to graphical elements                          */
+namespace GUI
+{
+  // common
+  static const int    PAD                   = 4 ;
+  static const int    PAD3                  = (PAD * 3) ;
+  static const int    PAD4                  = (PAD * 4) ;
+  static const int    PAD6                  = (PAD * 6) ;
+  static const int    PAD8                  = (PAD * 8) ;
+  static const Colour TEXT_EMPTY_COLOR      = Colour(0x80808080) ;
+  static const Colour TEXT_NORMAL_COLOR     = Colour(0xFFC0C0C0) ;
+  static const Colour TEXT_INVALID_COLOR    = Colour(0xFFFF0000) ;
+  static const Colour TEXT_HILITE_COLOR     = Colour(0xFFFFFFFF) ;
+  static const Colour TEXT_HILITEBG_COLOR   = Colour(0xFF000040) ;
+  static const Colour TEXT_CARET_COLOR      = Colour(0xFFFFFFFF) ;
+  static const Colour TEXT_FOCUS_COLOR      = Colour(0xFF000000) ;
+  static const Colour TEXT_SHADOW_COLOR     = Colour(0xFF000000) ;
+  static const Colour TEXT_BG_COLOR         = Colour(0xFF000000) ;
+  static const Colour TEXT_INVALID_BG_COLOR = Colour(0xFF200000) ;
+
+  // MainWindow
+  static const int    BORDERS_W       = 2 ;
+  static const int    TITLEBAR_H      = 24 ;
+  static const int    WINDOW_W        = 760 - BORDERS_W ;              // jucer 758
+  static const int    WINDOW_H        = 788 - BORDERS_W - TITLEBAR_H ; // jucer 762
+  static const int    TITLEBAR_BTNS   = DocumentWindow::minimiseButton | DocumentWindow::closeButton ;
+  static const String IDLE_TITLE_TEXT = "(Idle)" ;
+  static const String FILE_TITLE_TEXT = "(Recording)" ;
+  static const String RTMP_TITLE_TEXT = "(Broadcasting)" ;
+#ifdef TRAY_ICON
+  static const String TRAY_TOOTIP     = "\nClick to show/hide\nRight-click for menu" ;
+#endif // TRAY_ICON
+
+  // Controls
+  static const String FILE_XMIT_TEXT = "Record" ;
+  static const String RTMP_XMIT_TEXT = "Transmit" ;
+
+  // Chat
+  static const int    N_STATIC_CHATLIST_CHILDREN = 2 ; // ASSERT: num ChatList static widgets
+  static const int    SCROLLBAR_W                = 12 ;
+  static const int    CHATLIST_W                 = 128 ;
+  static const int    CHATLIST_X                 = CHATLIST_W + SCROLLBAR_W + PAD8 + PAD ;
+  static const int    CHATLIST_Y                 = PAD8 + PAD ;
+  static const int    OFFSET_CHATLIST_X          = CHATLIST_X + SCROLLBAR_W + PAD ;
+  static const int    EMPTY_CHATLIST_H           = 24 ;
+  static const int    CHATLIST_ITEM_H            = 24 ;
+  static const int    CHATLIST_ITEM_W            = CHATLIST_W - PAD6 ;
+  static const int    PADDED_CHATLIST_ITEM_H     = CHATLIST_ITEM_H + PAD ;
+  static const String CHAT_GROUP_TITLE           = "Chat" ;
+  static const String CHAT_PROMPT_TEXT           = "<type some chat here - then press ENTER key to send>" ;
+  static const String CLIENT_NICK                = "AvCaster" ;
+  static const String SERVER_NICK                = "SERVER" ;
+  static const String IRC_USER_PREFIX            = "IRC" ;
+  static const String LCTV_USER_PREFIX           = "LCTV" ;
+
+  // Config
+  static const String SCREEN_GROUP_TEXT      = "Screen" ;
+  static const String CAMERA_GROUP_TEXT      = "Camera" ;
+  static const String AUDIO_GROUP_TEXT       = "Audio" ;
+  static const String TEXT_GROUP_TEXT        = "Text" ;
+  static const String IMAGE_GROUP_TEXT       = "Image" ;
+  static const String OUTPUT_GROUP_TEXT      = "Output" ;
+  static const String CHAT_GROUP_TEXT        = "Chat" ;
+  static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
+  static const String DELETE_BTN_DELETE_TEXT = "Delete" ;
+  static const String DELETE_BTN_RESET_TEXT  = "Reset" ;
+  static const String DEST_FILE_TEXT         = "Location:" ;
+  static const String DEST_RTMP_TEXT         = "URI:" ;
+  static const String DEST_LCTV_TEXT         = "Stream Key:" ;
+  static const String IMAGE_CHOOSER_TEXT     = "Select an image file ..." ;
+  static const String IMG_FILE_EXTENSIONS    = "*" + APP::PNG_FILE_EXT ;
+//   static const String IMG_FILE_EXTS          = "*" + APP::PNG_FILE_EXT  + ",*" +
+//                                                      APP::JPEG_FILE_EXT + ",*" +
+//                                                      APP::GIF_FILE_EXT         ;
+  static const double MIN_DISPLAY_N          = 0.0 ;
+  static const double MAX_DISPLAY_N          = 4.0 ;
+  static const double MIN_SCREEN_N           = 0.0 ;
+  static const double MAX_SCREEN_N           = 4.0 ;
+  static const double MIN_N_CHANNELS         = 0.0 ;
+  static const double MAX_N_CHANNELS         = 2.0 ;
+  static const int    MAX_RES_N_CHARS        = 4 ;
+  static const int    MAX_MOTD_LEN           = 2048 ;
+  static const int    MAX_FILENAME_LEN       = 255 ;
+  static const int    MAX_PORT_N_CHARS       = 5 ;
+
+  // StatusBar
+  static const String INIT_STATUS_TEXT  = "Initializing" ;
+  static const String READY_STATUS_TEXT = "Ready" ;
+
+  // alerts
+  enum         AlertType { ALERT_TYPE_WARNING , ALERT_TYPE_ERROR } ;
+  static const String    MODAL_WARNING_TITLE = APP::APP_NAME + " Warning" ;
+  static const String    MODAL_ERROR_TITLE   = APP::APP_NAME + " Error" ;
+
+  // user error messages
+  static const String GST_INSUFFICIENT_ERROR_MSG  = "Insufficient gStreamer version detected.\n\n"       +
+                                                    APP::APP_NAME + " requires gStreamer v"              +
+                                                    String(GST::MIN_MAJOR_VERSION) + "."                 +
+                                                    String(GST::MIN_MINOR_VERSION) + " or greater.\n\n"  +
+                                                    "See the README.md for detailed build instructions." ;
+  static const String IRC_INSUFFICIENT_ERROR_MSG  = "Insufficient libircclient version detected.\n\n"    +
+                                                    APP::APP_NAME + " requires libircclient v"           +
+                                                    String(IRC::MIN_MAJOR_VERSION) + "."                 +
+                                                    String(IRC::MIN_MINOR_VERSION) + " or greater.\n\n"  +
+                                                    "See the README.md for detailed build instructions." ;
+  static const String GST_INIT_ERROR_MSG          = "Error initializing gStreamer." ;
+  static const String GST_PIPELINE_INST_ERROR_MSG = "Error creating static GstElements." ;
+  static const String GST_BUS_INST_ERROR_MSG      = "Error initializing pipelie message handler." ;
+  static const String GST_ADD_ERROR_MSG           = "Error adding static GstElements to the pipeline." ;
+  static const String GST_PIPELINE_INIT_ERROR_MSG = "Error initializing dynamic GstElements." ;
+  static const String GST_CONFIG_ERROR_MSG        = "Error configuring dynamic GstElements." ;
+  static const String GST_XWIN_ERROR_MSG          = "Error attaching gStreamer to native x-window." ;
+  static const String SCREENCAP_INIT_ERROR_MSG    = "Error creating ScreencapBin GstElements." ;
+  static const String CAMERA_INIT_ERROR_MSG       = "Error creating CameraBin GstElements." ;
+  static const String TEXT_INIT_ERROR_MSG         = "Error creating TextBin GstElements." ;
+  static const String IMAGE_INIT_ERROR_MSG        = "Error creating ImageBin GstElements." ;
+  static const String MIXER_INIT_ERROR_MSG        = "Error creating CompositorBin GstElements." ;
+  static const String MIXER_PAD_INIT_ERROR_MSG    = "Error creating CompositorBin GstPads." ;
+  static const String PREVIEW_INIT_ERROR_MSG      = "Error creating PreviewBin GstElements." ;
+  static const String AUDIO_INIT_ERROR_MSG        = "Error creating AudioBin GstElements." ;
+  static const String MUXER_INIT_ERROR_MSG        = "Error creating MuxerBin GstElements." ;
+  static const String OUTPUT_INIT_ERROR_MSG       = "Error creating OutputBin GstElements." ;
+  static const String SCREENCAP_LINK_ERROR_MSG    = "Error linking ScreencapBin GstElements." ;
+  static const String CAMERA_LINK_ERROR_MSG       = "Error linking CameraBin GstElements." ;
+  static const String TEXT_LINK_ERROR_MSG         = "Error linking TextBin GstElements." ;
+  static const String IMAGE_LINK_ERROR_MSG        = "Error linking ImageBin GstElements." ;
+  static const String MIXER_LINK_ERROR_MSG        = "Error linking CompositorBin GstElements." ;
+  static const String MIXER_PAD_LINK_ERROR_MSG    = "Error linking CompositorBin GstPads." ;
+  static const String MIXER_BIN_LINK_ERROR_MSG    = "Error linking CompositorBin to other bins." ;
+  static const String PREVIEW_LINK_ERROR_MSG      = "Error linking PreviewBin GstElements." ;
+  static const String AUDIO_LINK_ERROR_MSG        = "Error linking AudioBin GstElements." ;
+  static const String MUXER_LINK_ERROR_MSG        = "Error linking MuxerBin GstElements." ;
+  static const String MUXER_BIN_LINK_ERROR_MSG    = "Error linking MuxerBin to other bins." ;
+  static const String OUTPUT_LINK_ERROR_MSG       = "Error linking OutputBin GstElements." ;
+  static const String GST_STATE_ERROR_MSG         = "Invalid configuration." ;
+  static const String STORAGE_WRITE_ERROR_MSG     = "I/O error storing configuration." ;
+  static const String PRESET_NAME_ERROR_MSG       = "Enter a name for this preset in the \"Preset\" box then press \"Save\" again." ;
+  static const String PRESET_RENAME_ERROR_MSG     = "A preset already exists with that name." ;
+  static const String CONFIG_INVALID_ERROR_MSG    = "Invalid paramenter(s) - correct the errors indicated in red." ;
+  static const String CONFIG_CHANGE_ERROR_MSG     = "Can not re-configure while the stream is active." ;
+  static const String ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture device.\n\n" ;
+  static const String PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
+  static const String JACK_INIT_ERROR_MSG         = "Error connecting to Jack server.\n\n" ;
 }
 
 #endif // _CONSTANTS_H_

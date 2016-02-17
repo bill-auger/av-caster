@@ -29,6 +29,7 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 /* AvCaster private class variables */
 
+JUCEApplicationBase*     AvCaster::App            = nullptr ; // Initialize()
 MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
 #ifndef DISABLE_CHAT
 ScopedPointer<IrcClient> AvCaster::Irc            = nullptr ; // Initialize()
@@ -233,8 +234,9 @@ StringArray AvCaster::GetChatNicks(ValueTree chatters_store)
 
 /* AvCaster private class methods */
 
-bool AvCaster::Initialize(MainContent* main_content)
+bool AvCaster::Initialize(JUCEApplicationBase* main_app , MainContent* main_content)
 {
+  App       = main_app ;
   Gui       = main_content ;
   CliParams = JUCEApplicationBase::getCommandLineParameterArray() ;
 
@@ -287,6 +289,8 @@ DEBUG_TRACE_INIT_PHASE_7
 
 void AvCaster::Shutdown()
 {
+  if (!IsInitialized) return ;
+
   DisplayAlert() ;
 
 DEBUG_TRACE_SHUTDOWN_PHASE_1
@@ -313,12 +317,16 @@ void AvCaster::HandleTimer(int timer_id)
 {
   switch (timer_id)
   {
-    case APP::TIMER_HI_ID:                                          break ;
-    case APP::TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ;    break ;
+    case APP::TIMER_HI_ID:                                                        break ;
+    case APP::TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ;                  break ;
+    case APP::TIMER_LO_ID:
+      if      (App->getApplicationReturnValue() != 0 && AvCaster::Alerts.size() == 0)
+      { if (!IsAlertModal) { App->shutdown() ; App->quit() ; } }
 #ifndef DISABLE_CHAT
-    case APP::TIMER_LO_ID:  if (IsChatEnabled) Irc->startThread() ; break ;
+      else if (IsChatEnabled) Irc->startThread() ;
 #endif // DISABLE_CHAT
-    default:                                                        break ;
+                                                                                  break ;
+    default:                                                                      break ;
   }
 }
 
@@ -353,11 +361,11 @@ void AvCaster::RefreshGui()
   bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID]) ;
   bool       is_preview_on     = bool(Store->config[CONFIG::PREVIEW_ID   ]) &&
                                  Gstreamer::IsPreviewEnabled                 ;
-  Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets ) :
-                                                       static_cast<Component*>(Gui->controls) ;
-  Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config ) :
-                                 (is_preview_on    ) ? static_cast<Component*>(Gui->preview) :
-                                                       static_cast<Component*>(Gui->chat   ) ;
+  Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets   ) :
+                                                       static_cast<Component*>(Gui->controls  ) ;
+  Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config    ) :
+                                 (is_preview_on    ) ? static_cast<Component*>(Gui->preview   ) :
+                                                       static_cast<Component*>(Gui->chat      ) ;
 
 DEBUG_TRACE_REFRESH_GUI
 
@@ -477,15 +485,23 @@ DUMP_DEBUG_MEDIA_SWITCHES
 
 bool AvCaster::ValidateEnvironment()
 {
+  bool is_sufficient_gst_version = Gstreamer::IsSufficientVersion() ;
+#ifndef DISABLE_CHAT
+  bool is_sufficient_irc_version = IrcClient::IsSufficientVersion() ;
+#else // DISABLE_CHAT
+  bool is_sufficient_irc_version = true ;
+#endif // DISABLE_CHAT
+  bool is_valid_home_dir         = APP::HOME_DIR   .isDirectory() ;
+  bool is_valid_appdata_dir      = APP::APPDATA_DIR.isDirectory() ;
+  bool is_valid_videos_dir       = APP::VIDEOS_DIR .isDirectory() ;
+
 DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
-  return Gstreamer::IsSufficientVersion() &&
-#ifndef DISABLE_CHAT
-         IrcClient::IsSufficientVersion() &&
-#endif // DISABLE_CHAT
-         APP::HOME_DIR   .isDirectory()   &&
-         APP::APPDATA_DIR.isDirectory()   &&
-         APP::VIDEOS_DIR .isDirectory()    ;
+  if (!is_sufficient_gst_version) AvCaster::Error(GUI::GST_INSUFFICIENT_ERROR_MSG) ;
+  if (!is_sufficient_irc_version) AvCaster::Error(GUI::IRC_INSUFFICIENT_ERROR_MSG) ;
+
+  return is_sufficient_gst_version && is_sufficient_irc_version &&
+         is_valid_home_dir         && is_valid_appdata_dir      && is_valid_videos_dir ;
 }
 
 void AvCaster::DisplayAlert()

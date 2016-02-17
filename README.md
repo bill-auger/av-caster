@@ -29,7 +29,7 @@ AvCaster is a native GNU/linux appliction built with the [JUCE][juce] framework 
 ### Motivation
 The motivation behind this project is that streaming with a feature-rich, bleeding-edge client such as OBS and FMLE is very CPU intensive even on reasonably capable machines.  In situations such as live code streaming, where the broadcast is an auxiliary concern, there is more utility in reserving those extra cycles for primary development tasks.
 
-A command-line solution is the obvious choice for such scenarios but obviously lacks real-time control and preview.  This project was created to mark a reasonable balance between headless performance and a graphical feature set.  Initially a simple ffmpeg command-line launcher GUI; it has since become a gStreamer native library implementation.
+A command-line solution is the obvious choice for such scenarios but obviously lacks real-time control and preview.  This project was created to mark a reasonable balance between headless performance and a graphical feature set.
 
 
 ### Get AvCaster
@@ -40,7 +40,7 @@ The [OpenSUSE Build Service][obs] hosts AvCaster x86 and x86-64 binary package r
   * OpenSuse Tumbleweed , Suse SLE 12
   * Ubuntu 15.10
 
-Follow the [instructions][obs] there to subscribe your package manager or download the latest package for your distribution directly.  Let us know if you would like packaging for another architecture.
+Follow the [instructions][obs] there to subscribe your package manager or download the latest package for your distribution directly.  Let us know if you would like packaging for another distribution or architecture.
 #### Other GNU/Linux:
 Refer to "Building from Source" below.
 
@@ -56,7 +56,7 @@ In any case you can "Star" this repo above if you like this project or "Watch" t
 
 
 ### Getting Help / Bug Reporting
-If AvCaster refuses to launch after changing some parameters in the GUI you can try deleting the persistent configuration file in your AppData dir (e.g. ~/.av-caster/av-caster.bin).
+If AvCaster refuses to launch after changing some parameters in the GUI you can try deleting the persistent configuration file in your user AppData dir (e.g. ~/.config/av-caster/av-caster.bin).
 
 Please report any problems on the [AvCaster Issue Tracker][tracker].
 
@@ -135,14 +135,14 @@ There were several similar projects considered for expansion before this project
   * [ffmpeg-gui](http://sourceforge.net/projects/ffmpegfrontend/) - cross-platform QT basic ffmpeg launcher
   * [ffmpeggui](http://sourceforge.net/projects/ffmpeg-gui/) - Win32 basic ffmpeg launcher
 
-Also, the original ffmpeg bash script with all of the features that this project has since re-implemented is in [this gist](https://gist.github.com/bill-auger/9480205a38d9d00d2fa3) if an ultra-lightweight command-line webcasting tool is more suitable.  It requires some manual configuration o/c, but is approximately twice as nice.
+Also, the ffmpeg bash script that AvCaster was originally conceived to wrap is in [this gist](https://gist.github.com/bill-auger/9480205a38d9d00d2fa3) if an ultra-lightweight command-line webcasting tool is more suitable.  It is capable of recording to file or streaming to an RTMP server with screen capture, webcam, text overlay, and stereo audio.  It requires some manual configuration o/c, but is approximately twice as nice.
 
 
 [juce]:       http://juce.com/
 [gstreamer]:  http://gstreamer.freedesktop.org/
 [lctv]:       https://www.livecoding.tv/
 [deb]:        https://packagecloud.io/ninjam/av-caster
-[wiki]:       https://github.com/bill-auger/av-caster/wiki/AvCaster-Wiki
+[wiki]:       https://github.com/bill-auger/av-caster/wiki/
 [tracker]:    https://github.com/bill-auger/av-caster/issues
 [gitter-img]: https://badges.gitter.im/Join%20Chat.svg
 [gitter]:     https://gitter.im/bill-auger/av-caster

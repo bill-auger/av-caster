@@ -105,7 +105,7 @@ public:
 private:
 
   // setup
-  static bool Initialize(MainContent* main_content) ;
+  static bool Initialize(JUCEApplicationBase* main_app , MainContent* main_content) ;
   static void Shutdown  () ;
 
   // callbacks and event handlers
@@ -122,6 +122,7 @@ private:
   static void DisplayAlert              () ;
 
 
+  static JUCEApplicationBase*     App ;
   static MainContent*             Gui ;
 #ifndef DISABLE_CHAT
   static ScopedPointer<IrcClient> Irc ;

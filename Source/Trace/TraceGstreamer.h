@@ -312,6 +312,10 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_GET_STATIC_PAD  String pad_avail = "static " ; DEBUG_TRACE_GET_PAD
 #  define DEBUG_TRACE_GET_REQUEST_PAD String pad_avail = "request" ; DEBUG_TRACE_GET_PAD
 
+#  define DEBUG_TRACE_VERSION                                                                      \
+  Trace::TraceMedia("detected gStreamer v" + String(major_version) + "." + String(minor_version) + \
+                                       "." + String(micro_version) + "." + String(nano_version))   ;
+
 #  define DEBUG_MAKE_GRAPHVIZ                                                                  \
   String color = (DEBUG_ANSI_COLORS) ? "\033[1;34m" : "" ;                                     \
   String cend  = (DEBUG_ANSI_COLORS) ? "\033[0m"    : "" ;                                     \
@@ -384,6 +388,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_GET_PAD                   ;
 #  define DEBUG_TRACE_GET_STATIC_PAD            ;
 #  define DEBUG_TRACE_GET_REQUEST_PAD           ;
+#  define DEBUG_TRACE_VERSION                   ;
 #  define DEBUG_MAKE_GRAPHVIZ                   ;
 
 #endif // DEBUG_TRACE
