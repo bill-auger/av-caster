@@ -73,6 +73,7 @@ DEBUG_TRACE_INIT_VERSION
   void shutdown() override
   {
 DEBUG_TRACE_SHUTDOWN_IN
+
     stopTimers() ;
     AvCaster::Shutdown() ;
 

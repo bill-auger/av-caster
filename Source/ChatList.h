@@ -39,11 +39,28 @@ class ChatList  : public Component,
 {
 public:
     //==============================================================================
-    ChatList (ValueTree chatters_store);
+    ChatList (ValueTree network_store);
     ~ChatList();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+
+private:
+
+  void valueTreeChildAdded     (ValueTree& a_parent_node , ValueTree& a_node) override ;
+  void valueTreeChildRemoved   (ValueTree& a_parent_node , ValueTree& a_node) override ;
+  void valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key)  override ;
+
+  void createChatListItem(int child_idx) ;
+  int  sortedChatterIdx  (ValueTree& chatter_store) ;
+  void refresh           () ;
+
+  // unused ValueTree::Listener interface implementations
+  void valueTreeChildOrderChanged(ValueTree& a_parent_node) override { UNUSED(a_parent_node) ;           } ;
+  void valueTreeParentChanged    (ValueTree& a_node)        override { UNUSED(a_node) ;                  } ;
+  void valueTreeRedirected       (ValueTree& a_node)        override { UNUSED(a_node) ;                  } ;
+
+
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -54,21 +71,9 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  void valueTreeChildAdded  (ValueTree& chatters_store , ValueTree& chatter_store) override ;
-  void valueTreeChildRemoved(ValueTree& chatters_store , ValueTree& chatter_store) override ;
-
-  void createChatListItem(int child_idx) ;
-  int  sortedChildIdx    (ValueTree& a_parent_node , ValueTree& a_node) ;
-  void refresh           () ;
-
-  // unused ValueTree::Listener interface implementations
-  void valueTreePropertyChanged(  ValueTree& a_node , const Identifier& a_key) override { UNUSED(a_node) ; UNUSED(a_key) ;  } ;
-  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                    override { UNUSED(a_parent_node) ;           } ;
-  void valueTreeParentChanged(    ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
-  void valueTreeRedirected(       ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
-
-
+  ValueTree networkStore ;
   ValueTree chattersStore ;
+  OwnedArray<ChatListItem> chatListItems ;
 
     //[/UserVariables]
 

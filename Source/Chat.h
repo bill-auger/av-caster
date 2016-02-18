@@ -47,9 +47,30 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 
+  friend class MainContent ;
+
+
   void updateVisiblilty() ;
   void refresh         () ;
-  void addChatLine     (String prefix , String chat_user , String chat_text) ;
+  void addChatLine     (String prefix , String nick , String message) ;
+
+
+private:
+
+  void textEditorReturnKeyPressed(TextEditor& a_text_editor) override ;
+  void valueTreeChildAdded       (ValueTree& networks_store , ValueTree& network_store) override ;
+  void valueTreeChildRemoved     (ValueTree& networks_store , ValueTree& network_store) override ;
+
+  void initialize     (ValueTree networks_store) ;
+  void createChatList (ValueTree network_store) ;
+  void destroyChatList(String network_id) ;
+  bool isNetworkNode  (ValueTree& a_parent_node , ValueTree& a_node) ;
+
+  // unused ValueTree::Listener interface implementations
+  void valueTreePropertyChanged(  ValueTree& a_node , const Identifier& a_key) override { UNUSED(a_node) ; UNUSED(a_key) ;  } ;
+  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                    override { UNUSED(a_parent_node) ;           } ;
+  void valueTreeParentChanged(    ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
+  void valueTreeRedirected(       ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
 
     //[/UserMethods]
 
@@ -61,25 +82,7 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  friend class MainContent ;
-
-  void textEditorReturnKeyPressed(TextEditor& a_text_editor) override ;
-  void valueTreeChildAdded       (ValueTree& servers_store , ValueTree& server_store) override ;
-  void valueTreeChildRemoved     (ValueTree& servers_store , ValueTree& server_store) override ;
-
-  void initialize     (ValueTree servers_store) ;
-  void createChatList (ValueTree server_store) ;
-  void destroyChatList(String server_id) ;
-  bool isServersNode  (ValueTree& a_parent_node , ValueTree& a_node) ;
-
-  // unused ValueTree::Listener interface implementations
-  void valueTreePropertyChanged(  ValueTree& a_node , const Identifier& a_key) override { UNUSED(a_node) ; UNUSED(a_key) ;  } ;
-  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                    override { UNUSED(a_parent_node) ;           } ;
-  void valueTreeParentChanged(    ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
-  void valueTreeRedirected(       ValueTree& a_node)                           override { UNUSED(a_node) ;                  } ;
-
-
-  ValueTree            serversStore ;
+  ValueTree            networksStore ;
   OwnedArray<ChatList> chatLists ;
 
     //[/UserVariables]

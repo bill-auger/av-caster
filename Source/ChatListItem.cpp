@@ -34,13 +34,13 @@
 ChatListItem::ChatListItem (ValueTree chatter_store)
     : chatterStore(chatter_store)
 {
-    addAndMakeVisible (banButton = new TextButton ("banButton"));
-    banButton->setButtonText (TRANS("X"));
-    banButton->addListener (this);
-    banButton->setColour (TextButton::buttonColourId, Colour (0xff400000));
-    banButton->setColour (TextButton::buttonOnColourId, Colours::maroon);
-    banButton->setColour (TextButton::textColourOnId, Colours::red);
-    banButton->setColour (TextButton::textColourOffId, Colours::red);
+    addAndMakeVisible (kickButton = new TextButton ("kickButton"));
+    kickButton->setButtonText (TRANS("X"));
+    kickButton->addListener (this);
+    kickButton->setColour (TextButton::buttonColourId, Colour (0xff400000));
+    kickButton->setColour (TextButton::buttonOnColourId, Colours::maroon);
+    kickButton->setColour (TextButton::textColourOnId, Colours::red);
+    kickButton->setColour (TextButton::textColourOffId, Colours::red);
 
     addAndMakeVisible (nickLabel = new Label ("nickLabel",
                                               TRANS("(connecting)")));
@@ -60,13 +60,15 @@ ChatListItem::ChatListItem (ValueTree chatter_store)
 
     //[Constructor] You can add your own custom stuff here..
 
-  String nick    = STRING(this->chatterStore[CONFIG::NICK_ID]) ;
   String user_id = String(chatter_store.getType()) ;
+  String nick    = STRING(this->chatterStore[CONFIG::NICK_ID]) ;
 
-  this->banButton->setVisible(false) ;
-  this->nickLabel->setText(nick , juce::dontSendNotification) ;
+  setComponentID(user_id) ; setSize(GUI::CHATLIST_ITEM_W , GUI::CHATLIST_ITEM_H) ;
+  if (nick.isNotEmpty()) this->nickLabel->setText(nick , juce::dontSendNotification) ;
 
-  setName(user_id) ; setSize(GUI::CHATLIST_ITEM_W , GUI::CHATLIST_ITEM_H) ;
+#ifdef CHATLIST_KICK_BTN_NYI
+  kickButton = nullptr ;
+#endif // CHATLIST_KICK_BTN_NYI
 
     //[/Constructor]
 }
@@ -74,9 +76,14 @@ ChatListItem::ChatListItem (ValueTree chatter_store)
 ChatListItem::~ChatListItem()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+
+#ifdef CHATLIST_KICK_BTN_NYI
+  nickLabel = nullptr ; return ;
+#endif // CHATLIST_KICK_BTN_NYI
+
     //[/Destructor_pre]
 
-    banButton = nullptr;
+    kickButton = nullptr;
     nickLabel = nullptr;
 
 
@@ -105,9 +112,14 @@ void ChatListItem::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    banButton->setBounds (4, 4, 15, 16);
+    kickButton->setBounds (4, 4, 15, 16);
     nickLabel->setBounds (24, 4, 72, 16);
     //[UserResized] Add your own custom resize handling here..
+
+#ifdef CHATLIST_KICK_BTN_NYI
+  nickLabel->setBounds(4, 4, 92, 16) ;
+#endif // CHATLIST_KICK_BTN_NYI
+
     //[/UserResized]
 }
 
@@ -116,10 +128,15 @@ void ChatListItem::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == banButton)
+    if (buttonThatWasClicked == kickButton)
     {
-        //[UserButtonCode_banButton] -- add your button handler code here..
-        //[/UserButtonCode_banButton]
+        //[UserButtonCode_kickButton] -- add your button handler code here..
+
+#ifdef CHATLIST_KICK_BTN_NYI
+      ;
+#endif // CHATLIST_KICK_BTN_NYI
+
+        //[/UserButtonCode_kickButton]
     }
 
     //[UserbuttonClicked_Post]
@@ -150,7 +167,7 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="1 1 102 22" cornerSize="10" fill="solid: ff303030" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffffffff"/>
   </BACKGROUND>
-  <TEXTBUTTON name="banButton" id="5ea28eb29c334aeb" memberName="banButton"
+  <TEXTBUTTON name="kickButton" id="5ea28eb29c334aeb" memberName="kickButton"
               virtualName="" explicitFocusOrder="0" pos="4 4 15 16" bgColOff="ff400000"
               bgColOn="ff800000" textCol="ffff0000" textColOn="ffff0000" buttonText="X"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>

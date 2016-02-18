@@ -29,17 +29,17 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 /* AvCaster private class variables */
 
-JUCEApplicationBase*     AvCaster::App            = nullptr ; // Initialize()
-MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
+JUCEApplicationBase*            AvCaster::App            = nullptr ; // Initialize()
+MainContent*                    AvCaster::Gui            = nullptr ; // Initialize()
 #ifndef DISABLE_CHAT
-ScopedPointer<IrcClient> AvCaster::Irc            = nullptr ; // Initialize()
+ScopedPointer<IrcClient>        AvCaster::Irc ;                      // Initialize()
 #endif // DISABLE_CHAT
-StringArray              AvCaster::CliParams ;                // Initialize()
-bool                     AvCaster::IsInitialized  = false ;   // Initialize()
-bool                     AvCaster::IsMediaEnabled = true ;    // ProcessCliParams()
-bool                     AvCaster::IsChatEnabled  = true ;    // ProcessCliParams()
-Array<Alert*>            AvCaster::Alerts ;                   // Warning() , Error()
-bool                     AvCaster::IsAlertModal   = false ;   // GetModalCb() , OnModalDismissed()
+StringArray                     AvCaster::CliParams ;                // Initialize()
+bool                            AvCaster::IsInitialized  = false ;   // Initialize()
+bool                            AvCaster::IsMediaEnabled = true ;    // ProcessCliParams()
+bool                            AvCaster::IsChatEnabled  = true ;    // ProcessCliParams()
+Array<Alert*>                   AvCaster::Alerts ;                   // Warning() , Error()
+bool                            AvCaster::IsAlertModal   = false ;   // GetModalCb() , OnModalDismissed()
 
 
 /* AvCaster public class methods */
@@ -59,12 +59,6 @@ void AvCaster::AddChatLine(String prefix , String nick , String message)
   Gui->chat->addChatLine(prefix , nick , message) ;
 }
 
-#ifndef DISABLE_CHAT
-void AvCaster::SendChat(String chat_message) { Irc->sendChat(chat_message) ; }
-#else // DISABLE_CHAT
-void AvCaster::SendChat(String chat_message) {}
-#endif // DISABLE_CHAT
-
 ModalComponentManager::Callback* AvCaster::GetModalCb()
 {
   IsAlertModal = true ;
@@ -74,18 +68,40 @@ ModalComponentManager::Callback* AvCaster::GetModalCb()
 
 void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
+#ifndef DISABLE_CHAT
+void AvCaster::SendChat(String chat_message)
+{
+  Irc->sendChat(chat_message) ;
+  IrcClient::AddUserChat(String::empty , IRC::YOU_NICK , chat_message) ;
+}
+#endif // DISABLE_CHAT
+
 Rectangle<int> AvCaster::GetPreviewBounds() { return Gui->getPreviewBounds() ; }
 
-void AvCaster::SetConfig(const Identifier& a_key , var a_value)
+void AvCaster::DeactivateControl(const Identifier& a_key) { Store->deactivateControl(a_key) ; }
+
+void AvCaster::SetValue(const Identifier& a_key , var a_value)
 {
 DEBUG_TRACE_GUI_SET_CONFIG
 
-  Store->setConfig(a_key , a_value) ;
+  if      (CONFIG::ROOT_KEYS  .contains(a_key)) Store->setRootValue    (a_key , a_value) ;
+  else if (CONFIG::CONFIG_KEYS.contains(a_key)) Store->setVolatileValue(a_key , a_value) ;
 }
 
-ValueTree AvCaster::GetConfigStore() { return ValueTree(Store->config) ; }
+ValueTree AvCaster::GetVolatileStore() { return ValueTree(Store->config) ; }
 
-void AvCaster::DeactivateControl(const Identifier& a_key) { Store->deactivateControl(a_key) ; }
+ValueTree AvCaster::GetSelectedNetworkStore()
+{
+  int       network_idx   = int(Store->config[CONFIG::NETWORK_IDX_ID]) ;
+  ValueTree network_store = Store->networks.getChild(network_idx) ;
+
+  return GetNetworkStore(network_store.getType()) ;
+}
+
+ValueTree AvCaster::GetNetworkStore(Identifier network_id)
+{
+  return ValueTree(Store->getNetworkStore(network_id)) ;
+}
 
 void AvCaster::StorePreset(String preset_name) { Store->storePreset(preset_name) ; }
 
@@ -95,44 +111,7 @@ void AvCaster::DeletePreset() { Store->deletePreset() ; }
 
 void AvCaster::ResetPreset() { Store->resetPreset() ; }
 
-bool AvCaster::SetPreset(String preset_name , int option_n)
-{
-  int        stored_option_n      = GetPresetIdx() ;
-  String     stored_preset_name   = GetPresetName() ;
-  bool       is_valid_option      = !!(~option_n) ;
-  bool       is_static_preset     = IsStaticPreset() ;
-  bool       is_empty             = preset_name.isEmpty() ;
-  bool       has_name_changed     = preset_name != stored_preset_name && !is_empty ;
-  bool       should_rename_preset = !is_valid_option && has_name_changed && !is_static_preset ;
-  bool       should_reset_option  = RejectPresetChange() || should_rename_preset ;
-  var        value                = var((is_valid_option) ? option_n : stored_option_n) ;
-
-DEBUG_TRACE_HANDLE_PRESETCOMBO
-
-  // reject empty preset name
-  if (!is_valid_option && is_empty) return false ;
-
-  // rename preset , restore selection , or commit preset change
-  if (should_rename_preset) RenamePreset(preset_name) ;
-  if (!should_reset_option) SetConfig(CONFIG::PRESET_ID , value) ;
-  else                      RefreshGui() ;
-
-  return true ;
-}
-
-bool AvCaster::RejectPresetChange()
-{
-  bool is_output_on = bool(Store->config[CONFIG::OUTPUT_ID]) ;
-
-DEBUG_TRACE_REJECT_CONFIG_CHANGE
-
-  if (is_output_on) Warning(GUI::CONFIG_CHANGE_ERROR_MSG) ;
-
-  return is_output_on ;
-}
-
-// bool AvCaster::IsConfigGuiSane() { return Gui->config->validateConfigGui() ; }
-bool AvCaster::IsConfigGuiSane() { return true ; }
+// bool AvCaster::IsConfigGuiSane() { return Gui->config->validateParams() ; }
 
 bool AvCaster::IsStaticPreset() { return AvCaster::GetPresetIdx() < CONFIG::N_STATIC_PRESETS ; }
 
@@ -158,6 +137,8 @@ StringArray AvCaster::GetCameraNames() { return Store->cameraNames() ; }
 
 StringArray AvCaster::GetAudioNames() { return Store->audioNames() ; }
 
+StringArray AvCaster::GetNetworkNames() { return Store->networkNames() ; }
+
 StringArray AvCaster::GetCameraResolutions() { return Store->getCameraResolutions() ; }
 
 String AvCaster::GetCameraResolution()
@@ -170,14 +151,14 @@ String AvCaster::GetCameraResolution()
 
 String AvCaster::GetCameraPath()
 {
-  ValueTree camera_store = Store->getCameraConfig() ;
+  ValueTree camera_store = Store->getCameraStore() ;
 
   return STRING(camera_store[CONFIG::CAMERA_PATH_ID]) ;
 }
 
 int AvCaster::GetCameraRate()
 {
-  ValueTree camera_store    = Store->getCameraConfig() ;
+  ValueTree camera_store    = Store->getCameraStore() ;
   int       camera_rate     = int(camera_store[CONFIG::CAMERA_RATE_ID]) ;
 //   int       output_rate_idx = int(Store->config[CONFIG::FRAMERATE_ID]) ;
 //   int       output_rate     = CONFIG::FRAMERATES[output_rate_idx].getIntValue() ;
@@ -195,36 +176,10 @@ void AvCaster::UpdateIrcHost(StringArray alias_uris , String actual_host)
   Store->updateIrcHost(alias_uris , actual_host) ;
 }
 
-/*
-void AvCaster::RenameServer(String requested_host , String actual_host)
+void AvCaster::UpdateChatNicks(Identifier network_id , StringArray nicks)
 {
-  ValueTree  server_store   = Store->servers.getChildWithProperty(CONFIG::HOST_ID , requested_host) ;
-  ValueTree  chatters_store = server_store.getChildWithName(CONFIG::CHATTERS_ID) ;
-  int        server_idx     = Store->servers.indexOf(server_store) ;
-  Identifier server_id      = CONFIG::FilterId(actual_host , APP::VALID_URI_CHARS) ;
-  ValueTree  updated_store  = ValueTree(server_id) ;
-
-  Store->servers.removeChild       (server_store    ,               nullptr) ;
-  Store->servers.addChild          (updated_store   , server_idx  , nullptr) ;
-  server_store  .removeChild       (chatters_store  ,               nullptr) ;
-  updated_store .addChild          (chatters_store  , -1          , nullptr) ;
-  updated_store .copyPropertiesFrom(server_store    ,               nullptr) ;
-  server_store  .setProperty       (CONFIG::HOST_ID , actual_host , nullptr) ;
+  Store->updateChatNicks(network_id , nicks) ;
 }
-*/
-#ifdef PREFIX_CHAT_NICKS
-void AvCaster::UpdateChatNicks(String host , String channel , StringArray nicks)
-{
-  Store->updateChatNicks(host , channel , nicks) ;
-  const MessageManagerLock mmLock ; Gui->chat->updateVisiblilty() ;
-}
-#else // PREFIX_CHAT_NICKS
-void AvCaster::UpdateChatNicks(String host , StringArray nicks)
-{
-  Store->updateChatNicks(host , nicks) ;
-  const MessageManagerLock mmLock ; Gui->chat->updateVisiblilty() ;
-}
-#endif // PREFIX_CHAT_NICKS
 
 StringArray AvCaster::GetChatNicks(ValueTree chatters_store)
 {
@@ -244,7 +199,7 @@ bool AvCaster::Initialize(JUCEApplicationBase* main_app , MainContent* main_cont
 
 DEBUG_DISABLE_FEATURES
 
-  if (HandleCliParamsTerminating()) return false ;
+  if (HandleCliParams()) return false ;
 
 DEBUG_TRACE_INIT_PHASE_1
 
@@ -255,10 +210,11 @@ DEBUG_TRACE_INIT_PHASE_2
   // load persistent configuration
   if ((Store = new AvCasterStore()) == nullptr) return false ;
 
+DEBUG_SEED_IRC_NETWORKS
 DEBUG_TRACE_INIT_PHASE_3
 
   // initialze GUI
-  Gui->initialize(Store->servers) ;
+  Gui->initialize(Store->networks) ;
 
   if (!ProcessCliParams()) return false ;
 
@@ -270,9 +226,9 @@ DEBUG_TRACE_INIT_PHASE_4
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libircclient
-#ifndef DISABLE_CHAT
-  if (IsChatEnabled && (Irc = new IrcClient(Store->servers)) == nullptr) return false ;
-#endif // DISABLE_CHAT
+  bool show_timestamps = bool(Store->config[CONFIG::TIMESTAMPS_ID]) ;
+  bool show_joinparts  = bool(Store->config[CONFIG::JOINPARTS_ID ]) ;
+  if (IsChatEnabled) Irc = new IrcClient(Store->networks , show_timestamps , show_joinparts) ;
 
 DEBUG_TRACE_INIT_PHASE_6
 
@@ -297,8 +253,7 @@ DEBUG_TRACE_SHUTDOWN_PHASE_1
 
 #ifndef DISABLE_CHAT
   // shutdown network
-  if (IsChatEnabled && Irc != nullptr && Irc->isThreadRunning()) Irc->stopThread(500) ;
-  Irc = nullptr ;
+  if (IsChatEnabled) { Irc->waitForThreadToExit(5000) ; Irc = nullptr ; }
 #endif // DISABLE_CHAT
 
 DEBUG_TRACE_SHUTDOWN_PHASE_2
@@ -317,16 +272,14 @@ void AvCaster::HandleTimer(int timer_id)
 {
   switch (timer_id)
   {
-    case APP::TIMER_HI_ID:                                                        break ;
-    case APP::TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ;                  break ;
-    case APP::TIMER_LO_ID:
-      if      (App->getApplicationReturnValue() != 0 && AvCaster::Alerts.size() == 0)
-      { if (!IsAlertModal) { App->shutdown() ; App->quit() ; } }
+    case APP::TIMER_HI_ID:                                                      break ;
+    case APP::TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ;                break ;
 #ifndef DISABLE_CHAT
-      else if (IsChatEnabled) Irc->startThread() ;
+    case APP::TIMER_LO_ID:  if (!InitFail() && IsChatEnabled) PumpIrcClient() ; break ;
+#else // DISABLE_CHAT
+    case APP::TIMER_LO_ID:  InitFail() ;                                        break ;
 #endif // DISABLE_CHAT
-                                                                                  break ;
-    default:                                                                      break ;
+    default:                                                                    break ;
   }
 }
 
@@ -344,16 +297,33 @@ void AvCaster::UpdateStatusGUI()
 
 void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
-  if (!Store->isControlKey(a_key)) return ;
+  if (GetPresetIdx() == CONFIG::INVALID_IDX) return ; // renaming
 
-  // reconfigure gStreamer element
+  bool is_stream_active           = bool(Store->config[CONFIG::OUTPUT_ID]) ;
+  bool was_preset_combo_changed   = a_key == CONFIG::PRESET_ID ;
+  bool was_config_button_pressed  = a_key == CONFIG::IS_PENDING_ID ;
+  bool is_config_pending          = AvCaster::GetIsConfigPending() ;
+  bool is_swapping_presets        = was_preset_combo_changed  && !is_config_pending ;
+  bool is_exiting_config_mode     = was_config_button_pressed && !is_config_pending ;
+  bool should_create_irc_sessions = is_swapping_presets || is_exiting_config_mode ;
+
+DEBUG_TRACE_HANDLE_CONFIG_CHANGE
+
+  if (!Store->isMediaKey(a_key) && !Store->isReconfigureKey(a_key)) return ;
+  if (Store->isReconfigureKey(a_key) && is_stream_active)
+  { SetValue(CONFIG::OUTPUT_ID , false) ; return ; } // defer handling
+
+  // reconfigure Gstreamer elements
   Gstreamer::Reconfigure(a_key) ;
 
-  // store changes
-  StorePreset(GetPresetName()) ;
+  // reconfigure Irc networks
+  bool show_timestamps = bool(Store->config[CONFIG::TIMESTAMPS_ID]) ;
+  bool show_joinparts  = bool(Store->config[CONFIG::JOINPARTS_ID ]) ;
+  if (Store->isReconfigureKey(a_key))
+    Irc->configure(should_create_irc_sessions , show_timestamps , show_joinparts) ;
 
-  // refresh GUI
-  RefreshGui() ;
+  // store changes and refresh GUI
+  StorePreset(GetPresetName()) ; RefreshGui() ;
 }
 
 void AvCaster::RefreshGui()
@@ -400,10 +370,11 @@ void AvCaster::UpdateStatus()
 #endif // TRAY_ICON
 }
 
-bool AvCaster::HandleCliParamsTerminating()
+bool AvCaster::HandleCliParams()
 {
-DEBUG_TRACE_HANDLE_CLI_PARAMS_TERMINATING
+DEBUG_TRACE_HANDLE_CLI_PARAMS
 
+  // handle terminating CLI params
   if      (CliParams.contains(APP::CLI_HELP_TOKEN   ))
   { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG  )) ; return true ; }
   else if (CliParams.contains(APP::CLI_PRESETS_TOKEN))
@@ -431,7 +402,7 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS_TERMINATING
 
 bool AvCaster::ProcessCliParams()
 {
-DEBUG_TRACE_HANDLE_CLI_PARAMS
+DEBUG_TRACE_PROCESS_CLI_PARAMS
 
   // load initial configuration preset
   if (CliParams.contains(APP::CLI_PRESET_TOKEN))
@@ -440,7 +411,7 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
     int token_idx  = CliParams.indexOf(APP::CLI_PRESET_TOKEN) ;
     int preset_idx = CliParams[token_idx + 1].getIntValue() ;
 
-    if (~preset_idx) Store->setConfig(CONFIG::PRESET_ID , preset_idx) ;
+    if (~preset_idx) SetValue(CONFIG::PRESET_ID , preset_idx) ;
   }
 
   // disable features
@@ -526,3 +497,20 @@ Alerts.remove(0) ; return ;
 
   Alerts.remove(0) ;
 }
+
+bool AvCaster::InitFail()
+{
+  bool init_fail_pending = App->getApplicationReturnValue() != 0 ;
+  bool should_quit       = init_fail_pending && !IsAlertModal && Alerts.size() == 0 ;
+
+  if (should_quit) { App->shutdown() ; App->quit() ; }
+
+  return init_fail_pending ;
+}
+
+#ifndef DISABLE_CHAT
+void AvCaster::PumpIrcClient()
+{
+  if (!Irc->isThreadRunning()) Irc->startThread() ;
+}
+#endif // DISABLE_CHAT

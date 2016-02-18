@@ -85,9 +85,6 @@ Chat::Chat ()
 
     //[Constructor] You can add your own custom stuff here..
 
-  // defer visibility until connected to some chat channel
-  updateVisiblilty() ;
-
   // text editor colors
   this->chatEntryText  ->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
   this->chatHistoryText->setColour(TextEditor::textColourId            , GUI::TEXT_NORMAL_COLOR  ) ;
@@ -116,6 +113,8 @@ Chat::Chat ()
   // register interest in outgoing chat text
   this->chatEntryText->addListener(this) ;
 
+  updateVisiblilty() ;
+
     //[/Constructor]
 }
 
@@ -133,6 +132,7 @@ Chat::~Chat()
 
 
     //[Destructor]. You can add your own custom destruction code here..
+  this->chatLists.clear() ;
     //[/Destructor]
 }
 
@@ -172,15 +172,16 @@ void Chat::resized()
 
 void Chat::updateVisiblilty()
 {
-  int n_chatters = 0 ; int n_servers = this->serversStore.getNumChildren() ;
-  for (int server_n = 0 ; server_n < n_servers ; ++server_n)
+  // get total number of chatters
+  bool is_connected = false ;
+  for (int network_n = 0 ; network_n < this->networksStore.getNumChildren() ; ++network_n)
   {
-    ValueTree server   = this->serversStore.getChild(server_n) ;
-    ValueTree chatters = server.getChildWithName(CONFIG::CHATTERS_ID) ;
-    n_chatters        += chatters.getNumChildren() ;
+    ValueTree network_store   = this->networksStore.getChild(network_n) ;
+    int       connected_state = int(network_store[CONFIG::RETRIES_ID]) ;
+    is_connected              = is_connected || connected_state == IRC::STATE_CONNECTED ;
   }
 
-  bool   is_visible  = n_chatters > 0 ;
+  bool   is_visible  = is_connected ;
   String group_title = (is_visible) ? GUI::CHAT_GROUP_TITLE : AvCaster::GetVersionString() ;
 
 DEBUG_TRACE_CHAT_VISIBILITY
@@ -190,17 +191,15 @@ DEBUG_TRACE_CHAT_VISIBILITY
   this->chatHistoryText ->setVisible(is_visible) ;
   this->chatEntryGroup  ->setVisible(is_visible) ;
   this->chatEntryText   ->setVisible(is_visible) ;
-  for (int server_n = 0 ; server_n < this->chatLists.size() ; ++server_n)
-    this->chatLists[server_n]->setVisible(is_visible) ;
 }
 
 void Chat::refresh()
 {
   updateVisiblilty() ;
 
- // calculate total height
-  int server_n = this->chatLists.size() ; int lists_h = GUI::CHATLIST_Y ;
-  while (server_n--) lists_h += this->chatLists[server_n]->getHeight() + GUI::PAD ;
+  // calculate total height
+  int network_n = this->chatLists.size() ; int lists_h = GUI::CHATLIST_Y ;
+  while (network_n--) lists_h += this->chatLists[network_n]->getHeight() + GUI::PAD ;
 
   bool is_scrollbar_visible = lists_h > getHeight() ;
   int  list_x_offset        = (is_scrollbar_visible)? GUI::OFFSET_CHATLIST_X : GUI::CHATLIST_X ;
@@ -208,23 +207,33 @@ void Chat::refresh()
   int  list_y               = GUI::CHATLIST_Y ;
 
   // arrange lists
-  for (int server_n = 0 ; server_n < this->chatLists.size() ; ++server_n)
+  for (int network_n = 0 ; network_n < this->chatLists.size() ; ++network_n)
   {
-    ChatList* chatList = this->chatLists[server_n] ;
+    ChatList* chat_list  = this->chatLists[network_n] ;
+    int       n_chatters = chat_list->getNumChildComponents() - GUI::N_STATIC_CHATLIST_CHILDREN ;
+    bool      is_visible = n_chatters > 0 ;
 
-    chatList->setTopLeftPosition(list_x , list_y) ;
+DEBUG_TRACE_MOVE_CHATLIST
 
-    list_y += chatList->getHeight() ;
+    if (!is_visible) continue ;
+
+    chat_list->setTopLeftPosition(list_x , list_y) ;
+
+    list_y += chat_list->getHeight() ;
   }
 }
 
-void Chat::addChatLine(String prefix , String nick , String message_text)
+void Chat::addChatLine(String prefix , String nick , String message)
 {
-  String message_header = prefix + ((nick == GUI::CLIENT_NICK) ? "" : nick + ": ") ;
+  prefix  = prefix .trim() ;
+  nick    = nick   .trim() ;
+  message = message.trim() ;
+  prefix  = (prefix.isEmpty()        ) ? String::empty : prefix + " " ;
+  nick    = (nick == GUI::CLIENT_NICK) ? String::empty : nick   + ": " ;
 
   const MessageManagerLock mmLock ;
   this->chatHistoryText->moveCaretToEnd() ;
-  this->chatHistoryText->insertTextAtCaret("\n" + message_header + message_text) ;
+  this->chatHistoryText->insertTextAtCaret("\n" + prefix + nick + message) ;
 }
 
 
@@ -234,55 +243,56 @@ void Chat::textEditorReturnKeyPressed(TextEditor& a_text_editor)
 {
   if (&a_text_editor != this->chatEntryText) return ;
 
+#if DISABLE_CHAT
   AvCaster::SendChat(this->chatEntryText->getText()) ;
+#endif // DISABLE_CHAT
   this->chatEntryText->clear() ;
 }
 
 void Chat::valueTreeChildAdded(ValueTree& a_parent_node , ValueTree& a_node)
 {
-  if (isServersNode(a_parent_node , a_node)) createChatList(a_node) ;
+  if (isNetworkNode(a_parent_node , a_node)) createChatList(a_node) ;
 }
 
 void Chat::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)
 {
-  if (isServersNode(a_parent_node , a_node)) destroyChatList(String(a_node.getType())) ;
+  if (isNetworkNode(a_parent_node , a_node)) destroyChatList(String(a_node.getType())) ;
 }
 
-void Chat::initialize(ValueTree servers_store)
+void Chat::initialize(ValueTree networks_store)
 {
-  this->serversStore = servers_store ; this->serversStore.addListener(this) ;
+  this->networksStore = networks_store ; this->networksStore.addListener(this) ;
 
-  for (int server_n = 0 ; server_n < servers_store.getNumChildren() ; ++server_n)
-    createChatList(this->serversStore.getChild(server_n)) ;
+  for (int network_n = 0 ; network_n < this->networksStore.getNumChildren() ; ++network_n)
+    createChatList(this->networksStore.getChild(network_n)) ;
 }
 
-void Chat::createChatList(ValueTree server_store)
+void Chat::createChatList(ValueTree network_store)
 {
-  ValueTree chatters_store = server_store.getChildWithName(CONFIG::CHATTERS_ID) ;
+  String    network_id = String(network_store.getType()) ;
+  ChatList* chat_list = new ChatList(network_store) ;
 
-  String    server_id = String(server_store.getType()) ;
-  ChatList* chat_list = new ChatList(chatters_store) ;
-
-  chat_list->setComponentID(server_id) ; addAndMakeVisible(chat_list) ;
+  const MessageManagerLock mmLock ;
+  chat_list->setComponentID(network_id) ; addChildComponent(chat_list) ;
   this->chatLists.add(chat_list) ;
 
   refresh() ;
 }
 
-void Chat::destroyChatList(String server_id)
+void Chat::destroyChatList(String network_id)
 {
-  for (int server_n = 0 ; server_n < this->chatLists.size() ; ++server_n)
-  {
-    ChatList* chatlist = this->chatLists[server_n] ;
-    if (chatlist->getComponentID() == server_id) this->chatLists.removeObject(chatlist) ;
-  }
+  ChatList* chat_list     = static_cast<ChatList*>(findChildWithID(network_id)) ;
+  int       chat_list_idx = getIndexOfChildComponent(chat_list) ;
+
+  const MessageManagerLock mmLock ;
+  this->chatLists.removeObject(chat_list) ;
 
   refresh() ;
 }
 
-bool Chat::isServersNode(ValueTree& a_parent_node , ValueTree& a_node)
+bool Chat::isNetworkNode(ValueTree& a_parent_node , ValueTree& a_node)
 {
-  return a_parent_node.getType() == CONFIG::SERVERS_ID ;
+  return a_parent_node.getType() == CONFIG::NETWORKS_ID ;
 }
 
 //[/MiscUserCode]

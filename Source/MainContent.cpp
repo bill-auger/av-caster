@@ -182,9 +182,9 @@ void MainContent::loadPresetsCombo(ComboBox* a_combobox)
   a_combobox->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
 }
 
-void MainContent::initialize(ValueTree servers_store)
+void MainContent::initialize(ValueTree networks_store)
 {
-  this->chat->initialize(servers_store) ;
+  this->chat->initialize(networks_store) ;
 }
 
 void MainContent::disableControls(bool is_media_enabled  , bool is_screen_enabled  ,

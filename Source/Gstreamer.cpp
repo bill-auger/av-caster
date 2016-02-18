@@ -170,7 +170,7 @@ DEBUG_TRACE_GST_INIT_PHASE_7
   return true ;
 }
 
-void Gstreamer::ReloadConfig() { ConfigStore = AvCaster::GetConfigStore() ; }
+void Gstreamer::ReloadConfig() { ConfigStore = AvCaster::GetVolatileStore() ; }
 
 void Gstreamer::Shutdown()
 {
@@ -179,7 +179,7 @@ void Gstreamer::Shutdown()
   // TODO: to shut down correctly (flushing the buffers)
   //       gst_element_send_event(Pipeline , gst_event_eos()) ;
   //       then wait for EOS message on bus before setting pipeline state to NULL
-// FIXME: setting (ScreencapBin to state null here causes X to throw error:
+// FIXME: setting (ScreencapBin to state null here may cause X to throw error:
 //          "ERROR: X returned BadShmSeg (invalid shared segment parameter) for operation Unknown"
 
   if (!IsInBin(ScreencapBin , ScreenRealSource)) DestroyElement(ScreenRealSource) ;
@@ -877,7 +877,7 @@ GstElement* Gstreamer::ConfigureAudio()
                    (IsInBin(AudioBin , AudioJackSource )) ? AudioJackSource  :
                    (IsInBin(AudioBin , AudioFauxSource )) ? AudioFauxSource  : nullptr ;
 
-  if (!is_enabled) audio_api_idx = CONFIG::CONFIG_IDX_INVALID ;
+  if (!is_enabled) audio_api_idx = CONFIG::INVALID_IDX ;
   switch ((CONFIG::AudioApi)audio_api_idx)
   {
     case CONFIG::ALSA_AUDIO_IDX:  next_source = AudioAlsaSource ;  caps_str = audio16_caps_str ; break ;
@@ -1108,9 +1108,8 @@ DEBUG_TRACE_GST_ERROR_MESSAGE
 
   if (is_alsa_init_error || is_pulse_init_error || is_jack_init_error)
   {
-    // re-configure with null source
-    AvCaster::DeactivateControl(CONFIG::AUDIO_ID) ;
-    ConfigureAudio() ;
+    // disable control toggle and re-configure with null source
+    AvCaster::DeactivateControl(CONFIG::AUDIO_ID) ; ConfigureAudio() ;
 
     // alert user
     String warning_msg = (is_alsa_init_error ) ? GUI::ALSA_INIT_ERROR_MSG  :
@@ -1181,6 +1180,8 @@ DEBUG_TRACE_REMOVE_ELEMENT_OUT
 void Gstreamer::DestroyElement(GstElement* an_element)
 {
 DEBUG_TRACE_DESTROY_ELEMENT
+// FIXME: on shutdown --> GStreamer-CRITICAL **: gst_object_unref: assertion '((GObject *) object)->ref_count > 0' failed
+DBG("Gstreamer::DestroyElement() GST_OBJECT_REFCOUNT_VALUE(an_element)=" + String(GST_OBJECT_REFCOUNT_VALUE(an_element))) ;
 
   if (an_element != nullptr && SetState(an_element , GST_STATE_NULL))
     gst_object_unref(an_element) ;

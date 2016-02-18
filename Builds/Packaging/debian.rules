@@ -28,7 +28,7 @@ build-stamp:
 	dh_testdir
 
 	# Add here commands to compile the package.
-	make --directory=$(BUILD_DIR)/ CONFIG=Release
+	make --directory=$(BUILD_DIR)/ CONFIG=Release TARGET_ARCH="-mtune=generic"
 	# --- end custom part for compiling
 
 	touch build-stamp

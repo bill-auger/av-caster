@@ -16,6 +16,7 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+
 #ifndef _PRESETS_H_
 #define _PRESETS_H_
 
@@ -49,15 +50,16 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 
-  void broughtToFront     () override ;
+  void broughtToFront() override ;
 
-  void handleSaveButton   () ;
-  void handleNewButton    () ;
-  void handleDeleteButton () ;
-  void handlePresetCombo  () ;
-  void toggleControls     () ;
-  void setCreatePresetMode(bool is_pending_new_preset_name) ;
-  bool isCreatePresetMode () ;
+  void handleNewButton     () ;
+  void handleDeleteButton  () ;
+  bool handleConfigButton  () ;
+  void handlePresetsCombo  () ;
+  void toggleControls      () ;
+  void setCreatePresetMode (bool is_pending_new_preset_name) ;
+  bool isCreatePresetMode  () ;
+  bool createOrUpdatePreset() ;
 
     //[/UserMethods]
 
@@ -84,9 +86,8 @@ private:
 
     //==============================================================================
     ScopedPointer<GroupComponent> presetsGroup;
-    ScopedPointer<TextButton> saveButton;
-    ScopedPointer<TextButton> newButton;
-    ScopedPointer<TextButton> deleteButton;
+    ScopedPointer<TextButton> newPresetButton;
+    ScopedPointer<TextButton> deletePresetButton;
     ScopedPointer<Label> presetLabel;
     ScopedPointer<ComboBox> presetsCombo;
     ScopedPointer<ImageButton> configButton;

@@ -232,17 +232,15 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_configButton] -- add your button handler code here..
 
-      if (AvCaster::RejectPresetChange()) return ;
-
       key   = CONFIG::IS_PENDING_ID ;
-      value = var(!AvCaster::GetIsConfigPending()) ;
+      value = var(true) ;
 
         //[/UserButtonCode_configButton]
     }
 
     //[UserbuttonClicked_Post]
 
-  AvCaster::SetConfig(key , value) ;
+  AvCaster::SetValue(key , value) ;
 
     //[/UserbuttonClicked_Post]
 }
@@ -256,12 +254,7 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_presetsCombo] -- add your combo box handling code here..
 
-      String preset_name = this->presetsCombo->getText() ;
-      int    option_n    = this->presetsCombo->getSelectedItemIndex() ;
-
-      AvCaster::SetPreset(preset_name , option_n) ;
-
-      return ;
+      handlePresetsCombo() ; return ;
 
         //[/UserComboBoxCode_presetsCombo]
     }
@@ -293,7 +286,7 @@ void Controls::disableControls(bool is_media_enabled  , bool is_screen_enabled  
 
 void Controls::loadConfig()
 {
-  ValueTree config_store       = AvCaster::GetConfigStore() ;
+  ValueTree config_store       = AvCaster::GetVolatileStore() ;
   bool      is_screencap_on    = bool(config_store[CONFIG::SCREENCAP_ID  ]) ;
   bool      is_camera_on       = bool(config_store[CONFIG::CAMERA_ID     ]) ;
   bool      is_text_on         = bool(config_store[CONFIG::TEXT_ID       ]) ;
@@ -315,6 +308,14 @@ void Controls::loadConfig()
   this->outputToggle      ->setToggleState  (is_output_on       , juce::dontSendNotification) ;
   this->outputToggle      ->setButtonText   (xmit_btn_text) ;
   this->mainContent       ->loadPresetsCombo(this->presetsCombo) ;
+  this->presetsCombo      ->setEditableText(false) ;
+}
+
+void Controls::handlePresetsCombo()
+{
+  int option_n = this->presetsCombo->getSelectedItemIndex() ;
+
+  AvCaster::SetValue(CONFIG::PRESET_ID , option_n) ;
 }
 
 //[/MiscUserCode]

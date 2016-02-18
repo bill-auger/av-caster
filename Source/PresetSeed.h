@@ -82,6 +82,8 @@ protected:
   int        videoBitrate ;
   String     outputDest ;
 
+  // chat params
+  int        chatNetworkIdx ;
 
 public:
 

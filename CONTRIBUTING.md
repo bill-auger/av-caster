@@ -1,11 +1,11 @@
 ### Disclaimer
 
 AvCaster source code and assets are distributed under the terms of the GNU Lesser General Public License version 3.
-As a contributor, you agree that all contributions to the source tree, wiki, and issue tracker will automatically fall under the same licence as AvCaster.
+As a contributor, you agree that all unlicensed contributions to the source tree, wiki, and issue tracker will automatically fall under the same licence as AvCaster.
 In short, this means that you allow others to copy, distribute, and modify their copies or your work as long as they extend this priviledge to others and credit you as the original author if they distribute.
-If you are not the original sole author of your contributions, they must be distributable under some GPL-compatible license such as Creative Commonns and you must clearly give attribution to the copyright holder with a hyperlink to the original source.
-Any contributions that are under the terms of a GPL-compatible license will retain their current license.
-Any contributions that are under the terms of a GPL-incompatible license will not be accepted.
+If you are not the original sole author of your contribution (i.e. it is a derivative work incorporating or based on someone else's work) , then all source works must be freely copyable and distributable under the terms of some GPL-compatible license (such as Creative Commonns) and you must clearly give attribution to the copyright holders with a hyperlinks to the original sources.
+Any such contributions that are under the terms of a GPL-compatible license will retain their current license.
+No other contributions will be accepted.
 
 
 ### Developers

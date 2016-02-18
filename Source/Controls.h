@@ -57,11 +57,12 @@ private:
 
   void broughtToFront() override ;
 
-  void disableControls(bool is_media_enabled  , bool is_screen_enabled  ,
-                       bool is_camera_enabled , bool is_text_enabled    ,
-                       bool is_image_enabled  , bool is_preview_enabled ,
-                       bool is_audio_enabled                            ) ;
-  void loadConfig() ;
+  void disableControls   (bool is_media_enabled  , bool is_screen_enabled  ,
+                          bool is_camera_enabled , bool is_text_enabled    ,
+                          bool is_image_enabled  , bool is_preview_enabled ,
+                          bool is_audio_enabled                            ) ;
+  void loadConfig        () ;
+  void handlePresetsCombo() ;
 
     //[/UserMethods]
 

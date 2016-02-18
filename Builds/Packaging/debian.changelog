@@ -1,3 +1,17 @@
+av-caster (0.15.203) whatever; urgency=medium
+
+  * warn insuficient gStreamer version
+  * add desktop and icon file installation and tray icon
+  * split configuration GUI groups into separate panes
+  * improved stream key/url validation
+  * add chat config GUI and update copyright notices
+  * add CONTRIBUTING.md and update README.md
+  * enable tracing in release build
+  * toggle screencap and camera at runtime via control buttons
+
+ -- bill-auger <bill-auger@programmer.net>  Wed, 17 Feb 2016 04:20:42 -0400
+
+
 av-caster (0.15.201) whatever; urgency=medium
 
   * add cli switches to disable runtime features

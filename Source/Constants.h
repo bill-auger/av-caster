@@ -31,18 +31,20 @@
 #define IMAGE_BIN_NYI 1
 #define DISABLE_GUI_CONFIG_NYI
 #define DISABLE_AUDIO   (! JUCE_LINUX) // replace audio-real-source with fakesrc
-#define DISABLE_CHAT                   // TODO: add 'ircclient' dep back to jucer
 #define DISABLE_PREVIEW (! JUCE_LINUX) // replace preview-sink with fakesink
 //#define DISABLE_OUTPUT               // replace filesink or rtmpsink with fakesink
-// #define SUPRESS_ALERTS
+// #define DISABLE_CHAT
+// #define SEED_IRC_NETWORKS
+#define SUPRESS_GREETING_MESSAGES
+#define SUPRESS_ALERTS
+// #define CHATLIST_KICK_BTN_NYI
 
 // debugging tweaks and kludges
 #define INJECT_DEFAULT_CAMERA_DEVICE_INFO
 #define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
 #define NATIVE_CAMERA_RESOLUTION_ONLY
-// #define PREFIX_CHAT_NICKS
-#define STATIC_PIPELINE
 // #define FAKE_MUX_ENCODER_SRC_AND_SINK // isolate compositor from encoder and muxer from output
+// #define MOCK_CHAT_NICKS
 
 // enable tracing
 #ifdef DEBUG
@@ -50,13 +52,18 @@
 #else // DEBUG
 #  define DEBUG_TRACE 1
 #endif // DEBUG
-#define DEBUG_TRACE_EVENTS (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_GUI    (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_MEDIA  (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_CONFIG (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_CHAT   (DEBUG_TRACE && 0)
-#define DEBUG_TRACE_STATE  (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_VB     (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_EVENTS    (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_GUI       (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_GUI_VB    (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_MEDIA     (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_MEDIA_VB  (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_CONFIG    (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_CONFIG_VB (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_CHAT      (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_CHAT_VB   (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_STATE     (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_ERRORS    (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_VB        (DEBUG_TRACE && 0)
 
 // enable debug features
 #ifdef DEBUG_TRACE
@@ -90,7 +97,7 @@ namespace APP
   static const int N_TIMERS             = 3 ;
   static const int TIMER_HI_ID          = 1 ; static const int TIMER_HI_IVL  = 125 ;
   static const int TIMER_MED_ID         = 2 ; static const int TIMER_MED_IVL = 500 ;
-  static const int TIMER_LO_ID          = 3 ; static const int TIMER_LO_IVL  = 1000 ;
+  static const int TIMER_LO_ID          = 3 ; static const int TIMER_LO_IVL  = 500 ;
   static const int TIMER_IDS [N_TIMERS] = { TIMER_HI_ID  , TIMER_MED_ID  , TIMER_LO_ID  } ;
   static const int TIMER_IVLS[N_TIMERS] = { TIMER_HI_IVL , TIMER_MED_IVL , TIMER_LO_IVL } ;
 
@@ -159,8 +166,12 @@ namespace APP
   static const File   BIN_FILE         = File::getSpecialLocation(File::currentExecutableFile       ) ;
   static const File   HOME_DIR         = File::getSpecialLocation(File::userHomeDirectory           ) ;
   static const File   APPDATA_DIR      = File::getSpecialLocation(File::userApplicationDataDirectory) ;
-  static const File   VIDEOS_DIR       = File::getSpecialLocation(File::userMoviesDirectory         ) ;
-  static const File   PICTURES_DIR     = File::getSpecialLocation(File::userPicturesDirectory       ) ;
+// FIXME: segfault (if dir not exist? - or xdg-user-dir VIDEOS invalid?)
+// more XDG_CONFIG_HOME ('~/.config')
+//   static const File   PICTURES_DIR     = File::getSpecialLocation(File::userPicturesDirectory       ) ;
+//   static const File   VIDEOS_DIR       = File::getSpecialLocation(File::userMoviesDirectory         ) ;
+  static const File   PICTURES_DIR     = File("/home/bill/pics") ;
+  static const File   VIDEOS_DIR       = File("/home/bill/vids") ;
   static const File   LOGO_FILE        = BIN_FILE.getSiblingFile(ICON_FILENAME                ) ;
   static const File   ICON_FILE        = HOME_DIR.getChildFile  (ICONS_PATH + ICON_FILENAME   ) ;
   static const File   DESKTOP_FILE     = HOME_DIR.getChildFile  (APPS_PATH  + DESKTOP_FILENAME) ;
@@ -187,79 +198,119 @@ namespace CONFIG
 |*|      with a JUCE binary file-out for persistence (STORAGE_FILENAME)
 |*|  when defining new nodes or properties be sure to:
 |*|    * update the SCHEMA below
-|*|    * if new property        -> define *_ID and DEFAULT_* below
-|*|                             -> add default property to DefaultStore
-|*|                             -> sanitize data in AvCasterStore::sanitize*ParentNode*()
-|*|    * if new node            -> add default node to DefaultStore
-|*|                             -> verify schema in new method AvCasterStore::verifyNewNode()
-|*|                             -> sanitize data in AvCasterStore::sanitize*NewNode*()
-|*|    * if new root property   -> verify schema in AvCasterStore::verifyRoot()
-|*|    * if new preset property -> verify schema in AvCasterStore::verifyPreset()
-|*|                             -> add instance var and definition in PresetSeed class
+|*|    * if transient            -> note this in the SCHEMA below (non-persistent)
+|*|                              -> restore in AvCasterStore::verify*ParentNode*()
+|*|                              -> filter in AvCasterStore::storeConfig()
+|*|    * if new property         -> define *_ID and DEFAULT_* below
+|*|                              -> sanitize data in AvCasterStore::sanitize*ParentNode*()
+|*|    * if new node             -> verify schema in new method AvCasterStore::verifyNewNode()
+|*|                              -> sanitize data in AvCasterStore::sanitize*NewNode*()
+|*|    * if new root property    -> verify schema in AvCasterStore::verifyRoot()
+|*|                              -> add default property to CONFIG::DefaultStore() below
+|*|    * if new root node        -> add default node to CONFIG::DefaultStore() below
+|*|    * if new preset property  -> verify schema in AvCasterStore::verifyPreset()
+|*|                              -> add instance var and definition in PresetSeed class
+|*|    * if new network property -> verify schema in AvCasterStore::verifyNetwork()
+|*|    * if compatibility broken -> increment CONFIG_VERSION
 \*/
 
 /*\ SCHEMA:
 |*|
 |*| // AvCasterStore->root
+|*| // NOTE: PRESETS_ID node and NETWORKS_ID node
+|*|        are pruned from root on load and re-grafted on store
 |*| STORAGE_ID:
 |*| {
 |*|   // config root IDs
-|*|   CONFIG_VERSION_ID: a_double                              ,
-|*|   IS_PENDING_ID:     a_bool                                ,
-|*|   PRESET_ID:         an_int                                ,
-|*|   PRESETS_ID:        [ a-config-id: a_config_node , .... ] // config nodes as below
+|*|   CONFIG_VERSION_ID: a_double                             ,
+|*|   IS_PENDING_ID:     a_bool                               , // (non-persistent)
+|*|   PRESET_ID:         an_int                               ,
+|*|   PRESETS_ID:        [ a-preset-id: a_preset_node , ... ] , // preset nodes as below
+|*|   NETWORKS_ID:       [ network-id:  a_network     , ... ]   // networks as below
 |*| }
 |*|
-|*| // AvCasterStore->config
+|*|
+|*| // AvCasterStore->presets (pruned from root on load)
+|*| PRESETS_ID: [ a-preset-id: a_preset_node , ... ] // preset nodes as below
+|*|
 |*| // AvCasterStore->presets (each child)
-|*| // Gstreamer::ConfigStore
+|*| // AvCasterStore->config  (non-persistent)
+|*| // Gstreamer::ConfigStore (non-persistent)
 |*| VOLATILE_CONFIG_ID:
 |*| {
-|*|   // control IDs
-|*|   PRESET_NAME_ID:         a_string ,
-|*|   SCREENCAP_ID:           a_bool   ,
-|*|   CAMERA_ID:              a_bool   ,
-|*|   TEXT_ID:                a_bool   ,
-|*|   IMAGE_ID:               a_bool   ,
-|*|   PREVIEW_ID:             a_bool   ,
-|*|   AUDIO_ID:               a_bool   ,
-|*|   OUTPUT_ID:              a_bool   ,
-|*|   // screen IDs
-|*|   DISPLAY_N_ID:           an_int   ,
-|*|   SCREEN_N_ID:            an_int   ,
-|*|   SCREENCAP_W_ID:         an_int   ,
-|*|   SCREENCAP_H_ID:         an_int   ,
-|*|   OFFSET_X_ID:            an_int   ,
-|*|   OFFSET_Y_ID:            an_int   ,
-|*|   // camera IDs
-|*|   CAMERA_DEV_ID:          an_int   ,
-|*|   CAMERA_RES_ID:          an_int   ,
-|*|   // audio IDs
-|*|   AUDIO_API_ID:           an_int   ,
-|*|   AUDIO_DEVICE_ID:        an_int   ,
-|*|   AUDIO_CODEC_ID:         an_int   ,
-|*|   N_CHANNELS_ID:          an_int   ,
-|*|   SAMPLERATE_ID:          an_int   ,
-|*|   AUDIO_BITRATE_ID:       an_int   ,
-|*|   // text IDs
-|*|   MOTD_TEXT_ID:           a_string ,
-|*|   TEXT_STYLE_ID:          an_int   ,
-|*|   TEXT_POSITION_ID:       an_int   ,
-|*|   // image IDs
-|*|   IMAGE_LOC_ID:           a_string ,
-|*|   // output IDs
-|*|   OUTPUT_SINK_ID:         an_int   ,
-|*|   OUTPUT_MUXER_ID:        an_int   ,
-|*|   OUTPUT_W_ID:            an_int   ,
-|*|   OUTPUT_H_ID:            an_int   ,
-|*|   FRAMERATE_ID:           an_int   ,
-|*|   VIDEO_BITRATE_ID:       an_int   ,
-|*|   OUTPUT_DEST_ID:         a_string
+|*|   // Controls IDs
+|*|   PRESET_NAME_ID:   a_string ,
+|*|   SCREENCAP_ID:     a_bool   ,
+|*|   CAMERA_ID:        a_bool   ,
+|*|   TEXT_ID:          a_bool   ,
+|*|   IMAGE_ID:         a_bool   ,
+|*|   PREVIEW_ID:       a_bool   ,
+|*|   AUDIO_ID:         a_bool   ,
+|*|   OUTPUT_ID:        a_bool   , // (non-persistent)
+|*|   // ConfigScreen IDs
+|*|   DISPLAY_N_ID:     an_int   ,
+|*|   SCREEN_N_ID:      an_int   ,
+|*|   SCREENCAP_W_ID:   an_int   ,
+|*|   SCREENCAP_H_ID:   an_int   ,
+|*|   OFFSET_X_ID:      an_int   ,
+|*|   OFFSET_Y_ID:      an_int   ,
+|*|   // ConfigCamera IDs
+|*|   CAMERA_DEVICE_ID: an_int   ,
+|*|   CAMERA_RES_ID:    an_int   ,
+|*|   // ConfigAudio IDs
+|*|   AUDIO_API_ID:     an_int   ,
+|*|   AUDIO_DEVICE_ID:  an_int   ,
+|*|   AUDIO_CODEC_ID:   an_int   ,
+|*|   N_CHANNELS_ID:    an_int   ,
+|*|   SAMPLERATE_ID:    an_int   ,
+|*|   AUDIO_BITRATE_ID: an_int   ,
+|*|   // ConfigText IDs
+|*|   MOTD_TEXT_ID:     a_string ,
+|*|   TEXT_STYLE_ID:    an_int   ,
+|*|   TEXT_POSITION_ID: an_int   ,
+|*|   // ConfigImage IDs
+|*|   IMAGE_LOC_ID:     a_string ,
+|*|   // ConfigOutput IDs
+|*|   OUTPUT_SINK_ID:   an_int   ,
+|*|   OUTPUT_MUXER_ID:  an_int   ,
+|*|   OUTPUT_W_ID:      an_int   ,
+|*|   OUTPUT_H_ID:      an_int   ,
+|*|   FRAMERATE_ID:     an_int   ,
+|*|   VIDEO_BITRATE_ID: an_int   ,
+|*|   OUTPUT_DEST_ID:   a_string ,
+|*|   // ConfigChat IDs
+|*|   TIMESTAMPS_ID:    a_bool   ,
+|*|   JOINPART_ID:      a_bool   ,
+|*|   HOST_IDX_ID:      an_int
 |*| }
 |*|
-|*| // AvCasterStore->cameras
+|*|
+|*| // AvCasterStore->networks (pruned from root on load)
+|*| NETWORKS_ID: [ network-id: a_network , ... ] // networks as below
+|*|
+|*| // a_network
+|*| network-id:                          // e.g. "irc-debian-org" via FilterId("irc.debian.org")
+|*| {
+|*|   NETWORK_ID:  a_string            , // e.g. "irc.debian.org"
+|*|   HOST_ID:     a_string            , // e.g. "charm.oftc.net" (non-persistent)
+|*|   PORT_ID:     an_int              ,
+|*|   NICK_ID:     a_string            ,
+|*|   PASS_ID:     a_string            ,
+|*|   CHANNEL_ID:  a_string            ,
+|*|   GREETING_ID: a_string            ,
+|*|   RETRIES_ID:  an_int              , // (non-persistent)
+|*|   CHATTERS_ID: [ a_chatter , ... ]   // a_chatter as below (non-persistent)
+|*| }
+|*|
+|*| // a_chatter
+|*| user-id:            // e.g. "-fred-stone" via FilterId("@fred stone")
+|*| {
+|*|   NICK_ID: a_string // e.g. "@fred stone"
+|*| }
+|*|
+|*|
+|*| // AvCasterStore->cameras (non-persistent)
 |*| CAMERA_DEVICES_ID: [ device_id: a_camera_device_info , ... ] // a_camera_device_info as below
-
 |*| // a_camera_device_info
 |*| device-id:                          // e.g. "video0"
 |*| {
@@ -269,26 +320,9 @@ namespace CONFIG
 |*|   CAMERA_RESOLUTIONS_ID: a_string
 |*| }
 |*|
-|*| // AvCasterStore->audios
+|*|
+|*| // AvCasterStore->audios (non-persistent)
 |*| AUDIO_DEVICES_ID: [] // nyi
-|*|
-|*| // AvCasterStore->servers
-|*| SERVERS_ID: [ a_server  , ... ] // a_server as below
-|*|
-|*| // a_server
-|*| server-id:
-|*| {
-|*|   HOST_ID:     a_string
-|*|   PORT_ID:     an_int
-|*|   CHANNEL_ID:  a_string
-|*|   CHATTERS_ID: [ a_chatter , ... ] // a_chatter as below
-|*| }
-|*|
-|*| // a_chatter
-|*| user-id:                 // e.g. "-fred-stone" via FilterId("@fred stone")
-|*| {
-|*|   NICK_ID: a_string // e.g. "@fred stone"
-|*| }
 \*/
 
 
@@ -301,11 +335,11 @@ namespace CONFIG
 
 
   // config indices
-  enum              StaticPreset       { FILE_PRESET_IDX , RTMP_PRESET_IDX , LCTV_PRESET_IDX } ;
-  enum              AudioApi           { ALSA_AUDIO_IDX , PULSE_AUDIO_IDX , JACK_AUDIO_IDX } ;
-  enum              AudioCodec         { MP3_AUDIO_IDX , AAC_AUDIO_IDX } ;
-  enum              OutputStream       { FILE_OUTPUT_IDX , RTMP_OUTPUT_IDX } ;
-  static const int  CONFIG_IDX_INVALID = -1 ;
+  static const int INVALID_IDX  = -1 ;
+  enum             StaticPreset { FILE_PRESET_IDX , RTMP_PRESET_IDX , LCTV_PRESET_IDX } ;
+  enum             AudioApi     { ALSA_AUDIO_IDX , PULSE_AUDIO_IDX , JACK_AUDIO_IDX } ;
+  enum             AudioCodec   { MP3_AUDIO_IDX , AAC_AUDIO_IDX } ;
+  enum             OutputStream { FILE_OUTPUT_IDX , RTMP_OUTPUT_IDX } ;
 
   // config strings
   static const StringArray CAMERA_RESOLUTIONS = StringArray::fromLines("160x120" + newLine +
@@ -339,12 +373,12 @@ namespace CONFIG
                                                                        "1200k"             ) ;
 
   // nodes
-  static const Identifier STORAGE_ID             = "av-caster-config" ;
-  static const Identifier PRESETS_ID             = "presets" ;
-  static const Identifier VOLATILE_CONFIG_ID     = "volatile-config" ;
-  static const Identifier CAMERA_DEVICES_ID      = "camera-devices" ;
-  static const Identifier AUDIO_DEVICES_ID       = "audio-devices" ;
-  static const Identifier SERVERS_ID             = "irc-servers" ;
+  static const Identifier STORAGE_ID            = "av-caster-config" ;
+  static const Identifier PRESETS_ID            = "presets" ;
+  static const Identifier VOLATILE_CONFIG_ID    = "volatile-config" ;
+  static const Identifier CAMERA_DEVICES_ID     = "camera-devices" ;
+  static const Identifier AUDIO_DEVICES_ID      = "audio-devices" ;
+  static const Identifier NETWORKS_ID           = "irc-networks" ;
   // config root IDs
   static const Identifier CONFIG_VERSION_ID     = "config-version" ;
   static const Identifier PRESET_ID             = "current-preset-idx" ;
@@ -394,14 +428,18 @@ namespace CONFIG
   static const Identifier VIDEO_BITRATE_ID      = "video-bitrate-idx" ;
   static const Identifier OUTPUT_DEST_ID        = "output-dest" ;
   // chat IDs
-  static const Identifier GREETING_ID            = "chat-greeting" ;
-  static const Identifier JOINPART_ID            = "show-joins-parts" ;
-  static const Identifier HOST_ID                = "chat-host" ;
-  static const Identifier PORT_ID                = "chat-port" ;
-  static const Identifier NICK_ID                = "chat-nick" ;
-  static const Identifier PASS_ID                = "chat-pass" ;
-  static const Identifier CHANNEL_ID             = "chat-channel" ;
-  static const Identifier CHATTERS_ID            = "active-chatters" ;
+  static const Identifier TIMESTAMPS_ID         = "show-timestamps" ;
+  static const Identifier JOINPARTS_ID          = "show-joins-parts" ;
+  static const Identifier NETWORK_IDX_ID        = "chat-network-idx" ;
+  static const Identifier NETWORK_ID            = "chat-network" ;
+  static const Identifier HOST_ID               = "chat-host" ;
+  static const Identifier PORT_ID               = "chat-port" ;
+  static const Identifier NICK_ID               = "chat-nick" ;
+  static const Identifier PASS_ID               = "chat-pass" ;
+  static const Identifier CHANNEL_ID            = "chat-channel" ;
+  static const Identifier GREETING_ID           = "chat-greeting" ;
+  static const Identifier RETRIES_ID            = "n-connect-retries" ;
+  static const Identifier CHATTERS_ID           = "active-chatters" ;
 
   // root defaults
 #if JUCE_LINUX
@@ -416,13 +454,7 @@ namespace CONFIG
   static const int        DEFAULT_PRESET_IDX          = FILE_PRESET_IDX ; // ASSERT: must be 0
   static const int        N_STATIC_PRESETS            = 3 ; // ASSERT: num PresetSeed subclasses
   static const bool       DEFAULT_IS_PENDING          = false ;
-
-  // control defaults
-  static const String     FILE_PRESET_NAME            = "Local File" ;
-  static const String     RTMP_PRESET_NAME            = "RTMP Server" ;
-  static const String     LCTV_PRESET_NAME            = "livecoding.tv" ;
-  static const String     DEFAULT_PRESET_NAME         = FILE_PRESET_NAME ;
-  static const Identifier DEFAULT_PRESET_ID           = FilterId(DEFAULT_PRESET_NAME , APP::VALID_ID_CHARS) ;
+  // Controls defaults
 #ifdef DISABLE_GUI_CONFIG_NYI
   static const bool       DEFAULT_IS_SCREENCAP_ACTIVE = true ;
 #else // DISABLE_GUI_CONFIG_NYI
@@ -442,12 +474,12 @@ namespace CONFIG
   static const int        DEFAULT_OFFSET_X            = 0 ;
   static const int        DEFAULT_OFFSET_Y            = 0 ;
   // camera defaults
-  static const int        DEFAULT_CAMERA_DEVICE_IDX   = -1 ;
-  static const int        DEFAULT_CAMERA_RES_IDX      = -1 ;
+  static const int        DEFAULT_CAMERA_DEVICE_IDX   = INVALID_IDX ;
+  static const int        DEFAULT_CAMERA_RES_IDX      = INVALID_IDX ;
   static const int        DEFAULT_CAMERA_RATE         = 30 ;
   // audio defaults
   static const int        DEFAULT_AUDIO_API_IDX       = ALSA_AUDIO_IDX ;
-  static const int        DEFAULT_AUDIO_DEVICE_IDX    = -1 ;
+  static const int        DEFAULT_AUDIO_DEVICE_IDX    = INVALID_IDX ;
   static const int        DEFAULT_AUDIO_CODEC_IDX     = MP3_AUDIO_IDX ;
   static const int        DEFAULT_N_CHANNELS          = 2 ;
   static const int        DEFAULT_SAMPLERATE_IDX      = 0 ;
@@ -467,7 +499,45 @@ namespace CONFIG
   static const int        DEFAULT_VIDEO_BITRATE_IDX   = 0 ;
   static const String     DEFAULT_OUTPUT_DEST         = APP::APP_NAME + ".flv" ;
   // chat defaults
-  static const int        DEFAULT_HOST_IDX            = -1 ;
+  static const int        DEFAULT_SHOW_TIMESTAMPS     = false ;
+  static const int        DEFAULT_SHOW_JOINPARTS      = true ;
+  static const int        DEFAULT_NETWORK_IDX         = INVALID_IDX ;
+  // Presets defaults
+  static const String     FILE_PRESET_NAME            = "Local File" ;
+  static const String     RTMP_PRESET_NAME            = "RTMP Server" ;
+  static const String     LCTV_PRESET_NAME            = "livecoding.tv" ;
+  static const String     DEFAULT_PRESET_NAME         = FILE_PRESET_NAME ;
+  static const Identifier DEFAULT_PRESET_ID           = FilterId(DEFAULT_PRESET_NAME , APP::VALID_ID_CHARS) ;
+
+#define ROOT_IDS   String(CONFIG_VERSION_ID) + " " + String(IS_PENDING_ID   ) + " " + \
+                   String(PRESET_ID        ) + " " + String(PRESETS_ID      )
+#define CONFIG_IDS String(PRESET_NAME_ID   ) + " " + String(SCREENCAP_ID    ) + " " + \
+                   String(CAMERA_ID        ) + " " + String(TEXT_ID         ) + " " + \
+                   String(IMAGE_ID         ) + " " + String(PREVIEW_ID      ) + " " + \
+                   String(AUDIO_ID         ) + " " + String(OUTPUT_ID       ) + " " + \
+                   String(DISPLAY_N_ID     ) + " " + String(SCREEN_N_ID     ) + " " + \
+                   String(SCREENCAP_W_ID   ) + " " + String(SCREENCAP_H_ID  ) + " " + \
+                   String(OFFSET_X_ID      ) + " " + String(OFFSET_Y_ID     ) + " " + \
+                   String(CAMERA_DEVICE_ID ) + " " + String(CAMERA_RES_ID   ) + " " + \
+                   String(AUDIO_API_ID     ) + " " + String(AUDIO_DEVICE_ID ) + " " + \
+                   String(AUDIO_CODEC_ID   ) + " " + String(N_CHANNELS_ID   ) + " " + \
+                   String(SAMPLERATE_ID    ) + " " + String(AUDIO_BITRATE_ID) + " " + \
+                   String(MOTD_TEXT_ID     ) + " " + String(TEXT_STYLE_ID   ) + " " + \
+                   String(TEXT_POSITION_ID ) + " "                                  + \
+                   String(IMAGE_LOC_ID     ) + " "                                  + \
+                   String(OUTPUT_SINK_ID   ) + " " + String(OUTPUT_MUXER_ID ) + " " + \
+                   String(OUTPUT_W_ID      ) + " " + String(OUTPUT_H_ID     ) + " " + \
+                   String(FRAMERATE_ID     ) + " " + String(VIDEO_BITRATE_ID) + " " + \
+                   String(OUTPUT_DEST_ID   ) + " "                                  + \
+                   String(NETWORK_IDX_ID   )
+// FIXME: Identifier assertion errors
+//   static const Identifier MEDIA_IDS      [] = { SCREENCAP_ID , CAMERA_ID , TEXT_ID   , IMAGE_ID ,
+//                                          PREVIEW_ID   , AUDIO_ID  , OUTPUT_ID , NULL     } ;
+//   static const Identifier RECONFIGURE_IDS[] = { IS_PENDING_ID , PRESET_ID , NULL } ;
+  static const StringArray       ROOT_KEYS        = StringArray::fromTokens(ROOT_IDS   , false) ;
+  static const StringArray       CONFIG_KEYS      = StringArray::fromTokens(CONFIG_IDS , false) ;
+//   static const Array<Identifier> MEDIA_KEYS       (MEDIA_IDS      ) ;
+//   static const Array<Identifier> RECONFIGURE_KEYS (RECONFIGURE_IDS) ;
 
 
   static ValueTree DefaultStore()
@@ -476,8 +546,8 @@ namespace CONFIG
     default_store.setProperty(CONFIG_VERSION_ID , CONFIG_VERSION     , nullptr) ;
     default_store.setProperty(IS_PENDING_ID     , DEFAULT_IS_PENDING , nullptr) ;
     default_store.setProperty(PRESET_ID         , DEFAULT_PRESET_IDX , nullptr) ;
-    default_store.addChild   (ValueTree(PRESETS_ID) , -1 , nullptr) ;
-    default_store.addChild   (ValueTree(SERVERS_ID) , -1 , nullptr) ;
+    default_store.addChild   (ValueTree(PRESETS_ID ) , -1 , nullptr) ;
+    default_store.addChild   (ValueTree(NETWORKS_ID) , -1 , nullptr) ;
 
     return default_store ;
   }
@@ -486,11 +556,11 @@ namespace CONFIG
 
 
 /** the GST namespace defines configuration and runtime constants
-        pertaining to the gStreamer media backend                 */
+        pertaining to the Gstreamer media backend class           */
 namespace GST
 {
-  static const unsigned int MIN_MAJOR_VERSION = 1 ;
-  static const unsigned int MIN_MINOR_VERSION = 6 ;
+  static const uint8 MIN_MAJOR_VERSION = 1 ;
+  static const uint8 MIN_MINOR_VERSION = 6 ;
 
   // element IDs
   static const String PIPELINE_ID         = "pipeline" ;
@@ -535,27 +605,49 @@ namespace GST
         pertaining to the libircclient network backend */
 namespace IRC
 {
-  static const unsigned int MIN_MAJOR_VERSION = 1 ;
-  static const unsigned int MIN_MINOR_VERSION = 8 ;
+  static const uint8         MIN_MAJOR_VERSION = 1 ;
+  static const uint8         MIN_MINOR_VERSION = 8 ;
+  static const Range<uint16> PORT_RANGE        = Range<uint16>::between(1 , 49151) ;
 
   // IDs
-  static const char*  ROOT_CHANNEL = "&bitlbee" ;
-  static const String ROOT_USER    = "root!root@" ;
-  static const char*  ROOT_NICK    = "@root" ;
-  static const String IDENTIFY_CMD = "identify " ;
+  static const String BITLBEE_HOST             = "im.bitlbee.org" ;
+  static const String LOCAL_HOST               = "localhost" ;
+  static const String BITLBEE_REMOTE_ROOT_USER = "root!root@" + BITLBEE_HOST ;
+  static const String BITLBEE_LOCAL_ROOT_USER  = "root!root@" + LOCAL_HOST   ;
+  static const char*  BITLBEE_ROOT_NICK        = "@root" ;
+  static const char*  BITLBEE_ROOT_CHANNEL     = "&bitlbee" ;
+  static const char*  BITLBEE_XMPP_CHANNEL     = "#xmpp-chat" ;
+  static const String BITLBEE_IDENTIFY_CMD     = "identify " ;
+
+  // connection state
+  static const uint8 MAX_N_RETRIES   = 5 ;
+  static const uint8 STATE_FAILED    = 0 ;
+  static const uint8 STATE_CONNECTED = MAX_N_RETRIES ;
 
   // incoming server messages
-  static const char*  CONNECTED_MSG       = "Logging in: Logged in" ;
-  static const String BITLBEE_WELCOME_MSG = "Welcome to the BitlBee gateway, " ;
-  static const char*  LOGIN_BLOCKED_MSG   = "New request: You're already connected to this server. Would you like to take over this session?" ;
-  static const char*  KICKED_SELF_MSG     = "You've successfully taken over your old session" ;
+  static const char*  BITLBEE_CONNECTED_MSG     = "Logging in: Logged in" ;
+  static const String BITLBEE_WELCOME_MSG       = "Welcome to the BitlBee gateway, " ;
+  static const char*  BITLBEE_LOGIN_BLOCKED_MSG = "New request: You're already connected to this server. Would you like to take over this session?" ;
+  static const char*  BITLBEE_KICKED_SELF_MSG   = "You've successfully taken over your old session" ;
+
+  // formatting markup tokens
+  static const String BOLD_BEGIN   = "[B]" ;
+  static const String BOLD_END     = "[/B]" ;
+  static const String ITALIC_BEGIN = "[I]" ;
+  static const String ITALIC_END   = "[/I]" ;
+  static const String ULINE_BEGIN  = "[U]" ;
+  static const String ULINE_END    = "[/U]" ;
+  static const String COLOR_BEGIN  = "[COLOR=" ;
+  static const String COLOR_END    = "[/COLOR]" ;
 
   // GUI display messages
-  static const String SESSION_BLOCKED_MSG = "It appeaers that you are already connected to BitlBee with another client.  This chat will not be connected to LCTV." ;
-  static const String LOGGING_IN_MSG      = "Logging into chat server: " ;
-  static const String LOGGED_IN_MSG       = "Logged into chat server: " ;
-  static const char*  LOGIN_MSG           = CHARSTAR(String(APP::APP_NAME + " starting up")) ;
-  static const char*  LOGOOUT_MSG         = CHARSTAR(String(APP::APP_NAME + " shutting down")) ;
+  static const String YOU_NICK                    = "You" ;
+  static const char*  INVALID_PARAMS_MSG          = "Invalid network credentials." ;
+  static const String BITLBEE_SESSION_BLOCKED_MSG = "It appeaers that you are already connected to BitlBee with another client.  This chat will not be connected to LCTV." ;
+  static const String LOGGING_IN_MSG              = "Logging into chat server: " ;
+  static const String LOGGED_IN_MSG               = "Logged into chat server: " ;
+  static const String LOGIN_MSG                   = APP::APP_NAME + " starting up" ;
+  static const String LOGOUT_MSG                  = APP::APP_NAME + " shutting down" ;
 
   // URIS
   static const String      LCTV_URL        = "https://www.livecoding.tv/" ;
@@ -618,6 +710,7 @@ namespace GUI
   static const int    PADDED_CHATLIST_ITEM_H     = CHATLIST_ITEM_H + PAD ;
   static const String CHAT_GROUP_TITLE           = "Chat" ;
   static const String CHAT_PROMPT_TEXT           = "<type some chat here - then press ENTER key to send>" ;
+  static const String CONNECTING_TEXT            = "(connecting)" ;
   static const String CLIENT_NICK                = "AvCaster" ;
   static const String SERVER_NICK                = "SERVER" ;
   static const String IRC_USER_PREFIX            = "IRC" ;
@@ -634,24 +727,26 @@ namespace GUI
   static const String DELETE_BTN_CANCEL_TEXT = "Cancel" ;
   static const String DELETE_BTN_DELETE_TEXT = "Delete" ;
   static const String DELETE_BTN_RESET_TEXT  = "Reset" ;
+  static const String IMAGE_CHOOSER_TEXT     = "Select an image file ..." ;
   static const String DEST_FILE_TEXT         = "Location:" ;
   static const String DEST_RTMP_TEXT         = "URI:" ;
   static const String DEST_LCTV_TEXT         = "Stream Key:" ;
-  static const String IMAGE_CHOOSER_TEXT     = "Select an image file ..." ;
+  static const String DEFAULT_NETWORK_TEXT   = "(Press \'New Network\')" ;
+  static const String NEW_NETWORK_TEXT       = "(Enter Hostname)" ;
   static const String IMG_FILE_EXTENSIONS    = "*" + APP::PNG_FILE_EXT ;
 //   static const String IMG_FILE_EXTS          = "*" + APP::PNG_FILE_EXT  + ",*" +
 //                                                      APP::JPEG_FILE_EXT + ",*" +
 //                                                      APP::GIF_FILE_EXT         ;
-  static const double MIN_DISPLAY_N          = 0.0 ;
-  static const double MAX_DISPLAY_N          = 4.0 ;
-  static const double MIN_SCREEN_N           = 0.0 ;
-  static const double MAX_SCREEN_N           = 4.0 ;
-  static const double MIN_N_CHANNELS         = 0.0 ;
-  static const double MAX_N_CHANNELS         = 2.0 ;
-  static const int    MAX_RES_N_CHARS        = 4 ;
-  static const int    MAX_MOTD_LEN           = 2048 ;
-  static const int    MAX_FILENAME_LEN       = 255 ;
-  static const int    MAX_PORT_N_CHARS       = 5 ;
+  static const double MIN_DISPLAY_N    = 0.0 ;
+  static const double MAX_DISPLAY_N    = 4.0 ;
+  static const double MIN_SCREEN_N     = 0.0 ;
+  static const double MAX_SCREEN_N     = 4.0 ;
+  static const double MIN_N_CHANNELS   = 0.0 ;
+  static const double MAX_N_CHANNELS   = 2.0 ;
+  static const int    MAX_RES_N_CHARS  = 4 ;
+  static const int    MAX_MOTD_LEN     = 2048 ;
+  static const int    MAX_FILENAME_LEN = 255 ;
+  static const int    MAX_PORT_N_CHARS = 5 ;
 
   // StatusBar
   static const String INIT_STATUS_TEXT  = "Initializing" ;
@@ -704,10 +799,9 @@ namespace GUI
   static const String OUTPUT_LINK_ERROR_MSG       = "Error linking OutputBin GstElements." ;
   static const String GST_STATE_ERROR_MSG         = "Invalid configuration." ;
   static const String STORAGE_WRITE_ERROR_MSG     = "I/O error storing configuration." ;
-  static const String PRESET_NAME_ERROR_MSG       = "Enter a name for this preset in the \"Preset\" box then press \"Save\" again." ;
+  static const String PRESET_NAME_ERROR_MSG       = "Enter a name for this preset in the \"Preset\" box or press the \"Cancel\" button." ;
   static const String PRESET_RENAME_ERROR_MSG     = "A preset already exists with that name." ;
   static const String CONFIG_INVALID_ERROR_MSG    = "Invalid paramenter(s) - correct the errors indicated in red." ;
-  static const String CONFIG_CHANGE_ERROR_MSG     = "Can not re-configure while the stream is active." ;
   static const String ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture device.\n\n" ;
   static const String PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
   static const String JACK_INIT_ERROR_MSG         = "Error connecting to Jack server.\n\n" ;

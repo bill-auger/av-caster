@@ -16,8 +16,9 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef _CONFIG_CHAT_H_
-#define _CONFIG_CHAT_H_
+
+#ifndef _CONFIGCHAT_H_
+#define _CONFIGCHAT_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -34,7 +35,7 @@ class MainContent ;
 /**
                                                                     //[Comments]
   ConfigChat is the chat configuration GUI for the AvCaster application.
-  It has it controls for setting the per-server chat parameters.
+  It has it controls for setting the per-network chat parameters.
                                                                     //[/Comments]
 */
 class ConfigChat  : public Component,
@@ -66,9 +67,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> serverButton;
-    ScopedPointer<Label> hostLabel;
-    ScopedPointer<ComboBox> hostCombo;
+    ScopedPointer<TextButton> newNetworkButton;
+    ScopedPointer<TextButton> deleteNetworkButton;
+    ScopedPointer<ToggleButton> timestampToggle;
+    ScopedPointer<ToggleButton> joinPartToggle;
+    ScopedPointer<Label> networkLabel;
+    ScopedPointer<ComboBox> networkCombo;
     ScopedPointer<Label> portLabel;
     ScopedPointer<TextEditor> portText;
     ScopedPointer<Label> nickLabel;
@@ -79,7 +83,6 @@ private:
     ScopedPointer<TextEditor> channelText;
     ScopedPointer<Label> greetingLabel;
     ScopedPointer<TextEditor> greetingText;
-    ScopedPointer<ToggleButton> joinPartToggle;
 
 
     //==============================================================================
@@ -89,4 +92,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIG_CHAT_H_
+#endif // _CONFIGCHAT_H_

@@ -35,16 +35,22 @@ public:
 
   static void TraceEvent          (String msg) ;
   static void TraceGui            (String msg) ;
+  static void TraceGuiVb          (String msg) ;
   static void TraceMedia          (String msg) ;
+  static void TraceMediaVb        (String msg) ;
   static void TraceConfig         (String msg) ;
+  static void TraceConfigVb       (String msg) ;
   static void TraceChat           (String msg) ;
+  static void TraceChatVb         (String msg) ;
   static void TraceVerbose        (String msg) ;
   static void TraceState          (String msg) ;
   static void TraceWarning        (String msg) ;
   static void TraceError          (String msg) ;
+
   static void TraceMissingNode    (ValueTree config_store , Identifier a_node_id) ;
   static void TraceMissingProperty(ValueTree config_store    , Identifier a_property_id ,
                                    var       a_default_value                            ) ;
+  static void TraceTreeChanged    (ValueTree& a_node , const Identifier& a_key) ;
   static void DumpConfig          (ValueTree config_store , String node_desc) ;
 } ;
 

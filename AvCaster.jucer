@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.15.203"
-              bundleIdentifier="" includeBinaryInAppConfig="1" jucerVersion="3.1.1">
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.15.204"
+              bundleIdentifier="com.yourcompany.AvCaster" includeBinaryInAppConfig="1"
+              jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
     <GROUP id="{B968229C-6218-718C-8F23-4791DDD13A93}" name="Assets">
       <FILE id="ytyANP" name="av-caster.png" compile="0" resource="1" file="Assets/av-caster.png"/>
@@ -124,7 +125,7 @@
     </VS2008>
     <LINUX_MAKE targetFolder="Builds/Makefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-1.0&#96;"
                 extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;"
-                externalLibraries="">
+                externalLibraries="ircclient">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="" isDebug="1" optimisation="1" targetName="av-caster-dbg"/>
         <CONFIGURATION name="Release" libraryPath="" isDebug="0" optimisation="3" targetName="av-caster"/>

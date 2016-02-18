@@ -59,7 +59,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> banButton;
+    ScopedPointer<TextButton> kickButton;
     ScopedPointer<Label> nickLabel;
 
 

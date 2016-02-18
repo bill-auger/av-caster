@@ -27,7 +27,7 @@
 
 /* state */
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_1 Trace::TraceState("initializing gStreamer") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_1 Trace::TraceState("initializing Gstreamer") ;
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_2 Trace::TraceState("instantiating pipeline") ;
 
@@ -39,7 +39,7 @@
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_6 Trace::TraceState("linking bins") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_7 Trace::TraceState("gStreamer ready") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_7 Trace::TraceState("Gstreamer ready") ;
 
 #  define DEBUG_TRACE_DISABLED_BINS                                                      \
   if (!IsScreenEnabled    ) Trace::TraceState("ScreencapBin disabled") ;  \
@@ -92,8 +92,8 @@
   Trace::TraceError("GSTError:" + is_handled_msg + " '" + error_message + "'") ;            \
   if (is_audio_error) Trace::TraceMedia("deactivating audio")                               ;
 
-#  define DEBUG_TRACE_UNHANDLED_MESSAGE if (DEBUG_TRACE_VB)                                   \
-  Trace::TraceMedia("got unhandled message '" + String(GST_MESSAGE_TYPE_NAME(message)) + "'") ;
+#  define DEBUG_TRACE_UNHANDLED_MESSAGE                                                         \
+  Trace::TraceMediaVb("got unhandled message '" + String(GST_MESSAGE_TYPE_NAME(message)) + "'") ;
 
 void MessageStructEach(GstMessage* message ,  GstStructureForeachFunc each_fn)
 {

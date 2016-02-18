@@ -100,8 +100,8 @@ Config::Config (MainContent* main_content)
     addAndMakeVisible (configChat = new ConfigChat());
     configChat->setName ("configChat");
 
-    addAndMakeVisible (configSpacer = new Component());
-    configSpacer->setName ("configSpacer");
+    addAndMakeVisible (dummyConfigPane = new Component());
+    dummyConfigPane->setName ("dummyConfigPane");
 
     addAndMakeVisible (hintsGroup = new GroupComponent ("hintsGroup",
                                                         TRANS("Hints")));
@@ -132,56 +132,60 @@ Config::Config (MainContent* main_content)
     //[Constructor] You can add your own custom stuff here..
 
   // establish local handles to child Component widgets
-  this->displaySlider     = this->configScreen->displaySlider ;
-  this->screenSlider      = this->configScreen->screenSlider ;
-  this->screenWidthText   = this->configScreen->screenWidthText ;
-  this->screenHeightText  = this->configScreen->screenHeightText ;
-  this->xOffsetText       = this->configScreen->xOffsetText ;
-  this->yOffsetText       = this->configScreen->yOffsetText ;
-  this->cameraDevCombo    = this->configCamera->cameraDevCombo ;
-  this->cameraResCombo    = this->configCamera->cameraResCombo ;
-  this->audioApiCombo     = this->configAudio ->audioApiCombo ;
-  this->audioDevCombo     = this->configAudio ->audioDevCombo ;
-  this->audioCodecCombo   = this->configAudio ->audioCodecCombo ;
-  this->nChannelsSlider   = this->configAudio ->nChannelsSlider ;
-  this->samplerateCombo   = this->configAudio ->samplerateCombo ;
-  this->audioBitrateCombo = this->configAudio ->audioBitrateCombo ;
-  this->motdText          = this->configText  ->motdText ;
-  this->textStyleCombo    = this->configText  ->textStyleCombo ;
-  this->textPosCombo      = this->configText  ->textPosCombo ;
-  this->interstitialText  = this->configImage ->interstitialText ;
-  this->browseButton      = this->configImage ->browseButton ;
-  this->outputSinkCombo   = this->configOutput->outputSinkCombo ;
-  this->outputWidthText   = this->configOutput->outputWidthText ;
-  this->outputHeightText  = this->configOutput->outputHeightText ;
-  this->framerateCombo    = this->configOutput->framerateCombo ;
-  this->videoBitrateCombo = this->configOutput->videoBitrateCombo ;
-  this->outputDestLabel   = this->configOutput->outputDestLabel ;
-  this->outputDestText    = this->configOutput->outputDestText ;
-  this->serverButton      = this->configChat  ->serverButton ;
-  this->hostCombo         = this->configChat  ->hostCombo ;
-  this->portText          = this->configChat  ->portText ;
-  this->nickText          = this->configChat  ->nickText ;
-  this->passText          = this->configChat  ->passText ;
-  this->channelText       = this->configChat  ->channelText ;
-  this->greetingText      = this->configChat  ->greetingText ;
-  this->joinPartToggle    = this->configChat  ->joinPartToggle ;
+  this->displaySlider       = this->configScreen->displaySlider ;
+  this->screenSlider        = this->configScreen->screenSlider ;
+  this->screenWidthText     = this->configScreen->screenWidthText ;
+  this->screenHeightText    = this->configScreen->screenHeightText ;
+  this->xOffsetText         = this->configScreen->xOffsetText ;
+  this->yOffsetText         = this->configScreen->yOffsetText ;
+  this->cameraDevCombo      = this->configCamera->cameraDevCombo ;
+  this->cameraResCombo      = this->configCamera->cameraResCombo ;
+  this->audioApiCombo       = this->configAudio ->audioApiCombo ;
+  this->audioDevCombo       = this->configAudio ->audioDevCombo ;
+  this->audioCodecCombo     = this->configAudio ->audioCodecCombo ;
+  this->nChannelsSlider     = this->configAudio ->nChannelsSlider ;
+  this->samplerateCombo     = this->configAudio ->samplerateCombo ;
+  this->audioBitrateCombo   = this->configAudio ->audioBitrateCombo ;
+  this->motdText            = this->configText  ->motdText ;
+  this->textStyleCombo      = this->configText  ->textStyleCombo ;
+  this->textPosCombo        = this->configText  ->textPosCombo ;
+  this->interstitialText    = this->configImage ->interstitialText ;
+  this->browseButton        = this->configImage ->browseButton ;
+  this->outputSinkCombo     = this->configOutput->outputSinkCombo ;
+  this->outputWidthText     = this->configOutput->outputWidthText ;
+  this->outputHeightText    = this->configOutput->outputHeightText ;
+  this->framerateCombo      = this->configOutput->framerateCombo ;
+  this->videoBitrateCombo   = this->configOutput->videoBitrateCombo ;
+  this->outputDestLabel     = this->configOutput->outputDestLabel ;
+  this->outputDestText      = this->configOutput->outputDestText ;
+  this->timestampToggle     = this->configChat  ->timestampToggle ;
+  this->joinPartToggle      = this->configChat  ->joinPartToggle ;
+  this->newNetworkButton    = this->configChat  ->newNetworkButton ;
+  this->deleteNetworkButton = this->configChat  ->deleteNetworkButton ;
+  this->networkCombo        = this->configChat  ->networkCombo ;
+  this->portText            = this->configChat  ->portText ;
+  this->nickText            = this->configChat  ->nickText ;
+  this->passText            = this->configChat  ->passText ;
+  this->channelText         = this->configChat  ->channelText ;
+  this->greetingText        = this->configChat  ->greetingText ;
 
   // configure
   Button    ::Listener* this_button_listener   = static_cast<Button    ::Listener*>(this) ;
   Slider    ::Listener* this_slider_listener   = static_cast<Slider    ::Listener*>(this) ;
   TextEditor::Listener* this_text_listener     = static_cast<TextEditor::Listener*>(this) ;
   ComboBox  ::Listener* this_combobox_listener = static_cast<ComboBox  ::Listener*>(this) ;
-  this->mainContent->configureButton(this->screenButton   , this_button_listener) ;
-  this->mainContent->configureButton(this->cameraButton   , this_button_listener) ;
-  this->mainContent->configureButton(this->audioButton    , this_button_listener) ;
-  this->mainContent->configureButton(this->textButton     , this_button_listener) ;
-  this->mainContent->configureButton(this->imageButton    , this_button_listener) ;
-  this->mainContent->configureButton(this->outputButton   , this_button_listener) ;
-  this->mainContent->configureButton(this->chatButton     , this_button_listener) ;
-  this->mainContent->configureButton(this->browseButton   , this_button_listener) ;
-  this->mainContent->configureButton(this->serverButton   , this_button_listener) ;
-  this->mainContent->configureButton(this->joinPartToggle , this_button_listener) ;
+  this->mainContent->configureButton(this->screenButton        , this_button_listener) ;
+  this->mainContent->configureButton(this->cameraButton        , this_button_listener) ;
+  this->mainContent->configureButton(this->audioButton         , this_button_listener) ;
+  this->mainContent->configureButton(this->textButton          , this_button_listener) ;
+  this->mainContent->configureButton(this->imageButton         , this_button_listener) ;
+  this->mainContent->configureButton(this->outputButton        , this_button_listener) ;
+  this->mainContent->configureButton(this->chatButton          , this_button_listener) ;
+  this->mainContent->configureButton(this->browseButton        , this_button_listener) ;
+  this->mainContent->configureButton(this->timestampToggle     , this_button_listener) ;
+  this->mainContent->configureButton(this->joinPartToggle      , this_button_listener) ;
+  this->mainContent->configureButton(this->newNetworkButton    , this_button_listener) ;
+  this->mainContent->configureButton(this->deleteNetworkButton , this_button_listener) ;
   this->mainContent->configureSlider(this->displaySlider   , this_slider_listener ,
                                      GUI::MIN_DISPLAY_N    , GUI::MAX_DISPLAY_N   , 1.0) ;
   this->mainContent->configureSlider(this->screenSlider    , this_slider_listener ,
@@ -230,10 +234,10 @@ Config::Config (MainContent* main_content)
   this->mainContent->configureCombobox(this->outputSinkCombo   , this_combobox_listener) ;
   this->mainContent->configureCombobox(this->framerateCombo    , this_combobox_listener) ;
   this->mainContent->configureCombobox(this->videoBitrateCombo , this_combobox_listener) ;
-  this->mainContent->configureCombobox(this->hostCombo         , this_combobox_listener) ;
+  this->mainContent->configureCombobox(this->networkCombo      , this_combobox_listener) ;
 
-  // NOTE: configSpacer is a non-functional dummy - most siblings bounds are coupled to it
-  configSpacer   ->toBack() ;
+  // NOTE: dummyPane is a non-functional dummy - most siblings bounds are coupled to it
+  dummyConfigPane->toBack() ;
   configPaneGroup->setText(GUI::SCREEN_GROUP_TEXT) ;
 
   updateVisibility(static_cast<Component*>(this->configScreen)) ;
@@ -262,7 +266,7 @@ Config::~Config()
     configImage = nullptr;
     configOutput = nullptr;
     configChat = nullptr;
-    configSpacer = nullptr;
+    dummyConfigPane = nullptr;
     hintsGroup = nullptr;
     hintsText = nullptr;
 
@@ -311,7 +315,7 @@ void Config::resized()
     configImage->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
     configOutput->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
     configChat->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
-    configSpacer->setBounds ((16 + 174) + 12, (4 + 16) + 16, ((getWidth() - 32) - 186) - 24, 252);
+    dummyConfigPane->setBounds ((16 + 174) + 12, (4 + 16) + 16, ((getWidth() - 32) - 186) - 24, 252);
     hintsGroup->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 252, (((getWidth() - 32) - 186) - 24) - 0, (roundFloatToInt ((getHeight() - 20) * 0.9534f)) - 278);
     hintsText->setBounds ((((16 + 174) + 12) + 0) + 14, (((4 + 16) + 16) + 252) + 20, ((((getWidth() - 32) - 186) - 24) - 0) - 28, ((roundFloatToInt ((getHeight() - 20) * 0.9534f)) - 278) - 32);
     //[UserResized] Add your own custom resize handling here..
@@ -322,13 +326,7 @@ void Config::resized()
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void Config::broughtToFront() { loadConfig() ;
-/* FIXME: testing
-hostCombo->clear               (juce::dontSendNotification) ;
-hostCombo->addItemList         (AvCaster::GetPresetsNames() , 1) ;
-hostCombo->setSelectedItemIndex(0 , juce::dontSendNotification) ;
-*/
-}
+void Config::broughtToFront() { loadConfig() ; }
 
 void Config::sliderValueChanged(Slider* a_slider)
 {
@@ -339,7 +337,7 @@ void Config::sliderValueChanged(Slider* a_slider)
   else if (a_slider == screenSlider   ) key = CONFIG::SCREEN_N_ID ;
   else if (a_slider == nChannelsSlider) key = CONFIG::N_CHANNELS_ID ;
 
-  AvCaster::SetConfig(key , value) ;
+  AvCaster::SetValue(key , value) ;
 }
 
 void Config::comboBoxChanged(ComboBox* a_combobox)
@@ -409,24 +407,36 @@ void Config::comboBoxChanged(ComboBox* a_combobox)
     key         = CONFIG::VIDEO_BITRATE_ID ;
     default_idx = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
   }
-  else if (a_combobox == this->hostCombo)
+  else if (a_combobox == this->networkCombo)
   {
 // TODO: nyi
-DBG("Config::comboBoxChanged() hostCombo option_n=" + String(option_n) + " text=" + a_combobox->getText()) ;
-if (!(~option_n))
-{
-DBG("Config::comboBoxChanged() hostCombo text changed=" + a_combobox->getText()) ;
-// TODO: validate: GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
-}
-    return ;
-//     key         = CONFIG::HOST_ID ;
-//     default_idx = CONFIG::DEFAULT_HOST_IDX ;
+DBG("Config::comboBoxChanged() networkCombo option_n=" + String(option_n) + " text=" + this->networkCombo->getText()) ;
+    if (~option_n)
+    {
+DBG("Config::comboBoxChanged() networkCombo selection changed") ;
+      this->networkCombo->setEditableText(false) ;
+    }
+    else
+    {
+      // TODO: validate: GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
+      //       how to setInputRestrictions on combo text editor
+      String network = this->networkCombo->getText().substring(0 , GUI::MAX_FILENAME_LEN) ;
+      this->networkCombo->setText(network , juce::dontSendNotification) ;
+//       this->networkCombo->setEditableText(false) ;
+
+DBG("Config::comboBoxChanged() networkCombo nothing selected OR text network=" + network) ;
+    }
+
+    key         = CONFIG::NETWORK_IDX_ID ;
+    default_idx = CONFIG::DEFAULT_NETWORK_IDX ;
+
+    loadConfig() ;
   }
   else return ;
 
   value = var((~option_n) ? option_n : default_idx) ;
   a_combobox->setSelectedItemIndex(int(value) , juce::dontSendNotification) ;
-  AvCaster::SetConfig(key , value) ;
+  AvCaster::SetValue(key , value) ;
 }
 
 void Config::buttonClicked(Button* a_button)
@@ -437,43 +447,44 @@ void Config::buttonClicked(Button* a_button)
   var        value ;                      // child buttons
 
   // Config buttons
-  if      (a_button == screenButton)
+  if      (a_button == this->screenButton)
   {
     config_component  = static_cast<Component*>(this->configScreen) ;
     config_group_text = GUI::SCREEN_GROUP_TEXT ;
   }
-  else if (a_button == cameraButton)
+  else if (a_button == this->cameraButton)
   {
     config_component = static_cast<Component*>(this->configCamera) ;
     config_group_text = GUI::CAMERA_GROUP_TEXT ;
   }
-  else if (a_button == audioButton)
+  else if (a_button == this->audioButton)
   {
     config_component = static_cast<Component*>(this->configAudio) ;
     config_group_text = GUI::AUDIO_GROUP_TEXT ;
   }
-  else if (a_button == textButton)
+  else if (a_button == this->textButton)
   {
     config_component = static_cast<Component*>(this->configText) ;
     config_group_text = GUI::TEXT_GROUP_TEXT ;
   }
-  else if (a_button == imageButton)
+  else if (a_button == this->imageButton)
   {
     config_component = static_cast<Component*>(this->configImage) ;
     config_group_text = GUI::IMAGE_GROUP_TEXT ;
   }
-  else if (a_button == outputButton)
+  else if (a_button == this->outputButton)
   {
     config_component = static_cast<Component*>(this->configOutput) ;
     config_group_text = GUI::OUTPUT_GROUP_TEXT ;
   }
-  else if (a_button == chatButton)
+  else if (a_button == this->chatButton)
   {
     config_component = static_cast<Component*>(this->configChat) ;
     config_group_text = GUI::CHAT_GROUP_TEXT ;
   }
+
   // Image buttons
-  else if (a_button == browseButton)
+  else if (a_button == this->browseButton)
   {
     FileChooser           file_chooser(GUI::IMAGE_CHOOSER_TEXT  , APP::PICTURES_DIR ,
                                        GUI::IMG_FILE_EXTENSIONS , false             ) ;
@@ -487,20 +498,42 @@ void Config::buttonClicked(Button* a_button)
     key   = CONFIG::IMAGE_LOC_ID ;
     value = var(image_loc) ;
   }
+
   // Chat buttons
-  else if (a_button == serverButton) { DBG("Config::buttonClicked() serverButton") ; return ; } // TODO: nyi
-  else if (a_button == joinPartToggle)
+  else if (a_button == this->timestampToggle)
   {
-    key   = CONFIG::JOINPART_ID ;
+    key   = CONFIG::TIMESTAMPS_ID ;
     value = var(a_button->getToggleState()) ;
+  }
+  else if (a_button == this->joinPartToggle)
+  {
+    key   = CONFIG::JOINPARTS_ID ;
+    value = var(a_button->getToggleState()) ;
+  }
+  else if (a_button == this->newNetworkButton)
+  {
+    this->networkCombo->setEditableText(true) ;
+    this->networkCombo->setTextWhenNothingSelected(GUI::NEW_NETWORK_TEXT) ;
+// TODO: clear inputs
+    enableComponents() ; return ;
+  }
+  else if (a_button == this->deleteNetworkButton)
+  {
+    if (this->networkCombo->getNumItems() == 0)
+    {
+      this->networkCombo->setEditableText(false) ;
+      this->networkCombo->setTextWhenNothingSelected(GUI::DEFAULT_NETWORK_TEXT) ;
+    }
+// TODO:
+    enableComponents() ; return ;
   }
 
   if (config_component != nullptr)        // local buttons
   {
-    configPaneGroup->setText(config_group_text) ;
+    this->configPaneGroup->setText(config_group_text) ;
     updateVisibility(config_component) ;
   }
-  else AvCaster::SetConfig(key , value) ; // child buttons
+  else AvCaster::SetValue(key , value) ; // child buttons
 }
 
 void Config::textEditorTextChanged(TextEditor& a_text_editor)
@@ -511,58 +544,71 @@ void Config::textEditorTextChanged(TextEditor& a_text_editor)
 void Config::textEditorFocusLost(TextEditor& a_text_editor)
 {
   TextEditor* ed      = &a_text_editor ;
-  var         str_val = var(ed->getText()) ;
-  var         int_val = var(ed->getText().getIntValue()) ;
+  String      text    = ed->getText().trim() ;
+  var         str_val = var(text) ;
+  var         int_val = var(text.getIntValue()) ;
   Identifier  key ;
   var         value ;
 
-  if      (ed == this->screenWidthText ) { key = CONFIG::SCREENCAP_W_ID ;  value = int_val ; }
-  else if (ed == this->screenHeightText) { key = CONFIG::SCREENCAP_H_ID ;  value = int_val ; }
-  else if (ed == this->xOffsetText     ) { key = CONFIG::OFFSET_X_ID ;     value = int_val ; }
-  else if (ed == this->yOffsetText     ) { key = CONFIG::OFFSET_Y_ID ;     value = int_val ; }
-  else if (ed == this->motdText        ) { key = CONFIG::MOTD_TEXT_ID ;    value = str_val ; }
-  else if (ed == this->interstitialText) { key = CONFIG::IMAGE_LOC_ID ;    value = str_val ; }
-  else if (ed == this->outputWidthText ) { key = CONFIG::OUTPUT_W_ID ;     value = int_val ; }
-  else if (ed == this->outputHeightText) { key = CONFIG::OUTPUT_H_ID ;     value = int_val ; }
-  else if (ed == this->outputDestText  ) { key = CONFIG::OUTPUT_DEST_ID ;  value = str_val ; }
+  if      (ed == this->screenWidthText ) { key = CONFIG::SCREENCAP_W_ID ; value = int_val ; }
+  else if (ed == this->screenHeightText) { key = CONFIG::SCREENCAP_H_ID ; value = int_val ; }
+  else if (ed == this->xOffsetText     ) { key = CONFIG::OFFSET_X_ID ;    value = int_val ; }
+  else if (ed == this->yOffsetText     ) { key = CONFIG::OFFSET_Y_ID ;    value = int_val ; }
+  else if (ed == this->motdText        ) { key = CONFIG::MOTD_TEXT_ID ;   value = str_val ; }
+  else if (ed == this->interstitialText) { key = CONFIG::IMAGE_LOC_ID ;   value = str_val ; }
+  else if (ed == this->outputWidthText ) { key = CONFIG::OUTPUT_W_ID ;    value = int_val ; }
+  else if (ed == this->outputHeightText) { key = CONFIG::OUTPUT_H_ID ;    value = int_val ; }
+  else if (ed == this->outputDestText  ) { key = CONFIG::OUTPUT_DEST_ID ; value = str_val ; }
   else                                   return ;
 
-  AvCaster::SetConfig(key , value) ;
+  AvCaster::SetValue(key , value) ;
 }
 
 void Config::loadConfig()
 {
-  ValueTree   config_store       = AvCaster::GetConfigStore() ;
-  StringArray camera_devices     = AvCaster::GetCameraNames() ;
-  StringArray camera_resolutions = AvCaster::GetCameraResolutions() ;
-  StringArray audio_devices      = AvCaster::GetAudioNames() ;
+  ValueTree   config_store       = AvCaster::GetVolatileStore       () ;
+  ValueTree   network_store      = AvCaster::GetSelectedNetworkStore() ;
+  StringArray camera_devices     = AvCaster::GetCameraNames         () ;
+  StringArray camera_resolutions = AvCaster::GetCameraResolutions   () ;
+  StringArray audio_devices      = AvCaster::GetAudioNames          () ;
+  StringArray network_names      = AvCaster::GetNetworkNames        () ;
 
 DEBUG_TRACE_CONFIG_LOAD_CONFIG
 
-  double display_n         = double(config_store[CONFIG::DISPLAY_N_ID    ]) ;
-  double screen_n          = double(config_store[CONFIG::SCREEN_N_ID     ]) ;
-  String screencap_w       = STRING(config_store[CONFIG::SCREENCAP_W_ID  ]) ;
-  String screencap_h       = STRING(config_store[CONFIG::SCREENCAP_H_ID  ]) ;
-  String offset_x          = STRING(config_store[CONFIG::OFFSET_X_ID     ]) ;
-  String offset_y          = STRING(config_store[CONFIG::OFFSET_Y_ID     ]) ;
-  int    camera_dev_idx    = int   (config_store[CONFIG::CAMERA_DEVICE_ID]) ;
-  int    camera_res_idx    = int   (config_store[CONFIG::CAMERA_RES_ID   ]) ;
-  int    audio_api_idx     = int   (config_store[CONFIG::AUDIO_API_ID    ]) ;
-  int    audio_dev_idx     = int   (config_store[CONFIG::AUDIO_DEVICE_ID ]) ;
-  int    audio_codec_idx   = int   (config_store[CONFIG::AUDIO_CODEC_ID  ]) ;
-  double n_channels        = double(config_store[CONFIG::N_CHANNELS_ID   ]) ;
-  int    samplerate_idx    = int   (config_store[CONFIG::SAMPLERATE_ID   ]) ;
-  int    audio_bitrate_idx = int   (config_store[CONFIG::AUDIO_BITRATE_ID]) ;
-  int    text_style_idx    = int   (config_store[CONFIG::TEXT_STYLE_ID   ]) ;
-  int    text_pos_idx      = int   (config_store[CONFIG::TEXT_POSITION_ID]) ;
-  String motd_text         = STRING(config_store[CONFIG::MOTD_TEXT_ID    ]) ;
-  String interstitial_text = STRING(config_store[CONFIG::IMAGE_LOC_ID    ]) ;
-  int    output_idx        = int   (config_store[CONFIG::OUTPUT_SINK_ID  ]) ;
-  String output_w_text     = STRING(config_store[CONFIG::OUTPUT_W_ID     ]) ;
-  String output_h_text     = STRING(config_store[CONFIG::OUTPUT_H_ID     ]) ;
-  int    framerate_idx     = int   (config_store[CONFIG::FRAMERATE_ID    ]) ;
-  int    video_bitrate_idx = int   (config_store[CONFIG::VIDEO_BITRATE_ID]) ;
-  String output_dest_text  = STRING(config_store[CONFIG::OUTPUT_DEST_ID  ]) ;
+  double display_n             = double(config_store [CONFIG::DISPLAY_N_ID    ]) ;
+  double screen_n              = double(config_store [CONFIG::SCREEN_N_ID     ]) ;
+  String screencap_w           = STRING(config_store [CONFIG::SCREENCAP_W_ID  ]) ;
+  String screencap_h           = STRING(config_store [CONFIG::SCREENCAP_H_ID  ]) ;
+  String offset_x              = STRING(config_store [CONFIG::OFFSET_X_ID     ]) ;
+  String offset_y              = STRING(config_store [CONFIG::OFFSET_Y_ID     ]) ;
+  int    camera_dev_idx        = int   (config_store [CONFIG::CAMERA_DEVICE_ID]) ;
+  int    camera_res_idx        = int   (config_store [CONFIG::CAMERA_RES_ID   ]) ;
+  int    audio_api_idx         = int   (config_store [CONFIG::AUDIO_API_ID    ]) ;
+  int    audio_dev_idx         = int   (config_store [CONFIG::AUDIO_DEVICE_ID ]) ;
+  int    audio_codec_idx       = int   (config_store [CONFIG::AUDIO_CODEC_ID  ]) ;
+  double n_channels            = double(config_store [CONFIG::N_CHANNELS_ID   ]) ;
+  int    samplerate_idx        = int   (config_store [CONFIG::SAMPLERATE_ID   ]) ;
+  int    audio_bitrate_idx     = int   (config_store [CONFIG::AUDIO_BITRATE_ID]) ;
+  int    text_style_idx        = int   (config_store [CONFIG::TEXT_STYLE_ID   ]) ;
+  int    text_pos_idx          = int   (config_store [CONFIG::TEXT_POSITION_ID]) ;
+  String motd_text             = STRING(config_store [CONFIG::MOTD_TEXT_ID    ]) ;
+  String interstitial_text     = STRING(config_store [CONFIG::IMAGE_LOC_ID    ]) ;
+  int    output_idx            = int   (config_store [CONFIG::OUTPUT_SINK_ID  ]) ;
+  String output_w_text         = STRING(config_store [CONFIG::OUTPUT_W_ID     ]) ;
+  String output_h_text         = STRING(config_store [CONFIG::OUTPUT_H_ID     ]) ;
+  int    framerate_idx         = int   (config_store [CONFIG::FRAMERATE_ID    ]) ;
+  int    video_bitrate_idx     = int   (config_store [CONFIG::VIDEO_BITRATE_ID]) ;
+  String output_dest_text      = STRING(config_store [CONFIG::OUTPUT_DEST_ID  ]) ;
+  int    network_idx           = int   (config_store [CONFIG::NETWORK_IDX_ID  ]) ;
+  String network_text          = STRING(network_store[CONFIG::NETWORK_ID      ]) ;
+  int    port                  = int   (network_store[CONFIG::PORT_ID         ]) ;
+  String port_text             = (network_store.isValid()) ? String(port) : String::empty ;
+  String nick_text             = STRING(network_store[CONFIG::NICK_ID         ]) ;
+  String pass_text             = STRING(network_store[CONFIG::PASS_ID         ]) ;
+  String channel_text          = STRING(network_store[CONFIG::CHANNEL_ID      ]) ;
+  String greeting_text         = STRING(network_store[CONFIG::GREETING_ID     ]) ;
+  bool   should_show_joinparts = bool  (network_store[CONFIG::NICK_ID         ]) ;
+
   bool   is_lctv_preset    = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
   String output_label_text = (is_lctv_preset                       ) ? GUI::DEST_LCTV_TEXT :
                              (output_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::DEST_FILE_TEXT :
@@ -582,6 +628,11 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputHeightText ->setText             (output_h_text    ) ;
   this->outputDestText   ->setText             (output_dest_text ) ;
   this->outputDestLabel  ->setText             (output_label_text , juce::dontSendNotification) ;
+  this->portText         ->setText             (port_text        ) ;
+  this->nickText         ->setText             (nick_text        ) ;
+  this->passText         ->setText             (pass_text        ) ;
+  this->channelText      ->setText             (channel_text     ) ;
+  this->greetingText     ->setText             (greeting_text    ) ;
   this->cameraDevCombo   ->clear               (juce::dontSendNotification) ;
   this->cameraResCombo   ->clear               (juce::dontSendNotification) ;
   this->audioDevCombo    ->clear               (juce::dontSendNotification) ;
@@ -594,6 +645,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputSinkCombo  ->clear               (juce::dontSendNotification) ;
   this->framerateCombo   ->clear               (juce::dontSendNotification) ;
   this->videoBitrateCombo->clear               (juce::dontSendNotification) ;
+  this->networkCombo     ->clear               (juce::dontSendNotification) ;
   this->cameraDevCombo   ->addItemList         (camera_devices            , 1) ;
   this->cameraResCombo   ->addItemList         (camera_resolutions        , 1) ;
   this->audioApiCombo    ->addItemList         (CONFIG::AUDIO_APIS        , 1) ;
@@ -606,6 +658,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputSinkCombo  ->addItemList         (CONFIG::OUTPUT_SINKS      , 1) ;
   this->framerateCombo   ->addItemList         (CONFIG::FRAMERATES        , 1) ;
   this->videoBitrateCombo->addItemList         (CONFIG::VIDEO_BITRATES    , 1) ;
+  this->networkCombo     ->addItemList         (network_names             , 1) ;
   this->cameraDevCombo   ->setSelectedItemIndex(camera_dev_idx    , juce::dontSendNotification) ;
   this->cameraResCombo   ->setSelectedItemIndex(camera_res_idx    , juce::dontSendNotification) ;
   this->audioApiCombo    ->setSelectedItemIndex(audio_api_idx     , juce::dontSendNotification) ;
@@ -618,16 +671,26 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputSinkCombo  ->setSelectedItemIndex(output_idx        , juce::dontSendNotification) ;
   this->framerateCombo   ->setSelectedItemIndex(framerate_idx     , juce::dontSendNotification) ;
   this->videoBitrateCombo->setSelectedItemIndex(video_bitrate_idx , juce::dontSendNotification) ;
+  this->networkCombo     ->setSelectedItemIndex(network_idx       , juce::dontSendNotification) ;
+  this->joinPartToggle   ->setToggleState      (should_show_joinparts , juce::dontSendNotification) ;
 
   enableComponents() ;
 }
 
 void Config::enableComponents()
 {
-  bool is_static_preset = AvCaster::IsStaticPreset() ;
+  bool is_user_preset     = !AvCaster::IsStaticPreset() ;
+  bool is_chat_configured = this->networkCombo->getNumItems() > 0 ;
 
-  this->audioCodecCombo->setEnabled(!is_static_preset) ; // TODO: videoCodecCombo
-  this->outputSinkCombo->setEnabled(!is_static_preset) ; // TODO: outputMuxerCombo
+  this->audioCodecCombo->setEnabled(is_user_preset    ) ; // TODO: videoCodecCombo
+  this->outputSinkCombo->setEnabled(is_user_preset    ) ; // TODO: outputMuxerCombo
+  this->timestampToggle->setEnabled(is_chat_configured) ;
+  this->joinPartToggle ->setEnabled(is_chat_configured) ;
+  this->portText       ->setEnabled(is_chat_configured) ;
+  this->nickText       ->setEnabled(is_chat_configured) ;
+  this->passText       ->setEnabled(is_chat_configured) ;
+  this->channelText    ->setEnabled(is_chat_configured) ;
+  this->greetingText   ->setEnabled(is_chat_configured) ;
 
 #ifdef DISABLE_GUI_CONFIG_NYI
 this->displaySlider   ->setEnabled(false) ;
@@ -642,27 +705,19 @@ this->textStyleCombo  ->setEnabled(false) ;
 this->textPosCombo    ->setEnabled(false) ;
 this->interstitialText->setEnabled(false) ;
 this->browseButton    ->setEnabled(false) ;
-this->serverButton    ->setEnabled(false) ;
-this->hostCombo       ->setEnabled(false) ;
-this->portText        ->setEnabled(false) ;
-this->nickText        ->setEnabled(false) ;
-this->passText        ->setEnabled(false) ;
-this->channelText     ->setEnabled(false) ;
-this->greetingText    ->setEnabled(false) ;
-this->joinPartToggle  ->setEnabled(false) ;
 #endif // DISABLE_GUI_CONFIG_NYI
 }
 
 void Config::updateVisibility(Component* config_component)
 {
-  configAudio     ->setVisible(false) ;
+  configScreen    ->setVisible(false) ;
   configCamera    ->setVisible(false) ;
-  configChat      ->setVisible(false) ;
+  configAudio     ->setVisible(false) ;
+  configText      ->setVisible(false) ;
   configImage     ->setVisible(false) ;
   configOutput    ->setVisible(false) ;
-  configScreen    ->setVisible(false) ;
-  configText      ->setVisible(false) ;
-  configSpacer    ->setVisible(false) ;
+  configChat      ->setVisible(false) ;
+  dummyConfigPane ->setVisible(false) ;
   config_component->setVisible(true ) ;
 }
 
@@ -680,7 +735,7 @@ bool Config::validateOutputDest()
   return is_valid ;
 }
 
-bool Config::validateConfigGui()
+bool Config::validateParams()
 {
   bool is_sane = validateOutputDest() ;
 
@@ -781,7 +836,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="0 0 0M 0M" posRelativeX="7ab6ee7eab27ae3e"
                     posRelativeY="7ab6ee7eab27ae3e" posRelativeW="7ab6ee7eab27ae3e"
                     posRelativeH="7ab6ee7eab27ae3e" class="ConfigChat" params=""/>
-  <GENERICCOMPONENT name="configSpacer" id="7ab6ee7eab27ae3e" memberName="configSpacer"
+  <GENERICCOMPONENT name="dummyConfigPane" id="7ab6ee7eab27ae3e" memberName="dummyConfigPane"
                     virtualName="" explicitFocusOrder="0" pos="12 16 24M 252" posRelativeX="3d078232c622c691"
                     posRelativeY="3d078232c622c691" posRelativeW="3d078232c622c691"
                     posRelativeH="6607ba656d5c8919" class="Component" params=""/>

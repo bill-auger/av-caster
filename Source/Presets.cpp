@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 
 #include "AvCaster.h"
+#include "Trace/TraceConfig.h"
 
 //[/Headers]
 
@@ -38,20 +39,15 @@ Presets::Presets (MainContent* main_content)
     presetsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     presetsGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (saveButton = new TextButton ("saveButton"));
-    saveButton->setExplicitFocusOrder (1);
-    saveButton->setButtonText (TRANS("Save"));
-    saveButton->addListener (this);
+    addAndMakeVisible (newPresetButton = new TextButton ("newPresetButton"));
+    newPresetButton->setExplicitFocusOrder (1);
+    newPresetButton->setButtonText (TRANS("New Preset"));
+    newPresetButton->addListener (this);
 
-    addAndMakeVisible (newButton = new TextButton ("newButton"));
-    newButton->setExplicitFocusOrder (2);
-    newButton->setButtonText (TRANS("New"));
-    newButton->addListener (this);
-
-    addAndMakeVisible (deleteButton = new TextButton ("deleteButton"));
-    deleteButton->setExplicitFocusOrder (3);
-    deleteButton->setButtonText (TRANS("Delete"));
-    deleteButton->addListener (this);
+    addAndMakeVisible (deletePresetButton = new TextButton ("deletePresetButton"));
+    deletePresetButton->setExplicitFocusOrder (2);
+    deletePresetButton->setButtonText (TRANS("Delete Preset"));
+    deletePresetButton->addListener (this);
 
     addAndMakeVisible (presetLabel = new Label ("presetLabel",
                                                 TRANS("Preset:")));
@@ -63,7 +59,7 @@ Presets::Presets (MainContent* main_content)
     presetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (presetsCombo = new ComboBox ("presetsCombo"));
-    presetsCombo->setExplicitFocusOrder (4);
+    presetsCombo->setExplicitFocusOrder (3);
     presetsCombo->setEditableText (true);
     presetsCombo->setJustificationType (Justification::centredLeft);
     presetsCombo->setTextWhenNothingSelected (String::empty);
@@ -71,7 +67,7 @@ Presets::Presets (MainContent* main_content)
     presetsCombo->addListener (this);
 
     addAndMakeVisible (configButton = new ImageButton ("configButton"));
-    configButton->setExplicitFocusOrder (5);
+    configButton->setExplicitFocusOrder (4);
     configButton->addListener (this);
 
     configButton->setImages (false, true, true,
@@ -98,9 +94,8 @@ Presets::~Presets()
     //[/Destructor_pre]
 
     presetsGroup = nullptr;
-    saveButton = nullptr;
-    newButton = nullptr;
-    deleteButton = nullptr;
+    newPresetButton = nullptr;
+    deletePresetButton = nullptr;
     presetLabel = nullptr;
     presetsCombo = nullptr;
     configButton = nullptr;
@@ -129,9 +124,8 @@ void Presets::resized()
     //[/UserPreResize]
 
     presetsGroup->setBounds (16, 12, getWidth() - 32, 64);
-    saveButton->setBounds (244, 35, 64, 24);
-    newButton->setBounds (332, 35, 64, 24);
-    deleteButton->setBounds (420, 35, 64, 24);
+    newPresetButton->setBounds (268, 36, 96, 24);
+    deletePresetButton->setBounds (388, 36, 96, 24);
     presetLabel->setBounds (500, 36, 48, 24);
     presetsCombo->setBounds (560, 36, 128, 24);
     configButton->setBounds (696, 36, 24, 24);
@@ -148,45 +142,36 @@ void Presets::buttonClicked (Button* buttonThatWasClicked)
 
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == saveButton)
+    if (buttonThatWasClicked == newPresetButton)
     {
-        //[UserButtonCode_saveButton] -- add your button handler code here..
-
-      handleSaveButton() ; return ;
-
-        //[/UserButtonCode_saveButton]
-    }
-    else if (buttonThatWasClicked == newButton)
-    {
-        //[UserButtonCode_newButton] -- add your button handler code here..
+        //[UserButtonCode_newPresetButton] -- add your button handler code here..
 
       handleNewButton() ; return ;
 
-        //[/UserButtonCode_newButton]
+        //[/UserButtonCode_newPresetButton]
     }
-    else if (buttonThatWasClicked == deleteButton)
+    else if (buttonThatWasClicked == deletePresetButton)
     {
-        //[UserButtonCode_deleteButton] -- add your button handler code here..
+        //[UserButtonCode_deletePresetButton] -- add your button handler code here..
 
       handleDeleteButton() ; return ;
 
-        //[/UserButtonCode_deleteButton]
+        //[/UserButtonCode_deletePresetButton]
     }
     else if (buttonThatWasClicked == configButton)
     {
         //[UserButtonCode_configButton] -- add your button handler code here..
 
-      if (AvCaster::RejectPresetChange()) return ;
+      if (!createOrUpdatePreset()) return ;
 
       key   = CONFIG::IS_PENDING_ID ;
-      value = var(!AvCaster::GetIsConfigPending()) ;
+      value = var(false) ;
 
         //[/UserButtonCode_configButton]
     }
 
     //[UserbuttonClicked_Post]
-
-  AvCaster::SetConfig(key , value) ;
+  AvCaster::SetValue(key , value) ;
 
     //[/UserbuttonClicked_Post]
 }
@@ -200,21 +185,7 @@ void Presets::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_presetsCombo] -- add your combo box handling code here..
 
-      String preset_name = this->presetsCombo->getText() ;
-      int    option_n    = this->presetsCombo->getSelectedItemIndex() ;
-      bool   is_saving   = this->saveButton  ->isDown() ; // defer to handleSaveButton()
-      bool   is_deleting = this->deleteButton->isDown() ; // defer to handleDeleteButton()
-
-      if (is_deleting) return ;
-
-      // create new preset
-      if      (isCreatePresetMode()) AvCaster::StorePreset(preset_name) ;
-      else if (is_saving           ) return ;
-
-      // rename preset , restore selection , or commit preset change
-      if (AvCaster::SetPreset(preset_name , option_n)) setCreatePresetMode(false) ;
-
-      return ;
+      handlePresetsCombo() ; return ;
 
         //[/UserComboBoxCode_presetsCombo]
     }
@@ -229,23 +200,7 @@ void Presets::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 void Presets::broughtToFront()
 {
-  toggleControls() ;
   this->mainContent->loadPresetsCombo(this->presetsCombo) ; setCreatePresetMode(false) ;
-}
-
-void Presets::handleSaveButton()
-{
-  String preset_name = this->presetsCombo->getText() ;
-
-  if (preset_name.isEmpty()) AvCaster::Warning(GUI::PRESET_NAME_ERROR_MSG) ;
-  else
-  {
-    setCreatePresetMode(false) ; AvCaster::StorePreset(preset_name) ;
-
-#ifdef STATIC_PIPELINE
-  AvCaster::Warning("Changes will take effect after AvCaster is restarted.") ;
-#endif // STATIC_PIPELINE
-  }
 }
 
 void Presets::handleNewButton()
@@ -266,31 +221,76 @@ void Presets::handleDeleteButton()
   else                                 AvCaster::DeletePreset() ;
 }
 
-void Presets::toggleControls()
+bool Presets::createOrUpdatePreset()
 {
-  bool is_config_pending = AvCaster::GetIsConfigPending() ;
+  String preset_name           = this->presetsCombo->getText() ;
+  int    option_n              = this->presetsCombo->getSelectedItemIndex() ;
+  bool   is_create_preset_mode = isCreatePresetMode() ;
+  bool   is_empty_preset_name  = preset_name.isEmpty() ;
+  bool   is_valid_option       = !!(~option_n) ;
+  bool   is_static_preset      = AvCaster::IsStaticPreset() ;
+  bool   has_name_changed      = preset_name != AvCaster::GetPresetName() ;
+  bool   should_rename_preset  = !is_valid_option      && !is_static_preset &&
+                                 !is_empty_preset_name && has_name_changed   ;
+  bool   is_name_collision     = false ;
 
-  this->presetsGroup->setVisible(is_config_pending) ;
-  this->saveButton  ->setVisible(is_config_pending) ;
-  this->newButton   ->setVisible(is_config_pending) ;
-  this->deleteButton->setVisible(is_config_pending) ;
-  this->presetLabel ->setVisible(is_config_pending) ;
+  // reject duplicate preset name if creating or renaming
+  for (int preset_n = 0 ; preset_n < this->presetsCombo->getNumItems() ; ++preset_n)
+    if (this->presetsCombo->getItemText(preset_n) == preset_name) is_name_collision = true ;
+
+DEBUG_TRACE_CREATE_PRESET
+
+  // validate new preset name
+  if (is_empty_preset_name) { AvCaster::Warning(GUI::PRESET_NAME_ERROR_MSG) ; return false ; }
+
+  if (is_create_preset_mode || should_rename_preset)
+  {
+    if (is_name_collision) { AvCaster::Warning(GUI::PRESET_RENAME_ERROR_MSG) ; return false ; }
+
+    // create preset
+    if      (is_create_preset_mode) AvCaster::StorePreset (preset_name) ;
+    // rename preset
+    else if (should_rename_preset ) AvCaster::RenamePreset(preset_name) ;
+  }
+  // update preset
+  else AvCaster::StorePreset(preset_name) ;
+
+  setCreatePresetMode(false) ;
+
+  return true ;
+}
+
+void Presets::handlePresetsCombo()
+{
+  String preset_name     = this->presetsCombo->getText() ;
+  int    option_n        = this->presetsCombo->getSelectedItemIndex() ;
+  int    stored_option_n = AvCaster::GetPresetIdx() ;
+
+  if (this->deletePresetButton->isDown()) return ; // defer to handleDeleteButton()
+
+  // create, rename or update preset
+  if (!createOrUpdatePreset()) AvCaster::SetValue(CONFIG::PRESET_ID , stored_option_n) ;
 }
 
 void Presets::setCreatePresetMode(bool is_pending_new_preset_name)
 {
-  bool   is_static_preset = AvCaster::IsStaticPreset() ;
-  String button_text      = (is_pending_new_preset_name) ? GUI::DELETE_BTN_CANCEL_TEXT :
-                            (is_static_preset          ) ? GUI::DELETE_BTN_RESET_TEXT  :
-                                                           GUI::DELETE_BTN_DELETE_TEXT ;
+  bool   is_static_preset   = AvCaster::IsStaticPreset() ;
+  bool   should_be_editable = is_pending_new_preset_name || !is_static_preset ;
+  String button_text        = (is_static_preset          ) ? GUI::DELETE_BTN_RESET_TEXT  :
+                              (is_pending_new_preset_name) ? GUI::DELETE_BTN_CANCEL_TEXT :
+                                                             GUI::DELETE_BTN_DELETE_TEXT ;
 
-  this->presetsCombo->setEditableText(is_pending_new_preset_name || !is_static_preset) ;
-  this->deleteButton->setButtonText  (button_text) ;
+DEBUG_TRACE_SET_CREATE_PRESET_MODE
+
+  this->presetsCombo      ->setEditableText(should_be_editable) ;
+  this->deletePresetButton->setButtonText  (button_text) ;
+
+  if (should_be_editable) this->presetsCombo->showEditor() ;
 }
 
 bool Presets::isCreatePresetMode()
 {
-  return this->deleteButton->getButtonText() == GUI::DELETE_BTN_CANCEL_TEXT ;
+  return this->deletePresetButton->getButtonText() == GUI::DELETE_BTN_CANCEL_TEXT ;
 }
 
 //[/MiscUserCode]
@@ -316,14 +316,11 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="presetsGroup" id="5f4ffe47101cb73b" memberName="presetsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"
                   textcol="ffffffff" title="Presets"/>
-  <TEXTBUTTON name="saveButton" id="b669a1abab5602e9" memberName="saveButton"
-              virtualName="" explicitFocusOrder="1" pos="244 35 64 24" buttonText="Save"
+  <TEXTBUTTON name="newPresetButton" id="e71f2f34ab7772e6" memberName="newPresetButton"
+              virtualName="" explicitFocusOrder="1" pos="268 36 96 24" buttonText="New Preset"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="newButton" id="693a3f523732acb3" memberName="newButton"
-              virtualName="" explicitFocusOrder="2" pos="332 35 64 24" buttonText="New"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="deleteButton" id="846aa62a47585ee2" memberName="deleteButton"
-              virtualName="" explicitFocusOrder="3" pos="420 35 64 24" buttonText="Delete"
+  <TEXTBUTTON name="deletePresetButton" id="693a3f523732acb3" memberName="deletePresetButton"
+              virtualName="" explicitFocusOrder="2" pos="388 36 96 24" buttonText="Delete Preset"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="presetLabel" id="3a60504146c5134" memberName="presetLabel"
          virtualName="" explicitFocusOrder="0" pos="500 36 48 24" textCol="ffffffff"
@@ -331,10 +328,10 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="presetsCombo" id="94d77976c2b2f37" memberName="presetsCombo"
-            virtualName="" explicitFocusOrder="4" pos="560 36 128 24" editable="1"
+            virtualName="" explicitFocusOrder="3" pos="560 36 128 24" editable="1"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
-               virtualName="" explicitFocusOrder="5" pos="696 36 24 24" buttonText="configButton"
+               virtualName="" explicitFocusOrder="4" pos="696 36 24 24" buttonText="configButton"
                connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="1"
                resourceNormal="preferencessystem_png" opacityNormal="1" colourNormal="0"
                resourceOver="confighover_png" opacityOver="1" colourOver="0"

@@ -16,6 +16,7 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
@@ -62,7 +63,7 @@ public:
 
 public:
 
-  bool validateConfigGui() ;
+  bool validateParams() ;
 
 
 private:
@@ -116,14 +117,16 @@ private:
   ComboBox*     videoBitrateCombo ;
   Label*        outputDestLabel ;
   TextEditor*   outputDestText ;
-  TextButton*   serverButton ;
-  ComboBox*     hostCombo ;
+  TextButton*   newNetworkButton ;
+  TextButton*   deleteNetworkButton ;
+  ToggleButton* timestampToggle ;
+  ToggleButton* joinPartToggle ;
+  ComboBox*     networkCombo ;
   TextEditor*   portText ;
   TextEditor*   nickText ;
   TextEditor*   passText ;
   TextEditor*   channelText ;
   TextEditor*   greetingText ;
-  ToggleButton* joinPartToggle ;
 
     //[/UserVariables]
 
@@ -144,7 +147,7 @@ private:
     ScopedPointer<ConfigImage> configImage;
     ScopedPointer<ConfigOutput> configOutput;
     ScopedPointer<ConfigChat> configChat;
-    ScopedPointer<Component> configSpacer;
+    ScopedPointer<Component> dummyConfigPane;
     ScopedPointer<GroupComponent> hintsGroup;
     ScopedPointer<TextEditor> hintsText;
 

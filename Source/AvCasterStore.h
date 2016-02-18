@@ -46,18 +46,18 @@ private:
   AvCasterStore() ;
 
   // persistence
-  ValueTree verifyConfig      (ValueTree config_store , Identifier root_node_id) ;
-  ValueTree getOrCreatePresets() ;
-  ValueTree getOrCreateServers() ;
-  void      verifyRoot        () ;
-  void      verifyPresets     () ;
-  void      verifyPreset      () ;
-  void      verifyServers     () ;
-  void      verifyServer      (ValueTree a_server_node) ;
-  void      sanitizeRoot      () ;
-  void      sanitizePresets   () ;
-  void      sanitizePreset    () ;
-  void      storeConfig       () ;
+  ValueTree verifyStoredConfig (ValueTree config_store) ;
+  ValueTree getOrCreatePresets () ;
+  ValueTree getOrCreateNetworks() ;
+  void      verifyRoot         () ;
+  void      verifyPresets      () ;
+  void      verifyPreset       () ;
+  void      verifyNetworks     () ;
+  void      verifyNetwork      (ValueTree a_network_node) ;
+  void      sanitizeRoot       () ;
+  void      sanitizePresets    () ;
+  void      sanitizePreset     () ;
+  void      storeConfig        () ;
 
   // runtime params
   void verifyProperty              (ValueTree config_store    , Identifier a_key ,
@@ -70,12 +70,6 @@ private:
   void sanitizePresetComboProperty(Identifier a_key , StringArray options) ;
 //   void detectDisplayDimensions    () ;
   void detectCaptureDevices       () ;
-  void loadPreset                 () ;
-  void storePreset                (String preset_name) ;
-  void renamePreset               (String preset_name) ;
-  void deletePreset               () ;
-  void resetPreset                () ;
-  void storeServer                (String host , String port) ;
 
   // event handlers
   void listen                  (bool should_listen) ;
@@ -95,30 +89,38 @@ private:
 //   void valueTreeRedirected       (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
 
   // getters/setters
-  ValueTree   getKeyNode          (const Identifier& a_key) ;
-  bool        isControlKey        (const Identifier& a_key) ;
+  bool        isMediaKey          (const Identifier& a_key) ;
+  bool        isReconfigureKey    (const Identifier& a_key) ;
   StringArray presetsNames        () ;
   StringArray cameraNames         () ;
   StringArray audioNames          () ;
-  ValueTree   getCameraConfig     () ;
+  StringArray networkNames        () ;
+  ValueTree   getCameraStore      () ;
+  ValueTree   getNetworkStore     (Identifier network_id) ;
   StringArray getCameraResolutions() ;
   void        deactivateControl   (const Identifier& a_key) ;
-  void        setConfig           (const Identifier& a_key , var a_value) ;
+  void        setValue            (ValueTree storage_node , const Identifier& a_key , var a_value) ;
+  void        setRootValue        (const Identifier& a_key , var a_value) ;
+  void        setVolatileValue    (const Identifier& a_key , var a_value) ;
+  void        renamePreset        (String preset_name) ;
+  void        storePreset         (String preset_name) ;
+  void        deletePreset        () ;
+  void        resetPreset         () ;
+  void        loadPreset          () ;
+  void        storeNetwork        (String network         , String port    , String nick     ,
+                                   String pass            , String channel , String greeting ,
+                                   bool   show_join_parts                                    ) ;
   void        updateIrcHost       (StringArray alias_uris , String actual_host) ;
-#ifdef PREFIX_CHAT_NICKS
-  void        updateChatNicks     (String host , String channel , StringArray nicks) ;
-#else // PREFIX_CHAT_NICKS
-  void        updateChatNicks     (String host , StringArray nicks) ;
-#endif // PREFIX_CHAT_NICKS
+  void        updateChatNicks     (Identifier network_id , StringArray nicks) ;
   StringArray getChatNicks        (ValueTree chatters_store) ;
 
   // configuration/persistence
-  ValueTree root ;      // config root            (STORAGE_ID node)
-  ValueTree presets ;   // persistent GUI config  (PRESETS_ID node)
-  ValueTree config ;    // volatile GUI config    (VOLATILE_CONFIG_ID node)
-  ValueTree cameras ;   // video devices info     (CAMERA_DEVICES_ID node)
-  ValueTree audios ;    // audio devices info     (AUDIO_DEVICES_ID node)
-  ValueTree servers ;   // chat servers and nicks (SERVERS_ID node)
+  ValueTree root ;       // config root             (STORAGE_ID node        )
+  ValueTree presets ;    // persistent GUI config   (PRESETS_ID node        )
+  ValueTree config ;     // volatile GUI config     (VOLATILE_CONFIG_ID node)
+  ValueTree cameras ;    // video devices info      (CAMERA_DEVICES_ID node )
+  ValueTree audios ;     // audio devices info      (AUDIO_DEVICES_ID node  )
+  ValueTree networks ;   // chat networks and nicks (NETWORKS_ID node       )
   File      configDir ;
   File      configFile ;
 } ;

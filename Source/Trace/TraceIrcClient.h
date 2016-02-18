@@ -23,55 +23,87 @@
 
 #  include "Trace.h"
 
+  // IRC event codes
+static HashMap<int , String> IRC_EVENT_CODES ;
+static void PopulateEventCodes()
+{
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_WELCOME       , "RPL_WELCOME"      ) ; // 001
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_YOURHOST      , "RPL_YOURHOST"     ) ; // 002
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_CREATED       , "RPL_CREATED"      ) ; // 003
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_MYINFO        , "RPL_MYINFO"       ) ; // 004
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_BOUNCE        , "RPL_BOUNCE"       ) ; // 005
+  IRC_EVENT_CODES.set(42                           , "RPL_YOURID"       ) ; // 042 non-RFC
+  IRC_EVENT_CODES.set(250                          , "RPL_STATSDLINE"   ) ; // 250
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_LUSERCLIENT   , "RPL_LUSERCLIENT"  ) ; // 251
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_LUSEROP       , "RPL_LUSEROP"      ) ; // 252
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_LUSERUNKNOWN  , "RPL_LUSERUNKNOWN" ) ; // 253
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_LUSERCHANNELS , "RPL_LUSERCHANNELS") ; // 254
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_LUSERME       , "RPL_LUSERME"      ) ; // 255
+  IRC_EVENT_CODES.set(256                          , "RPL_ADMINME"      ) ; // 256
+  IRC_EVENT_CODES.set(265                          , "RPL_LOCALUSERS"   ) ; // 265 non-RFC
+  IRC_EVENT_CODES.set(266                          , "RPL_GLOBALUSERS"  ) ; // 266 non-RFC
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_NAMREPLY      , "RPL_NAMREPLY"     ) ; // 353
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_ENDOFNAMES    , "RPL_ENDOFNAMES"   ) ; // 366
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_MOTD          , "RPL_MOTD"         ) ; // 372
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_MOTDSTART     , "RPL_MOTDSTART"    ) ; // 375
+  IRC_EVENT_CODES.set(LIBIRC_RFC_RPL_ENDOFMOTD     , "RPL_ENDOFMOTD"    ) ; // 376
+}
 
-#  define DUMP_SERVER_PARAMS String dbg = "" ;                    \
-  for (int i = 0 ; i < count ; ++i)                               \
-    dbg += "\n\tparams[" + String(i) + "]=" + String(params[i]) ; \
-  Trace::TraceChat(dbg) ;                                         \
 
-#  define DEBUG_TRACE_SERVER_INFO                                                                                         \
-  bool is_session_valid = a_server_info->session != 0 ;                                                                   \
-  bool is_host_valid    = a_server_info->host.isNotEmpty() ;                                                              \
-  bool is_port_valid    = a_server_info->port > 0 ;                                                                       \
-  bool is_nick_valid    = a_server_info->nick.isNotEmpty() ;                                                              \
-  if (DEBUG_TRACE_VB) Trace::TraceChat(String("a_server_info =>") +                                                       \
-    "\n\tsession='" + String(!!a_server_info->session) + "' (" + String((is_session_valid) ? "valid" : "invalid") + ")" + \
-    "\n\thost='"    + String(a_server_info   ->host  ) + "' (" + String((is_host_valid   ) ? "valid" : "invalid") + ")" + \
-    "\n\tport='"    + String(a_server_info   ->port  ) + "' (" + String((is_port_valid   ) ? "valid" : "invalid") + ")" + \
-    "\n\tnick='"    + String(a_server_info   ->nick  ) + "' (" + String((is_nick_valid   ) ? "valid" : "invalid") + ")" ) ;
+#  define DUMP_SERVER_PARAMS String dbg = "" ;                         \
+  for (int i = 0 ; i < count ; ++i)                                    \
+    dbg += "\tparams[" + String(i) + "]=" + String(params[i]) + "\n" ; \
+  Trace::TraceChatVb(dbg) ;
 
-#  define DEBUG_TRACE_CREATE_SESSION                                        \
-  String dbg = " session for host '" + String(server_info.host) + "'" ;     \
-  if (server_info.session == 0) Trace::TraceError("error creating" + dbg) ; \
-  else                          Trace::TraceChat("created" + dbg)           ;
+#  define DEBUG_TRACE_CREATE_SESSION                                              \
+  String dbg = " session for network '" + String(network_info->network) + "'" ;   \
+  String err = String((is_valid_session) ? "" : " session invalid") +             \
+               String((is_valid_network) ? "" : " network invalid") +             \
+               String((is_valid_port   ) ? "" : " port invalid"   ) +             \
+               String((is_valid_nick   ) ? "" : " nick invalid"   ) +             \
+               String((is_valid_channel) ? "" : " channel invalid") ;             \
+  if (err.isNotEmpty()) Trace::TraceError("error creating" + dbg + " - " + err) ; \
+  else                  Trace::TraceChat("created" + dbg)                         ;
 
-#  define DEBUG_TRACE_LOGIN                                                              \
-  String dbg = "connecting to " + String(a_server_info->host) +                          \
-               ":"              + String(a_server_info->port) +                          \
-               " as '"          + String(a_server_info->nick) + "'" ;                    \
-  String err = (is_err) ? String(irc_strerror(irc_errno(a_server_info->session))) : "" ; \
-  if (is_err) Trace::TraceError("error " + dbg + " - " + err) ;                          \
-  else        Trace::TraceChat(dbg)                                                      ;
+#  define DEBUG_TRACE_LOGIN_FAILED                                     \
+  if (GetRetries(network_id) == IRC::STATE_FAILED + 1)                 \
+    Trace::TraceError("error connecting to " + String(network)       + \
+                      ":"                    + String(port   )       + \
+                      " as '"                + String(nick   ) + "'" ) ;
 
-#  define DEBUG_TRACE_CONNECTED Trace::TraceState("connected to " + host) ;
+#  define DEBUG_TRACE_LOGIN                                                     \
+  String err              = String(irc_strerror(irc_errno(session))) ;          \
+  bool   is_connect_error = err != String("Illegal operation for this state") ; \
+  String dbg              = "connecting to " + String(network) +                \
+                            ":"              + String(port   ) +                \
+                            " as '"          + String(nick   ) + "'" ;          \
+  if      (!is_err         ) Trace::TraceChat(dbg) ;                            \
+  else if (is_connect_error) Trace::TraceError("error " + dbg + " - " + err)    ;
 
-#  define DEBUG_TRACE_SERVER_MSG if (DEBUG_TRACE_VB)                                          \
-  { if      (event == LIBIRC_RFC_RPL_NAMREPLY  ) Trace::TraceChat("received names reply") ;   \
-    else if (event == LIBIRC_RFC_RPL_ENDOFNAMES) Trace::TraceChat("received end of names") ;  \
-    else { Trace::TraceChat(String("received code: ") + String(event)) ; DUMP_SERVER_PARAMS } }
+#  define DEBUG_TRACE_CONNECTED                                                         \
+  Trace::TraceState("connected to '" + network_info->network + "' host (" + host + ")") ;
 
-#  define DEBUG_TRACE_NICKS                                                          \
-  Trace::TraceChat("got " + String(nicks.size())                                   + \
-                   " nicks for '" + host + "' channel: " + channel                 + \
-                   ((DEBUG_TRACE_VB) ? " [" + nicks.joinIntoString(",") + "]" : "")) ;
+#  define DEBUG_TRACE_SERVER_EVENT                                                      \
+  if (IRC_EVENT_CODES.size() == 0) PopulateEventCodes() ;                               \
+  String code = (IRC_EVENT_CODES.contains(event)) ? IRC_EVENT_CODES[event]           :  \
+                                                    String("code: ") + String(event) ; \
+  Trace::TraceChatVb(String("received ") + code) ; DUMP_SERVER_PARAMS
 
-#  define DEBUG_TRACE_CHAT_MSG_VB                                                           \
-  if (DEBUG_TRACE_VB && count == 2)                                                         \
-    Trace::TraceChat("'" + String((!!origin) ? origin : "someone") + "' said in channel " + \
-                     String(params[0]) + ": " + String(params[1]) + "")                     ;
+#  define DEBUG_TRACE_NICKS                                                     \
+  StringArray newnicks     = StringArray::fromTokens(nicks , false) ;           \
+  String      nnewnicks    = String(newnicks.size()) ;                          \
+  String      ntotalnicks  = String(network_info->nicks.size()) ;               \
+  String      newnicks_csv = newnicks.joinIntoString(",") ;                     \
+  Trace::TraceChat("got ("          + nnewnicks + "/"           + ntotalnicks + \
+                   ") NAMES from '" + network   + "' channel: " + channel     + \
+                   ((DEBUG_TRACE_CHAT_VB) ? " [" + newnicks_csv + "]" : "")   ) ;
+
+#  define DEBUG_TRACE_CHAT_MSG_VB                                                        \
+  if (count == 2) Trace::TraceChatVb("'" + String((!!origin) ? origin : "someone") +     \
+                                     "' said in channel " + String(params[0])      +     \
+                                     ": "                 + String(params[1])      + "") ;
 
 #  define DEBUG_TRACE_CHAT_MSG                                    \
-  bool has_kicked_self = message.endsWith(IRC::KICKED_SELF_MSG) ; \
   if (is_root_channel ) Trace::TraceVerbose("is_root_channel" ) ; \
   if (is_root_user    ) Trace::TraceVerbose("is_root_user"    ) ; \
   if (is_xmpp_channel ) Trace::TraceVerbose("is_my_channel"   ) ; \
@@ -81,40 +113,32 @@
   String dbg = ((is_root_user && is_root_channel  ) ?                                        \
                ((is_logged_in                     ) ? "logged into bitlbee"              :   \
                ((is_login_blocked                 ) ? "already logged into bitlbee" : "")) : \
-               ((!is_root_user && !is_root_channel) ? nick + " said: " + message :           \
-               ((DEBUG_TRACE_VB                   ) ? "unhandled msg" : "")      )      ) ;  \
+               ((!is_root_user && !is_root_channel) ? nick + " said: '" + message + "'" :    \
+               ((DEBUG_TRACE_CHAT_VB              ) ? "unhandled msg" : "")      )      ) ;  \
   if (dbg.isNotEmpty()) Trace::TraceChat(dbg)                                                ;
 
-#  define DEBUG_TRACE_ONJOIN                                      \
-  Trace::TraceChat(nick + " just joined channel " + channel_name) ;
+#  define DEBUG_TRACE_ONJOIN Trace::TraceChat(nick + " just joined channel " + channel) ;
 
-#  define DEBUG_TRACE_ONPART                                      \
-  Trace::TraceChat(nick + " just parted channel " + channel_name) ;
+#  define DEBUG_TRACE_ONPART Trace::TraceChat(nick + " just parted channel " + channel) ;
 
-#  define DEBUG_TRACE_NICK_CHANGE                                                                \
-  Trace::TraceChat(from_nick + "' changed nick to '" + to_nick + "' on TODO(host)TODO(channel)") ;
-
-#  define DEBUG_TRACE_THREAD_RUN_IN                                    \
-  Trace::TraceState("starting '" + this->getThreadName() + "' thread") ;
-
-#  define DEBUG_TRACE_THREAD_RUN_OUT                                   \
-  Trace::TraceState("stopping '" + this->getThreadName() + "' thread") ;
+#  define DEBUG_TRACE_NICK_CHANGE                                                          \
+  IrcClient* client = static_cast<IrcClient*>(irc_get_ctx(session)) ;                      \
+  Trace::TraceChat(from_nick             + "' changed nick to '" + to_nick + "' on "     + \
+                   network_info->network + ":"                   + network_info->channel ) ;
 
 #else // DEBUG_TRACE
 
-#  define DEBUG_TRACE_SERVER_INFO    ;
 #  define DEBUG_TRACE_CREATE_SESSION ;
 #  define DEBUG_TRACE_LOGIN          ;
+#  define DEBUG_TRACE_LOGIN_FAILED   ;
 #  define DEBUG_TRACE_CONNECTED      ;
-#  define DEBUG_TRACE_SERVER_MSG     ;
+#  define DEBUG_TRACE_SERVER_EVENT   ;
 #  define DEBUG_TRACE_NICKS          ;
 #  define DEBUG_TRACE_CHAT_MSG_VB    ;
 #  define DEBUG_TRACE_CHAT_MSG       ;
 #  define DEBUG_TRACE_ONJOIN         ;
 #  define DEBUG_TRACE_ONPART         ;
 #  define DEBUG_TRACE_NICK_CHANGE    ;
-#  define DEBUG_TRACE_THREAD_RUN_IN  ;
-#  define DEBUG_TRACE_THREAD_RUN_OUT ;
 
 #endif // DEBUG_TRACE
 #endif // _TRACEIRCCLIENT_H_

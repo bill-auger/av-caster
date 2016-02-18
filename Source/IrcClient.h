@@ -16,30 +16,26 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+
 #include "Constants.h"
 #ifndef DISABLE_CHAT
 
 #ifndef _IRCCLIENT_H_
 #define _IRCCLIENT_H_
 
+
 #include <libircclient/libircclient.h>
 
 #include "Constants.h"
-
-
-typedef struct IrcServerInfo
-{
-  irc_session_t* session  ;
-  String         host     ;
-  unsigned short port     ;
-  String         nick     ;
-} IrcServerInfo ;
 
 
 /**
   IrcClient is the IRC network communications class for the AvCaster application.
   It encapsulates interactions with the libircclient C library
       and provides cross-network channel bridging.
+
+  Each instance can manage multiple network connections
+      but aech network session is restricted to a single channel.
 */
 class IrcClient : public Thread
 {
@@ -50,10 +46,28 @@ public:
 
   ~IrcClient() ;
 
+  // session management
+  void configure(bool should_create_sessions , bool should_show_timestamps ,
+                                               bool should_show_joinparts  ) ;
+
 
 private:
 
-  IrcClient(ValueTree servers_store) ;
+  typedef struct IrcNetworkInfo
+  {
+    irc_session_t* session ;
+    Identifier     network_id ;
+    String         network ;
+    unsigned short port ;
+    String         nick ;
+    String         pass ;
+    String         channel ;
+    String         greeting ;
+    StringArray    nicks ;
+  } IrcNetworkInfo ;
+
+
+  IrcClient(ValueTree networks_store , bool should_show_timestamps , bool should_show_joinparts) ;
 
   // libircclient callbacks
   static void OnConnect   (irc_session_t* session , const char* event  , const char* origin ,
@@ -70,26 +84,32 @@ private:
                            const char**   params  , unsigned int count                      ) ;
 
   // helpers
-  static bool        IsValidServerInfo  (IrcServerInfo* a_server_info) ;
-  static bool        IsSufficientVersion() ;
-  static void        HandleNicks        (String host , String channel , StringArray nicks) ;
-  static String      ProcessTextMeta    (const char* message) ;
-  static StringArray ProcessTimestamp   (String message) ;
-  static void        AddServerChat      (String message) ;
-  static void        AddClientChat      (String message) ;
-  static void        AddUserChat        (String prefix , String nick , String message) ;
+  static bool            IsSufficientVersion() ;
+  static IrcNetworkInfo* GetNetworkInfo     (irc_session_t* session) ;
+  static void            SetRetries         (Identifier network_id , int n_retries) ;
+  static int             GetRetries         (Identifier network_id) ;
+  static void            HandleNicks        (IrcNetworkInfo* network_info , String nicks) ;
+  static void            UpdateNicks        (IrcNetworkInfo* network_info) ;
+  static String          ProcessTextMeta    (const char* message) ;
+  static StringArray     ProcessTimestamp   (String message) ;
+  static void            AddServerChat      (String message) ;
+  static void            AddClientChat      (String message) ;
+  static void            AddUserChat        (String prefix , String nick , String message) ;
 
   // session management
-  IrcServerInfo createSession(ValueTree server_store) ;
-  bool          login        (IrcServerInfo* a_server_info) ;
-  void          run          () override ;
+  void createSessions () ;
+  void destroySessions() ;
+  void run            () override ;
+  bool login          (IrcNetworkInfo* network_info) ;
+  void sendChat       (String chat_message) ;
 
-  void sendChat(String chat_msg) ;
 
+  static irc_callbacks_t ServerCallbacks ;
+  static bool            ShouldShowTimestamps ;
+  static bool            ShouldShowJoinParts ;
 
-  irc_callbacks_t      callbacks ;
-  Array<IrcServerInfo> servers ;
-  ValueTree            serversStore ; // TODO: replace servers?? replace IrcServerInfo
+  ValueTree                  networksStore ;
+  OwnedArray<IrcNetworkInfo> networks ;
 } ;
 
 #endif // _IRCCLIENT_H_
