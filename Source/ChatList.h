@@ -39,7 +39,7 @@ class ChatList  : public Component,
 {
 public:
     //==============================================================================
-    ChatList (ValueTree network_store);
+    ChatList ();
     ~ChatList();
 
     //==============================================================================
@@ -47,18 +47,22 @@ public:
 
 private:
 
+  friend class MainContent ;
+
+
   void valueTreeChildAdded     (ValueTree& a_parent_node , ValueTree& a_node) override ;
   void valueTreeChildRemoved   (ValueTree& a_parent_node , ValueTree& a_node) override ;
-  void valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key)  override ;
+  void valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key ) override ;
 
+  void initialize        (ValueTree network_store , ValueTree chatters_store) ;
   void createChatListItem(int child_idx) ;
   int  sortedChatterIdx  (ValueTree& chatter_store) ;
   void refresh           () ;
 
   // unused ValueTree::Listener interface implementations
-  void valueTreeChildOrderChanged(ValueTree& a_parent_node) override { UNUSED(a_parent_node) ;           } ;
-  void valueTreeParentChanged    (ValueTree& a_node)        override { UNUSED(a_node) ;                  } ;
-  void valueTreeRedirected       (ValueTree& a_node)        override { UNUSED(a_node) ;                  } ;
+  void valueTreeChildOrderChanged(ValueTree& /*a_parent_node*/)                        override {} ;
+  void valueTreeParentChanged    (ValueTree& /*a_node*/)                               override {} ;
+  void valueTreeRedirected       (ValueTree& /*a_node*/)                               override {} ;
 
 
     //[/UserMethods]
@@ -71,8 +75,8 @@ private:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
-  ValueTree networkStore ;
-  ValueTree chattersStore ;
+  ValueTree                networkStore ;
+  ValueTree                chattersStore ;
   OwnedArray<ChatListItem> chatListItems ;
 
     //[/UserVariables]

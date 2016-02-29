@@ -38,8 +38,7 @@ class MainContent ;
   It has it controls for setting the per-network chat parameters.
                                                                     //[/Comments]
 */
-class ConfigChat  : public Component,
-                    public ComboBoxListener
+class ConfigChat  : public Component
 {
 public:
     //==============================================================================
@@ -52,7 +51,6 @@ public:
 
     void paint (Graphics& g);
     void resized();
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
 
 
@@ -67,12 +65,9 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> newNetworkButton;
-    ScopedPointer<TextButton> deleteNetworkButton;
     ScopedPointer<ToggleButton> timestampToggle;
     ScopedPointer<ToggleButton> joinPartToggle;
     ScopedPointer<Label> networkLabel;
-    ScopedPointer<ComboBox> networkCombo;
     ScopedPointer<Label> portLabel;
     ScopedPointer<TextEditor> portText;
     ScopedPointer<Label> nickLabel;
@@ -83,6 +78,7 @@ private:
     ScopedPointer<TextEditor> channelText;
     ScopedPointer<Label> greetingLabel;
     ScopedPointer<TextEditor> greetingText;
+    ScopedPointer<TextEditor> networkText;
 
 
     //==============================================================================

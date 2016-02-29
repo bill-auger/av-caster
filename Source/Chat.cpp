@@ -31,7 +31,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-Chat::Chat ()
+Chat::Chat (MainContent* main_content)
 {
     addAndMakeVisible (chatGroup = new GroupComponent ("chatGroup",
                                                        TRANS("Chat")));
@@ -72,9 +72,9 @@ Chat::Chat ()
     chatEntryText->setColour (TextEditor::backgroundColourId, Colour (0xff202020));
     chatEntryText->setText (String::empty);
 
-    addAndMakeVisible (dummyChatList = new ChatList (ValueTree::invalid));
-    dummyChatList->setExplicitFocusOrder (2);
-    dummyChatList->setName ("dummyChatList");
+    addAndMakeVisible (chatList = new ChatList());
+    chatList->setExplicitFocusOrder (2);
+    chatList->setName ("chatList");
 
 
     //[UserPreSize]
@@ -85,35 +85,15 @@ Chat::Chat ()
 
     //[Constructor] You can add your own custom stuff here..
 
-  // text editor colors
-  this->chatEntryText  ->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
-  this->chatHistoryText->setColour(TextEditor::textColourId            , GUI::TEXT_NORMAL_COLOR  ) ;
-  this->chatEntryText  ->setColour(TextEditor::textColourId            , GUI::TEXT_NORMAL_COLOR  ) ;
-  this->chatHistoryText->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
-  this->chatEntryText  ->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
-  this->chatHistoryText->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
-  this->chatEntryText  ->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
-  this->chatHistoryText->setColour(TextEditor::outlineColourId         , GUI::TEXT_BG_COLOR      ) ;
-  this->chatEntryText  ->setColour(TextEditor::outlineColourId         , GUI::TEXT_BG_COLOR      ) ;
-  this->chatHistoryText->setColour(TextEditor::focusedOutlineColourId  , GUI::TEXT_FOCUS_COLOR   ) ;
-  this->chatEntryText  ->setColour(TextEditor::focusedOutlineColourId  , GUI::TEXT_FOCUS_COLOR   ) ;
-  this->chatHistoryText->setColour(TextEditor::shadowColourId          , GUI::TEXT_SHADOW_COLOR  ) ;
-  this->chatEntryText  ->setColour(TextEditor::shadowColourId          , GUI::TEXT_SHADOW_COLOR  ) ;
-  this->chatHistoryText->setColour(TextEditor::backgroundColourId      , GUI::TEXT_BG_COLOR      ) ;
-  this->chatEntryText  ->setColour(TextEditor::backgroundColourId      , GUI::TEXT_BG_COLOR      ) ;
-
-  // text editor behaviors
-  this->chatEntryText->setSelectAllWhenFocused(true) ;
+  // configure look and feel , validations, and listeners
+  TextEditor::Listener* this_text_listener = static_cast<TextEditor::Listener*>(this) ;
+  main_content->configureTextEditor(this->chatEntryText , this_text_listener ,
+                                    GUI::MAX_MOTD_LEN   , String::empty      ) ;
   this->chatEntryText->setTextToShowWhenEmpty(GUI::CHAT_PROMPT_TEXT , GUI::TEXT_EMPTY_COLOR) ;
-  this->chatEntryText->setInputRestrictions(1024) ;
+  setFontSize() ;
 
-  // hide GUI designer placeholder
-  this->dummyChatList->setVisible(false) ;
-
-  // register interest in outgoing chat text
-  this->chatEntryText->addListener(this) ;
-
-  updateVisiblilty() ;
+  // defer visibility until connected to some chat channel
+  updateVisiblilty(false) ;
 
     //[/Constructor]
 }
@@ -128,11 +108,10 @@ Chat::~Chat()
     chatHistoryText = nullptr;
     chatEntryGroup = nullptr;
     chatEntryText = nullptr;
-    dummyChatList = nullptr;
+    chatList = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
-  this->chatLists.clear() ;
     //[/Destructor]
 }
 
@@ -159,7 +138,7 @@ void Chat::resized()
     chatHistoryText->setBounds (32, 32, getWidth() - 64, getHeight() - 104);
     chatEntryGroup->setBounds (28, getHeight() - 68, getWidth() - 56, 38);
     chatEntryText->setBounds (32, getHeight() - 58, getWidth() - 64, 24);
-    dummyChatList->setBounds (getWidth() - 160, 32, 128, 48);
+    chatList->setBounds (getWidth() - 160, 32, 128, 48);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -170,70 +149,33 @@ void Chat::resized()
 
 /* Chat public instance methods */
 
-void Chat::updateVisiblilty()
+void Chat::updateVisiblilty(bool is_visible)
 {
-  // get total number of chatters
-  bool is_connected = false ;
-  for (int network_n = 0 ; network_n < this->networksStore.getNumChildren() ; ++network_n)
-  {
-    ValueTree network_store   = this->networksStore.getChild(network_n) ;
-    int       connected_state = int(network_store[CONFIG::RETRIES_ID]) ;
-    is_connected              = is_connected || connected_state == IRC::STATE_CONNECTED ;
-  }
-
-  bool   is_visible  = is_connected ;
   String group_title = (is_visible) ? GUI::CHAT_GROUP_TITLE : AvCaster::GetVersionString() ;
 
 DEBUG_TRACE_CHAT_VISIBILITY
 
+  const MessageManagerLock mmLock ;
   this->chatGroup       ->setText   (group_title) ;
   this->chatHistoryGroup->setVisible(is_visible) ;
   this->chatHistoryText ->setVisible(is_visible) ;
   this->chatEntryGroup  ->setVisible(is_visible) ;
   this->chatEntryText   ->setVisible(is_visible) ;
-}
-
-void Chat::refresh()
-{
-  updateVisiblilty() ;
-
-  // calculate total height
-  int network_n = this->chatLists.size() ; int lists_h = GUI::CHATLIST_Y ;
-  while (network_n--) lists_h += this->chatLists[network_n]->getHeight() + GUI::PAD ;
-
-  bool is_scrollbar_visible = lists_h > getHeight() ;
-  int  list_x_offset        = (is_scrollbar_visible)? GUI::OFFSET_CHATLIST_X : GUI::CHATLIST_X ;
-  int  list_x               = getWidth() - list_x_offset ;
-  int  list_y               = GUI::CHATLIST_Y ;
-
-  // arrange lists
-  for (int network_n = 0 ; network_n < this->chatLists.size() ; ++network_n)
-  {
-    ChatList* chat_list  = this->chatLists[network_n] ;
-    int       n_chatters = chat_list->getNumChildComponents() - GUI::N_STATIC_CHATLIST_CHILDREN ;
-    bool      is_visible = n_chatters > 0 ;
-
-DEBUG_TRACE_MOVE_CHATLIST
-
-    if (!is_visible) continue ;
-
-    chat_list->setTopLeftPosition(list_x , list_y) ;
-
-    list_y += chat_list->getHeight() ;
-  }
+  this->chatList        ->setVisible(is_visible) ;
 }
 
 void Chat::addChatLine(String prefix , String nick , String message)
 {
-  prefix  = prefix .trim() ;
-  nick    = nick   .trim() ;
-  message = message.trim() ;
-  prefix  = (prefix.isEmpty()        ) ? String::empty : prefix + " " ;
-  nick    = (nick == GUI::CLIENT_NICK) ? String::empty : nick   + ": " ;
+  String newline = (this->chatHistoryText->getText().isEmpty()) ? String::empty : newLine ;
+  prefix         = prefix .trim() ;
+  nick           = nick   .trim() ;
+  message        = message.trim() ;
+  prefix         = (prefix.isEmpty()        ) ? String::empty : prefix + " " ;
+  nick           = (nick == GUI::CLIENT_NICK) ? String::empty : nick   + ": " ;
 
   const MessageManagerLock mmLock ;
   this->chatHistoryText->moveCaretToEnd() ;
-  this->chatHistoryText->insertTextAtCaret("\n" + prefix + nick + message) ;
+  this->chatHistoryText->insertTextAtCaret(newline + prefix + nick + message) ;
 }
 
 
@@ -243,56 +185,38 @@ void Chat::textEditorReturnKeyPressed(TextEditor& a_text_editor)
 {
   if (&a_text_editor != this->chatEntryText) return ;
 
-#if DISABLE_CHAT
+#ifndef DISABLE_CHAT
   AvCaster::SendChat(this->chatEntryText->getText()) ;
 #endif // DISABLE_CHAT
   this->chatEntryText->clear() ;
 }
 
-void Chat::valueTreeChildAdded(ValueTree& a_parent_node , ValueTree& a_node)
+void Chat::setFontSize()
 {
-  if (isNetworkNode(a_parent_node , a_node)) createChatList(a_node) ;
+DEBUG_TRACE_SET_FONTSIZE
+
+  Font current_font  = this->chatHistoryText->getFont() ;
+  int  new_font_size = getFontSize() ;
+  Font new_font      = current_font.withHeight(new_font_size) ;
+
+  this->chatHistoryText->applyFontToAllText(new_font) ;
+  this->chatEntryText  ->applyFontToAllText(new_font) ;
+
+//   resized() ; // TODO: dynamic font size nyi
 }
 
-void Chat::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)
+
+int Chat::getFontSize()
 {
-  if (isNetworkNode(a_parent_node , a_node)) destroyChatList(String(a_node.getType())) ;
-}
+//   return GUI::FONT_SIZE ;
+  return 16 ;
+/* TODO: dynamic font size nyi
+  int font_size_n = int(this->fontSize.getValue()) ;
+  int font_size_n = int(this->fontSize.getValue()) ;
+  int font_size   = GUI::FONT_SIZES[font_size_n].getIntValue() ;
 
-void Chat::initialize(ValueTree networks_store)
-{
-  this->networksStore = networks_store ; this->networksStore.addListener(this) ;
-
-  for (int network_n = 0 ; network_n < this->networksStore.getNumChildren() ; ++network_n)
-    createChatList(this->networksStore.getChild(network_n)) ;
-}
-
-void Chat::createChatList(ValueTree network_store)
-{
-  String    network_id = String(network_store.getType()) ;
-  ChatList* chat_list = new ChatList(network_store) ;
-
-  const MessageManagerLock mmLock ;
-  chat_list->setComponentID(network_id) ; addChildComponent(chat_list) ;
-  this->chatLists.add(chat_list) ;
-
-  refresh() ;
-}
-
-void Chat::destroyChatList(String network_id)
-{
-  ChatList* chat_list     = static_cast<ChatList*>(findChildWithID(network_id)) ;
-  int       chat_list_idx = getIndexOfChildComponent(chat_list) ;
-
-  const MessageManagerLock mmLock ;
-  this->chatLists.removeObject(chat_list) ;
-
-  refresh() ;
-}
-
-bool Chat::isNetworkNode(ValueTree& a_parent_node , ValueTree& a_node)
-{
-  return a_parent_node.getType() == CONFIG::NETWORKS_ID ;
+  return font_size ;
+*/
 }
 
 //[/MiscUserCode]
@@ -307,10 +231,10 @@ bool Chat::isNetworkNode(ValueTree& a_parent_node , ValueTree& a_node)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="Chat" componentName="" parentClasses="public Component, public TextEditor::Listener, public ValueTree::Listener"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="1"
-                 initialHeight="1">
+<JUCER_COMPONENT documentType="Component" className="Chat" componentName="" parentClasses="public Component, public TextEditor::Listener"
+                 constructorParams="MainContent* main_content" variableInitialisers=""
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
     <ROUNDRECT pos="20 18 40M 36M" cornerSize="4" fill="solid: ff282828" hasStroke="0"/>
   </BACKGROUND>
@@ -331,9 +255,9 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="2" pos="32 58R 64M 24" textcol="ffffffff"
               bkgcol="ff202020" initialText="" multiline="0" retKeyStartsLine="0"
               readonly="0" scrollbars="0" caret="1" popupmenu="1"/>
-  <GENERICCOMPONENT name="dummyChatList" id="90795555172fbed0" memberName="dummyChatList"
-                    virtualName="" explicitFocusOrder="2" pos="160R 32 128 48" class="ChatList"
-                    params="ValueTree::invalid"/>
+  <GENERICCOMPONENT name="chatList" id="90795555172fbed0" memberName="chatList" virtualName=""
+                    explicitFocusOrder="2" pos="160R 32 128 48" class="ChatList"
+                    params=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

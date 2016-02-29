@@ -46,28 +46,44 @@ private:
   AvCasterStore() ;
 
   // persistence
-  ValueTree verifyStoredConfig (ValueTree config_store) ;
-  ValueTree getOrCreatePresets () ;
-  ValueTree getOrCreateNetworks() ;
-  void      verifyRoot         () ;
-  void      verifyPresets      () ;
-  void      verifyPreset       () ;
-  void      verifyNetworks     () ;
-  void      verifyNetwork      (ValueTree a_network_node) ;
-  void      sanitizeRoot       () ;
-  void      sanitizePresets    () ;
-  void      sanitizePreset     () ;
-  void      storeConfig        () ;
+  ValueTree verifyStorage  (ValueTree stored_config) ;
+  void      verifyRoot     () ;
+  void      verifyPresets  () ;
+  void      verifyPreset   () ;
+  void      verifyNetworks () ;
+  void      verifyNetwork  (ValueTree a_network_node) ;
+  void      sanitizeRoot   () ;
+  void      sanitizePresets() ;
+  void      sanitizePreset () ;
+  void      storeConfig    () ;
+  void      storePreset    (String preset_name) ;
+  void      renamePreset   (String preset_name) ;
+  void      deletePreset   () ;
+  void      resetPreset    () ;
+  void      loadPreset     () ;
 
-  // runtime params
-  void verifyProperty              (ValueTree config_store    , Identifier a_key ,
+  // validations
+  void verifyChildNode            (ValueTree config_store , Identifier a_node_id) ;
+  void verifyPresetChildNode      (Identifier a_node_id) ;
+  void verifyProperty             (ValueTree config_store    , Identifier a_key ,
                                    var       a_default_value                    ) ;
-  void verifyRootProperty          (Identifier a_key , var a_default_value) ;
-  void verifyPresetProperty        (Identifier a_key , var a_default_value) ;
+  void verifyRootProperty         (Identifier a_key , var a_default_value) ;
+  void verifyNetworkProperty      (Identifier a_key , var a_default_value) ;
+  void verifyPresetProperty       (Identifier a_key , var a_default_value) ;
+  void restoreStaticPresets       () ;
+  bool hasDuplicatedNodes         (ValueTree stored_config) ;
+  int  nDuplicatedNodes           (ValueTree parent_node , StringArray node_ids) ;
+  void removeDuplicatedNodes      (ValueTree parent_node , Identifier node_id) ;
+  void filterRogueKeys            (ValueTree parent_node , StringArray persistent_keys) ;
+  void filterRogueNodes           (ValueTree parent_node , StringArray persistent_node_ids) ;
   void sanitizeIntProperty        (ValueTree config_store , Identifier a_key ,
                                    int       min_value    , int max_value    ) ;
   void sanitizeRootComboProperty  (Identifier a_key , StringArray options) ;
   void sanitizePresetComboProperty(Identifier a_key , StringArray options) ;
+  void restoreTransients          () ;
+  void restorePresetTransients    (ValueTree a_preset_store) ;
+
+  // runtime params
 //   void detectDisplayDimensions    () ;
   void detectCaptureDevices       () ;
 
@@ -91,39 +107,30 @@ private:
   // getters/setters
   bool        isMediaKey          (const Identifier& a_key) ;
   bool        isReconfigureKey    (const Identifier& a_key) ;
+  void        deactivateControl   (const Identifier& a_key) ;
+  void        setValue            (ValueTree storage_node , const Identifier& a_key ,
+                                   const var a_value                                ) ;
+  void        setValueViaGui      (ValueTree storage_node , const Identifier& a_key ,
+                                   const var a_value                                ) ;
+  void        updateChatters      (StringArray nicks) ;
   StringArray presetsNames        () ;
   StringArray cameraNames         () ;
   StringArray audioNames          () ;
-  StringArray networkNames        () ;
   ValueTree   getCameraStore      () ;
-  ValueTree   getNetworkStore     (Identifier network_id) ;
   StringArray getCameraResolutions() ;
-  void        deactivateControl   (const Identifier& a_key) ;
-  void        setValue            (ValueTree storage_node , const Identifier& a_key , var a_value) ;
-  void        setRootValue        (const Identifier& a_key , var a_value) ;
-  void        setVolatileValue    (const Identifier& a_key , var a_value) ;
-  void        renamePreset        (String preset_name) ;
-  void        storePreset         (String preset_name) ;
-  void        deletePreset        () ;
-  void        resetPreset         () ;
-  void        loadPreset          () ;
-  void        storeNetwork        (String network         , String port    , String nick     ,
-                                   String pass            , String channel , String greeting ,
-                                   bool   show_join_parts                                    ) ;
-  void        updateIrcHost       (StringArray alias_uris , String actual_host) ;
-  void        updateChatNicks     (Identifier network_id , StringArray nicks) ;
-  StringArray getChatNicks        (ValueTree chatters_store) ;
+  StringArray getChatNicks        () ;
+
 
   // configuration/persistence
-  ValueTree root ;       // config root             (STORAGE_ID node        )
-  ValueTree presets ;    // persistent GUI config   (PRESETS_ID node        )
-  ValueTree config ;     // volatile GUI config     (VOLATILE_CONFIG_ID node)
-  ValueTree cameras ;    // video devices info      (CAMERA_DEVICES_ID node )
-  ValueTree audios ;     // audio devices info      (AUDIO_DEVICES_ID node  )
-  ValueTree networks ;   // chat networks and nicks (NETWORKS_ID node       )
+  ValueTree root ;       // persistent static config  (STORAGE_ID node        )
+  ValueTree presets ;    // persistent dynamic config (PRESETS_ID node        )
+  ValueTree config ;     // volatile media config     (VOLATILE_CONFIG_ID node)
+  ValueTree network ;    // volatile network config   (NETWORK_ID node        )
+  ValueTree chatters ;   // volatile nicks list       (CHATTERS_ID node       )
+  ValueTree cameras ;    // video devices info        (CAMERA_DEVICES_ID node )
+  ValueTree audios ;     // audio devices info        (AUDIO_DEVICES_ID node  )
   File      configDir ;
   File      configFile ;
 } ;
-
 
 #endif // _AVCASTERSTORE_H_

@@ -65,7 +65,8 @@ public:
 
 private:
 
-  void           initialize      (ValueTree networks_store) ;
+  void           initialize      (ValueTree config_store   , ValueTree network_store ,
+                                  ValueTree chatters_store                           ) ;
   void           disableControls (bool is_media_enabled  , bool is_screen_enabled  ,
                                   bool is_camera_enabled , bool is_text_enabled    ,
                                   bool is_image_enabled  , bool is_preview_enabled ,

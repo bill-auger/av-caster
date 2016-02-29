@@ -143,11 +143,17 @@ void ConfigText::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == textStyleCombo)
     {
         //[UserComboBoxCode_textStyleCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_textStyleCombo]
     }
     else if (comboBoxThatHasChanged == textPosCombo)
     {
         //[UserComboBoxCode_textPosCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_textPosCombo]
     }
 

@@ -120,11 +120,17 @@ void ConfigCamera::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == cameraDevCombo)
     {
         //[UserComboBoxCode_cameraDevCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_cameraDevCombo]
     }
     else if (comboBoxThatHasChanged == cameraResCombo)
     {
         //[UserComboBoxCode_cameraResCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_cameraResCombo]
     }
 

@@ -29,15 +29,26 @@
 
 /* IrcClient class variables */
 
-irc_callbacks_t IrcClient::ServerCallbacks ;      // IrcClient()
-bool            IrcClient::ShouldShowTimestamps ; // IrcClient() , reconfigure()
-bool            IrcClient::ShouldShowJoinParts ;  // IrcClient() , reconfigure()
+ValueTree       IrcClient::NetworkStore ;    // IrcClient()
+irc_callbacks_t IrcClient::ServerCallbacks ; // IrcClient()
+StringArray     IrcClient::Nicks ;           // HandleNicks()
 
 
 /* IrcClient public instance methods */
 
-void IrcClient::configure(bool should_create_sessions , bool should_show_timestamps ,
-                                                        bool should_show_joinparts  )
+void IrcClient::configure(bool should_create_session)
+{
+  // disconnect and destroy existing network connection
+  destroySession() ;
+
+  // validate and create network session (and login asynchronously)
+  if (should_create_session) createSession() ;
+}
+
+
+/* IrcClient private class methods */
+
+IrcClient::IrcClient(ValueTree network_store) : Thread(APP::IRC_THREAD_NAME)
 {
   // validate and initialize
   if (ServerCallbacks.event_connect != OnConnect    ||
@@ -47,7 +58,7 @@ void IrcClient::configure(bool should_create_sessions , bool should_show_timesta
       ServerCallbacks.event_nick    != OnNickChange ||
       ServerCallbacks.event_numeric != OnNumeric     )
   {
-    // assign shared server callbacks (NOTE: there are many more)
+    // assign server callbacks (NOTE: there are many more)
     memset(&ServerCallbacks , 0 , sizeof(ServerCallbacks)) ;
     ServerCallbacks.event_connect = OnConnect ;
     ServerCallbacks.event_channel = OnChannelMsg ;
@@ -57,40 +68,25 @@ void IrcClient::configure(bool should_create_sessions , bool should_show_timesta
     ServerCallbacks.event_numeric = OnNumeric ;
   }
 
-  // destroy any existing network connections
-  destroySessions() ;
+  NetworkStore  = network_store ;
 
-  // set common properties
-  ShouldShowTimestamps = should_show_timestamps ;
-  ShouldShowJoinParts  = should_show_joinparts ;
-
-  // create per network session instances (and login asynchronously)
-  if (should_create_sessions) createSessions() ;
+  this->session = nullptr ; configure(true) ;
 }
 
-
-/* IrcClient private class methods */
-
-IrcClient::IrcClient(ValueTree networks_store , bool should_show_timestamps , bool should_show_joinparts) :
-                     Thread(APP::IRC_THREAD_NAME) , networksStore(networks_store)
-{
-  configure(true , should_show_timestamps , should_show_joinparts) ;
-}
-
-IrcClient::~IrcClient() { destroySessions() ; }
+IrcClient::~IrcClient() { destroySession() ; NetworkStore = ValueTree::invalid ; }
 
 void IrcClient::OnConnect(irc_session_t* session , const char*  event , const char* origin ,
                           const char**   params  , unsigned int count                      )
 {
-  String          host         = origin ;
-  String          message      = params[1] ;
-  IrcNetworkInfo* network_info = IrcClient::GetNetworkInfo(session) ;
-  bool            is_bitlbee   = message.startsWith(IRC::BITLBEE_WELCOME_MSG) ;
-  bool            is_oftc      = network_info->network.endsWith(IRC::OFTC_TLD) ;
+  String host       = origin ;
+  String message    = params[1] ;
+  bool   is_bitlbee = message.startsWith(IRC::BITLBEE_WELCOME_MSG) ;
+  String channel    = STRING(NetworkStore[CONFIG::CHANNEL_ID]) ;
 
 DEBUG_TRACE_CONNECTED
 
-  if (is_oftc) AvCaster::UpdateIrcHost(IRC::OFTC_ALIAS_URIS , host) ;
+  // set actual connected host for this network
+  AvCaster::SetValue(CONFIG::HOST_ID , host) ;
 
   // display connected message
   AddClientChat(IRC::LOGGED_IN_MSG + host) ; AddServerChat(message) ;
@@ -103,10 +99,10 @@ DEBUG_TRACE_CONNECTED
     irc_cmd_msg(session , IRC::BITLBEE_ROOT_CHANNEL , CHARSTAR(identify_cmd)) ;
     //irc_cmd_join(session , IRC::BITLBEE_XMPP_CHANNEL , NULL) ; // FIXME: when to join?
   }
-  else irc_cmd_join(session , CHARSTAR(network_info->channel) , NULL) ;
+  else irc_cmd_join(session , CHARSTAR(channel) , NULL) ;
 
   // reset retries counter
-  SetRetries(network_info->network_id , IRC::MAX_N_RETRIES) ;
+  SetRetries(IRC::MAX_N_RETRIES) ;
 }
 
 /* TODO: handle nickserv
@@ -152,14 +148,13 @@ DEBUG_TRACE_CHAT_MSG_VB
   StringArray processed_message = ProcessTimestamp(filtered_message) ;
   String      timestamp         = processed_message[0].trim() ;
   String      message           = processed_message[1].trim() ;
-  bool        is_root_user      = user_id.startsWith(IRC::BITLBEE_REMOTE_ROOT_USER) ||
-                                  user_id.startsWith(IRC::BITLBEE_LOCAL_ROOT_USER )  ;
-  bool        is_root_channel   = channel == String (IRC::BITLBEE_ROOT_CHANNEL) ;
-  bool        is_xmpp_channel   = channel == String (IRC::BITLBEE_XMPP_CHANNEL) ;
-  bool        is_login_blocked  = message.endsWith  (IRC::BITLBEE_LOGIN_BLOCKED_MSG) ;
-  bool        has_kicked_self   = message.endsWith  (IRC::BITLBEE_KICKED_SELF_MSG  ) ;
-  bool        is_logged_in      = message.endsWith  (IRC::BITLBEE_CONNECTED_MSG    ) ||
-                                  has_kicked_self                                     ;
+  bool        is_root_user      = IRC::BITLBEE_ROOT_USERS.contains(user_id) ;
+  bool        is_root_channel   = channel == String(IRC::BITLBEE_ROOT_CHANNEL     ) ;
+  bool        is_xmpp_channel   = channel == String(IRC::BITLBEE_XMPP_CHANNEL     ) ;
+  bool        is_login_blocked  = message.endsWith (IRC::BITLBEE_LOGIN_BLOCKED_MSG) ;
+  bool        has_kicked_self   = message.endsWith (IRC::BITLBEE_KICKED_SELF_MSG  ) ;
+  bool        is_logged_in      = message.endsWith (IRC::BITLBEE_CONNECTED_MSG    ) ||
+                                  has_kicked_self                                    ;
 
 DEBUG_TRACE_CHAT_MSG
 
@@ -176,22 +171,24 @@ DEBUG_TRACE_CHAT_MSG
 void IrcClient::OnJoin(irc_session_t* session , const char* event  , const char* origin ,
                        const char**   params  , unsigned int count                      )
 {
-  char nickbuf[128] ; irc_target_get_nick(origin , nickbuf , sizeof(nickbuf)) ;
-  String          nick          = nickbuf ;
-  String          channel       = params[0] ;
-  IrcNetworkInfo* network_info  = IrcClient::GetNetworkInfo(session) ;
-  bool            is_local_nick = nick == network_info->nick ;
-  String          greeting      = (is_local_nick) ? IRC::LOGIN_MSG : network_info->greeting ;
+  char   nickbuf[128] ; irc_target_get_nick(origin , nickbuf , sizeof(nickbuf)) ;
+  String nick                  = nickbuf ;
+  String channel               = params[0] ;
+  String network               = STRING(NetworkStore[CONFIG::NETWORK_ID  ]) ;
+  String this_nick             = STRING(NetworkStore[CONFIG::NICK_ID     ]) ;
+  String peer_greeting         = STRING(NetworkStore[CONFIG::GREETING_ID ]) ;
+  bool   should_show_joinparts = bool  (NetworkStore[CONFIG::JOINPARTS_ID]) ;
+  bool   is_local_nick         = nick == this_nick ;
+  String greeting              = (is_local_nick) ? IRC::LOGIN_GREETING : peer_greeting ;
 
   irc_cmd_user_mode(session , "+i") ;
 
 DEBUG_TRACE_ONJOIN
 
-  if (is_local_nick) return ;
 //   if (channel_name == IRC::BITLBEE_ROOT_CHANNEL) return ; // FIXME: probably redundant now
 
-  if (ShouldShowJoinParts)
-    AddClientChat(nick + " just joined " + network_info->network + " channel " + channel) ;
+  if (should_show_joinparts && !is_local_nick)
+    AddClientChat(nick + " just joined " + network + " channel " + channel) ;
 
 #ifndef SUPRESS_GREETING_MESSAGES
   irc_cmd_msg(session , CHARSTAR(channel) , CHARSTAR(greeting)) ;
@@ -204,16 +201,17 @@ void IrcClient::OnPart(irc_session_t* session , const char* event  , const char*
                        const char**   params  , unsigned int count                      )
 {
   char nickbuf[128] ; irc_target_get_nick(origin , nickbuf , sizeof(nickbuf)) ;
-  String          nick         = nickbuf ;
-  String          channel       = params[0] ;
-  IrcNetworkInfo* network_info = IrcClient::GetNetworkInfo(session) ;
+  String nick                  = nickbuf ;
+  String channel               = params[0] ;
+  String network               = STRING(NetworkStore[CONFIG::NETWORK_ID  ]) ;
+  String this_nick             = STRING(NetworkStore[CONFIG::NICK_ID     ]) ;
+  bool   should_show_joinparts = bool  (NetworkStore[CONFIG::JOINPARTS_ID]) ;
+  bool   is_local_nick         = nick == this_nick ;
 
 DEBUG_TRACE_ONPART
 
-  if (nick == network_info->nick) return ;
-
-  if (ShouldShowJoinParts)
-    AddClientChat(nick + " just parted " + network_info->network + " channel " + channel) ;
+  if (should_show_joinparts && !is_local_nick)
+    AddClientChat(nick + " just parted " + network + " channel " + channel) ;
 
 //   irc_cmd_names(session , CHARSTAR(channel_name)) ; // FIXME: this maybe redundant
 }
@@ -221,26 +219,26 @@ DEBUG_TRACE_ONPART
 void IrcClient::OnNickChange(irc_session_t* session , const char* event  , const char* origin ,
                              const char**   params  , unsigned int count                      )
 {
-  String          from_nick    = origin ;
-  String          to_nick      = params[0] ;
-  IrcNetworkInfo* network_info = IrcClient::GetNetworkInfo(session) ;
+  String from_nick = origin ;
+  String to_nick   = params[0] ;
+  String network   = STRING(NetworkStore[CONFIG::NETWORK_ID]) ;
+  String channel   = STRING(NetworkStore[CONFIG::CHANNEL_ID]) ;
 
 DEBUG_TRACE_NICK_CHANGE
-// DUMP_SERVER_PARAMS // TODO: nick changes untested
+
+// DUMP_SERVER_PARAMS // TODO: nick changes nyi
 //   irc_cmd_names(session , CHARSTAR(channel_name)) ; // FIXME: this maybe redundant
 }
 
 void IrcClient::OnNumeric(irc_session_t* session , unsigned int event , const char* origin ,
                           const char**   params  , unsigned int count                      )
 {
-  IrcNetworkInfo* network_info = IrcClient::GetNetworkInfo(session) ;
-  String          channel      = params[2] ;
-  String          nicks        = params[3] ;
+  String nicks = params[3] ;
 
 DEBUG_TRACE_SERVER_EVENT
 
-  if      (event == LIBIRC_RFC_RPL_NAMREPLY  ) HandleNicks(network_info , nicks) ;
-  else if (event == LIBIRC_RFC_RPL_ENDOFNAMES) UpdateNicks(network_info) ;
+  if      (event == LIBIRC_RFC_RPL_NAMREPLY  ) HandleNicks(nicks) ;
+  else if (event == LIBIRC_RFC_RPL_ENDOFNAMES) UpdateNicks() ;
 }
 
 bool IrcClient::IsSufficientVersion()
@@ -253,49 +251,33 @@ bool IrcClient::IsSufficientVersion()
          minor_version >= IRC::MIN_MINOR_VERSION  ;
 }
 
-IrcClient::IrcNetworkInfo* IrcClient::GetNetworkInfo(irc_session_t* session)
+void IrcClient::SetRetries(int n_retries)
 {
-  return static_cast<IrcNetworkInfo*>(irc_get_ctx(session)) ;
+  NetworkStore.setProperty(CONFIG::RETRIES_ID , n_retries , nullptr) ;
 }
 
-void IrcClient::SetRetries(Identifier network_id , int n_retries)
+void IrcClient::HandleNicks(String nicks)
 {
-  ValueTree network_store = AvCaster::GetNetworkStore(network_id) ;
+  String network = STRING(NetworkStore[CONFIG::NETWORK_ID]) ;
+  String channel = STRING(NetworkStore[CONFIG::CHANNEL_ID]) ;
 
-  network_store.setProperty(CONFIG::RETRIES_ID , n_retries , nullptr) ;
-}
+  if (IRC::BITLBEE_HOSTS.contains(network) && channel == IRC::BITLBEE_ROOT_CHANNEL) return ;
 
-int IrcClient::GetRetries(Identifier network_id)
-{
-  ValueTree network_store = AvCaster::GetNetworkStore(network_id) ;
-
-  return int(network_store[CONFIG::RETRIES_ID]) ;
-}
-
-void IrcClient::HandleNicks(IrcNetworkInfo* network_info , String nicks)
-{
-  String network = network_info->network ;
-  String channel = network_info->channel ;
-
-  if ((network == IRC::BITLBEE_HOST         || network == IRC::LOCAL_HOST) &&
-       channel == IRC::BITLBEE_ROOT_CHANNEL                                 ) return ;
-
-  network_info->nicks.addTokens         (nicks , false) ;
-  network_info->nicks.removeEmptyStrings() ;
-  network_info->nicks.removeString      (IRC::BITLBEE_ROOT_NICK) ;
+  Nicks.addTokens         (nicks , false) ;
+  Nicks.removeEmptyStrings() ;
+  Nicks.removeString      (IRC::BITLBEE_ROOT_NICK) ;
 
 DEBUG_TRACE_NICKS
 }
 
-void IrcClient::UpdateNicks(IrcNetworkInfo* network_info)
+void IrcClient::UpdateNicks()
 {
 #ifdef MOCK_CHAT_NICKS
-  network_info->nicks.clear() ; int n_nicks = 100 ;
-  while (n_nicks--) network_info->nicks.add("MockNick" + String(n_nicks)) ;
+  Nicks.clear() ; int n_nicks = 100 ;
+  while (n_nicks--) Nicks.add("MockNick" + String(n_nicks)) ;
 #endif // MOCK_CHAT_NICKS
 
-  AvCaster::UpdateChatNicks(network_info->network_id , network_info->nicks) ;
-  network_info->nicks.clear() ;
+  AvCaster::UpdateChatters(Nicks) ; Nicks.clear() ;
 }
 
 String IrcClient::ProcessTextMeta(const char* message)
@@ -349,114 +331,100 @@ void IrcClient::AddUserChat(String prefix , String nick , String message)
 
 /* IrcClient private instance methods */
 
-void IrcClient::createSessions()
+void IrcClient::createSession()
 {
-  // create per network sessions (and login asynchronously)
-  for (int network_n = 0 ; network_n < this->networksStore.getNumChildren() ; ++network_n)
-  {
-    ValueTree       network_store = this->networksStore.getChild(network_n) ;
-    IrcNetworkInfo* network_info  = new IrcNetworkInfo() ;
-    network_info->session         = irc_create_session(&ServerCallbacks) ;
-    network_info->network_id      =        network_store.getType() ;
-    network_info->network         = STRING(network_store[CONFIG::NETWORK_ID ]) ;
-    network_info->port            = int   (network_store[CONFIG::PORT_ID    ]) ;
-    network_info->nick            = STRING(network_store[CONFIG::NICK_ID    ]) ;
-    network_info->pass            = STRING(network_store[CONFIG::PASS_ID    ]) ;
-    network_info->channel         = STRING(network_store[CONFIG::CHANNEL_ID ]) ;
-    network_info->greeting        = STRING(network_store[CONFIG::GREETING_ID]) ;
-/*  network_info->nicks           = StringArray() ; */
-    bool is_valid_session         = network_info->session != 0 ;
-    bool is_valid_network         = network_info->network.isNotEmpty() ;
-    bool is_valid_port            = IRC::PORT_RANGE.contains(uint16(network_info->port)) ;
-    bool is_valid_nick            = network_info->nick   .isNotEmpty() ;
-    bool is_valid_channel         = network_info->channel.isNotEmpty() ;
+  if (!NetworkStore.isValid()) return ;
 
-// TODO: perhaps move these validations intp Config->validateParams() ;
+  // create network session (and login asynchronously)
+  this->session                   = irc_create_session(&ServerCallbacks) ;
+  String         network          = STRING(NetworkStore[CONFIG::NETWORK_ID ]) ;
+  unsigned short port             = int   (NetworkStore[CONFIG::PORT_ID    ]) ;
+  String         nick             = STRING(NetworkStore[CONFIG::NICK_ID    ]) ;
+  String         pass             = STRING(NetworkStore[CONFIG::PASS_ID    ]) ;
+  String         channel          = STRING(NetworkStore[CONFIG::CHANNEL_ID ]) ;
+  String         greeting         = STRING(NetworkStore[CONFIG::GREETING_ID]) ;
+  bool           is_valid_session = this->session != 0 ;
+  bool           is_valid_network = network.isNotEmpty() ;
+  bool           is_valid_port    = IRC::PORT_RANGE.contains(uint16(port)) ;
+  bool           is_valid_nick    = nick   .isNotEmpty() ;
+  bool           is_valid_channel = channel.isNotEmpty() ;
+
+// NOTE: text editors are implicitly sanitized in Config::Config() -> MainContent->configureTextEditor()
 // NOTE: irc_option_set(session , LIBIRC_OPTION_STRIPNICKS) ;
 // NOTE: See LIBIRC_OPTION_SSL_NO_VERIFY for servers which use self-signed SSL certificates
 
 DEBUG_TRACE_CREATE_SESSION
 
-    if (is_valid_session && is_valid_network && is_valid_port &&
-        is_valid_nick    && is_valid_channel                   )
-    {
-      // add to active sessions
-      this->networks.add(network_info) ;
-
-      // set circular reference in session to network_info object
-      irc_set_ctx(network_info->session , network_info) ;
-
-      // set retries counter
-      SetRetries(network_info->network_id , IRC::MAX_N_RETRIES) ;
-    }
-    else { irc_destroy_session(network_info->session) ; delete network_info ; }
-  }
+  // set retries counter or desroy invalid session
+  if (is_valid_session && is_valid_network && is_valid_port &&
+      is_valid_nick    && is_valid_channel                   ) SetRetries(IRC::MAX_N_RETRIES) ;
+  else if (is_valid_session)                                   destroySession() ;
 }
 
-void IrcClient::destroySessions()
+void IrcClient::destroySession()
 {
-  // disconnect and destroy network sessions
-  for (int network_n = 0 ; network_n < this->networks.size() ; ++network_n)
-  {
-    IrcNetworkInfo* network_info = this->networks[network_n] ;
+  if (this->session == nullptr) return ;
 
-#ifndef SUPRESS_GREETING_MESSAGES
-    irc_cmd_quit       (network_info->session , CHARSTAR(IRC::LOGOUT_MSG)) ;
-#else // SUPRESS_GREETING_MESSAGES
-    irc_disconnect     (network_info->session) ;
-#endif // SUPRESS_GREETING_MESSAGES
-    irc_destroy_session(network_info->session) ;
+  // display login message and clear peers list
+  if (irc_is_connected(this->session))
+  {
+DEBUG_TRACE_LOGOUT
+
+    AddClientChat(IRC::LOGGING_OUT_MSG + network) ;
+    Nicks.clear() ; UpdateNicks() ;
   }
 
-  this->networks.clear() ;
+  // disconnect and destroy network session
+#ifndef SUPRESS_GREETING_MESSAGES
+  irc_cmd_quit       (this->session , CHARSTAR(IRC::LOGOUT_GREETING)) ;
+#else // SUPRESS_GREETING_MESSAGES
+  irc_disconnect     (this->session) ;
+#endif // SUPRESS_GREETING_MESSAGES
+  irc_destroy_session(this->session) ;
+
+  this->session = nullptr ;
 }
 
 void IrcClient::run()
 {
-  for (int network_n = 0 ; network_n < this->networks.size() ; ++network_n)
+  if (this->session == nullptr) return ;
+
+  if (irc_is_connected(this->session))
   {
-    IrcNetworkInfo* network_info = this->networks[network_n] ;
-    irc_session_t*  session      = network_info->session ;
+    // pump IRC client
+    struct timeval timeout ;
+    timeout.tv_usec   = 250000 ;
+    timeout.tv_sec    = 0 ;
+    int    maxfd      = 0 ;
+    fd_set in_set , out_set ;
 
-    if (irc_is_connected(session))
-    {
-      // pump IRC client
-      struct timeval timeout ;
-      timeout.tv_usec   = 250000 ;
-      timeout.tv_sec    = 0 ;
-      int    maxfd      = 0 ;
-      fd_set in_set , out_set ;
+    FD_ZERO(&in_set) ; FD_ZERO(&out_set) ;
 
-      FD_ZERO(&in_set) ; FD_ZERO(&out_set) ;
-
-      irc_add_select_descriptors(session , &in_set , &out_set , &maxfd) ;
-      if (select(maxfd + 1 , &in_set , &out_set , 0 , &timeout) < 0        ||
-          irc_process_select_descriptors(session , &in_set , &out_set)) return ;
-    }
-    else login(network_info) ;
+    irc_add_select_descriptors(this->session , &in_set , &out_set , &maxfd) ;
+    if (select(maxfd + 1 , &in_set , &out_set , 0 , &timeout) < 0        ||
+        irc_process_select_descriptors(this->session , &in_set , &out_set)) return ;
   }
+  else login() ;
 }
 
-bool IrcClient::login(IrcNetworkInfo* network_info)
+bool IrcClient::login()
 {
-  irc_session_t* session    = network_info->session ;
-  Identifier     network_id = network_info->network_id ;
-  String         network    = network_info->network ;
-  unsigned short port       = network_info->port ;
-  String         nick       = network_info->nick ;
+  String         network   = STRING(NetworkStore[CONFIG::NETWORK_ID]) ;
+  unsigned short port      = int   (NetworkStore[CONFIG::PORT_ID   ]) ;
+  String         nick      = STRING(NetworkStore[CONFIG::NICK_ID   ]) ;
+  int            n_retries = int   (NetworkStore[CONFIG::RETRIES_ID]) ;
 
 DEBUG_TRACE_LOGIN_FAILED
 
   // fail after nRetries connection attempts
-  int n_retries = GetRetries(network_id) ;
-  if (n_retries != IRC::STATE_FAILED) SetRetries(network_id , --n_retries) ;
+  if (n_retries != IRC::STATE_FAILED) SetRetries(--n_retries) ;
   if (n_retries == IRC::STATE_FAILED) return true ;
 
   // display login message
   AddClientChat(IRC::LOGGING_IN_MSG + network) ;
 
-  bool is_err = irc_connect(session , CHARSTAR(network) , port    ,
-                            nullptr , CHARSTAR(nick   ) , nullptr , nullptr) ;
+  bool is_err = irc_connect(this->session , CHARSTAR(network) , port    ,
+                            nullptr       , CHARSTAR(nick   ) , nullptr , nullptr) ;
 
 DEBUG_TRACE_LOGIN
 
@@ -465,14 +433,9 @@ DEBUG_TRACE_LOGIN
 
 void IrcClient::sendChat(String chat_message)
 {
-  for (int network_n = 0 ; network_n < this->networks.size() ; ++network_n)
-  {
-    IrcNetworkInfo* network_info = this->networks[network_n] ;
-    irc_session_t*  session      = network_info->session ;
-    String          channel      = network_info->channel ;
+  String channel = STRING(NetworkStore[CONFIG::CHANNEL_ID]) ;
 
-    irc_cmd_msg(session , CHARSTAR(channel) , CHARSTAR(chat_message)) ;
-  }
+  irc_cmd_msg(this->session , CHARSTAR(channel) , CHARSTAR(chat_message)) ;
 }
 
 #endif // DISABLE_CHAT

@@ -203,26 +203,41 @@ void ConfigAudio::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == audioApiCombo)
     {
         //[UserComboBoxCode_audioApiCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_audioApiCombo]
     }
     else if (comboBoxThatHasChanged == audioDevCombo)
     {
         //[UserComboBoxCode_audioDevCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_audioDevCombo]
     }
     else if (comboBoxThatHasChanged == audioCodecCombo)
     {
         //[UserComboBoxCode_audioCodecCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_audioCodecCombo]
     }
     else if (comboBoxThatHasChanged == samplerateCombo)
     {
         //[UserComboBoxCode_samplerateCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_samplerateCombo]
     }
     else if (comboBoxThatHasChanged == audioBitrateCombo)
     {
         //[UserComboBoxCode_audioBitrateCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_audioBitrateCombo]
     }
 
@@ -238,6 +253,9 @@ void ConfigAudio::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == nChannelsSlider)
     {
         //[UserSliderCode_nChannelsSlider] -- add your slider handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserSliderCode_nChannelsSlider]
     }
 

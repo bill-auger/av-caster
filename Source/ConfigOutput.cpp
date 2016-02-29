@@ -210,16 +210,25 @@ void ConfigOutput::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == outputSinkCombo)
     {
         //[UserComboBoxCode_outputSinkCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_outputSinkCombo]
     }
     else if (comboBoxThatHasChanged == framerateCombo)
     {
         //[UserComboBoxCode_framerateCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_framerateCombo]
     }
     else if (comboBoxThatHasChanged == videoBitrateCombo)
     {
         //[UserComboBoxCode_videoBitrateCombo] -- add your combo box handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserComboBoxCode_videoBitrateCombo]
     }
 

@@ -284,20 +284,21 @@ void Controls::disableControls(bool is_media_enabled  , bool is_screen_enabled  
   this->outputToggle      ->setEnabled(is_media_enabled  ) ;
 }
 
+void Controls::initialize(ValueTree config_store) { this->configStore  = config_store ; }
+
 void Controls::loadConfig()
 {
-  ValueTree config_store       = AvCaster::GetVolatileStore() ;
-  bool      is_screencap_on    = bool(config_store[CONFIG::SCREENCAP_ID  ]) ;
-  bool      is_camera_on       = bool(config_store[CONFIG::CAMERA_ID     ]) ;
-  bool      is_text_on         = bool(config_store[CONFIG::TEXT_ID       ]) ;
-  bool      is_interstitial_on = bool(config_store[CONFIG::IMAGE_ID      ]) ;
-  bool      is_preview_on      = bool(config_store[CONFIG::PREVIEW_ID    ]) ;
-  bool      is_audio_on        = bool(config_store[CONFIG::AUDIO_ID      ]) ;
-  bool      is_output_on       = bool(config_store[CONFIG::OUTPUT_ID     ]) ;
-  int       sink_idx           = int (config_store[CONFIG::OUTPUT_SINK_ID]) ;
-  String    xmit_btn_text      = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
-                                 (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
-                                                                         String::empty       ;
+  bool   is_screencap_on    = bool(this->configStore[CONFIG::SCREENCAP_ID  ]) ;
+  bool   is_camera_on       = bool(this->configStore[CONFIG::CAMERA_ID     ]) ;
+  bool   is_text_on         = bool(this->configStore[CONFIG::TEXT_ID       ]) ;
+  bool   is_interstitial_on = bool(this->configStore[CONFIG::IMAGE_ID      ]) ;
+  bool   is_preview_on      = bool(this->configStore[CONFIG::PREVIEW_ID    ]) ;
+  bool   is_audio_on        = bool(this->configStore[CONFIG::AUDIO_ID      ]) ;
+  bool   is_output_on       = bool(this->configStore[CONFIG::OUTPUT_ID     ]) ;
+  int    sink_idx           = int (this->configStore[CONFIG::OUTPUT_SINK_ID]) ;
+  String xmit_btn_text      = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
+                              (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
+                                                                      String::empty       ;
 
   this->screencapToggle   ->setToggleState  (is_screencap_on    , juce::dontSendNotification) ;
   this->cameraToggle      ->setToggleState  (is_camera_on       , juce::dontSendNotification) ;
@@ -308,7 +309,7 @@ void Controls::loadConfig()
   this->outputToggle      ->setToggleState  (is_output_on       , juce::dontSendNotification) ;
   this->outputToggle      ->setButtonText   (xmit_btn_text) ;
   this->mainContent       ->loadPresetsCombo(this->presetsCombo) ;
-  this->presetsCombo      ->setEditableText(false) ;
+  this->presetsCombo      ->setEditableText (false) ;
 }
 
 void Controls::handlePresetsCombo()

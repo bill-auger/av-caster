@@ -25,9 +25,10 @@
 #  include "Trace.h"
 
 
-#  define DEBUG_TRACE_CONFIG_LOAD_CONFIG                                                        \
-  Trace::TraceConfig("loading preset '" + STRING(config_store[CONFIG::PRESET_NAME_ID]) + "'") ; \
-  Trace::DumpConfig(config_store , "volatile")                                                  ;
+#  define DEBUG_TRACE_CONFIG_LOAD_CONFIG                                   \
+  String preset_name = STRING(this->configStore[CONFIG::PRESET_NAME_ID]) ; \
+  Trace::TraceConfig("loading preset '" + preset_name + "'") ;             \
+  Trace::DumpConfig(this->configStore , "volatile")                                                  ;
 
 #  define DEBUG_TRACE_SET_CREATE_PRESET_MODE                                               \
   bool has_mode_changed = is_pending_new_preset_name != isCreatePresetMode() ;             \

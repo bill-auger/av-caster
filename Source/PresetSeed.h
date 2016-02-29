@@ -25,79 +25,91 @@
 
 class PresetSeed
 {
+public:
+
+  static ValueTree DefaultStore() ;
+  static ValueTree PresetSeeds () ;
+
+
 protected:
 
   PresetSeed() ;
 
   void createPreset() ;
 
-
   // node ID
   Identifier presetId ;
-
-  // control params
+  // Controls params
   String     presetName ;
-  bool       isScreencapActive ;
-  bool       isCameraActive ;
-  bool       isTextActive ;
-  bool       isImageActive ;
-  bool       isPreviewActive ;
-  bool       isAudioActive ;
-  bool       isOutputActive ;
-
-  // screencap params
-  int        displayN ;
-  int        screenN ;
-  int        screencapW ;
-  int        screencapH ;
-  int        offsetX ;
-  int        offsetY ;
-
-  // camera params
-  int        cameraResolutionIdx ;
-  int        cameraDeviceIdx ;
-
-  // audio params
-  int        audioApiIdx ;
-  int        audioDeviceIdx ;
-  int        audioCodecIdx ;
-  int        nChannels ;
-  int        samplerate ;
-  int        audioBitrate ;
-
-  // text params
-  String     motdText ;
-  int        textStyleIdx ;
-  int        textPosIdx ;
-
-  // interstitial params
-  String     imageLocation ;
-
-  // output params
+  // ConfigOutput params
   int        sinkIdx ;
-  int        muxerIdx ;
-  int        outputW ;
-  int        outputH ;
-  int        framerate ;
-  int        videoBitrate ;
   String     outputDest ;
 
-  // chat params
-  int        chatNetworkIdx ;
 
-public:
+private:
 
-  // AvCasterStore->configPresets child node
-  ValueTree preset ;
+  void setValue(ValueTree a_node , Identifier a_key , var a_value) ;
+
+
+  // AvCasterStore->presets child node
+  ValueTree presetStore ;
+  // AvCasterStore->network node
+  ValueTree networkStore ;
+
+  // Controls params
+  bool   isScreencapActive ;
+  bool   isCameraActive ;
+  bool   isTextActive ;
+  bool   isImageActive ;
+  bool   isPreviewActive ;
+  bool   isAudioActive ;
+  // ConfigScreen params
+  int    displayN ;
+  int    screenN ;
+  int    screencapW ;
+  int    screencapH ;
+  int    offsetX ;
+  int    offsetY ;
+  // ConfigCamera params
+  int    cameraResolutionIdx ;
+  int    cameraDeviceIdx ;
+  // ConfigAudio params
+  int    audioApiIdx ;
+  int    audioDeviceIdx ;
+  int    audioCodecIdx ;
+  int    nChannels ;
+  int    samplerate ;
+  int    audioBitrate ;
+  // ConfigText params
+  String motdText ;
+  int    textStyleIdx ;
+  int    textPosIdx ;
+  // ConfigImage params
+  String imageLocation ;
+  // ConfigOutput params
+  int    muxerIdx ;
+  int    outputW ;
+  int    outputH ;
+  int    framerate ;
+  int    videoBitrate ;
+  // ConfigChat params
+  String network ;
+  int    port ;
+  String nick ;
+  String pass ;
+  String channel ;
+  bool   showTimestamps ;
+  bool   showJoinParts ;
+  String greeting ;
 } ;
 
 
-class FilePresetSeed : public PresetSeed { public: FilePresetSeed() ; } ;
+class FilePresetSeed : private PresetSeed { friend class PresetSeed ; private: FilePresetSeed() ; } ;
 
 
-class RtmpPresetSeed : public PresetSeed { public: RtmpPresetSeed() ; } ;
+class RtmpPresetSeed : private PresetSeed { friend class PresetSeed ; private: RtmpPresetSeed() ; } ;
 
 
-class LctvPresetSeed : public PresetSeed { public: LctvPresetSeed() ; } ;
+class LctvPresetSeed : private PresetSeed { friend class PresetSeed ; private: LctvPresetSeed() ; } ;
 
 #endif // _PRESETSEED_H_

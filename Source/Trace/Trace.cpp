@@ -48,16 +48,13 @@ void Trace::TraceError   (String msg) { if (DEBUG_TRACE_STATE    ) LOG("\033[0;3
 void Trace::TraceMissingNode(ValueTree config_store , Identifier a_node_id)
 {
   if (!config_store.getChildWithName(a_node_id).isValid())
-    Trace::TraceConfig("missing node - adding '" + String(a_node_id) + "'") ;
+    Trace::TraceConfig("missing node of '" + String(config_store.getType())      +
+                       "' - adding '"      + String(a_node_id             ) + "'") ;
 }
 
 void Trace::TraceMissingProperty(ValueTree config_store    , Identifier a_property_id ,
                                  var       a_default_value                            )
 {
-  // supress transient nodes
-  if (a_property_id == CONFIG::IS_PENDING_ID ||
-      a_property_id == CONFIG::OUTPUT_ID      ) return ;
-
   if (!config_store.hasProperty(a_property_id))
   {
     Trace::TraceConfig("missing property of '"       + String(config_store.getType())     +
@@ -67,32 +64,24 @@ void Trace::TraceMissingProperty(ValueTree config_store    , Identifier a_proper
   }
 }
 
-void Trace::TraceTreeChanged(ValueTree& a_node , const Identifier& a_key)
-{
-  String parent_id = String(a_node.getParent().getType()) ;                              \
-  String node_id   = String(a_node.getType()            ) ;                              \
-  String key       = String(a_key                       ) ;                              \
-  String val       = STRING(a_node[a_key]               ) ;                              \
-  Trace::TraceEvent("value changed for " + node_id + "['" + key + "'] => '" + val + "'") ;
-}
-
 void Trace::DumpConfig(ValueTree config_store , String node_desc)
 {
   if (!DEBUG_TRACE_CONFIG_VB) return ;
 
   if (!config_store.isValid())
-  { Trace::TraceError("Trace::DumpConfig() - invalid node") ; return ; }
+  { Trace::TraceError("Trace::DumpConfig() - invalid node: " + node_desc) ; return ; }
 
   String node_name    = String(config_store.getType()) ;
   int    n_properties =        config_store.getNumProperties() ;
   int    n_children   =        config_store.getNumChildren() ;
 
   String pad = "  " ;
-  String dbg = String("dump node '" + node_desc            + "' =>\n") + pad +
-               "node => "           + node_name                              +
-               " (properties: "     + String(n_properties) + ")"             +
-               " (children: "       + String(n_children)   + ")"             ;
+  String dbg = String("dumping node: " + node_desc            + " =>\n") + pad +
+               "node => "              + node_name                             +
+               " (properties: "        + String(n_properties) + ")"            +
+               " (children: "          + String(n_children)   + ")"            ;
 
+#ifdef DUMP_COMFIG_VERBOSE
   for (int property_n = 0 ; property_n < n_properties ; ++property_n)
   {
     Identifier key          = config_store.getPropertyName(property_n) ;
@@ -100,16 +89,65 @@ void Trace::DumpConfig(ValueTree config_store , String node_desc)
     dbg += "\n" + pad + "  key => "             + String(key)             +
            "\n" + pad + "    stored_value  => " + stored_value.toString() ;
   }
+#endif // DUMP_COMFIG_VERBOSE
 
   Trace::TraceConfig(dbg) ;
 
   for (int child_n = 0 ; child_n < n_children ; ++child_n)
   {
     ValueTree child_node      = config_store.getChild(child_n) ;
-    String    child_node_desc = node_name + "[" + String(child_n) + "] ('" +
-                                String(child_node.getType()) + "')"        ;
+    String    child_id        = String(child_node.getType()) ;
+    String    child_node_desc = String("'") + node_name + "[" + String(child_n) +
+                                "]] ('"     + child_id  + "')"                  ;
     DumpConfig(child_node , child_node_desc) ;
   }
+}
+
+String Trace::VarType(var a_var) // juce var dynamic datatypes
+{
+  return (a_var.isVoid()      ) ? "void"      :
+         (a_var.isUndefined() ) ? "undefined" :
+         (a_var.isInt()       ) ? "int"       :
+         (a_var.isInt64()     ) ? "int64"     :
+         (a_var.isBool()      ) ? "bool"      :
+         (a_var.isDouble()    ) ? "double"    :
+         (a_var.isString()    ) ? "string"    :
+         (a_var.isObject()    ) ? "object"    :
+         (a_var.isArray()     ) ? "array"     :
+         (a_var.isBinaryData()) ? "binary"    :
+         (a_var.isMethod()    ) ? "method"    :
+                                  "unknown"   ;
+}
+
+void Trace::TraceTreeChanged(ValueTree& a_node , const Identifier& a_key)
+{
+  String parent_id = String(a_node.getParent().getType()) ;
+  String node_id   = String(a_node.getType()            ) ;
+  String key       = String(a_key                       ) ;
+  String val       = STRING(a_node[a_key]               ) ;
+  Trace::TraceEvent("value changed for " + node_id             + "['" + key +
+                    "'] => ("            + Trace::VarType(val) + ")'" + val + "'") ;
+}
+
+void Trace::TraceValueChanged(Value& a_value , String name)
+{
+  Trace::TraceEvent("value changed for '"   + name            + "' => (" +
+                    VarType(a_value) + ")'" + STRING(a_value) + "'"      ) ;
+}
+
+String Trace::TraceSetValue(ValueTree a_node , const Identifier& a_key , var a_value)
+{
+  String prev_type  = Trace::VarType(a_node[a_key]) ;
+  String next_type  = Trace::VarType(a_value      ) ;
+  String node_id    = (a_node.isValid()) ? STRING(a_node.getType()) : String("NULL") ;
+  String prev_val   = (a_node.isValid()) ? STRING(a_node[a_key]   ) : String("NULL") ;
+  String next_val   = STRING(a_value) ;
+  String key        = (a_key .isValid()) ? String(a_key           ) : String("NULL") ;
+  String change_msg = "key "               + node_id   + "['"  + key      +
+                      "'] changing from (" + prev_type + ")'"  + prev_val +
+                      "' to ("             + next_type + ")'"  + next_val + "'" ;
+
+  return (next_type != prev_type || next_val != prev_val) ? change_msg : String::empty ;
 }
 
 #endif // DEBUG_TRACE

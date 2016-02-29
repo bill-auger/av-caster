@@ -29,17 +29,16 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 /* AvCaster private class variables */
 
-JUCEApplicationBase*            AvCaster::App            = nullptr ; // Initialize()
-MainContent*                    AvCaster::Gui            = nullptr ; // Initialize()
+JUCEApplicationBase*     AvCaster::App            = nullptr ; // Initialize()
+MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
 #ifndef DISABLE_CHAT
-ScopedPointer<IrcClient>        AvCaster::Irc ;                      // Initialize()
+ScopedPointer<IrcClient> AvCaster::Irc ;                      // Initialize()
 #endif // DISABLE_CHAT
-StringArray                     AvCaster::CliParams ;                // Initialize()
-bool                            AvCaster::IsInitialized  = false ;   // Initialize()
-bool                            AvCaster::IsMediaEnabled = true ;    // ProcessCliParams()
-bool                            AvCaster::IsChatEnabled  = true ;    // ProcessCliParams()
-Array<Alert*>                   AvCaster::Alerts ;                   // Warning() , Error()
-bool                            AvCaster::IsAlertModal   = false ;   // GetModalCb() , OnModalDismissed()
+bool                     AvCaster::IsInitialized  = false ;   // Initialize()
+bool                     AvCaster::IsMediaEnabled = true ;    // ProcessCliParams()
+bool                     AvCaster::IsChatEnabled  = true ;    // ProcessCliParams()
+Array<Alert*>            AvCaster::Alerts ;                   // Warning() , Error()
+bool                     AvCaster::IsAlertModal   = false ;   // GetModalCb() , OnModalDismissed()
 
 
 /* AvCaster public class methods */
@@ -80,27 +79,14 @@ Rectangle<int> AvCaster::GetPreviewBounds() { return Gui->getPreviewBounds() ; }
 
 void AvCaster::DeactivateControl(const Identifier& a_key) { Store->deactivateControl(a_key) ; }
 
-void AvCaster::SetValue(const Identifier& a_key , var a_value)
+void AvCaster::SetValue(const Identifier& a_key , const var a_value)
 {
-DEBUG_TRACE_GUI_SET_CONFIG
+  ValueTree storage_node = (CONFIG::ROOT_KEYS   .contains(a_key)) ? Store->root        :
+                           (CONFIG::PRESET_KEYS .contains(a_key)) ? Store->config      :
+                           (CONFIG::NETWORK_KEYS.contains(a_key)) ? Store->network     :
+                                                                    ValueTree::invalid ;
 
-  if      (CONFIG::ROOT_KEYS  .contains(a_key)) Store->setRootValue    (a_key , a_value) ;
-  else if (CONFIG::CONFIG_KEYS.contains(a_key)) Store->setVolatileValue(a_key , a_value) ;
-}
-
-ValueTree AvCaster::GetVolatileStore() { return ValueTree(Store->config) ; }
-
-ValueTree AvCaster::GetSelectedNetworkStore()
-{
-  int       network_idx   = int(Store->config[CONFIG::NETWORK_IDX_ID]) ;
-  ValueTree network_store = Store->networks.getChild(network_idx) ;
-
-  return GetNetworkStore(network_store.getType()) ;
-}
-
-ValueTree AvCaster::GetNetworkStore(Identifier network_id)
-{
-  return ValueTree(Store->getNetworkStore(network_id)) ;
+  Store->setValueViaGui(storage_node , a_key , a_value) ;
 }
 
 void AvCaster::StorePreset(String preset_name) { Store->storePreset(preset_name) ; }
@@ -137,8 +123,6 @@ StringArray AvCaster::GetCameraNames() { return Store->cameraNames() ; }
 
 StringArray AvCaster::GetAudioNames() { return Store->audioNames() ; }
 
-StringArray AvCaster::GetNetworkNames() { return Store->networkNames() ; }
-
 StringArray AvCaster::GetCameraResolutions() { return Store->getCameraResolutions() ; }
 
 String AvCaster::GetCameraResolution()
@@ -166,40 +150,31 @@ int AvCaster::GetCameraRate()
   return (camera_store.isValid()) ? camera_rate : CONFIG::DEFAULT_CAMERA_RATE ;
 }
 
+StringArray AvCaster::GetChatNicks() { return Store->getChatNicks() ; }
+
 String AvCaster::GetVersionString()
 {
   return APP::APP_NAME + " v" + ProjectInfo::versionString ;
 }
 
-void AvCaster::UpdateIrcHost(StringArray alias_uris , String actual_host)
-{
-  Store->updateIrcHost(alias_uris , actual_host) ;
-}
-
-void AvCaster::UpdateChatNicks(Identifier network_id , StringArray nicks)
-{
-  Store->updateChatNicks(network_id , nicks) ;
-}
-
-StringArray AvCaster::GetChatNicks(ValueTree chatters_store)
-{
-  return Store->getChatNicks(chatters_store) ;
-}
+void AvCaster::UpdateChatters(StringArray nicks) { Store->updateChatters(nicks) ; }
 
 
 /* AvCaster private class methods */
 
 bool AvCaster::Initialize(JUCEApplicationBase* main_app , MainContent* main_content)
 {
-  App       = main_app ;
-  Gui       = main_content ;
-  CliParams = JUCEApplicationBase::getCommandLineParameterArray() ;
+ValueTree config = ValueTree::invalid ; ValueTree fred = config.getChildWithName("fred") ;
 
-  CliParams.removeEmptyStrings() ; CliParams.removeDuplicates(false) ;
+  App                    = main_app ;
+  Gui                    = main_content ;
+  StringArray cli_params = JUCEApplicationBase::getCommandLineParameterArray() ;
+
+  cli_params.removeEmptyStrings() ; cli_params.removeDuplicates(false) ;
 
 DEBUG_DISABLE_FEATURES
 
-  if (HandleCliParams()) return false ;
+  if (HandleCliParams(cli_params)) return false ;
 
 DEBUG_TRACE_INIT_PHASE_1
 
@@ -214,23 +189,26 @@ DEBUG_SEED_IRC_NETWORKS
 DEBUG_TRACE_INIT_PHASE_3
 
   // initialze GUI
-  Gui->initialize(Store->networks) ;
-
-  if (!ProcessCliParams()) return false ;
+  Gui->initialize(Store->config , Store->network , Store->chatters) ;
 
 DEBUG_TRACE_INIT_PHASE_4
 
-  // initialize libgtreamer
-  if (IsMediaEnabled && !Gstreamer::Initialize(Gui->getWindowHandle())) return false ;
+  if (!ProcessCliParams(cli_params)) return false ;
 
 DEBUG_TRACE_INIT_PHASE_5
 
-  // initialize libircclient
-  bool show_timestamps = bool(Store->config[CONFIG::TIMESTAMPS_ID]) ;
-  bool show_joinparts  = bool(Store->config[CONFIG::JOINPARTS_ID ]) ;
-  if (IsChatEnabled) Irc = new IrcClient(Store->networks , show_timestamps , show_joinparts) ;
+  // initialize libgtreamer
+  if (IsMediaEnabled && !Gstreamer::Initialize(Store->config , Gui->getWindowHandle()))
+    return false ;
 
 DEBUG_TRACE_INIT_PHASE_6
+
+  // initialize libircclient
+#ifndef DISABLE_CHAT
+  if (IsChatEnabled) Irc = new IrcClient(Store->network) ;
+#endif // DISABLE_CHAT
+
+DEBUG_TRACE_INIT_PHASE_7
 
   // finalize initialization
   StorePreset(GetPresetName()) ; RefreshGui() ; IsInitialized = true ;
@@ -238,7 +216,7 @@ DEBUG_TRACE_INIT_PHASE_6
   // subscribe to model change events
   Store->listen(true) ;
 
-DEBUG_TRACE_INIT_PHASE_7
+DEBUG_TRACE_INIT_PHASE_8
 
   return IsInitialized ;
 }
@@ -299,13 +277,13 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
   if (GetPresetIdx() == CONFIG::INVALID_IDX) return ; // renaming
 
-  bool is_stream_active           = bool(Store->config[CONFIG::OUTPUT_ID]) ;
-  bool was_preset_combo_changed   = a_key == CONFIG::PRESET_ID ;
-  bool was_config_button_pressed  = a_key == CONFIG::IS_PENDING_ID ;
-  bool is_config_pending          = AvCaster::GetIsConfigPending() ;
-  bool is_swapping_presets        = was_preset_combo_changed  && !is_config_pending ;
-  bool is_exiting_config_mode     = was_config_button_pressed && !is_config_pending ;
-  bool should_create_irc_sessions = is_swapping_presets || is_exiting_config_mode ;
+  bool      is_stream_active           = bool(Store->config[CONFIG::OUTPUT_ID]) ;
+  bool      was_preset_combo_changed   = a_key == CONFIG::PRESET_ID ;
+  bool      was_config_button_pressed  = a_key == CONFIG::IS_PENDING_ID ;
+  bool      is_config_pending          = AvCaster::GetIsConfigPending() ;
+  bool      is_swapping_presets        = was_preset_combo_changed  && !is_config_pending ;
+  bool      is_exiting_config_mode     = was_config_button_pressed && !is_config_pending ;
+  bool      should_login_chat          = is_swapping_presets || is_exiting_config_mode ;
 
 DEBUG_TRACE_HANDLE_CONFIG_CHANGE
 
@@ -317,10 +295,9 @@ DEBUG_TRACE_HANDLE_CONFIG_CHANGE
   Gstreamer::Reconfigure(a_key) ;
 
   // reconfigure Irc networks
-  bool show_timestamps = bool(Store->config[CONFIG::TIMESTAMPS_ID]) ;
-  bool show_joinparts  = bool(Store->config[CONFIG::JOINPARTS_ID ]) ;
-  if (Store->isReconfigureKey(a_key))
-    Irc->configure(should_create_irc_sessions , show_timestamps , show_joinparts) ;
+#ifndef DISABLE_CHAT
+  if (Store->isReconfigureKey(a_key)) Irc->configure(should_login_chat) ;
+#endif // DISABLE_CHAT
 
   // store changes and refresh GUI
   StorePreset(GetPresetName()) ; RefreshGui() ;
@@ -370,14 +347,14 @@ void AvCaster::UpdateStatus()
 #endif // TRAY_ICON
 }
 
-bool AvCaster::HandleCliParams()
+bool AvCaster::HandleCliParams(StringArray cli_params)
 {
 DEBUG_TRACE_HANDLE_CLI_PARAMS
 
   // handle terminating CLI params
-  if      (CliParams.contains(APP::CLI_HELP_TOKEN   ))
+  if      (cli_params.contains(APP::CLI_HELP_TOKEN   ))
   { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG  )) ; return true ; }
-  else if (CliParams.contains(APP::CLI_PRESETS_TOKEN))
+  else if (cli_params.contains(APP::CLI_PRESETS_TOKEN))
   {
     // load persistent configuration as normal
     Store = new AvCasterStore() ; int n_presets = Store->presets.getNumChildren() ;
@@ -394,22 +371,22 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
 
     return true ;
   }
-  else if (CliParams.contains(APP::CLI_VERSION_TOKEN))
+  else if (cli_params.contains(APP::CLI_VERSION_TOKEN))
   { printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ; return true ; }
 
   return false ;
 }
 
-bool AvCaster::ProcessCliParams()
+bool AvCaster::ProcessCliParams(StringArray cli_params)
 {
 DEBUG_TRACE_PROCESS_CLI_PARAMS
 
   // load initial configuration preset
-  if (CliParams.contains(APP::CLI_PRESET_TOKEN))
+  if (cli_params.contains(APP::CLI_PRESET_TOKEN))
   {
     // set initial preset from cli param
-    int token_idx  = CliParams.indexOf(APP::CLI_PRESET_TOKEN) ;
-    int preset_idx = CliParams[token_idx + 1].getIntValue() ;
+    int token_idx  = cli_params.indexOf(APP::CLI_PRESET_TOKEN) ;
+    int preset_idx = cli_params[token_idx + 1].getIntValue() ;
 
     if (~preset_idx) SetValue(CONFIG::PRESET_ID , preset_idx) ;
   }
@@ -422,7 +399,7 @@ DEBUG_TRACE_PROCESS_CLI_PARAMS
   bool& is_compositor_enabled = Gstreamer::IsCompositorEnabled ;
   bool& is_preview_enabled    = Gstreamer::IsPreviewEnabled ;
   bool& is_audio_enabled      = Gstreamer::IsAudioEnabled ;
-  for (String* token = CliParams.begin() ; token != CliParams.end() ; ++token)
+  for (String* token = cli_params.begin() ; token != cli_params.end() ; ++token)
     if      (*token == APP::CLI_DISABLE_MEDIA_TOKEN  )
       IsMediaEnabled   = is_screen_enabled     = is_camera_enabled  = is_text_enabled  =
       is_image_enabled = is_compositor_enabled = is_preview_enabled = is_audio_enabled = false ;
@@ -449,7 +426,7 @@ DEBUG_TRACE_PROCESS_CLI_PARAMS
                        is_text_enabled  , is_image_enabled  , is_preview_enabled ,
                        is_audio_enabled                                          ) ;
 
-DUMP_DEBUG_MEDIA_SWITCHES
+DEBUG_DUMP_MEDIA_SWITCHES
 
   return is_sane ;
 }

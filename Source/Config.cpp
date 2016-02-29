@@ -132,60 +132,56 @@ Config::Config (MainContent* main_content)
     //[Constructor] You can add your own custom stuff here..
 
   // establish local handles to child Component widgets
-  this->displaySlider       = this->configScreen->displaySlider ;
-  this->screenSlider        = this->configScreen->screenSlider ;
-  this->screenWidthText     = this->configScreen->screenWidthText ;
-  this->screenHeightText    = this->configScreen->screenHeightText ;
-  this->xOffsetText         = this->configScreen->xOffsetText ;
-  this->yOffsetText         = this->configScreen->yOffsetText ;
-  this->cameraDevCombo      = this->configCamera->cameraDevCombo ;
-  this->cameraResCombo      = this->configCamera->cameraResCombo ;
-  this->audioApiCombo       = this->configAudio ->audioApiCombo ;
-  this->audioDevCombo       = this->configAudio ->audioDevCombo ;
-  this->audioCodecCombo     = this->configAudio ->audioCodecCombo ;
-  this->nChannelsSlider     = this->configAudio ->nChannelsSlider ;
-  this->samplerateCombo     = this->configAudio ->samplerateCombo ;
-  this->audioBitrateCombo   = this->configAudio ->audioBitrateCombo ;
-  this->motdText            = this->configText  ->motdText ;
-  this->textStyleCombo      = this->configText  ->textStyleCombo ;
-  this->textPosCombo        = this->configText  ->textPosCombo ;
-  this->interstitialText    = this->configImage ->interstitialText ;
-  this->browseButton        = this->configImage ->browseButton ;
-  this->outputSinkCombo     = this->configOutput->outputSinkCombo ;
-  this->outputWidthText     = this->configOutput->outputWidthText ;
-  this->outputHeightText    = this->configOutput->outputHeightText ;
-  this->framerateCombo      = this->configOutput->framerateCombo ;
-  this->videoBitrateCombo   = this->configOutput->videoBitrateCombo ;
-  this->outputDestLabel     = this->configOutput->outputDestLabel ;
-  this->outputDestText      = this->configOutput->outputDestText ;
-  this->timestampToggle     = this->configChat  ->timestampToggle ;
-  this->joinPartToggle      = this->configChat  ->joinPartToggle ;
-  this->newNetworkButton    = this->configChat  ->newNetworkButton ;
-  this->deleteNetworkButton = this->configChat  ->deleteNetworkButton ;
-  this->networkCombo        = this->configChat  ->networkCombo ;
-  this->portText            = this->configChat  ->portText ;
-  this->nickText            = this->configChat  ->nickText ;
-  this->passText            = this->configChat  ->passText ;
-  this->channelText         = this->configChat  ->channelText ;
-  this->greetingText        = this->configChat  ->greetingText ;
+  this->displaySlider     = this->configScreen->displaySlider ;
+  this->screenSlider      = this->configScreen->screenSlider ;
+  this->screenWidthText   = this->configScreen->screenWidthText ;
+  this->screenHeightText  = this->configScreen->screenHeightText ;
+  this->xOffsetText       = this->configScreen->xOffsetText ;
+  this->yOffsetText       = this->configScreen->yOffsetText ;
+  this->cameraDevCombo    = this->configCamera->cameraDevCombo ;
+  this->cameraResCombo    = this->configCamera->cameraResCombo ;
+  this->audioApiCombo     = this->configAudio ->audioApiCombo ;
+  this->audioDevCombo     = this->configAudio ->audioDevCombo ;
+  this->audioCodecCombo   = this->configAudio ->audioCodecCombo ;
+  this->nChannelsSlider   = this->configAudio ->nChannelsSlider ;
+  this->samplerateCombo   = this->configAudio ->samplerateCombo ;
+  this->audioBitrateCombo = this->configAudio ->audioBitrateCombo ;
+  this->motdText          = this->configText  ->motdText ;
+  this->textStyleCombo    = this->configText  ->textStyleCombo ;
+  this->textPosCombo      = this->configText  ->textPosCombo ;
+  this->interstitialText  = this->configImage ->interstitialText ;
+  this->browseButton      = this->configImage ->browseButton ;
+  this->outputSinkCombo   = this->configOutput->outputSinkCombo ;
+  this->outputWidthText   = this->configOutput->outputWidthText ;
+  this->outputHeightText  = this->configOutput->outputHeightText ;
+  this->framerateCombo    = this->configOutput->framerateCombo ;
+  this->videoBitrateCombo = this->configOutput->videoBitrateCombo ;
+  this->outputDestLabel   = this->configOutput->outputDestLabel ;
+  this->outputDestText    = this->configOutput->outputDestText ;
+  this->networkText       = this->configChat  ->networkText ;
+  this->portText          = this->configChat  ->portText ;
+  this->nickText          = this->configChat  ->nickText ;
+  this->passText          = this->configChat  ->passText ;
+  this->channelText       = this->configChat  ->channelText ;
+  this->greetingText      = this->configChat  ->greetingText ;
+  this->timestampToggle   = this->configChat  ->timestampToggle ;
+  this->joinPartToggle    = this->configChat  ->joinPartToggle ;
 
-  // configure
+  // configure look and feel , validations, and listeners
   Button    ::Listener* this_button_listener   = static_cast<Button    ::Listener*>(this) ;
   Slider    ::Listener* this_slider_listener   = static_cast<Slider    ::Listener*>(this) ;
   TextEditor::Listener* this_text_listener     = static_cast<TextEditor::Listener*>(this) ;
   ComboBox  ::Listener* this_combobox_listener = static_cast<ComboBox  ::Listener*>(this) ;
-  this->mainContent->configureButton(this->screenButton        , this_button_listener) ;
-  this->mainContent->configureButton(this->cameraButton        , this_button_listener) ;
-  this->mainContent->configureButton(this->audioButton         , this_button_listener) ;
-  this->mainContent->configureButton(this->textButton          , this_button_listener) ;
-  this->mainContent->configureButton(this->imageButton         , this_button_listener) ;
-  this->mainContent->configureButton(this->outputButton        , this_button_listener) ;
-  this->mainContent->configureButton(this->chatButton          , this_button_listener) ;
-  this->mainContent->configureButton(this->browseButton        , this_button_listener) ;
-  this->mainContent->configureButton(this->timestampToggle     , this_button_listener) ;
-  this->mainContent->configureButton(this->joinPartToggle      , this_button_listener) ;
-  this->mainContent->configureButton(this->newNetworkButton    , this_button_listener) ;
-  this->mainContent->configureButton(this->deleteNetworkButton , this_button_listener) ;
+  this->mainContent->configureButton(this->screenButton    , this_button_listener) ;
+  this->mainContent->configureButton(this->cameraButton    , this_button_listener) ;
+  this->mainContent->configureButton(this->audioButton     , this_button_listener) ;
+  this->mainContent->configureButton(this->textButton      , this_button_listener) ;
+  this->mainContent->configureButton(this->imageButton     , this_button_listener) ;
+  this->mainContent->configureButton(this->outputButton    , this_button_listener) ;
+  this->mainContent->configureButton(this->chatButton      , this_button_listener) ;
+  this->mainContent->configureButton(this->browseButton    , this_button_listener) ;
+  this->mainContent->configureButton(this->timestampToggle , this_button_listener) ;
+  this->mainContent->configureButton(this->joinPartToggle  , this_button_listener) ;
   this->mainContent->configureSlider(this->displaySlider   , this_slider_listener ,
                                      GUI::MIN_DISPLAY_N    , GUI::MAX_DISPLAY_N   , 1.0) ;
   this->mainContent->configureSlider(this->screenSlider    , this_slider_listener ,
@@ -201,7 +197,7 @@ Config::Config (MainContent* main_content)
   this->mainContent->configureTextEditor(this->yOffsetText      , this_text_listener   ,
                                          GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
   this->mainContent->configureTextEditor(this->motdText         , this_text_listener   ,
-                                         GUI::MAX_MOTD_LEN      , ""                   ) ;
+                                         GUI::MAX_MOTD_LEN      , String::empty        ) ;
   this->mainContent->configureTextEditor(this->interstitialText , this_text_listener   ,
                                          GUI::MAX_FILENAME_LEN  , APP::VALID_ID_CHARS  ) ;
   this->mainContent->configureTextEditor(this->hintsText        , this_text_listener   ,
@@ -212,16 +208,18 @@ Config::Config (MainContent* main_content)
                                          GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
   this->mainContent->configureTextEditor(this->outputDestText   , this_text_listener   ,
                                          GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
+  this->mainContent->configureTextEditor(this->networkText      , this_text_listener   ,
+                                         GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
   this->mainContent->configureTextEditor(this->portText         , this_text_listener   ,
                                          GUI::MAX_PORT_N_CHARS  , APP::DIGITS          ) ;
   this->mainContent->configureTextEditor(this->nickText         , this_text_listener   ,
                                          GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
   this->mainContent->configureTextEditor(this->passText         , this_text_listener   ,
-                                         GUI::MAX_MOTD_LEN      , ""                   ) ;
+                                         GUI::MAX_MOTD_LEN      , String::empty        ) ;
   this->mainContent->configureTextEditor(this->channelText      , this_text_listener   ,
                                          GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
   this->mainContent->configureTextEditor(this->greetingText     , this_text_listener   ,
-                                         GUI::MAX_MOTD_LEN      , ""                   ) ;
+                                         GUI::MAX_MOTD_LEN      , String::empty        ) ;
   this->mainContent->configureCombobox(this->cameraDevCombo    , this_combobox_listener) ;
   this->mainContent->configureCombobox(this->cameraResCombo    , this_combobox_listener) ;
   this->mainContent->configureCombobox(this->audioApiCombo     , this_combobox_listener) ;
@@ -234,7 +232,6 @@ Config::Config (MainContent* main_content)
   this->mainContent->configureCombobox(this->outputSinkCombo   , this_combobox_listener) ;
   this->mainContent->configureCombobox(this->framerateCombo    , this_combobox_listener) ;
   this->mainContent->configureCombobox(this->videoBitrateCombo , this_combobox_listener) ;
-  this->mainContent->configureCombobox(this->networkCombo      , this_combobox_listener) ;
 
   // NOTE: dummyPane is a non-functional dummy - most siblings bounds are coupled to it
   dummyConfigPane->toBack() ;
@@ -331,11 +328,11 @@ void Config::broughtToFront() { loadConfig() ; }
 void Config::sliderValueChanged(Slider* a_slider)
 {
   Identifier key ;
-  var        value = var((int)a_slider->getValue()) ;
+  var        value = var(int(a_slider->getValue())) ;
 
-  if      (a_slider == displaySlider  ) key = CONFIG::DISPLAY_N_ID ;
-  else if (a_slider == screenSlider   ) key = CONFIG::SCREEN_N_ID ;
-  else if (a_slider == nChannelsSlider) key = CONFIG::N_CHANNELS_ID ;
+  if      (a_slider == this->displaySlider  ) key = CONFIG::DISPLAY_N_ID ;
+  else if (a_slider == this->screenSlider   ) key = CONFIG::SCREEN_N_ID ;
+  else if (a_slider == this->nChannelsSlider) key = CONFIG::N_CHANNELS_ID ;
 
   AvCaster::SetValue(key , value) ;
 }
@@ -406,31 +403,6 @@ void Config::comboBoxChanged(ComboBox* a_combobox)
   {
     key         = CONFIG::VIDEO_BITRATE_ID ;
     default_idx = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
-  }
-  else if (a_combobox == this->networkCombo)
-  {
-// TODO: nyi
-DBG("Config::comboBoxChanged() networkCombo option_n=" + String(option_n) + " text=" + this->networkCombo->getText()) ;
-    if (~option_n)
-    {
-DBG("Config::comboBoxChanged() networkCombo selection changed") ;
-      this->networkCombo->setEditableText(false) ;
-    }
-    else
-    {
-      // TODO: validate: GUI::MAX_FILENAME_LEN  , APP::VALID_URI_CHARS ) ;
-      //       how to setInputRestrictions on combo text editor
-      String network = this->networkCombo->getText().substring(0 , GUI::MAX_FILENAME_LEN) ;
-      this->networkCombo->setText(network , juce::dontSendNotification) ;
-//       this->networkCombo->setEditableText(false) ;
-
-DBG("Config::comboBoxChanged() networkCombo nothing selected OR text network=" + network) ;
-    }
-
-    key         = CONFIG::NETWORK_IDX_ID ;
-    default_idx = CONFIG::DEFAULT_NETWORK_IDX ;
-
-    loadConfig() ;
   }
   else return ;
 
@@ -510,25 +482,8 @@ void Config::buttonClicked(Button* a_button)
     key   = CONFIG::JOINPARTS_ID ;
     value = var(a_button->getToggleState()) ;
   }
-  else if (a_button == this->newNetworkButton)
-  {
-    this->networkCombo->setEditableText(true) ;
-    this->networkCombo->setTextWhenNothingSelected(GUI::NEW_NETWORK_TEXT) ;
-// TODO: clear inputs
-    enableComponents() ; return ;
-  }
-  else if (a_button == this->deleteNetworkButton)
-  {
-    if (this->networkCombo->getNumItems() == 0)
-    {
-      this->networkCombo->setEditableText(false) ;
-      this->networkCombo->setTextWhenNothingSelected(GUI::DEFAULT_NETWORK_TEXT) ;
-    }
-// TODO:
-    enableComponents() ; return ;
-  }
 
-  if (config_component != nullptr)        // local buttons
+  if (config_component != nullptr)       // local buttons
   {
     this->configPaneGroup->setText(config_group_text) ;
     updateVisibility(config_component) ;
@@ -552,62 +507,70 @@ void Config::textEditorFocusLost(TextEditor& a_text_editor)
 
   if      (ed == this->screenWidthText ) { key = CONFIG::SCREENCAP_W_ID ; value = int_val ; }
   else if (ed == this->screenHeightText) { key = CONFIG::SCREENCAP_H_ID ; value = int_val ; }
-  else if (ed == this->xOffsetText     ) { key = CONFIG::OFFSET_X_ID ;    value = int_val ; }
-  else if (ed == this->yOffsetText     ) { key = CONFIG::OFFSET_Y_ID ;    value = int_val ; }
-  else if (ed == this->motdText        ) { key = CONFIG::MOTD_TEXT_ID ;   value = str_val ; }
-  else if (ed == this->interstitialText) { key = CONFIG::IMAGE_LOC_ID ;   value = str_val ; }
-  else if (ed == this->outputWidthText ) { key = CONFIG::OUTPUT_W_ID ;    value = int_val ; }
-  else if (ed == this->outputHeightText) { key = CONFIG::OUTPUT_H_ID ;    value = int_val ; }
+  else if (ed == this->xOffsetText     ) { key = CONFIG::OFFSET_X_ID    ; value = int_val ; }
+  else if (ed == this->yOffsetText     ) { key = CONFIG::OFFSET_Y_ID    ; value = int_val ; }
+  else if (ed == this->motdText        ) { key = CONFIG::MOTD_TEXT_ID   ; value = str_val ; }
+  else if (ed == this->interstitialText) { key = CONFIG::IMAGE_LOC_ID   ; value = str_val ; }
+  else if (ed == this->outputWidthText ) { key = CONFIG::OUTPUT_W_ID    ; value = int_val ; }
+  else if (ed == this->outputHeightText) { key = CONFIG::OUTPUT_H_ID    ; value = int_val ; }
   else if (ed == this->outputDestText  ) { key = CONFIG::OUTPUT_DEST_ID ; value = str_val ; }
+  else if (ed == this->networkText     ) { key = CONFIG::NETWORK_ID     ; value = str_val ; }
+  else if (ed == this->portText        ) { key = CONFIG::PORT_ID        ; value = str_val ; }
+  else if (ed == this->nickText        ) { key = CONFIG::NICK_ID        ; value = str_val ; }
+  else if (ed == this->passText        ) { key = CONFIG::PASS_ID        ; value = str_val ; }
+  else if (ed == this->channelText     ) { key = CONFIG::CHANNEL_ID     ; value = str_val ; }
+  else if (ed == this->greetingText    ) { key = CONFIG::GREETING_ID    ; value = str_val ; }
   else                                   return ;
 
   AvCaster::SetValue(key , value) ;
 }
 
+void Config::initialize(ValueTree config_store , ValueTree network_store)
+{
+  this->configStore  = config_store ;
+  this->networkStore = network_store ;
+}
+
 void Config::loadConfig()
 {
-  ValueTree   config_store       = AvCaster::GetVolatileStore       () ;
-  ValueTree   network_store      = AvCaster::GetSelectedNetworkStore() ;
   StringArray camera_devices     = AvCaster::GetCameraNames         () ;
   StringArray camera_resolutions = AvCaster::GetCameraResolutions   () ;
   StringArray audio_devices      = AvCaster::GetAudioNames          () ;
-  StringArray network_names      = AvCaster::GetNetworkNames        () ;
 
 DEBUG_TRACE_CONFIG_LOAD_CONFIG
 
-  double display_n             = double(config_store [CONFIG::DISPLAY_N_ID    ]) ;
-  double screen_n              = double(config_store [CONFIG::SCREEN_N_ID     ]) ;
-  String screencap_w           = STRING(config_store [CONFIG::SCREENCAP_W_ID  ]) ;
-  String screencap_h           = STRING(config_store [CONFIG::SCREENCAP_H_ID  ]) ;
-  String offset_x              = STRING(config_store [CONFIG::OFFSET_X_ID     ]) ;
-  String offset_y              = STRING(config_store [CONFIG::OFFSET_Y_ID     ]) ;
-  int    camera_dev_idx        = int   (config_store [CONFIG::CAMERA_DEVICE_ID]) ;
-  int    camera_res_idx        = int   (config_store [CONFIG::CAMERA_RES_ID   ]) ;
-  int    audio_api_idx         = int   (config_store [CONFIG::AUDIO_API_ID    ]) ;
-  int    audio_dev_idx         = int   (config_store [CONFIG::AUDIO_DEVICE_ID ]) ;
-  int    audio_codec_idx       = int   (config_store [CONFIG::AUDIO_CODEC_ID  ]) ;
-  double n_channels            = double(config_store [CONFIG::N_CHANNELS_ID   ]) ;
-  int    samplerate_idx        = int   (config_store [CONFIG::SAMPLERATE_ID   ]) ;
-  int    audio_bitrate_idx     = int   (config_store [CONFIG::AUDIO_BITRATE_ID]) ;
-  int    text_style_idx        = int   (config_store [CONFIG::TEXT_STYLE_ID   ]) ;
-  int    text_pos_idx          = int   (config_store [CONFIG::TEXT_POSITION_ID]) ;
-  String motd_text             = STRING(config_store [CONFIG::MOTD_TEXT_ID    ]) ;
-  String interstitial_text     = STRING(config_store [CONFIG::IMAGE_LOC_ID    ]) ;
-  int    output_idx            = int   (config_store [CONFIG::OUTPUT_SINK_ID  ]) ;
-  String output_w_text         = STRING(config_store [CONFIG::OUTPUT_W_ID     ]) ;
-  String output_h_text         = STRING(config_store [CONFIG::OUTPUT_H_ID     ]) ;
-  int    framerate_idx         = int   (config_store [CONFIG::FRAMERATE_ID    ]) ;
-  int    video_bitrate_idx     = int   (config_store [CONFIG::VIDEO_BITRATE_ID]) ;
-  String output_dest_text      = STRING(config_store [CONFIG::OUTPUT_DEST_ID  ]) ;
-  int    network_idx           = int   (config_store [CONFIG::NETWORK_IDX_ID  ]) ;
-  String network_text          = STRING(network_store[CONFIG::NETWORK_ID      ]) ;
-  int    port                  = int   (network_store[CONFIG::PORT_ID         ]) ;
-  String port_text             = (network_store.isValid()) ? String(port) : String::empty ;
-  String nick_text             = STRING(network_store[CONFIG::NICK_ID         ]) ;
-  String pass_text             = STRING(network_store[CONFIG::PASS_ID         ]) ;
-  String channel_text          = STRING(network_store[CONFIG::CHANNEL_ID      ]) ;
-  String greeting_text         = STRING(network_store[CONFIG::GREETING_ID     ]) ;
-  bool   should_show_joinparts = bool  (network_store[CONFIG::NICK_ID         ]) ;
+  double display_n              = double(this->configStore [CONFIG::DISPLAY_N_ID    ]) ;
+  double screen_n               = double(this->configStore [CONFIG::SCREEN_N_ID     ]) ;
+  String screencap_w            = STRING(this->configStore [CONFIG::SCREENCAP_W_ID  ]) ;
+  String screencap_h            = STRING(this->configStore [CONFIG::SCREENCAP_H_ID  ]) ;
+  String offset_x               = STRING(this->configStore [CONFIG::OFFSET_X_ID     ]) ;
+  String offset_y               = STRING(this->configStore [CONFIG::OFFSET_Y_ID     ]) ;
+  int    camera_dev_idx         = int   (this->configStore [CONFIG::CAMERA_DEVICE_ID]) ;
+  int    camera_res_idx         = int   (this->configStore [CONFIG::CAMERA_RES_ID   ]) ;
+  int    audio_api_idx          = int   (this->configStore [CONFIG::AUDIO_API_ID    ]) ;
+  int    audio_dev_idx          = int   (this->configStore [CONFIG::AUDIO_DEVICE_ID ]) ;
+  int    audio_codec_idx        = int   (this->configStore [CONFIG::AUDIO_CODEC_ID  ]) ;
+  double n_channels             = double(this->configStore [CONFIG::N_CHANNELS_ID   ]) ;
+  int    samplerate_idx         = int   (this->configStore [CONFIG::SAMPLERATE_ID   ]) ;
+  int    audio_bitrate_idx      = int   (this->configStore [CONFIG::AUDIO_BITRATE_ID]) ;
+  int    text_style_idx         = int   (this->configStore [CONFIG::TEXT_STYLE_ID   ]) ;
+  int    text_pos_idx           = int   (this->configStore [CONFIG::TEXT_POSITION_ID]) ;
+  String motd_text              = STRING(this->configStore [CONFIG::MOTD_TEXT_ID    ]) ;
+  String interstitial_text      = STRING(this->configStore [CONFIG::IMAGE_LOC_ID    ]) ;
+  int    output_idx             = int   (this->configStore [CONFIG::OUTPUT_SINK_ID  ]) ;
+  String output_w_text          = STRING(this->configStore [CONFIG::OUTPUT_W_ID     ]) ;
+  String output_h_text          = STRING(this->configStore [CONFIG::OUTPUT_H_ID     ]) ;
+  int    framerate_idx          = int   (this->configStore [CONFIG::FRAMERATE_ID    ]) ;
+  int    video_bitrate_idx      = int   (this->configStore [CONFIG::VIDEO_BITRATE_ID]) ;
+  String output_dest_text       = STRING(this->configStore [CONFIG::OUTPUT_DEST_ID  ]) ;
+  String network_text           = STRING(this->networkStore[CONFIG::NETWORK_ID      ]) ;
+  int    port                   = int   (this->networkStore[CONFIG::PORT_ID         ]) ;
+  String nick_text              = STRING(this->networkStore[CONFIG::NICK_ID         ]) ;
+  String pass_text              = STRING(this->networkStore[CONFIG::PASS_ID         ]) ;
+  String channel_text           = STRING(this->networkStore[CONFIG::CHANNEL_ID      ]) ;
+  String greeting_text          = STRING(this->networkStore[CONFIG::GREETING_ID     ]) ;
+  bool   should_show_timestamps = bool  (this->networkStore[CONFIG::TIMESTAMPS_ID   ]) ;
+  bool   should_show_joinparts  = bool  (this->networkStore[CONFIG::JOINPARTS_ID    ]) ;
 
   bool   is_lctv_preset    = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
   String output_label_text = (is_lctv_preset                       ) ? GUI::DEST_LCTV_TEXT :
@@ -628,7 +591,8 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputHeightText ->setText             (output_h_text    ) ;
   this->outputDestText   ->setText             (output_dest_text ) ;
   this->outputDestLabel  ->setText             (output_label_text , juce::dontSendNotification) ;
-  this->portText         ->setText             (port_text        ) ;
+  this->networkText      ->setText             (network_text     ) ;
+  this->portText         ->setText             ((port > 0) ? String(port) : String::empty) ;
   this->nickText         ->setText             (nick_text        ) ;
   this->passText         ->setText             (pass_text        ) ;
   this->channelText      ->setText             (channel_text     ) ;
@@ -645,7 +609,6 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputSinkCombo  ->clear               (juce::dontSendNotification) ;
   this->framerateCombo   ->clear               (juce::dontSendNotification) ;
   this->videoBitrateCombo->clear               (juce::dontSendNotification) ;
-  this->networkCombo     ->clear               (juce::dontSendNotification) ;
   this->cameraDevCombo   ->addItemList         (camera_devices            , 1) ;
   this->cameraResCombo   ->addItemList         (camera_resolutions        , 1) ;
   this->audioApiCombo    ->addItemList         (CONFIG::AUDIO_APIS        , 1) ;
@@ -658,7 +621,6 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputSinkCombo  ->addItemList         (CONFIG::OUTPUT_SINKS      , 1) ;
   this->framerateCombo   ->addItemList         (CONFIG::FRAMERATES        , 1) ;
   this->videoBitrateCombo->addItemList         (CONFIG::VIDEO_BITRATES    , 1) ;
-  this->networkCombo     ->addItemList         (network_names             , 1) ;
   this->cameraDevCombo   ->setSelectedItemIndex(camera_dev_idx    , juce::dontSendNotification) ;
   this->cameraResCombo   ->setSelectedItemIndex(camera_res_idx    , juce::dontSendNotification) ;
   this->audioApiCombo    ->setSelectedItemIndex(audio_api_idx     , juce::dontSendNotification) ;
@@ -671,26 +633,18 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputSinkCombo  ->setSelectedItemIndex(output_idx        , juce::dontSendNotification) ;
   this->framerateCombo   ->setSelectedItemIndex(framerate_idx     , juce::dontSendNotification) ;
   this->videoBitrateCombo->setSelectedItemIndex(video_bitrate_idx , juce::dontSendNotification) ;
-  this->networkCombo     ->setSelectedItemIndex(network_idx       , juce::dontSendNotification) ;
-  this->joinPartToggle   ->setToggleState      (should_show_joinparts , juce::dontSendNotification) ;
+  this->timestampToggle  ->setToggleState      (should_show_timestamps , juce::dontSendNotification) ;
+  this->joinPartToggle   ->setToggleState      (should_show_joinparts  , juce::dontSendNotification) ;
 
   enableComponents() ;
 }
 
 void Config::enableComponents()
 {
-  bool is_user_preset     = !AvCaster::IsStaticPreset() ;
-  bool is_chat_configured = this->networkCombo->getNumItems() > 0 ;
+  bool is_user_preset = !AvCaster::IsStaticPreset() ;
 
-  this->audioCodecCombo->setEnabled(is_user_preset    ) ; // TODO: videoCodecCombo
-  this->outputSinkCombo->setEnabled(is_user_preset    ) ; // TODO: outputMuxerCombo
-  this->timestampToggle->setEnabled(is_chat_configured) ;
-  this->joinPartToggle ->setEnabled(is_chat_configured) ;
-  this->portText       ->setEnabled(is_chat_configured) ;
-  this->nickText       ->setEnabled(is_chat_configured) ;
-  this->passText       ->setEnabled(is_chat_configured) ;
-  this->channelText    ->setEnabled(is_chat_configured) ;
-  this->greetingText   ->setEnabled(is_chat_configured) ;
+  this->audioCodecCombo->setEnabled(is_user_preset) ; // TODO: videoCodecCombo
+  this->outputSinkCombo->setEnabled(is_user_preset) ; // TODO: outputMuxerCombo
 
 #ifdef DISABLE_GUI_CONFIG_NYI
 this->displaySlider   ->setEnabled(false) ;
@@ -705,20 +659,30 @@ this->textStyleCombo  ->setEnabled(false) ;
 this->textPosCombo    ->setEnabled(false) ;
 this->interstitialText->setEnabled(false) ;
 this->browseButton    ->setEnabled(false) ;
+#  ifdef DISABLE_CHAT
+this->networkText    ->setEnabled(false) ;
+this->portText       ->setEnabled(false) ;
+this->nickText       ->setEnabled(false) ;
+this->passText       ->setEnabled(false) ;
+this->channelText    ->setEnabled(false) ;
+this->greetingText   ->setEnabled(false) ;
+this->timestampToggle->setEnabled(false) ;
+this->joinPartToggle ->setEnabled(false) ;
+#  endif // DISABLE_CHAT
 #endif // DISABLE_GUI_CONFIG_NYI
 }
 
-void Config::updateVisibility(Component* config_component)
+void Config::updateVisibility(Component* selected_component)
 {
-  configScreen    ->setVisible(false) ;
-  configCamera    ->setVisible(false) ;
-  configAudio     ->setVisible(false) ;
-  configText      ->setVisible(false) ;
-  configImage     ->setVisible(false) ;
-  configOutput    ->setVisible(false) ;
-  configChat      ->setVisible(false) ;
-  dummyConfigPane ->setVisible(false) ;
-  config_component->setVisible(true ) ;
+  configScreen       ->setVisible(false) ;
+  configCamera       ->setVisible(false) ;
+  configAudio        ->setVisible(false) ;
+  configText         ->setVisible(false) ;
+  configImage        ->setVisible(false) ;
+  configOutput       ->setVisible(false) ;
+  configChat         ->setVisible(false) ;
+  dummyConfigPane    ->setVisible(false) ;
+  selected_component->setVisible(true ) ;
 }
 
 bool Config::validateOutputDest()
@@ -735,12 +699,7 @@ bool Config::validateOutputDest()
   return is_valid ;
 }
 
-bool Config::validateParams()
-{
-  bool is_sane = validateOutputDest() ;
-
-  return is_sane ;
-}
+// bool Config::validateParams() { bool is_sane = validateOutputDest() ; return is_sane ; }
 
 //[/MiscUserCode]
 

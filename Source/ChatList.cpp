@@ -31,11 +31,11 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-ChatList::ChatList (ValueTree network_store)
-    : networkStore(network_store)
+ChatList::ChatList ()
 {
     addAndMakeVisible (chattersGroup = new GroupComponent ("chattersGroup",
-                                                           TRANS("(connecting)")));
+                                                           TRANS("Nicks")));
+    chattersGroup->setTextLabelPosition (Justification::centred);
     chattersGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     chattersGroup->setColour (GroupComponent::textColourId, Colours::white);
 
@@ -50,19 +50,6 @@ ChatList::ChatList (ValueTree network_store)
 
 
     //[Constructor] You can add your own custom stuff here..
-
-  this->chattersStore = this->networkStore.getChildWithName(CONFIG::CHATTERS_ID) ;
-  String network      = STRING(this->networkStore[CONFIG::NETWORK_ID]) ;
-
-  this->chattersGroup->setText(network) ;
-  this->chattersGroup->setTextLabelPosition(Justification::horizontallyCentred) ;
-
-  // hide GUI designer placeholder
-  this->dummyChatListItem->setVisible(false) ;
-
-  // register interest in join/parts
-  this->networkStore.addListener(this) ;
-
     //[/Constructor]
 }
 
@@ -150,30 +137,32 @@ DEBUG_TRACE_REMOVE_CHATLIST_ITEM
 
 void ChatList::valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key)
 {
-DEBUG_TRACE_CHATLIST_TREE_CHANGED
+  if (a_node != this->networkStore || a_key != CONFIG::RETRIES_ID) return ;
 
-  int int_val = int(a_node[a_key]) ;
+  // show/hide dummy user ChatListItem (asynchronously)
+  int         connected_state   = int(this->networkStore[CONFIG::RETRIES_ID]) ;
+  bool        should_show_dummy = connected_state != IRC::STATE_CONNECTED &&
+                                  connected_state != IRC::STATE_FAILED     ;
+  StringArray dummy_chatter     = StringArray::fromTokens(GUI::CONNECTING_TEXT , false) ;
+  StringArray no_chatters       = StringArray() ;
+  StringArray nicks             = (should_show_dummy) ? dummy_chatter : no_chatters ;
 
-  if (a_node == this->networkStore && a_key == CONFIG::RETRIES_ID)
-  {
-    // show/hide dummy user ChatListItem (asynchronously)
-    int         connected_state  = int_val ;
-    bool        is_dummy_visible = connected_state != IRC::STATE_CONNECTED &&
-                                   connected_state != IRC::STATE_FAILED     ;
-    StringArray dummy_chatter    = StringArray::fromTokens(GUI::CONNECTING_TEXT , false) ;
-    StringArray no_chatters      = StringArray() ;
-    StringArray nicks            = (is_dummy_visible) ? dummy_chatter : no_chatters ;
-    Identifier  network_id       = this->networkStore.getType() ;
+  if (connected_state != IRC::STATE_CONNECTED) AvCaster::UpdateChatters(nicks) ;
+}
 
-    if (connected_state != IRC::STATE_CONNECTED)
-      AvCaster::UpdateChatNicks(network_id , nicks) ;
-  }
+void ChatList::initialize(ValueTree network_store , ValueTree chatters_store)
+{
+  // register interest in chat network connection state
+  (this->networkStore  = network_store ).addListener(this) ;
+  // register interest in channel joins/parts
+  (this->chattersStore = chatters_store).addListener(this) ;
 }
 
 int ChatList::sortedChatterIdx(ValueTree& chatter_store)
 {
-  StringArray nicks    = AvCaster::GetChatNicks(this->chattersStore) ;
-  String      nick     = STRING(chatter_store[CONFIG::NICK_ID]) ;
+  StringArray nicks = AvCaster::GetChatNicks() ;
+  String      nick  = STRING(chatter_store[CONFIG::NICK_ID]) ;
+
   nicks.add(nick) ; nicks.sort(true) ;
 
 DEBUG_TRACE_LOCATE_SORTED_CHILD
@@ -192,7 +181,6 @@ void ChatList::refresh()
 DEBUG_TRACE_RESIZE_CHATLIST
 
   const MessageManagerLock mmLock ;
-  setSize(GUI::CHATLIST_W , list_h) ;
 
   // arrange list entries
   for (int chatter_n = 0 ; chatter_n < n_chatters ; ++chatter_n)
@@ -207,9 +195,9 @@ DEBUG_TRACE_MOVE_CHATLIST_ITEM
     list_item_y += GUI::PADDED_CHATLIST_ITEM_H ;
   }
 
-  // set visibility and resize
-  setVisible(is_visible) ;
-  (static_cast<Chat*>(getParentComponent()))->refresh() ;
+  setSize(GUI::CHATLIST_W , list_h) ;
+
+  (static_cast<Chat*>(getParentComponent()))->updateVisiblilty(is_visible) ;
 }
 
 //[/MiscUserCode]
@@ -226,15 +214,15 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ChatList" componentName=""
                  parentClasses="public Component, public ValueTree::Listener"
-                 constructorParams="ValueTree network_store" variableInitialisers="networkStore(network_store)"
-                 snapPixels="4" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="128" initialHeight="48">
+                 constructorParams="" variableInitialisers="" snapPixels="4" snapActive="1"
+                 snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="128"
+                 initialHeight="48">
   <BACKGROUND backgroundColour="0">
     <ROUNDRECT pos="4 10 120 34" cornerSize="4" fill="solid: ff202020" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="chattersGroup" id="49d2cfd1b8779149" memberName="chattersGroup"
                   virtualName="" explicitFocusOrder="0" pos="0 0 128 48" outlinecol="ffffffff"
-                  textcol="ffffffff" title="(connecting)"/>
+                  textcol="ffffffff" title="Nicks" textpos="36"/>
   <GENERICCOMPONENT name="dummyChatListItem" id="56b906e64be2f4b6" memberName="dummyChatListItem"
                     virtualName="" explicitFocusOrder="0" pos="12 16 104 24" class="ChatListItem"
                     params="ValueTree::invalid"/>

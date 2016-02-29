@@ -39,7 +39,7 @@ MainContent::MainContent ()
     addAndMakeVisible (controls = new Controls (this));
     controls->setName ("controls");
 
-    addAndMakeVisible (chat = new Chat());
+    addAndMakeVisible (chat = new Chat (this));
     chat->setName ("chat");
 
     addAndMakeVisible (preview = new Preview());
@@ -152,18 +152,21 @@ void MainContent::configureTextEditor(TextEditor*           a_text_editor   ,
 {
   a_text_editor->setSelectAllWhenFocused(true) ;
   a_text_editor->setInputRestrictions(max_n_chars , allowed_chars) ;
+  a_text_editor->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
   a_text_editor->setColour(TextEditor::backgroundColourId      , GUI::TEXT_BG_COLOR      ) ;
   a_text_editor->setColour(TextEditor::textColourId            , GUI::TEXT_NORMAL_COLOR  ) ;
-  a_text_editor->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
   a_text_editor->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
   a_text_editor->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
+  a_text_editor->setColour(TextEditor::outlineColourId         , GUI::TEXT_BG_COLOR      ) ;
+  a_text_editor->setColour(TextEditor::focusedOutlineColourId  , GUI::TEXT_FOCUS_COLOR   ) ;
+  a_text_editor->setColour(TextEditor::shadowColourId          , GUI::TEXT_SHADOW_COLOR  ) ;
   a_text_editor->addListener(a_text_listener) ;
 }
 
 void MainContent::configureCombobox(ComboBox* a_combobox , ComboBox::Listener* a_combobox_listener)
 {
-  a_combobox->setColour(ComboBox::textColourId       , GUI::TEXT_NORMAL_COLOR) ;
-  a_combobox->setColour(ComboBox::backgroundColourId , GUI::TEXT_BG_COLOR    ) ;
+  a_combobox->setColour(ComboBox::textColourId              , GUI::TEXT_NORMAL_COLOR  ) ;
+  a_combobox->setColour(ComboBox::backgroundColourId        , GUI::TEXT_BG_COLOR      ) ;
   a_combobox->setColour(TextEditor::highlightColourId       , GUI::TEXT_HILITEBG_COLOR) ;
   a_combobox->setColour(TextEditor::highlightedTextColourId , GUI::TEXT_HILITE_COLOR  ) ;
   a_combobox->setColour(CaretComponent::caretColourId       , GUI::TEXT_CARET_COLOR   ) ;
@@ -182,9 +185,12 @@ void MainContent::loadPresetsCombo(ComboBox* a_combobox)
   a_combobox->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
 }
 
-void MainContent::initialize(ValueTree networks_store)
+void MainContent::initialize(ValueTree config_store   , ValueTree network_store ,
+                             ValueTree chatters_store                           )
 {
-  this->chat->initialize(networks_store) ;
+  this->controls      ->initialize(config_store                  ) ;
+  this->config        ->initialize(config_store  , network_store ) ;
+  this->chat->chatList->initialize(network_store , chatters_store) ;
 }
 
 void MainContent::disableControls(bool is_media_enabled  , bool is_screen_enabled  ,
@@ -269,7 +275,7 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="controls" id="7a0ffc87dbd1f2a3" memberName="controls" virtualName=""
                     explicitFocusOrder="0" pos="0 0 0M 76" class="Controls" params="this"/>
   <GENERICCOMPONENT name="chat" id="ac9a4042c98734e2" memberName="chat" virtualName=""
-                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Chat" params=""/>
+                    explicitFocusOrder="0" pos="0 76 0M 100M" class="Chat" params="this"/>
   <GENERICCOMPONENT name="preview" id="75e8b11c95e2efaf" memberName="preview" virtualName=""
                     explicitFocusOrder="0" pos="0 76 0M 100M" class="Preview" params=""/>
   <GENERICCOMPONENT name="presets" id="c3256eaa517d34eb" memberName="presets" virtualName=""

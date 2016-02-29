@@ -36,7 +36,7 @@ class Gstreamer
 private:
 
   // setup
-  static bool Initialize  (void* x_window_handle) ;
+  static bool Initialize  (ValueTree config_store , void* x_window_handle) ;
   static void ReloadConfig() ;
   static void Shutdown    () ;
 

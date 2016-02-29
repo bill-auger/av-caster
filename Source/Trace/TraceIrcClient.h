@@ -55,44 +55,54 @@ static void PopulateEventCodes()
     dbg += "\tparams[" + String(i) + "]=" + String(params[i]) + "\n" ; \
   Trace::TraceChatVb(dbg) ;
 
-#  define DEBUG_TRACE_CREATE_SESSION                                              \
-  String dbg = " session for network '" + String(network_info->network) + "'" ;   \
-  String err = String((is_valid_session) ? "" : " session invalid") +             \
-               String((is_valid_network) ? "" : " network invalid") +             \
-               String((is_valid_port   ) ? "" : " port invalid"   ) +             \
-               String((is_valid_nick   ) ? "" : " nick invalid"   ) +             \
-               String((is_valid_channel) ? "" : " channel invalid") ;             \
-  if (err.isNotEmpty()) Trace::TraceError("error creating" + dbg + " - " + err) ; \
-  else                  Trace::TraceChat("created" + dbg)                         ;
+#  define DEBUG_TRACE_CREATE_SESSION                                                   \
+  String dbg = " session for network '" + String(network) + "'" ;                      \
+  String err = (network.isEmpty())       ? String::empty :                             \
+               String((is_valid_session) ? String::empty : " session invalid") +       \
+               String((is_valid_port   ) ? String::empty : " port invalid"   ) +       \
+               String((is_valid_nick   ) ? String::empty : " nick invalid"   ) +       \
+               String((is_valid_channel) ? String::empty : " channel invalid") ;       \
+  if      (err.isNotEmpty()) Trace::TraceError("error creating" + dbg + " - " + err) ; \
+  else if (is_valid_network) Trace::TraceChat("created" + dbg)                         ;
 
-#  define DEBUG_TRACE_LOGIN_FAILED                                     \
-  if (GetRetries(network_id) == IRC::STATE_FAILED + 1)                 \
-    Trace::TraceError("error connecting to " + String(network)       + \
-                      ":"                    + String(port   )       + \
-                      " as '"                + String(nick   ) + "'" ) ;
+#  define DEBUG_TRACE_LOGIN_FAILED                                      \
+  if (n_retries == IRC::STATE_FAILED + 1)                               \
+    Trace::TraceError("error connecting to '" + String(network)       + \
+                      ":"                     + String(port   )       + \
+                      "' as '"                + String(nick   ) + "'" ) ;
 
 #  define DEBUG_TRACE_LOGIN                                                     \
   String err              = String(irc_strerror(irc_errno(session))) ;          \
   bool   is_connect_error = err != String("Illegal operation for this state") ; \
-  String dbg              = "connecting to " + String(network) +                \
-                            ":"              + String(port   ) +                \
-                            " as '"          + String(nick   ) + "'" ;          \
+  String dbg              = "connecting to '" + String(network) +               \
+                            ":"               + String(port   ) +               \
+                            "' as '"          + String(nick   ) + "'" ;         \
   if      (!is_err         ) Trace::TraceChat(dbg) ;                            \
   else if (is_connect_error) Trace::TraceError("error " + dbg + " - " + err)    ;
 
-#  define DEBUG_TRACE_CONNECTED                                                         \
-  Trace::TraceState("connected to '" + network_info->network + "' host (" + host + ")") ;
+#  define DEBUG_TRACE_CONNECTED                                                             \
+  String network = STRING(NetworkStore[CONFIG::NETWORK_ID]) ;                               \
+  Trace::TraceState("connected to '" + network + "' host (" + host + ")") ;                 \
+  if (network != host) Trace::TraceConfig("updating '" + network + "' host (" + host + ")") ;
 
-#  define DEBUG_TRACE_SERVER_EVENT                                                      \
-  if (IRC_EVENT_CODES.size() == 0) PopulateEventCodes() ;                               \
-  String code = (IRC_EVENT_CODES.contains(event)) ? IRC_EVENT_CODES[event]           :  \
+#  define DEBUG_TRACE_LOGOUT                                        \
+  String network = STRING(NetworkStore[CONFIG::NETWORK_ID]) ;       \
+  int    port    = int   (NetworkStore[CONFIG::PORT_ID   ]) ;       \
+  String nick    = STRING(NetworkStore[CONFIG::NICK_ID   ]) ;       \
+  Trace::TraceChat("disconnecting from '" + String(network)       + \
+                   ":"                    + String(port   )       + \
+                   "' as '"               + String(nick   ) + "'" ) ;
+
+#  define DEBUG_TRACE_SERVER_EVENT                                                     \
+  if (IRC_EVENT_CODES.size() == 0) PopulateEventCodes() ;                              \
+  String code = (IRC_EVENT_CODES.contains(event)) ? IRC_EVENT_CODES[event]           : \
                                                     String("code: ") + String(event) ; \
   Trace::TraceChatVb(String("received ") + code) ; DUMP_SERVER_PARAMS
 
 #  define DEBUG_TRACE_NICKS                                                     \
   StringArray newnicks     = StringArray::fromTokens(nicks , false) ;           \
   String      nnewnicks    = String(newnicks.size()) ;                          \
-  String      ntotalnicks  = String(network_info->nicks.size()) ;               \
+  String      ntotalnicks  = String(Nicks.size()   ) ;                          \
   String      newnicks_csv = newnicks.joinIntoString(",") ;                     \
   Trace::TraceChat("got ("          + nnewnicks + "/"           + ntotalnicks + \
                    ") NAMES from '" + network   + "' channel: " + channel     + \
@@ -121,10 +131,10 @@ static void PopulateEventCodes()
 
 #  define DEBUG_TRACE_ONPART Trace::TraceChat(nick + " just parted channel " + channel) ;
 
-#  define DEBUG_TRACE_NICK_CHANGE                                                          \
-  IrcClient* client = static_cast<IrcClient*>(irc_get_ctx(session)) ;                      \
-  Trace::TraceChat(from_nick             + "' changed nick to '" + to_nick + "' on "     + \
-                   network_info->network + ":"                   + network_info->channel ) ;
+#  define DEBUG_TRACE_NICK_CHANGE                                          \
+  IrcClient* client = static_cast<IrcClient*>(irc_get_ctx(session)) ;      \
+  Trace::TraceChat("'"     + from_nick + "' changed nick to '" + to_nick + \
+                   "' on " + network   + channel                         ) ;
 
 #else // DEBUG_TRACE
 

@@ -69,35 +69,30 @@ public:
   static void                   SendChat  (String chat_message) ;
 
   // getters/setters
-  static Rectangle<int> GetPreviewBounds       () ;
-  static void           DeactivateControl      (const Identifier& a_key) ;
-  static void           SetValue               (const Identifier& a_key , var a_value) ;
-  static ValueTree      GetVolatileStore       () ;
-  static ValueTree      GetSelectedNetworkStore() ;
-  static ValueTree      GetNetworkStore        (Identifier network_id) ;
-  static void           StorePreset            (String preset_name) ;
-  static void           RenamePreset           (String preset_name) ;
-  static void           DeletePreset           () ;
-  static void           ResetPreset            () ;
-//   static bool           IsConfigGuiSane        () ;
-  static bool           IsStaticPreset         () ;
-  static int            GetPresetIdx           () ;
-  static String         GetPresetName          () ;
-  static bool           GetIsPreviewActive     () ;
-  static bool           GetIsConfigPending     () ;
-  static StringArray    GetPresetsNames        () ;
-  static StringArray    GetCameraNames         () ;
-  static StringArray    GetAudioNames          () ;
-  static StringArray    GetNetworkNames        () ;
-  static StringArray    GetCameraResolutions   () ;
-  static String         GetCameraResolution    () ;
-  static String         GetCameraPath          () ;
-  static int            GetCameraRate          () ;
-  static String         GetVersionString       () ;
-  static void           DeleteServer           (ValueTree network_store) ;
-  static void           UpdateIrcHost          (StringArray alias_uris , String actual_host) ;
-  static void           UpdateChatNicks        (Identifier network_id , StringArray nicks) ;
-  static StringArray    GetChatNicks           (ValueTree chatters_store) ;
+  static Rectangle<int> GetPreviewBounds    () ;
+  static void           DeactivateControl   (const Identifier& a_key) ;
+  static void           SetValue            (const Identifier& a_key , const var a_value) ;
+  static void           StorePreset         (String preset_name) ;
+  static void           RenamePreset        (String preset_name) ;
+  static void           DeletePreset        () ;
+  static void           ResetPreset         () ;
+//   static bool           IsConfigGuiSane     () ;
+  static bool           IsStaticPreset      () ;
+  static int            GetPresetIdx        () ;
+  static String         GetPresetName       () ;
+  static bool           GetIsPreviewActive  () ;
+  static bool           GetIsConfigPending  () ;
+  static StringArray    GetPresetsNames     () ;
+  static StringArray    GetCameraNames      () ;
+  static StringArray    GetAudioNames       () ;
+  static StringArray    GetCameraResolutions() ;
+  static String         GetCameraResolution () ;
+  static String         GetCameraPath       () ;
+  static int            GetCameraRate       () ;
+  static StringArray    GetChatNicks        () ;
+  static String         GetVersionString    () ;
+  static void           DeleteServer        (ValueTree network_store) ;
+  static void           UpdateChatters      (StringArray nicks) ;
 
 
 private:
@@ -114,8 +109,8 @@ private:
   static void UpdateStatus       () ;
 
   // helpers
-  static bool HandleCliParams    () ;
-  static bool ProcessCliParams   () ;
+  static bool HandleCliParams    (StringArray cli_params) ;
+  static bool ProcessCliParams   (StringArray cli_params) ;
   static bool ValidateEnvironment() ;
   static void DisplayAlert       () ;
   static bool InitFail           () ;
@@ -124,19 +119,21 @@ private:
 #endif // DISABLE_CHAT
 
 
+  // collaborator handles
   static JUCEApplicationBase*     App ;
   static MainContent*             Gui ;
 #ifndef DISABLE_CHAT
   static ScopedPointer<IrcClient> Irc ;
 #endif // DISABLE_CHAT
-  static StringArray              CliParams ;
-  static Array<Alert*>            Alerts ;
-  static bool                     IsAlertModal ;
 
-  // persistence
+  // runtime data
+  static Array<Alert*> Alerts ;
+  static bool          IsAlertModal ;
+
+  // model/persistence
   static ScopedPointer<AvCasterStore> Store ;
 
-  // runtime features
+  // intialization flags
   static bool IsInitialized ;
   static bool IsMediaEnabled ;
   static bool IsChatEnabled ;

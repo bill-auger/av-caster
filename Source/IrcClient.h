@@ -34,8 +34,7 @@
   It encapsulates interactions with the libircclient C library
       and provides cross-network channel bridging.
 
-  Each instance can manage multiple network connections
-      but aech network session is restricted to a single channel.
+  Each instance manages a single network connection which auto-joins a single channel.
 */
 class IrcClient : public Thread
 {
@@ -47,27 +46,12 @@ public:
   ~IrcClient() ;
 
   // session management
-  void configure(bool should_create_sessions , bool should_show_timestamps ,
-                                               bool should_show_joinparts  ) ;
+  void configure(bool should_create_session) ;
 
 
 private:
 
-  typedef struct IrcNetworkInfo
-  {
-    irc_session_t* session ;
-    Identifier     network_id ;
-    String         network ;
-    unsigned short port ;
-    String         nick ;
-    String         pass ;
-    String         channel ;
-    String         greeting ;
-    StringArray    nicks ;
-  } IrcNetworkInfo ;
-
-
-  IrcClient(ValueTree networks_store , bool should_show_timestamps , bool should_show_joinparts) ;
+  IrcClient(ValueTree network_store) ;
 
   // libircclient callbacks
   static void OnConnect   (irc_session_t* session , const char* event  , const char* origin ,
@@ -84,32 +68,29 @@ private:
                            const char**   params  , unsigned int count                      ) ;
 
   // helpers
-  static bool            IsSufficientVersion() ;
-  static IrcNetworkInfo* GetNetworkInfo     (irc_session_t* session) ;
-  static void            SetRetries         (Identifier network_id , int n_retries) ;
-  static int             GetRetries         (Identifier network_id) ;
-  static void            HandleNicks        (IrcNetworkInfo* network_info , String nicks) ;
-  static void            UpdateNicks        (IrcNetworkInfo* network_info) ;
-  static String          ProcessTextMeta    (const char* message) ;
-  static StringArray     ProcessTimestamp   (String message) ;
-  static void            AddServerChat      (String message) ;
-  static void            AddClientChat      (String message) ;
-  static void            AddUserChat        (String prefix , String nick , String message) ;
+  static bool        IsSufficientVersion() ;
+  static void        SetRetries         (int n_retries) ;
+  static void        HandleNicks        (String nicks) ;
+  static void        UpdateNicks        () ;
+  static String      ProcessTextMeta    (const char* message) ;
+  static StringArray ProcessTimestamp   (String message) ;
+  static void        AddServerChat      (String message) ;
+  static void        AddClientChat      (String message) ;
+  static void        AddUserChat        (String prefix , String nick , String message) ;
 
   // session management
-  void createSessions () ;
-  void destroySessions() ;
-  void run            () override ;
-  bool login          (IrcNetworkInfo* network_info) ;
-  void sendChat       (String chat_message) ;
+  void createSession () ;
+  void destroySession() ;
+  void run           () override ;
+  bool login         () ;
+  void sendChat      (String chat_message) ;
 
 
+  static ValueTree       NetworkStore ;
   static irc_callbacks_t ServerCallbacks ;
-  static bool            ShouldShowTimestamps ;
-  static bool            ShouldShowJoinParts ;
+  static StringArray     Nicks ;
 
-  ValueTree                  networksStore ;
-  OwnedArray<IrcNetworkInfo> networks ;
+  irc_session_t* session ;
 } ;
 
 #endif // _IRCCLIENT_H_

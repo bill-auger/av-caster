@@ -29,21 +29,13 @@
 //==============================================================================
 ConfigChat::ConfigChat ()
 {
-    addAndMakeVisible (newNetworkButton = new TextButton ("newNetworkButton"));
-    newNetworkButton->setExplicitFocusOrder (1);
-    newNetworkButton->setButtonText (TRANS("New Network"));
-
-    addAndMakeVisible (deleteNetworkButton = new TextButton ("deleteNetworkButton"));
-    deleteNetworkButton->setExplicitFocusOrder (2);
-    deleteNetworkButton->setButtonText (TRANS("Delete Network"));
-
     addAndMakeVisible (timestampToggle = new ToggleButton ("timestampToggle"));
-    timestampToggle->setExplicitFocusOrder (3);
+    timestampToggle->setExplicitFocusOrder (6);
     timestampToggle->setButtonText (TRANS("Show Timestamps"));
     timestampToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (joinPartToggle = new ToggleButton ("joinPartToggle"));
-    joinPartToggle->setExplicitFocusOrder (4);
+    joinPartToggle->setExplicitFocusOrder (7);
     joinPartToggle->setButtonText (TRANS("Show Joins/Parts"));
     joinPartToggle->setToggleState (true, dontSendNotification);
     joinPartToggle->setColour (ToggleButton::textColourId, Colours::white);
@@ -57,14 +49,6 @@ ConfigChat::ConfigChat ()
     networkLabel->setColour (TextEditor::textColourId, Colours::black);
     networkLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (networkCombo = new ComboBox ("networkCombo"));
-    networkCombo->setExplicitFocusOrder (5);
-    networkCombo->setEditableText (false);
-    networkCombo->setJustificationType (Justification::centredLeft);
-    networkCombo->setTextWhenNothingSelected (TRANS("(Press \'New Network\')"));
-    networkCombo->setTextWhenNoChoicesAvailable (String::empty);
-    networkCombo->addListener (this);
-
     addAndMakeVisible (portLabel = new Label ("portLabel",
                                               TRANS("Port:")));
     portLabel->setFont (Font (15.00f, Font::plain));
@@ -75,7 +59,7 @@ ConfigChat::ConfigChat ()
     portLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (portText = new TextEditor ("portText"));
-    portText->setExplicitFocusOrder (6);
+    portText->setExplicitFocusOrder (2);
     portText->setMultiLine (false);
     portText->setReturnKeyStartsNewLine (false);
     portText->setReadOnly (false);
@@ -94,7 +78,7 @@ ConfigChat::ConfigChat ()
     nickLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (nickText = new TextEditor ("nickText"));
-    nickText->setExplicitFocusOrder (7);
+    nickText->setExplicitFocusOrder (3);
     nickText->setMultiLine (false);
     nickText->setReturnKeyStartsNewLine (false);
     nickText->setReadOnly (false);
@@ -113,7 +97,7 @@ ConfigChat::ConfigChat ()
     passLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (passText = new TextEditor ("passText"));
-    passText->setExplicitFocusOrder (8);
+    passText->setExplicitFocusOrder (4);
     passText->setMultiLine (false);
     passText->setReturnKeyStartsNewLine (false);
     passText->setReadOnly (false);
@@ -132,7 +116,7 @@ ConfigChat::ConfigChat ()
     channelLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (channelText = new TextEditor ("channelText"));
-    channelText->setExplicitFocusOrder (9);
+    channelText->setExplicitFocusOrder (5);
     channelText->setMultiLine (false);
     channelText->setReturnKeyStartsNewLine (false);
     channelText->setReadOnly (false);
@@ -151,7 +135,7 @@ ConfigChat::ConfigChat ()
     greetingLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (greetingText = new TextEditor ("greetingText"));
-    greetingText->setExplicitFocusOrder (10);
+    greetingText->setExplicitFocusOrder (8);
     greetingText->setMultiLine (true);
     greetingText->setReturnKeyStartsNewLine (true);
     greetingText->setReadOnly (false);
@@ -159,6 +143,16 @@ ConfigChat::ConfigChat ()
     greetingText->setCaretVisible (true);
     greetingText->setPopupMenuEnabled (true);
     greetingText->setText (String::empty);
+
+    addAndMakeVisible (networkText = new TextEditor ("networkText"));
+    networkText->setExplicitFocusOrder (1);
+    networkText->setMultiLine (false);
+    networkText->setReturnKeyStartsNewLine (false);
+    networkText->setReadOnly (false);
+    networkText->setScrollbarsShown (true);
+    networkText->setCaretVisible (true);
+    networkText->setPopupMenuEnabled (true);
+    networkText->setText (String::empty);
 
 
     //[UserPreSize]
@@ -176,12 +170,9 @@ ConfigChat::~ConfigChat()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    newNetworkButton = nullptr;
-    deleteNetworkButton = nullptr;
     timestampToggle = nullptr;
     joinPartToggle = nullptr;
     networkLabel = nullptr;
-    networkCombo = nullptr;
     portLabel = nullptr;
     portText = nullptr;
     nickLabel = nullptr;
@@ -192,6 +183,7 @@ ConfigChat::~ConfigChat()
     channelText = nullptr;
     greetingLabel = nullptr;
     greetingText = nullptr;
+    networkText = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -213,42 +205,22 @@ void ConfigChat::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    newNetworkButton->setBounds (0, 8, 96, 24);
-    deleteNetworkButton->setBounds (120, 8, 96, 24);
     timestampToggle->setBounds (234, 8, 128, 24);
     joinPartToggle->setBounds (376, 8, 128, 24);
-    networkLabel->setBounds (0, 48, 80, 24);
-    networkCombo->setBounds (80, 48, 136, 24);
-    portLabel->setBounds (0, 88, 40, 24);
-    portText->setBounds (80, 88, 56, 24);
-    nickLabel->setBounds (0, 128, 40, 24);
-    nickText->setBounds (80, 128, 136, 24);
-    passLabel->setBounds (0, 168, 72, 24);
-    passText->setBounds (80, 168, 136, 24);
-    channelLabel->setBounds (0, 208, 80, 24);
-    channelText->setBounds (80, 208, 136, 24);
+    networkLabel->setBounds (0, 8, 80, 24);
+    portLabel->setBounds (0, 48, 40, 24);
+    portText->setBounds (80, 48, 56, 24);
+    nickLabel->setBounds (0, 88, 40, 24);
+    nickText->setBounds (80, 88, 136, 24);
+    passLabel->setBounds (0, 128, 72, 24);
+    passText->setBounds (80, 128, 136, 24);
+    channelLabel->setBounds (0, 168, 80, 24);
+    channelText->setBounds (80, 168, 136, 24);
     greetingLabel->setBounds (234, 48, 72, 24);
-    greetingText->setBounds (234, 72, 270, 160);
+    greetingText->setBounds (234, 72, 270, 120);
+    networkText->setBounds (80, 8, 136, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
-}
-
-void ConfigChat::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
-{
-    //[UsercomboBoxChanged_Pre]
-    //[/UsercomboBoxChanged_Pre]
-
-    if (comboBoxThatHasChanged == networkCombo)
-    {
-        //[UserComboBoxCode_networkCombo] -- add your combo box handling code here..
-
-      // NOTE: handled in Config.cpp
-
-        //[/UserComboBoxCode_networkCombo]
-    }
-
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
 }
 
 
@@ -271,60 +243,50 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0"/>
-  <TEXTBUTTON name="newNetworkButton" id="2728ddd5e468423a" memberName="newNetworkButton"
-              virtualName="" explicitFocusOrder="1" pos="0 8 96 24" buttonText="New Network"
-              connectedEdges="0" needsCallback="0" radioGroupId="0"/>
-  <TEXTBUTTON name="deleteNetworkButton" id="f9a2036ed2991f0d" memberName="deleteNetworkButton"
-              virtualName="" explicitFocusOrder="2" pos="120 8 96 24" buttonText="Delete Network"
-              connectedEdges="0" needsCallback="0" radioGroupId="0"/>
   <TOGGLEBUTTON name="timestampToggle" id="1ec45429906b24f5" memberName="timestampToggle"
-                virtualName="" explicitFocusOrder="3" pos="234 8 128 24" txtcol="ffffffff"
+                virtualName="" explicitFocusOrder="6" pos="234 8 128 24" txtcol="ffffffff"
                 buttonText="Show Timestamps" connectedEdges="0" needsCallback="0"
                 radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="joinPartToggle" id="b365bf54ac5a17da" memberName="joinPartToggle"
-                virtualName="" explicitFocusOrder="4" pos="376 8 128 24" txtcol="ffffffff"
+                virtualName="" explicitFocusOrder="7" pos="376 8 128 24" txtcol="ffffffff"
                 buttonText="Show Joins/Parts" connectedEdges="0" needsCallback="0"
                 radioGroupId="0" state="1"/>
   <LABEL name="networkLabel" id="17d2e75add77ef88" memberName="networkLabel"
-         virtualName="" explicitFocusOrder="0" pos="0 48 80 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="0 8 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Host:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
-  <COMBOBOX name="networkCombo" id="5d47d4124d2dffbb" memberName="networkCombo"
-            virtualName="" explicitFocusOrder="5" pos="80 48 136 24" editable="0"
-            layout="33" items="" textWhenNonSelected="(Press 'New Network')"
-            textWhenNoItems=""/>
   <LABEL name="portLabel" id="c9766d1550ca03d" memberName="portLabel"
-         virtualName="" explicitFocusOrder="0" pos="0 88 40 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="0 48 40 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Port:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="portText" id="884822c04a8baf5b" memberName="portText" virtualName=""
-              explicitFocusOrder="6" pos="80 88 56 24" initialText="" multiline="0"
+              explicitFocusOrder="2" pos="80 48 56 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="nickLabel" id="2762611946169823" memberName="nickLabel"
-         virtualName="" explicitFocusOrder="0" pos="0 128 40 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="0 88 40 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Nick:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="nickText" id="33c730fea5d389aa" memberName="nickText" virtualName=""
-              explicitFocusOrder="7" pos="80 128 136 24" initialText="" multiline="0"
+              explicitFocusOrder="3" pos="80 88 136 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="passLabel" id="f5de0cc5921d9a6a" memberName="passLabel"
-         virtualName="" explicitFocusOrder="0" pos="0 168 72 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="0 128 72 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Password:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="passText" id="af6a1e14762cfebf" memberName="passText" virtualName=""
-              explicitFocusOrder="8" pos="80 168 136 24" initialText="" multiline="0"
+              explicitFocusOrder="4" pos="80 128 136 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="channelLabel" id="64c9a775a77af61c" memberName="channelLabel"
-         virtualName="" explicitFocusOrder="0" pos="0 208 80 24" textCol="ffffffff"
+         virtualName="" explicitFocusOrder="0" pos="0 168 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Channel:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="channelText" id="ca5aa4f4a77b4469" memberName="channelText"
-              virtualName="" explicitFocusOrder="9" pos="80 208 136 24" initialText=""
+              virtualName="" explicitFocusOrder="5" pos="80 168 136 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <LABEL name="greetingLabel" id="460772215644ef5" memberName="greetingLabel"
@@ -333,8 +295,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="greetingText" id="7d47de6dcee921f5" memberName="greetingText"
-              virtualName="" explicitFocusOrder="10" pos="234 72 270 160" initialText=""
+              virtualName="" explicitFocusOrder="8" pos="234 72 270 120" initialText=""
               multiline="1" retKeyStartsLine="1" readonly="0" scrollbars="1"
+              caret="1" popupmenu="1"/>
+  <TEXTEDITOR name="networkText" id="a4f0c88c1e1ddb44" memberName="networkText"
+              virtualName="" explicitFocusOrder="1" pos="80 8 136 24" initialText=""
+              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
 </JUCER_COMPONENT>
 

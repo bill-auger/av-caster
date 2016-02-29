@@ -63,7 +63,10 @@ public:
 
 public:
 
-  bool validateParams() ;
+  friend class MainContent ;
+
+
+//   bool validateParams() ;
 
 
 private:
@@ -75,9 +78,10 @@ private:
   void textEditorTextChanged(TextEditor& a_text_editor) override ;
   void textEditorFocusLost  (TextEditor& a_text_editor) override ;
 
+  void initialize        (ValueTree config_store , ValueTree network_store) ;
   void loadConfig        () ;
   void enableComponents  () ;
-  void updateVisibility  (Component* config_component) ;
+  void updateVisibility  (Component* selected_component) ;
   bool validateOutputDest() ;
 
     //[/UserMethods]
@@ -91,6 +95,8 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
   MainContent*  mainContent ;
+  ValueTree     configStore ;
+  ValueTree     networkStore ;
   Slider*       displaySlider ;
   Slider*       screenSlider ;
   TextEditor*   screenWidthText ;
@@ -117,16 +123,14 @@ private:
   ComboBox*     videoBitrateCombo ;
   Label*        outputDestLabel ;
   TextEditor*   outputDestText ;
-  TextButton*   newNetworkButton ;
-  TextButton*   deleteNetworkButton ;
-  ToggleButton* timestampToggle ;
-  ToggleButton* joinPartToggle ;
-  ComboBox*     networkCombo ;
+  TextEditor*   networkText ;
   TextEditor*   portText ;
   TextEditor*   nickText ;
   TextEditor*   passText ;
   TextEditor*   channelText ;
   TextEditor*   greetingText ;
+  ToggleButton* timestampToggle ;
+  ToggleButton* joinPartToggle ;
 
     //[/UserVariables]
 

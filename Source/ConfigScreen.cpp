@@ -210,11 +210,17 @@ void ConfigScreen::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == displaySlider)
     {
         //[UserSliderCode_displaySlider] -- add your slider handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserSliderCode_displaySlider]
     }
     else if (sliderThatWasMoved == screenSlider)
     {
         //[UserSliderCode_screenSlider] -- add your slider handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserSliderCode_screenSlider]
     }
 

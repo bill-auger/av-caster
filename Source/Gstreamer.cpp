@@ -53,7 +53,7 @@ GstElement* Gstreamer::AudioCaps           = nullptr ;
 GstElement* Gstreamer::MuxerBin            = nullptr ;
 GstElement* Gstreamer::OutputBin           = nullptr ;
 guintptr    Gstreamer::PreviewXwin         = 0    ;               // Initialize()
-ValueTree   Gstreamer::ConfigStore         = ValueTree::invalid ; // Initialize() -> ReloadConfig()
+ValueTree   Gstreamer::ConfigStore         = ValueTree::invalid ; // Initialize()
 bool        Gstreamer::IsMediaEnabled      = true ;               // AvCaster::ProcessCliParams()
 bool        Gstreamer::IsScreenEnabled     = true ;               // AvCaster::ProcessCliParams()
 bool        Gstreamer::IsCameraEnabled     = true ;               // AvCaster::ProcessCliParams()
@@ -74,8 +74,9 @@ bool        Gstreamer::IsAudioEnabled      = true ;               // AvCaster::P
 
 /* GstElement private class methods */
 
-bool Gstreamer::Initialize(void* x_window_handle)
+bool Gstreamer::Initialize(ValueTree config_store , void* x_window_handle)
 {
+  ConfigStore = config_store ;
   PreviewXwin = (guintptr)x_window_handle ;
 
 DEBUG_TRACE_GST_INIT_PHASE_1
@@ -122,7 +123,6 @@ DEBUG_TRACE_GST_INIT_PHASE_3
 DEBUG_TRACE_GST_INIT_PHASE_4 DEBUG_TRACE_DISABLED_BINS
 
   // configure bins
-  ReloadConfig() ;
   if ((IsScreenEnabled     && !BuildScreencapBin ()) ||
       (IsCameraEnabled     && !BuildCameraBin    ()) ||
       (IsTextEnabled       && !BuildTextBin      ()) ||
@@ -169,8 +169,6 @@ DEBUG_TRACE_GST_INIT_PHASE_7
 
   return true ;
 }
-
-void Gstreamer::ReloadConfig() { ConfigStore = AvCaster::GetVolatileStore() ; }
 
 void Gstreamer::Shutdown()
 {
@@ -736,7 +734,7 @@ bool Gstreamer::Reconfigure(const Identifier& config_key)
 
 DEBUG_TRACE_RECONFIGURE_IN
 
-  ReloadConfig() ; SetState(Pipeline , GST_STATE_READY) ;
+  SetState(Pipeline , GST_STATE_READY) ;
 
   bool is_error = ((configure_all || configure_screen ) && ConfigureScreen()  == nullptr) ||
                   ((configure_all || configure_camera ) && ConfigureCamera()  == nullptr) ||
@@ -1181,7 +1179,9 @@ void Gstreamer::DestroyElement(GstElement* an_element)
 {
 DEBUG_TRACE_DESTROY_ELEMENT
 // FIXME: on shutdown --> GStreamer-CRITICAL **: gst_object_unref: assertion '((GObject *) object)->ref_count > 0' failed
-DBG("Gstreamer::DestroyElement() GST_OBJECT_REFCOUNT_VALUE(an_element)=" + String(GST_OBJECT_REFCOUNT_VALUE(an_element))) ;
+gchar* element_name = gst_element_get_name(an_element) ;
+DBG("Gstreamer::DestroyElement(" + String(element_name) + ") refcount=" + String(GST_OBJECT_REFCOUNT_VALUE(an_element))) ;
+g_free(element_name) ;
 
   if (an_element != nullptr && SetState(an_element , GST_STATE_NULL))
     gst_object_unref(an_element) ;

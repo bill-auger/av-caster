@@ -50,8 +50,12 @@ public:
   static void TraceMissingNode    (ValueTree config_store , Identifier a_node_id) ;
   static void TraceMissingProperty(ValueTree config_store    , Identifier a_property_id ,
                                    var       a_default_value                            ) ;
-  static void TraceTreeChanged    (ValueTree& a_node , const Identifier& a_key) ;
   static void DumpConfig          (ValueTree config_store , String node_desc) ;
+
+  static String VarType          (var a_var) ;
+  static void   TraceTreeChanged (ValueTree& a_node , const Identifier& a_key) ;
+  static void   TraceValueChanged(Value& a_value , String name) ;
+  static String TraceSetValue    (ValueTree a_node , const Identifier& a_key , var a_value) ;
 } ;
 
 #endif // DEBUG_TRACE
