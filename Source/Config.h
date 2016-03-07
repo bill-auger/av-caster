@@ -81,7 +81,8 @@ private:
   void initialize        (ValueTree config_store , ValueTree network_store) ;
   void loadConfig        () ;
   void enableComponents  () ;
-  void updateVisibility  (Component* selected_component) ;
+  void updateVisibility  (Component* front_component , String group_text ,
+                          String     hints_text                          ) ;
   bool validateOutputDest() ;
 
     //[/UserMethods]

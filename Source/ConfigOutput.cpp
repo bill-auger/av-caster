@@ -1,21 +1,21 @@
-/*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
 
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
 
 //[Headers] You can add your own extra header files here...
 //[/Headers]
@@ -30,7 +30,7 @@
 ConfigOutput::ConfigOutput ()
 {
     addAndMakeVisible (outputStreamLabel = new Label ("outputStreamLabel",
-                                                      TRANS("Destination:")));
+                                                      TRANS("Stream:")));
     outputStreamLabel->setFont (Font (15.00f, Font::plain));
     outputStreamLabel->setJustificationType (Justification::centredLeft);
     outputStreamLabel->setEditable (false, false, false);
@@ -119,7 +119,7 @@ ConfigOutput::ConfigOutput ()
     videoBitrateCombo->addListener (this);
 
     addAndMakeVisible (outputDestLabel = new Label ("outputDestLabel",
-                                                    TRANS("Location:")));
+                                                    TRANS("Destination:")));
     outputDestLabel->setFont (Font (15.00f, Font::plain));
     outputDestLabel->setJustificationType (Justification::centredLeft);
     outputDestLabel->setEditable (false, false, false);
@@ -258,7 +258,7 @@ BEGIN_JUCER_METADATA
   <BACKGROUND backgroundColour="0"/>
   <LABEL name="outputStreamLabel" id="dac22e20ce0dd8e" memberName="outputStreamLabel"
          virtualName="" explicitFocusOrder="0" pos="0 8 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Destination:" editableSingleClick="0"
+         edTextCol="ff000000" edBkgCol="0" labelText="Stream:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="outputSinkCombo" id="12e0750a2c746a13" memberName="outputSinkCombo"
@@ -300,7 +300,7 @@ BEGIN_JUCER_METADATA
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="outputDestLabel" id="a1c19ea70cf15d1b" memberName="outputDestLabel"
          virtualName="" explicitFocusOrder="0" pos="0 208 80 24" textCol="ffffffff"
-         edTextCol="ff000000" edBkgCol="0" labelText="Location:" editableSingleClick="0"
+         edTextCol="ff000000" edBkgCol="0" labelText="Destination:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="outputDestText" id="569abe636085fb4a" memberName="outputDestText"

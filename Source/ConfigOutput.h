@@ -1,23 +1,24 @@
-/*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
-|*|
-|*|  This file is part of the AvCaster program.
-|*|
-|*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
-|*|  as published by the Free Software Foundation.
-|*|
-|*|  AvCaster is distributed in the hope that it will be useful,
-|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
-|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
-|*|
-|*|  You should have received a copy of the GNU Lesser General Public License
-|*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
-\*/
+/*
+  ==============================================================================
 
-#ifndef _CONFIG_OUTPUT_H_
-#define _CONFIG_OUTPUT_H_
+  This is an automatically generated GUI class created by the Introjucer!
+
+  Be careful when adding custom code to these files, as only the code within
+  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
+  and re-saved.
+
+  Created with Introjucer version: 3.1.1
+
+  ------------------------------------------------------------------------------
+
+  The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
+  Copyright 2004-13 by Raw Material Software Ltd.
+
+  ==============================================================================
+*/
+
+#ifndef __JUCE_HEADER_7ACD300A0FFE0DA6__
+#define __JUCE_HEADER_7ACD300A0FFE0DA6__
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -87,4 +88,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIG_OUTPUT_H_
+#endif   // __JUCE_HEADER_7ACD300A0FFE0DA6__

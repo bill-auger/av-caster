@@ -785,7 +785,7 @@ namespace GUI
   static const String INIT_STATUS_TEXT  = "Initializing" ;
   static const String READY_STATUS_TEXT = "Ready" ;
 
-  // alerts
+  // Alerts
   enum         AlertType { ALERT_TYPE_WARNING , ALERT_TYPE_ERROR } ;
   static const String    MODAL_WARNING_TITLE = APP::APP_NAME + " Warning" ;
   static const String    MODAL_ERROR_TITLE   = APP::APP_NAME + " Error" ;
@@ -838,6 +838,130 @@ namespace GUI
   static const String ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture device.\n\n" ;
   static const String PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
   static const String JACK_INIT_ERROR_MSG         = "Error connecting to Jack server.\n\n" ;
+
+  // Config label texts
+  static const String DISPLAY_N_LABEL   = "Display #:" ;
+  static const String SCREEN_N_LABEL    = "Screen #:" ;
+  static const String SCREEN_W_LABEL    = "Width:" ;
+  static const String SCREEN_H_LABEL    = "Height:" ;
+  static const String X_OFFSET_LABEL    = "Offset X:" ;
+  static const String Y_OFFSET_LABEL    = "Offset Y:" ;
+  static const String CAMERA_DEV_LABEL  = "Device:" ;
+  static const String CAMERA_RES_LABEL  = "Resolution:" ;
+  static const String AUDIO_API_LABEL   = "Interface:" ;
+  static const String AUDIO_DEV_LABEL   = "Device:" ;
+  static const String AUDIO_CODEC_LABEL = "Codec:" ;
+  static const String N_CHANNELS_LABEL  = "Channels:" ;
+  static const String SAMPLERATE_LABEL  = "Samplerate:" ;
+  static const String AUDIO_RATE_LABEL  = "Bitrate:" ;
+  static const String MOTD_LABEL        = "Message:" ;
+  static const String TEXT_STYLE_LABEL  = "Style:" ;
+  static const String TEXT_POS_LABEL    = "Position:" ;
+  static const String IMAGE_LOC_LABEL   = "Location:" ;
+  static const String IMAGE_BTN_LABEL   = "Browse:" ;
+  static const String OUTPUT_SINK_LABEL = "Stream:" ;
+  static const String OUTPUT_W_LABEL    = "Width:" ;
+  static const String OUTPUT_H_LABEL    = "Height:" ;
+  static const String FRAMERATE_LABEL   = "FPS:" ;
+  static const String VIDEO_RATE_LABEL  = "Bitrate:" ;
+  static const String OUTPUT_DEST_LABEL = "Destination:" ;
+  static const String NETWORK_LABEL     = "Host:" ;
+  static const String PORT_LABEL        = "Port:" ;
+  static const String NICK_LABEL        = "Nick:" ;
+  static const String PASS_LABEL        = "Password:" ;
+  static const String CHANNEL_LABEL     = "Channel:" ;
+  static const String GREETING_LABEL    = "Greeting:" ;
+  static const String TIMESTAMP_LABEL   = "Show Timestamps:" ;
+  static const String JOINPART_LABEL    = "Show Joins/Parts:" ;
+
+  // Config help texts
+  static const String CONFIG_SCREEN_HELP = "The " + SCREEN_GROUP_TEXT + " pane has controls to configure the screen capture." ;
+  static const String CONFIG_CAMERA_HELP = "The " + CAMERA_GROUP_TEXT + " pane has controls to configure the camera capture device." ;
+  static const String CONFIG_AUDIO_HELP  = "The " + AUDIO_GROUP_TEXT  + " pane has controls to configure the audio capture device." ;
+  static const String CONFIG_TEXT_HELP   = "The " + TEXT_GROUP_TEXT   + " pane has controls to configure the text overlay. This may be left empty if overlay text is not desired." ;
+  static const String CONFIG_IMAGE_HELP  = "The " + IMAGE_GROUP_TEXT  + " pane has controls to configure the interstitial image. This is a static image that will be shown to viewers when the stream is paused. If this is left empty then the default " + APP::APP_NAME + " splash image will be shown instead." ;
+  static const String CONFIG_OUTPUT_HELP = "The " + OUTPUT_GROUP_TEXT + " pane has controls to configure the output stream, either to produce a local video file or to stream to a server over the network." ;
+  static const String CONFIG_CHAT_HELP   = "The " + CHAT_GROUP_TEXT   + " pane has controls to configure the chat. These may be left empty if chat is not desired." ;
+  static const String DISPLAY_N_HELP     = DISPLAY_N_LABEL   + " Select the X display to capture (usually 0)." ;
+  static const String SCREEN_N_HELP      = SCREEN_N_LABEL    + " Select the X screen to capture (usually 0)." ;
+  static const String SCREEN_W__HELP     = SCREEN_W_LABEL    + " Specify the width of the area to capture (in pixels)." ;
+  static const String SCREEN_H__HELP     = SCREEN_H_LABEL    + " Specify the height of the area to capture (in pixels)." ;
+  static const String X_OFFSET_HELP      = X_OFFSET_LABEL    + " Specify the left edge position of the area to capture (in pixels)." ;
+  static const String Y_OFFSET_HELP      = Y_OFFSET_LABEL    + " Specify the top edge position of the area to capture (in pixels)." ;
+  static const String CAMERA_DEV_HELP    = CAMERA_DEV_LABEL  + " Select the camera device to capture." ;
+  static const String CAMERA_RES_HELP    = CAMERA_RES_LABEL  + " Select the camera capture resolution." ;
+  static const String AUDIO_API_HELP     = AUDIO_API_LABEL   + " Select the audio driver interface." ;
+  static const String AUDIO_DEV_HELP     = AUDIO_DEV_LABEL   + " Select the audio device to capture." ;
+  static const String AUDIO_CODEC_HELP   = AUDIO_CODEC_LABEL + " Select the audio encoder." ;
+  static const String N_CHANNELS_HELP    = N_CHANNELS_LABEL  + " Specify the number of audio channels to capture." ;
+  static const String SAMPLERATE_HELP    = SAMPLERATE_LABEL  + " Select the audio sample rate (22050 is good for voice, 48000 for music)." ;
+  static const String AUDIO_RATE_HELP    = AUDIO_RATE_LABEL  + " Select the audio output bit rate (64k per channel is good)." ;
+  static const String MOTD_HELP          = MOTD_LABEL        + " Enter the message of the day text." ;
+  static const String TEXT_STYLE_HELP    = TEXT_STYLE_LABEL  + " Select still or scrolling text overlay style." ;
+  static const String TEXT_POS_HELP      = TEXT_POS_LABEL    + " Select text overlay screen position." ;
+  static const String IMAGE_LOC_HELP     = IMAGE_LOC_LABEL   + " Specify the location of the image file." ;
+  static const String IMAGE_BTN_HELP     = IMAGE_BTN_LABEL   + " Brwose filesystem for the image file." ;
+  static const String OUTPUT_SINK_HELP   = OUTPUT_SINK_LABEL + " Select stream type." ;
+  static const String OUTPUT_W__HELP     = OUTPUT_W_LABEL    + " Specify the width of the output stream (in pixels)." ;
+  static const String OUTPUT_H__HELP     = OUTPUT_H_LABEL    + " Specify the width of the output stream (in pixels)." ;
+  static const String FRAMERATE_HELP     = FRAMERATE_LABEL   + " Select the stream output frame rate (12 is good for screen capture, 30 for video)." ;
+  static const String VIDEO_RATE_HELP    = VIDEO_RATE_LABEL  + " Select the stream output bit rate (800k - 1200k is good)." ;
+  static const String OUTPUT_DEST_HELP   = OUTPUT_DEST_LABEL + " Specify the local file or stream server URL." ;
+  static const String NETWORK_HELP       = NETWORK_LABEL     + " Specify the chat network or host URL." ;
+  static const String PORT_HELP          = PORT_LABEL        + " Specify the chat server port." ;
+  static const String NICK_HELP          = NICK_LABEL        + " Specify your nickname on the chat network." ;
+  static const String PASS_HELP          = PASS_LABEL        + " Specify the server password (this is not your NICKSERV pass)." ;
+  static const String CHANNEL_HELP       = CHANNEL_LABEL     + " Specify the channel to auto-join." ;
+  static const String GREETING_HELP      = GREETING_LABEL    + " Specify a pounce greeting to all entering chatters." ;
+  static const String TIMESTAMP_HELP     = TIMESTAMP_LABEL   + " Show or hide timestamps of chat messages." ;
+  static const String JOINPART_HELP      = JOINPART_LABEL    + " Show or hide notices of chatters entering and leaving the channel." ;
+  static const String SCREEN_HELP_TEXT   = String("Screen Capture Configuration:\n\n") +
+                                           CONFIG_SCREEN_HELP                 + "\n\n" +
+                                           DISPLAY_N_HELP                       + "\n" +
+                                           SCREEN_N_HELP                        + "\n" +
+                                           SCREEN_W__HELP                       + "\n" +
+                                           SCREEN_H__HELP                       + "\n" +
+                                           X_OFFSET_HELP                        + "\n" +
+                                           Y_OFFSET_HELP                               ;
+  static const String CAMERA_HELP_TEXT   = String("Camera Device Configuration:\n\n") +
+                                           CONFIG_CAMERA_HELP                + "\n\n" +
+                                           CAMERA_DEV_HELP                     + "\n" +
+                                           CAMERA_RES_HELP                            ;
+  static const String AUDIO_HELP_TEXT    = String("Audio Device Configuration:\n\n") +
+                                           CONFIG_AUDIO_HELP                + "\n\n" +
+                                           AUDIO_API_HELP                     + "\n" +
+                                           AUDIO_DEV_HELP                     + "\n" +
+                                           AUDIO_CODEC_HELP                   + "\n" +
+                                           N_CHANNELS_HELP                    + "\n" +
+                                           SAMPLERATE_HELP                    + "\n" +
+                                           AUDIO_RATE_HELP                           ;
+  static const String TEXT_HELP_TEXT     = String("Text Overlay Configuration:\n\n") +
+                                           CONFIG_TEXT_HELP                 + "\n\n" +
+                                           MOTD_HELP                          + "\n" +
+                                           TEXT_STYLE_HELP                    + "\n" +
+                                           TEXT_POS_HELP                             ;
+  static const String IMAGE_HELP_TEXT    = String("Interstitial Configuration:\n\n") +
+                                           CONFIG_IMAGE_HELP                + "\n\n" +
+                                           IMAGE_LOC_HELP                     + "\n" +
+                                           IMAGE_BTN_HELP                            ;
+  static const String OUTPUT_HELP_TEXT   = String("Output Stream Configuration:\n\n") +
+                                           CONFIG_OUTPUT_HELP                + "\n\n" +
+                                           OUTPUT_SINK_HELP                    + "\n" +
+                                           OUTPUT_W__HELP                      + "\n" +
+                                           OUTPUT_H__HELP                      + "\n" +
+                                           FRAMERATE_HELP                      + "\n" +
+                                           VIDEO_RATE_HELP                     + "\n" +
+                                           OUTPUT_DEST_HELP                           ;
+  static const String CHAT_HELP_TEXT     = String("Chat Configuration:\n\n") +
+                                           CONFIG_CHAT_HELP         + "\n\n" +
+                                           NETWORK_HELP               + "\n" +
+                                           PORT_HELP                  + "\n" +
+                                           NICK_HELP                  + "\n" +
+                                           PASS_HELP                  + "\n" +
+                                           CHANNEL_HELP               + "\n" +
+                                           GREETING_HELP              + "\n" +
+                                           TIMESTAMP_HELP             + "\n" +
+                                           JOINPART_HELP                     ;
 }
 
 #endif // _CONSTANTS_H_

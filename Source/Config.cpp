@@ -235,9 +235,9 @@ Config::Config (MainContent* main_content)
 
   // NOTE: dummyPane is a non-functional dummy - most siblings bounds are coupled to it
   dummyConfigPane->toBack() ;
-  configPaneGroup->setText(GUI::SCREEN_GROUP_TEXT) ;
 
-  updateVisibility(static_cast<Component*>(this->configScreen)) ;
+  Component* front_component = static_cast<Component*>(this->configScreen) ;
+  updateVisibility(front_component , GUI::SCREEN_GROUP_TEXT , GUI::SCREEN_HELP_TEXT) ;
 
     //[/Constructor]
 }
@@ -413,46 +413,54 @@ void Config::comboBoxChanged(ComboBox* a_combobox)
 
 void Config::buttonClicked(Button* a_button)
 {
-  Component* config_component = nullptr ; // local buttons
-  String     config_group_text ;          // local buttons
-  Identifier key ;                        // child buttons
-  var        value ;                      // child buttons
+  Component* front_component = nullptr ; // local buttons
+  String     group_text ;                // local buttons
+  String     hints_text ;                // local buttons
+  Identifier key ;                       // child buttons
+  var        value ;                     // child buttons
 
   // Config buttons
   if      (a_button == this->screenButton)
   {
-    config_component  = static_cast<Component*>(this->configScreen) ;
-    config_group_text = GUI::SCREEN_GROUP_TEXT ;
+    front_component = static_cast<Component*>(this->configScreen) ;
+    group_text      = GUI::SCREEN_GROUP_TEXT ;
+    hints_text      = GUI::SCREEN_HELP_TEXT ;
   }
   else if (a_button == this->cameraButton)
   {
-    config_component = static_cast<Component*>(this->configCamera) ;
-    config_group_text = GUI::CAMERA_GROUP_TEXT ;
+    front_component = static_cast<Component*>(this->configCamera) ;
+    group_text      = GUI::CAMERA_GROUP_TEXT ;
+    hints_text      = GUI::CAMERA_HELP_TEXT ;
   }
   else if (a_button == this->audioButton)
   {
-    config_component = static_cast<Component*>(this->configAudio) ;
-    config_group_text = GUI::AUDIO_GROUP_TEXT ;
+    front_component = static_cast<Component*>(this->configAudio) ;
+    group_text      = GUI::AUDIO_GROUP_TEXT ;
+    hints_text      = GUI::AUDIO_HELP_TEXT ;
   }
   else if (a_button == this->textButton)
   {
-    config_component = static_cast<Component*>(this->configText) ;
-    config_group_text = GUI::TEXT_GROUP_TEXT ;
+    front_component = static_cast<Component*>(this->configText) ;
+    group_text      = GUI::TEXT_GROUP_TEXT ;
+    hints_text      = GUI::TEXT_HELP_TEXT ;
   }
   else if (a_button == this->imageButton)
   {
-    config_component = static_cast<Component*>(this->configImage) ;
-    config_group_text = GUI::IMAGE_GROUP_TEXT ;
+    front_component = static_cast<Component*>(this->configImage) ;
+    group_text      = GUI::IMAGE_GROUP_TEXT ;
+    hints_text      = GUI::IMAGE_HELP_TEXT ;
   }
   else if (a_button == this->outputButton)
   {
-    config_component = static_cast<Component*>(this->configOutput) ;
-    config_group_text = GUI::OUTPUT_GROUP_TEXT ;
+    front_component = static_cast<Component*>(this->configOutput) ;
+    group_text      = GUI::OUTPUT_GROUP_TEXT ;
+    hints_text      = GUI::OUTPUT_HELP_TEXT ;
   }
   else if (a_button == this->chatButton)
   {
-    config_component = static_cast<Component*>(this->configChat) ;
-    config_group_text = GUI::CHAT_GROUP_TEXT ;
+    front_component = static_cast<Component*>(this->configChat) ;
+    group_text      = GUI::CHAT_GROUP_TEXT ;
+    hints_text      = GUI::CHAT_HELP_TEXT ;
   }
 
   // Image buttons
@@ -483,11 +491,8 @@ void Config::buttonClicked(Button* a_button)
     value = var(a_button->getToggleState()) ;
   }
 
-  if (config_component != nullptr)       // local buttons
-  {
-    this->configPaneGroup->setText(config_group_text) ;
-    updateVisibility(config_component) ;
-  }
+  if (front_component != nullptr)        // local buttons
+    updateVisibility(front_component , group_text , hints_text) ;
   else AvCaster::SetValue(key , value) ; // child buttons
 }
 
@@ -533,9 +538,9 @@ void Config::initialize(ValueTree config_store , ValueTree network_store)
 
 void Config::loadConfig()
 {
-  StringArray camera_devices     = AvCaster::GetCameraNames         () ;
-  StringArray camera_resolutions = AvCaster::GetCameraResolutions   () ;
-  StringArray audio_devices      = AvCaster::GetAudioNames          () ;
+  StringArray camera_devices     = AvCaster::GetCameraNames      () ;
+  StringArray camera_resolutions = AvCaster::GetCameraResolutions() ;
+  StringArray audio_devices      = AvCaster::GetAudioNames       () ;
 
 DEBUG_TRACE_CONFIG_LOAD_CONFIG
 
@@ -672,17 +677,20 @@ this->joinPartToggle ->setEnabled(false) ;
 #endif // DISABLE_GUI_CONFIG_NYI
 }
 
-void Config::updateVisibility(Component* selected_component)
+void Config::updateVisibility(Component* front_component , String group_text ,
+                              String     hints_text                          )
 {
-  configScreen       ->setVisible(false) ;
-  configCamera       ->setVisible(false) ;
-  configAudio        ->setVisible(false) ;
-  configText         ->setVisible(false) ;
-  configImage        ->setVisible(false) ;
-  configOutput       ->setVisible(false) ;
-  configChat         ->setVisible(false) ;
-  dummyConfigPane    ->setVisible(false) ;
-  selected_component->setVisible(true ) ;
+  this->configScreen->setVisible(false) ;
+  this->configCamera->setVisible(false) ;
+  this->configAudio ->setVisible(false) ;
+  this->configText  ->setVisible(false) ;
+  this->configImage ->setVisible(false) ;
+  this->configOutput->setVisible(false) ;
+  this->configChat  ->setVisible(false) ;
+  front_component   ->setVisible(true ) ;
+
+  this->configPaneGroup->setText(group_text) ;
+  this->hintsText      ->setText(hints_text) ;
 }
 
 bool Config::validateOutputDest()
