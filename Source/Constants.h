@@ -56,7 +56,7 @@
 #define DEBUG_TRACE_EVENTS    (DEBUG_TRACE && 1)
 #define DEBUG_TRACE_GUI       (DEBUG_TRACE && 1)
 #define DEBUG_TRACE_GUI_VB    (DEBUG_TRACE && 0)
-#define DEBUG_TRACE_MEDIA     (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_MEDIA     (DEBUG_TRACE && 1)
 #define DEBUG_TRACE_MEDIA_VB  (DEBUG_TRACE && 0)
 #define DEBUG_TRACE_CONFIG    (DEBUG_TRACE && 1)
 #define DEBUG_TRACE_CONFIG_VB (DEBUG_TRACE && 0)
@@ -149,7 +149,7 @@ namespace APP
                                                      "\n\n\t\t"                     + CLI_DISABLE_CHAT_TOKEN    + "\n\t\t\tdisables chat"                                        ;
 
 // NOTE: INPUTS are either mutually exclusive (compositor disabled) or must all be enabled (compositor enabled)
-//       N_COMPOSITOR_INPUTS is coupled to AvCaster::Is*Enabled flags in AvCaster::ProcessCliParams()
+//       N_COMPOSITOR_INPUTS is coupled to MEDIA_INIT_ID flags in AvCaster::ProcessCliParams()
 #define INPUTS String(APP::CLI_SCREEN_ONLY_TOKEN + newLine + APP::CLI_CAMERA_ONLY_TOKEN + \
                String((TEXT_BIN_NYI ) ? "" :       newLine + APP::CLI_TEXT_ONLY_TOKEN)  + \
                String((IMAGE_BIN_NYI) ? "" :       newLine + APP::CLI_IMAGE_ONLY_TOKEN) )
@@ -451,7 +451,7 @@ namespace CONFIG
   static const Identifier IS_PENDING_ID         = "is-config-pending" ;
   // Controls IDs
   static const Identifier PRESET_NAME_ID        = "preset-name" ;
-  static const Identifier SCREENCAP_ID          = "is-screencap-on" ;
+  static const Identifier SCREEN_ID             = "is-screencap-on" ;
   static const Identifier CAMERA_ID             = "is-camera-on" ;
   static const Identifier TEXT_ID               = "is-text-on" ;
   static const Identifier PREVIEW_ID            = "is-preview-on" ;
@@ -505,6 +505,17 @@ namespace CONFIG
   static const Identifier GREETING_ID           = "chat-greeting" ;
   static const Identifier RETRIES_ID            = "n-connect-retries" ;
   static const Identifier CHATTERS_ID           = "active-chatters" ;
+  // temporary keys for disabling media via CLI args
+  static const Identifier MEDIA_INIT_ID         = "media-init" ;
+  static const Identifier MEDIA_DISABLED_ID     = "is-media-disabled" ;
+  static const Identifier SCREENCAP_DISABLED_ID = "is-screencap-disabled" ;
+  static const Identifier CAMERA_DISABLED_ID    = "is-camera-disabled" ;
+  static const Identifier TEXT_DISABLED_ID      = "is-text-disabled" ;
+  static const Identifier IMAGE_DISABLED_ID     = "is-interstitial-disabled" ;
+  static const Identifier VMIXER_ID    = "is-compositor-disabled" ;
+  static const Identifier PREVIEW_DISABLED_ID   = "is-preview-disabled" ;
+  static const Identifier AUDIO_DISABLED_ID     = "is-audio-disabled" ;
+  static const Identifier CHAT_DISABLED_ID      = "is-chat-disabled" ;
 
   // root defaults
 #if JUCE_LINUX
@@ -520,11 +531,7 @@ namespace CONFIG
   static const int        N_STATIC_PRESETS            = 3 ; // ASSERT: num PresetSeed::PresetSeeds() child nodes
   static const bool       DEFAULT_IS_PENDING          = false ;
   // Controls defaults
-#ifdef DISABLE_GUI_CONFIG_NYI
-  static const bool       DEFAULT_IS_SCREENCAP_ACTIVE = true ;
-#else // DISABLE_GUI_CONFIG_NYI
-  static const bool       DEFAULT_IS_SCREENCAP_ACTIVE = false ;
-#endif // DISABLE_GUI_CONFIG_NYI
+  static const bool       DEFAULT_IS_SCREEN_ACTIVE    = false ;
   static const bool       DEFAULT_IS_CAMERA_ACTIVE    = false ;
   static const bool       DEFAULT_IS_TEXT_ACTIVE      = false ;
   static const bool       DEFAULT_IS_IMAGE_ACTIVE     = true ;
@@ -592,7 +599,7 @@ namespace CONFIG
 #define ROOT_TRANSIENT_IDS          String(IS_PENDING_ID    )
 #define PRESET_PERSISTENT_NODE_IDS  String(NETWORK_ID)
 #define PRESET_TRANSIENT_NODE_IDS   String(""               )
-#define PRESET_PERSISTENT_IDS       String(PRESET_NAME_ID   ) + " " + String(SCREENCAP_ID    ) + " " + \
+#define PRESET_PERSISTENT_IDS       String(PRESET_NAME_ID   ) + " " + String(SCREEN_ID       ) + " " + \
                                     String(CAMERA_ID        ) + " " + String(TEXT_ID         ) + " " + \
                                     String(IMAGE_ID         ) + " " + String(PREVIEW_ID      ) + " " + \
                                     String(AUDIO_ID         )                                  + " " + \
@@ -618,7 +625,10 @@ namespace CONFIG
                                     String(CHANNEL_ID       ) + " " + String(TIMESTAMPS_ID   ) + " " + \
                                     String(JOINPARTS_ID     ) + " " + String(GREETING_ID     )
 #define NETWORK_TRANSIENT_IDS       String(HOST_ID          ) + " " + String(RETRIES_ID      )
-#define MEDIA_IDS                   String(SCREENCAP_ID     ) + " " + String(CAMERA_ID       ) + " " + \
+#define CHATTER_TRANSIENT_IDS       String(NICK_ID          )
+#define CAMERA_TRANSIENT_IDS        String(""               )
+#define AUDIO_TRANSIENT_IDS         String(""               )
+#define MEDIA_IDS                   String(SCREEN_ID        ) + " " + String(CAMERA_ID       ) + " " + \
                                     String(TEXT_ID          ) + " " + String(IMAGE_ID        ) + " " + \
                                     String(PREVIEW_ID       ) + " " + String(AUDIO_ID        ) + " " + \
                                     String(OUTPUT_ID        )
@@ -641,6 +651,9 @@ namespace CONFIG
   static const StringArray NETWORK_PERSISTENT_KEYS  = StringArray::fromTokens(NETWORK_PERSISTENT_IDS      , false) ;
   static const StringArray NETWORK_KEYS             = StringArray::fromTokens(NETWORK_PERSISTENT_IDS      + " "  +
                                                                               NETWORK_TRANSIENT_IDS       , false) ;
+  static const StringArray CHATTER_KEYS             = StringArray::fromTokens(CHATTER_TRANSIENT_IDS       , false) ;
+  static const StringArray CAMERA_KEYS              = StringArray::fromTokens(CAMERA_TRANSIENT_IDS        , false) ;
+  static const StringArray AUDIO_KEYS               = StringArray::fromTokens(AUDIO_TRANSIENT_IDS         , false) ;
   static const StringArray MEDIA_KEYS               = StringArray::fromTokens(MEDIA_IDS                   , false) ;
   static const StringArray RECONFIGURE_KEYS         = StringArray::fromTokens(RECONFIGURE_IDS             , false) ;
 }
@@ -690,6 +703,7 @@ namespace GST
   static const String ALSA_INIT_ERROR  = "Could not open audio device for recording. Device is being used by another application." ;
   static const String PULSE_INIT_ERROR = "Failed to connect: Connection refused" ;
   static const String JACK_INIT_ERROR  = "Jack server not found" ;
+  static const String FILE_SINK_ERROR  = "No file name specified for writing." ;
 }
 
 
@@ -838,6 +852,7 @@ namespace GUI
   static const String ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture device.\n\n" ;
   static const String PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
   static const String JACK_INIT_ERROR_MSG         = "Error connecting to Jack server.\n\n" ;
+  static const String FILE_SINK_ERROR_MSG         = "Error creating local output file.\n\n" ;
 
   // Config label texts
   static const String DISPLAY_N_LABEL   = "Display #:" ;

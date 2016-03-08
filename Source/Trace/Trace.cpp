@@ -34,7 +34,6 @@ void Trace::TraceConfig  (String msg) { if (DEBUG_TRACE_CONFIG   ) LOG(         
 void Trace::TraceConfigVb(String msg) { if (DEBUG_TRACE_CONFIG_VB) LOG(          "[CONFIG]:  " + msg) ;               }
 void Trace::TraceChat    (String msg) { if (DEBUG_TRACE_CHAT     ) LOG(          "[CHAT]:    " + msg) ;               }
 void Trace::TraceChatVb  (String msg) { if (DEBUG_TRACE_CHAT_VB  ) LOG(          "[CHAT]:    " + msg) ;               }
-void Trace::TraceVerbose (String msg) { if (DEBUG_TRACE_VB       ) LOG(          "[DEBUG]:   " + msg) ;               }
 #  if ! DEBUG_ANSI_COLORS
 void Trace::TraceState   (String msg) { if (DEBUG_TRACE_STATE    ) LOG(          "[STATE]:   " + msg) ;               }
 void Trace::TraceWarning (String msg) { if (DEBUG_TRACE_STATE    ) LOG(          "[WARNING]: " + msg) ;               }

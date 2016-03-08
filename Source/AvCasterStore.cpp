@@ -153,47 +153,47 @@ void AvCasterStore::verifyPreset()
 DEBUG_TRACE_VERIFY_PRESET
 
   // ensure missing properties exist
-  verifyPresetProperty (CONFIG::PRESET_NAME_ID   , var(CONFIG::DEFAULT_PRESET_NAME        )) ;
-  verifyPresetProperty (CONFIG::SCREENCAP_ID     , var(CONFIG::DEFAULT_IS_SCREENCAP_ACTIVE)) ;
-  verifyPresetProperty (CONFIG::CAMERA_ID        , var(CONFIG::DEFAULT_IS_CAMERA_ACTIVE   )) ;
-  verifyPresetProperty (CONFIG::TEXT_ID          , var(CONFIG::DEFAULT_IS_TEXT_ACTIVE     )) ;
-  verifyPresetProperty (CONFIG::IMAGE_ID         , var(CONFIG::DEFAULT_IS_IMAGE_ACTIVE    )) ;
-  verifyPresetProperty (CONFIG::PREVIEW_ID       , var(CONFIG::DEFAULT_IS_PREVIEW_ACTIVE  )) ;
-  verifyPresetProperty (CONFIG::AUDIO_ID         , var(CONFIG::DEFAULT_IS_AUDIO_ACTIVE    )) ;
-  verifyPresetProperty (CONFIG::DISPLAY_N_ID     , var(CONFIG::DEFAULT_DISPLAY_N          )) ;
-  verifyPresetProperty (CONFIG::SCREEN_N_ID      , var(CONFIG::DEFAULT_SCREEN_N           )) ;
-  verifyPresetProperty (CONFIG::SCREENCAP_W_ID   , var(CONFIG::DEFAULT_SCREENCAP_W        )) ;
-  verifyPresetProperty (CONFIG::SCREENCAP_H_ID   , var(CONFIG::DEFAULT_SCREENCAP_H        )) ;
-  verifyPresetProperty (CONFIG::OFFSET_X_ID      , var(CONFIG::DEFAULT_OFFSET_X           )) ;
-  verifyPresetProperty (CONFIG::OFFSET_Y_ID      , var(CONFIG::DEFAULT_OFFSET_Y           )) ;
-  verifyPresetProperty (CONFIG::CAMERA_DEVICE_ID , var(CONFIG::DEFAULT_CAMERA_DEVICE_IDX  )) ;
-  verifyPresetProperty (CONFIG::CAMERA_RES_ID    , var(CONFIG::DEFAULT_CAMERA_RES_IDX     )) ;
-  verifyPresetProperty (CONFIG::AUDIO_API_ID     , var(CONFIG::DEFAULT_AUDIO_API_IDX      )) ;
-  verifyPresetProperty (CONFIG::AUDIO_DEVICE_ID  , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX   )) ;
-  verifyPresetProperty (CONFIG::AUDIO_CODEC_ID   , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX    )) ;
-  verifyPresetProperty (CONFIG::N_CHANNELS_ID    , var(CONFIG::DEFAULT_N_CHANNELS         )) ;
-  verifyPresetProperty (CONFIG::SAMPLERATE_ID    , var(CONFIG::DEFAULT_SAMPLERATE_IDX     )) ;
-  verifyPresetProperty (CONFIG::AUDIO_BITRATE_ID , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX  )) ;
-  verifyPresetProperty (CONFIG::MOTD_TEXT_ID     , var(CONFIG::DEFAULT_MOTD_TEXT          )) ;
-  verifyPresetProperty (CONFIG::TEXT_STYLE_ID    , var(CONFIG::DEFAULT_TEXT_STYLE_IDX     )) ;
-  verifyPresetProperty (CONFIG::TEXT_POSITION_ID , var(CONFIG::DEFAULT_TEXT_POSITION_IDX  )) ;
-  verifyPresetProperty (CONFIG::IMAGE_LOC_ID     , var(CONFIG::DEFAULT_IMAGE_LOCATION     )) ;
-  verifyPresetProperty (CONFIG::OUTPUT_SINK_ID   , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX    )) ;
-  verifyPresetProperty (CONFIG::OUTPUT_MUXER_ID  , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX   )) ;
-  verifyPresetProperty (CONFIG::OUTPUT_W_ID      , var(CONFIG::DEFAULT_OUTPUT_W           )) ;
-  verifyPresetProperty (CONFIG::OUTPUT_H_ID      , var(CONFIG::DEFAULT_OUTPUT_H           )) ;
-  verifyPresetProperty (CONFIG::FRAMERATE_ID     , var(CONFIG::DEFAULT_FRAMERATE_IDX      )) ;
-  verifyPresetProperty (CONFIG::VIDEO_BITRATE_ID , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX  )) ;
-  verifyPresetProperty (CONFIG::OUTPUT_DEST_ID   , var(CONFIG::DEFAULT_OUTPUT_DEST        )) ;
+  verifyPresetProperty (CONFIG::PRESET_NAME_ID   , var(CONFIG::DEFAULT_PRESET_NAME      )) ;
+  verifyPresetProperty (CONFIG::SCREEN_ID        , var(CONFIG::DEFAULT_IS_SCREEN_ACTIVE )) ;
+  verifyPresetProperty (CONFIG::CAMERA_ID        , var(CONFIG::DEFAULT_IS_CAMERA_ACTIVE )) ;
+  verifyPresetProperty (CONFIG::TEXT_ID          , var(CONFIG::DEFAULT_IS_TEXT_ACTIVE   )) ;
+  verifyPresetProperty (CONFIG::IMAGE_ID         , var(CONFIG::DEFAULT_IS_IMAGE_ACTIVE  )) ;
+  verifyPresetProperty (CONFIG::PREVIEW_ID       , var(CONFIG::DEFAULT_IS_PREVIEW_ACTIVE)) ;
+  verifyPresetProperty (CONFIG::AUDIO_ID         , var(CONFIG::DEFAULT_IS_AUDIO_ACTIVE  )) ;
+  verifyPresetProperty (CONFIG::DISPLAY_N_ID     , var(CONFIG::DEFAULT_DISPLAY_N        )) ;
+  verifyPresetProperty (CONFIG::SCREEN_N_ID      , var(CONFIG::DEFAULT_SCREEN_N         )) ;
+  verifyPresetProperty (CONFIG::SCREENCAP_W_ID   , var(CONFIG::DEFAULT_SCREENCAP_W      )) ;
+  verifyPresetProperty (CONFIG::SCREENCAP_H_ID   , var(CONFIG::DEFAULT_SCREENCAP_H      )) ;
+  verifyPresetProperty (CONFIG::OFFSET_X_ID      , var(CONFIG::DEFAULT_OFFSET_X         )) ;
+  verifyPresetProperty (CONFIG::OFFSET_Y_ID      , var(CONFIG::DEFAULT_OFFSET_Y         )) ;
+  verifyPresetProperty (CONFIG::CAMERA_DEVICE_ID , var(CONFIG::DEFAULT_CAMERA_DEVICE_IDX)) ;
+  verifyPresetProperty (CONFIG::CAMERA_RES_ID    , var(CONFIG::DEFAULT_CAMERA_RES_IDX   )) ;
+  verifyPresetProperty (CONFIG::AUDIO_API_ID     , var(CONFIG::DEFAULT_AUDIO_API_IDX    )) ;
+  verifyPresetProperty (CONFIG::AUDIO_DEVICE_ID  , var(CONFIG::DEFAULT_AUDIO_DEVICE_IDX )) ;
+  verifyPresetProperty (CONFIG::AUDIO_CODEC_ID   , var(CONFIG::DEFAULT_AUDIO_CODEC_IDX  )) ;
+  verifyPresetProperty (CONFIG::N_CHANNELS_ID    , var(CONFIG::DEFAULT_N_CHANNELS       )) ;
+  verifyPresetProperty (CONFIG::SAMPLERATE_ID    , var(CONFIG::DEFAULT_SAMPLERATE_IDX   )) ;
+  verifyPresetProperty (CONFIG::AUDIO_BITRATE_ID , var(CONFIG::DEFAULT_AUDIO_BITRATE_IDX)) ;
+  verifyPresetProperty (CONFIG::MOTD_TEXT_ID     , var(CONFIG::DEFAULT_MOTD_TEXT        )) ;
+  verifyPresetProperty (CONFIG::TEXT_STYLE_ID    , var(CONFIG::DEFAULT_TEXT_STYLE_IDX   )) ;
+  verifyPresetProperty (CONFIG::TEXT_POSITION_ID , var(CONFIG::DEFAULT_TEXT_POSITION_IDX)) ;
+  verifyPresetProperty (CONFIG::IMAGE_LOC_ID     , var(CONFIG::DEFAULT_IMAGE_LOCATION   )) ;
+  verifyPresetProperty (CONFIG::OUTPUT_SINK_ID   , var(CONFIG::DEFAULT_OUTPUT_SINK_IDX  )) ;
+  verifyPresetProperty (CONFIG::OUTPUT_MUXER_ID  , var(CONFIG::DEFAULT_OUTPUT_MUXER_IDX )) ;
+  verifyPresetProperty (CONFIG::OUTPUT_W_ID      , var(CONFIG::DEFAULT_OUTPUT_W         )) ;
+  verifyPresetProperty (CONFIG::OUTPUT_H_ID      , var(CONFIG::DEFAULT_OUTPUT_H         )) ;
+  verifyPresetProperty (CONFIG::FRAMERATE_ID     , var(CONFIG::DEFAULT_FRAMERATE_IDX    )) ;
+  verifyPresetProperty (CONFIG::VIDEO_BITRATE_ID , var(CONFIG::DEFAULT_VIDEO_BITRATE_IDX)) ;
+  verifyPresetProperty (CONFIG::OUTPUT_DEST_ID   , var(CONFIG::DEFAULT_OUTPUT_DEST      )) ;
   verifyPresetChildNode(CONFIG::NETWORK_ID) ;
-  verifyNetworkProperty(CONFIG::NETWORK_ID       , var(CONFIG::DEFAULT_NETWORK            )) ;
-  verifyNetworkProperty(CONFIG::PORT_ID          , var(CONFIG::DEFAULT_PORT               )) ;
-  verifyNetworkProperty(CONFIG::NICK_ID          , var(CONFIG::DEFAULT_NICK               )) ;
-  verifyNetworkProperty(CONFIG::PASS_ID          , var(CONFIG::DEFAULT_PASS               )) ;
-  verifyNetworkProperty(CONFIG::CHANNEL_ID       , var(CONFIG::DEFAULT_CHANNEL            )) ;
-  verifyNetworkProperty(CONFIG::TIMESTAMPS_ID    , var(CONFIG::DEFAULT_SHOW_TIMESTAMPS    )) ;
-  verifyNetworkProperty(CONFIG::JOINPARTS_ID     , var(CONFIG::DEFAULT_SHOW_JOINPARTS     )) ;
-  verifyNetworkProperty(CONFIG::GREETING_ID      , var(CONFIG::DEFAULT_GREETING           )) ;
+  verifyNetworkProperty(CONFIG::NETWORK_ID       , var(CONFIG::DEFAULT_NETWORK          )) ;
+  verifyNetworkProperty(CONFIG::PORT_ID          , var(CONFIG::DEFAULT_PORT             )) ;
+  verifyNetworkProperty(CONFIG::NICK_ID          , var(CONFIG::DEFAULT_NICK             )) ;
+  verifyNetworkProperty(CONFIG::PASS_ID          , var(CONFIG::DEFAULT_PASS             )) ;
+  verifyNetworkProperty(CONFIG::CHANNEL_ID       , var(CONFIG::DEFAULT_CHANNEL          )) ;
+  verifyNetworkProperty(CONFIG::TIMESTAMPS_ID    , var(CONFIG::DEFAULT_SHOW_TIMESTAMPS  )) ;
+  verifyNetworkProperty(CONFIG::JOINPARTS_ID     , var(CONFIG::DEFAULT_SHOW_JOINPARTS   )) ;
+  verifyNetworkProperty(CONFIG::GREETING_ID      , var(CONFIG::DEFAULT_GREETING         )) ;
 
   // filter any rogue data
   filterRogueKeys (this->root    , CONFIG::ROOT_PERSISTENT_KEYS    ) ;
@@ -659,9 +659,37 @@ bool AvCasterStore::isReconfigureKey(const Identifier& a_key)
 
 void AvCasterStore::deactivateControl(const Identifier& a_key)
 {
+  if (!isMediaKey(a_key)) return ;
+
 DEBUG_TRACE_DEACTIVATE_CONTROL
 
   listen(false) ; setValue(this->config , a_key , var(false)) ; listen(true) ;
+}
+
+bool AvCasterStore::isKnownProperty(ValueTree a_node  , const Identifier& a_key)
+{
+  ValueTree a_parent_node = a_node.getParent() ;
+
+  // TODO: camers and audio nyi
+  return (a_node        == this->root    ) ? CONFIG::ROOT_KEYS   .contains(a_key) :
+         (a_node        == this->config  ) ? CONFIG::PRESET_KEYS .contains(a_key) :
+         (a_node        == this->network ) ? CONFIG::NETWORK_KEYS.contains(a_key) :
+         (a_parent_node == this->presets ) ? CONFIG::PRESET_KEYS .contains(a_key) :
+         (a_parent_node == this->chatters) ? CONFIG::CHATTER_KEYS.contains(a_key) :
+         (a_parent_node == this->cameras ) ? CONFIG::CAMERA_KEYS .contains(a_key) :
+         (a_parent_node == this->audios  ) ? CONFIG::AUDIO_KEYS  .contains(a_key) :
+                                             false                                ;
+}
+
+void AvCasterStore::setProperty(ValueTree a_node  , const Identifier& a_key ,
+                                const var a_value                           )
+{
+  if (!a_node.isValid() || !isKnownProperty(a_node , a_key)) return ;
+
+DEBUG_TRACE_SET_PROPERTY // call this only from AvCasterStore->setValue() and AvCasterStore->setValueViaGui() for tracing correctness
+
+  if (!AvCaster::IsInitialized || !AvCaster::DisabledFeatures.contains(a_key))
+    a_node.setProperty(a_key , a_value , nullptr) ;
 }
 
 void AvCasterStore::setValue(ValueTree a_node  , const Identifier& a_key ,
@@ -669,7 +697,7 @@ void AvCasterStore::setValue(ValueTree a_node  , const Identifier& a_key ,
 {
 DEBUG_TRACE_STORE_SET_VALUE // call this only from AvCasterStore methods for tracing correctness
 
-  if (a_node.isValid()) a_node.setProperty(a_key , a_value , nullptr) ;
+  setProperty(a_node , a_key , a_value) ;
 }
 
 void AvCasterStore::setValueViaGui(ValueTree a_node  , const Identifier& a_key ,
@@ -677,7 +705,7 @@ void AvCasterStore::setValueViaGui(ValueTree a_node  , const Identifier& a_key ,
 {
 DEBUG_TRACE_GUI_SET_VALUE // call this only from AvCaster methods for tracing correctness
 
-  if (a_node.isValid()) a_node.setProperty(a_key , a_value , nullptr) ;
+  setProperty(a_node , a_key , a_value) ;
 }
 
 void AvCasterStore::updateChatters(StringArray active_nicks)

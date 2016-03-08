@@ -27,7 +27,7 @@
 
 /* feature switches */
 
-StringArray DisabledFeatures()
+StringArray DisableFeatures()
 {
   StringArray disabled_features = StringArray() ;
 #  ifdef DISABLE_MEDIA
@@ -62,30 +62,36 @@ StringArray DisabledFeatures()
   return disabled_features ;
 }
 
+#  define DEBUG_DISABLE_FEATURES                                                \
+  String dbg = "disabling feature per #define constant '" ;                     \
+  cli_params.addArray(DisableFeatures()) ; cli_params.removeDuplicates(false) ; \
+/*cli_params.mergeArray(DisabledFeatures()) ; // TODO: JUCE 4 feature */        \
+  for (int switch_n = 0 ; switch_n < cli_params.size() ; ++switch_n)            \
+    Trace::TraceState(dbg + cli_params[switch_n] + "'")                         ;
+
 #  if TEXT_BIN_NYI && IMAGE_BIN_NYI
-#    define DISABLE_FEATURES \
-  Gstreamer::IsTextEnabled = false ;    \
-  Gstreamer::IsImageEnabled = false     ;
+#    define DEBUG_DISABLE_FEATURES_NYI        \
+  Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ; \
+  Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ; \
+  DisabledFeatures.add(CONFIG::TEXT_ID ) ;    \
+  DisabledFeatures.add(CONFIG::IMAGE_ID) ;    \
+  DeactivateControl(CONFIG::TEXT_ID ) ;       \
+  DeactivateControl(CONFIG::IMAGE_ID)         ;
 #  else // TEXT_BIN_NYI && IMAGE_BIN_NYI
 #    if TEXT_BIN_NYI
-#      define DISABLE_FEATURES \
-  Gstreamer::IsTextEnabled = false        ;
+#      define DEBUG_DISABLE_FEATURES_NYI      \
+  Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ; \
+  DisabledFeatures.add(CONFIG::TEXT_ID ) ;    \
+  DeactivateControl(CONFIG::TEXT_ID )         ;
 #    endif // TEXT_BIN_NYI
 #    if IMAGE_BIN_NYI
-#      define DISABLE_FEATURES \
-  Gstreamer::IsImageEnabled = false       ;
+#      define DEBUG_DISABLE_FEATURES_NYI      \
+  Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ; \
+  DisabledFeatures.add(CONFIG::IMAGE_ID) ;    \
+  DeactivateControl(CONFIG::IMAGE_ID)         ;
 #    endif // IMAGE_BIN_NYI
 #  endif // TEXT_BIN_NYI && IMAGE_BIN_NYI
 
-#  define DEBUG_DISABLE_FEATURES DISABLE_FEATURES                                     \
-  String      dbg      = "disabling feature per #define constant '" ;                 \
-  StringArray features = DisabledFeatures() ;                                         \
-  for (int switch_n = 0 ; switch_n < features.size() ; ++switch_n)                    \
-                                  Trace::TraceState(dbg + features[switch_n] + "'") ; \
-  if (!Gstreamer::IsTextEnabled ) Trace::TraceState(dbg + "TEXT_BIN_NYI'") ;          \
-  if (!Gstreamer::IsImageEnabled) Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ;         \
-  cli_params.addArray(features) ; cli_params.removeDuplicates(false)                  ;
-  // cli_params.mergeArray(DisabledFeatures()) ; // TODO: new feature after upgrade
 
 void SeedIrcNetworks()
 {
@@ -110,9 +116,9 @@ void SeedIrcNetworks()
 
 #  define DEBUG_TRACE_INIT_PHASE_2 Trace::TraceState("instantiating model") ;
 
-#  define DEBUG_TRACE_INIT_PHASE_3 Trace::TraceState("instantiating GUI") ;
+#  define DEBUG_TRACE_INIT_PHASE_3 Trace::TraceState("processing CLI params") ;
 
-#  define DEBUG_TRACE_INIT_PHASE_4 Trace::TraceState("processing CLI params") ;
+#  define DEBUG_TRACE_INIT_PHASE_4 Trace::TraceState("instantiating GUI") ;
 
 #  define DEBUG_TRACE_INIT_PHASE_5                                               \
   Trace::TraceState((IsMediaEnabled) ? "instantiating media" : "media disabled") ;
@@ -130,34 +136,24 @@ void SeedIrcNetworks()
   else if (cli_params.contains(APP::CLI_VERSION_TOKEN)) token = APP::CLI_VERSION_TOKEN ; \
   if (token.isNotEmpty()) Trace::TraceConfig("found terminating cli token " + token)    ;
 
-#  define DEBUG_TRACE_PROCESS_CLI_PARAMS StringArray tokens ;                    \
-  for (String* token = cli_params.begin() ; token != cli_params.end() ; ++token) \
-    if (*token == APP::CLI_PRESET_TOKEN          ||                              \
-        *token == APP::CLI_DISABLE_MEDIA_TOKEN   ||                              \
-        *token == APP::CLI_SCREEN_ONLY_TOKEN     ||                              \
-        *token == APP::CLI_CAMERA_ONLY_TOKEN     ||                              \
-/*        *token == APP::CLI_TEXT_ONLY_TOKEN       ||                              */\
-/*        *token == APP::CLI_IMAGE_ONLY_TOKEN      ||                              */\
-        *token == APP::CLI_DISABLE_PREVIEW_TOKEN ||                              \
-        *token == APP::CLI_DISABLE_AUDIO_TOKEN   ||                              \
-        *token == APP::CLI_DISABLE_CHAT_TOKEN     ) tokens.add(*token) ;         \
-  String dbg = tokens.joinIntoString(",") ;                                      \
-  if (tokens.size()) Trace::TraceConfig("found pre-init cli tokens " + dbg)      ;
-
-#  define DEBUG_DUMP_MEDIA_SWITCHES                                                        \
-  Trace::TraceVerbose("cli_params="                   + cli_params.joinIntoString(",")   + \
-                      "\n\tAPP::N_COMPOSITOR_INPUTS=" + String(APP::N_COMPOSITOR_INPUTS) + \
-                      "\n\tn_video_inputs="           + String(n_video_inputs          ) + \
-                      "\n\tIsMediaEnabled="           + String(IsMediaEnabled          ) + \
-                      "\n\tis_screen_enabled="        + String(is_screen_enabled       ) + \
-                      "\n\tis_camera_enabled="        + String(is_camera_enabled       ) + \
-                      "\n\tis_text_enabled="          + String(is_text_enabled         ) + \
-                      "\n\tis_image_enabled="         + String(is_image_enabled        ) + \
-                      "\n\tis_compositor_enabled="    + String(is_compositor_enabled   ) + \
-                      "\n\tis_preview_enabled="       + String(is_preview_enabled      ) + \
-                      "\n\tis_audio_enabled="         + String(is_audio_enabled        ) + \
-                      "\n\tIsChatEnabled="            + String(IsChatEnabled           ) + \
-                      "\n\tis_sane="                  + String(is_sane                 ) ) ;
+#  define DEBUG_TRACE_PROCESS_CLI_PARAMS StringArray handled_tokens , unhandled_tokens ;        \
+  for (String* token = cli_params.begin() ; token != cli_params.end() ; ++token)                \
+    if (*token == APP::CLI_PRESET_TOKEN          ||                                             \
+        *token == APP::CLI_DISABLE_MEDIA_TOKEN   ||                                             \
+        *token == APP::CLI_SCREEN_ONLY_TOKEN     ||                                             \
+        *token == APP::CLI_CAMERA_ONLY_TOKEN     ||                                             \
+        *token == APP::CLI_TEXT_ONLY_TOKEN       ||                                             \
+        *token == APP::CLI_IMAGE_ONLY_TOKEN      ||                                             \
+        *token == APP::CLI_DISABLE_PREVIEW_TOKEN ||                                             \
+        *token == APP::CLI_DISABLE_AUDIO_TOKEN   ||                                             \
+        *token == APP::CLI_DISABLE_CHAT_TOKEN     )                                             \
+         handled_tokens.add(*token) ;                                                           \
+    else unhandled_tokens.add(*token) ;                                                         \
+  if (handled_tokens  .size()) Trace::TraceConfig("found pre-init cli tokens [ "            +   \
+                                                  handled_tokens  .joinIntoString(",") + "]") ; \
+  if (unhandled_tokens.size()) Trace::TraceConfig("found unknown cli tokens  [ "            +   \
+                                                  unhandled_tokens.joinIntoString(",") + "]") ; \
+  Trace::TraceConfigVb("dumping cli_params => [" + cli_params     .joinIntoString(",") + "]")   ;
 
 #  define DEBUG_TRACE_VALIDATE_ENVIRONMENT                                                          \
   bool is_err = false ; String dbg = "" ;                                                           \
@@ -207,6 +203,7 @@ void SeedIrcNetworks()
 #else // DEBUG_TRACE
 
 #  define DEBUG_DISABLE_FEATURES                    ;
+#  define DEBUG_DISABLE_FEATURES_NYI                ;
 #  define DEBUG_SEED_IRC_NETWORKS                   ;
 #  define DEBUG_TRACE_INIT_PHASE_1                  ;
 #  define DEBUG_TRACE_INIT_PHASE_2                  ;
@@ -218,7 +215,6 @@ void SeedIrcNetworks()
 #  define DEBUG_TRACE_INIT_PHASE_8                  ;
 #  define DEBUG_TRACE_HANDLE_CLI_PARAMS             ;
 #  define DEBUG_TRACE_PROCESS_CLI_PARAMS            ;
-#  define DEBUG_DUMP_MEDIA_SWITCHES                 ;
 #  define DEBUG_TRACE_VALIDATE_ENVIRONMENT          ;
 #  define DEBUG_TRACE_REFRESH_GUI                   ;
 #  define DEBUG_TRACE_SHUTDOWN_PHASE_1              ;

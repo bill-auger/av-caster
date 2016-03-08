@@ -57,11 +57,7 @@ private:
 
   void broughtToFront() override ;
 
-  void initialize        (ValueTree config_store) ;
-  void disableControls   (bool is_media_enabled  , bool is_screen_enabled  ,
-                          bool is_camera_enabled , bool is_text_enabled    ,
-                          bool is_image_enabled  , bool is_preview_enabled ,
-                          bool is_audio_enabled                            ) ;
+  void initialize        (ValueTree config_store , Array<Identifier> disabled_features) ;
   void loadConfig        () ;
   void handlePresetsCombo() ;
 
@@ -91,10 +87,10 @@ private:
 
     //==============================================================================
     ScopedPointer<GroupComponent> controlsGroup;
-    ScopedPointer<ToggleButton> screencapToggle;
+    ScopedPointer<ToggleButton> screenToggle;
     ScopedPointer<ToggleButton> cameraToggle;
     ScopedPointer<ToggleButton> textToggle;
-    ScopedPointer<ToggleButton> interstitialToggle;
+    ScopedPointer<ToggleButton> imageToggle;
     ScopedPointer<ToggleButton> previewToggle;
     ScopedPointer<ToggleButton> audioToggle;
     ScopedPointer<ToggleButton> outputToggle;

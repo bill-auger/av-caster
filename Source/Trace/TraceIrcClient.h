@@ -113,13 +113,13 @@ static void PopulateEventCodes()
                                      "' said in channel " + String(params[0])      +     \
                                      ": "                 + String(params[1])      + "") ;
 
-#  define DEBUG_TRACE_CHAT_MSG                                    \
-  if (is_root_channel ) Trace::TraceVerbose("is_root_channel" ) ; \
-  if (is_root_user    ) Trace::TraceVerbose("is_root_user"    ) ; \
-  if (is_xmpp_channel ) Trace::TraceVerbose("is_my_channel"   ) ; \
-  if (is_login_blocked) Trace::TraceVerbose("is_login_blocked") ; \
-  if (is_logged_in    ) Trace::TraceVerbose("is_logged_in"    ) ; \
-  if (has_kicked_self ) Trace::TraceVerbose("has_kicked_self" ) ; \
+#  define DEBUG_TRACE_CHAT_MSG                                   \
+  if (is_root_channel ) Trace::TraceChatVb("is_root_channel" ) ; \
+  if (is_root_user    ) Trace::TraceChatVb("is_root_user"    ) ; \
+  if (is_xmpp_channel ) Trace::TraceChatVb("is_my_channel"   ) ; \
+  if (is_login_blocked) Trace::TraceChatVb("is_login_blocked") ; \
+  if (is_logged_in    ) Trace::TraceChatVb("is_logged_in"    ) ; \
+  if (has_kicked_self ) Trace::TraceChatVb("has_kicked_self" ) ; \
   String dbg = ((is_root_user && is_root_channel  ) ?                                        \
                ((is_logged_in                     ) ? "logged into bitlbee"              :   \
                ((is_login_blocked                 ) ? "already logged into bitlbee" : "")) : \

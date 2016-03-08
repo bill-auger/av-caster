@@ -41,14 +41,27 @@
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_7 Trace::TraceState("Gstreamer ready") ;
 
-#  define DEBUG_TRACE_DISABLED_BINS                                                      \
-  if (!IsScreenEnabled    ) Trace::TraceState("ScreencapBin disabled") ;  \
-  if (!IsCameraEnabled    ) Trace::TraceState("CameraBin disabled") ;     \
-  if (!IsTextEnabled      ) Trace::TraceState("TextBin disabled") ;       \
-  if (!IsImageEnabled     ) Trace::TraceState("ImageBin disabled") ;      \
-  if (!IsCompositorEnabled) Trace::TraceState("CompositorBin disabled") ; \
-  if (!IsPreviewEnabled   ) Trace::TraceState("PreviewBin disabled") ;    \
-  if (!IsAudioEnabled     ) Trace::TraceState("AudioBin disabled")        ;
+#  define DEBUG_DUMP_MEDIA_SWITCHES                                                        \
+  Trace::TraceMediaVb(String("pipeline configuration params =>")             + \
+                      "\n\tn_video_inputs="     + String(n_video_inputs    ) + \
+                      "\n\tis_media_enabled="   + String(is_media_enabled  ) + \
+                      "\n\tis_screen_enabled="  + String(is_screen_enabled ) + \
+                      "\n\tis_camera_enabled="  + String(is_camera_enabled ) + \
+                      "\n\tis_text_enabled="    + String(is_text_enabled   ) + \
+                      "\n\tis_image_enabled="   + String(is_image_enabled  ) + \
+                      "\n\tis_vmixer_enabled="  + String(is_vmixer_enabled ) + \
+                      "\n\tis_preview_enabled=" + String(is_preview_enabled) + \
+                      "\n\tis_audio_enabled="   + String(is_audio_enabled  ) + \
+                      "\n\tis_config_sane="     + String(is_config_sane    ) ) ;
+
+#  define DEBUG_TRACE_DISABLED_BINS                                      \
+  if (!is_screen_enabled ) Trace::TraceState("ScreencapBin disabled") ;  \
+  if (!is_camera_enabled ) Trace::TraceState("CameraBin disabled") ;     \
+  if (!is_text_enabled   ) Trace::TraceState("TextBin disabled") ;       \
+  if (!is_image_enabled  ) Trace::TraceState("ImageBin disabled") ;      \
+  if (!is_vmixer_enabled ) Trace::TraceState("CompositorBin disabled") ; \
+  if (!is_preview_enabled) Trace::TraceState("PreviewBin disabled") ;    \
+  if (!is_audio_enabled  ) Trace::TraceState("AudioBin disabled")        ;
 
 #  define DEBUG_TRACE_BUILD_SCREENCAP_BIN  Trace::TraceState("instantiating ScreencapBin elements") ;
 
@@ -88,7 +101,7 @@
 
 #  define DEBUG_TRACE_GST_ERROR_MESSAGE                                                     \
   bool   is_audio_error = is_alsa_init_error || is_pulse_init_error || is_jack_init_error ; \
-  String is_handled_msg = (is_audio_error) ? " (unhandled)" : "" ;                          \
+  String is_handled_msg = (is_audio_error) ? "" : " (unhandled)" ;                          \
   Trace::TraceError("GSTError:" + is_handled_msg + " '" + error_message + "'") ;            \
   if (is_audio_error) Trace::TraceMedia("deactivating audio")                               ;
 
@@ -155,7 +168,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
   Trace::TraceState("configuring AudioBin " + bit_depth    + "bit @ "       +                        \
                     String(samplerate) + "hz x "                            +                        \
                     String(n_channels) + " channels" + " using " + plugin_id) ;                      \
-  Trace::TraceVerbose("configuring AudioCaps with '" + caps_str + "'")                               ;
+  Trace::TraceMediaVb("configuring AudioCaps with '" + caps_str + "'")                               ;
 
 #  define DEBUG_TRACE_CONFIGURE_MUXER_BIN                                                 \
   Trace::TraceState(String("configuring MuxerBin video - ")                           +   \
@@ -165,11 +178,15 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
       "mp3 audio 16bit @ " + String(samplerate)    + "hz -> " + String(audio_bitrate) +   \
                  "kbps x " + String(n_channels)    + " channels"                      )   ;
 
-#  define DEBUG_TRACE_CONFIGURE_OUTPUT_BIN                                         \
-  String server = " => '" + output_url.upToFirstOccurrenceOf("?" , true  , true) ; \
-  server        = server + ((server.endsWith("?")) ? "...'" : "'") ;               \
-  Trace::TraceState("configuring OutputBin using " + plugin_id         +           \
-                   ((plugin_id != GST::FAUXSINK_PLUGIN_ID) ? server : ""))         ;
+#  define DEBUG_TRACE_CONFIGURE_OUTPUT_BIN                                     \
+  String plugin_id = (next_sink == OutputFileSink) ? GST::FILESINK_PLUGIN_ID : \
+                     (next_sink == OutputRtmpSink) ? GST::RTMPSINK_PLUGIN_ID : \
+                     (next_sink == OutputFauxSink) ? GST::FAUXSINK_PLUGIN_ID : \
+                                                     String::empty           ; \
+  String url       = output_url.upToFirstOccurrenceOf("?" , true  , true) ;    \
+  String server    = (next_sink == OutputFauxSink) ? ""                   :    \
+                     " => '" + url + ((url.endsWith("?")) ? "...'" : "'") ;    \
+  Trace::TraceState("configuring OutputBin using " + plugin_id + server )      ;
 
 #  define DEBUG_TRACE_RECONFIGURE_IN                                     \
   String element = (configure_all    ) ? "pipeline" :                    \
@@ -203,8 +220,11 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_CONFIGURE_TEXT                                     \
   Trace::TraceMedia("configuring '" + GetElementId(a_text_source) + "'") ;
 
-#  define DEBUG_TRACE_CONFIGURE_FILE                                     \
+#  define DEBUG_TRACE_CONFIGURE_FILE_SOURCE                              \
   Trace::TraceMedia("configuring '" + GetElementId(a_file_source) + "'") ;
+
+#  define DEBUG_TRACE_CONFIGURE_FILE_SINK                              \
+  Trace::TraceMedia("configuring '" + GetElementId(a_file_sink) + "'") ;
 
 #  define DEBUG_TRACE_CONFIGURE_COMPOSITOR                              \
   Trace::TraceMedia("configuring '" + GetElementId(a_compositor) + "'") ;
@@ -332,6 +352,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_GST_INIT_PHASE_5          ;
 #  define DEBUG_TRACE_GST_INIT_PHASE_6          ;
 #  define DEBUG_TRACE_GST_INIT_PHASE_7          ;
+#  define DEBUG_DUMP_MEDIA_SWITCHES             ;
 #  define DEBUG_TRACE_DISABLED_BINS             ;
 #  define DEBUG_TRACE_BUILD_SCREENCAP_BIN       ;
 #  define DEBUG_TRACE_BUILD_CAMERA_BIN          ;

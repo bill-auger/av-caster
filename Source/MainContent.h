@@ -65,12 +65,8 @@ public:
 
 private:
 
-  void           initialize      (ValueTree config_store   , ValueTree network_store ,
-                                  ValueTree chatters_store                           ) ;
-  void           disableControls (bool is_media_enabled  , bool is_screen_enabled  ,
-                                  bool is_camera_enabled , bool is_text_enabled    ,
-                                  bool is_image_enabled  , bool is_preview_enabled ,
-                                  bool is_audio_enabled                            ) ;
+  void           initialize      (ValueTree config_store   , ValueTree network_store             ,
+                                  ValueTree chatters_store , Array<Identifier> disabled_features ) ;
   void           warning         (String message_text) ;
   void           error           (String message_text) ;
   Rectangle<int> getPreviewBounds() ;

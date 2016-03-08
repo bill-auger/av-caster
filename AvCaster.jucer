@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.15.204"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.000"
               bundleIdentifier="com.yourcompany.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">

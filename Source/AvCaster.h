@@ -108,14 +108,16 @@ private:
   static void RefreshGui         () ;
   static void UpdateStatus       () ;
 
+  // init args handlers and validations
+  static bool              HandleCliParams    (StringArray cli_params) ;
+  static Array<Identifier> ProcessCliParams   (StringArray cli_params) ;
+  static bool              ValidateEnvironment() ;
+
   // helpers
-  static bool HandleCliParams    (StringArray cli_params) ;
-  static bool ProcessCliParams   (StringArray cli_params) ;
-  static bool ValidateEnvironment() ;
-  static void DisplayAlert       () ;
-  static bool InitFail           () ;
+  static void DisplayAlert         () ;
+  static bool InitFail             () ;
 #ifndef DISABLE_CHAT
-  static void PumpIrcClient      () ;
+  static void PumpIrcClient        () ;
 #endif // DISABLE_CHAT
 
 
@@ -126,17 +128,18 @@ private:
   static ScopedPointer<IrcClient> Irc ;
 #endif // DISABLE_CHAT
 
-  // runtime data
-  static Array<Alert*> Alerts ;
-  static bool          IsAlertModal ;
-
   // model/persistence
   static ScopedPointer<AvCasterStore> Store ;
 
   // intialization flags
-  static bool IsInitialized ;
-  static bool IsMediaEnabled ;
-  static bool IsChatEnabled ;
+  static bool              IsInitialized ;
+  static Array<Identifier> DisabledFeatures ;
+  static bool              IsMediaEnabled ;
+  static bool              IsChatEnabled ;
+
+  // runtime data
+  static Array<Alert*> Alerts ;
+  static bool          IsAlertModal ;
 } ;
 
 #endif // _AVCASTER_H_

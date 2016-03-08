@@ -36,7 +36,8 @@ class Gstreamer
 private:
 
   // setup
-  static bool Initialize  (ValueTree config_store , void* x_window_handle) ;
+  static bool Initialize  (ValueTree         config_store      , void* x_window ,
+                           Array<Identifier> disabled_features                  ) ;
   static void ReloadConfig() ;
   static void Shutdown    () ;
 
@@ -70,7 +71,8 @@ private:
   static void ConfigureCameraSource  (GstElement* a_camera_source , String device_path) ;
   static void ConfigureTestVideo     (GstElement* a_test_source , guint pattern_n) ;
   static void ConfigureTextSource    (GstElement* a_text_source , String font_desc) ;
-  static void ConfigureFileSource    (GstElement* a_file_source , String file_path) ;
+  static void ConfigureFileSource    (GstElement* a_file_source , String location) ;
+  static void ConfigureFileSink      (GstElement* a_file_sink , String location) ;
   static void ConfigureCompositor    (GstElement* a_compositor , guint background_n) ;
   static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
   static bool ConfigureVideoSink     (GstElement* a_video_sink) ;
@@ -121,7 +123,8 @@ private:
   static String MakeAudioCapsString (String format , int samplerate , int n_channels) ;
   static String MakeH264CapsString  (int output_w , int output_h , int framerate) ;
   static String MakeMp3CapsString   (int samplerate , int n_channels) ;
-  static String MakeRtmpUrl         (String dest) ;
+  static String MakeFileName        (String destination , String file_ext) ;
+  static String MakeRtmpUrl         (String destination) ;
 
   // getters/setters
   static String GetElementId(GstElement* an_element) ;
@@ -133,6 +136,7 @@ private:
   static bool IsPlaying          () ;
   static bool IsInPipeline       (GstElement* an_element) ;
   static bool IsInBin            (GstElement* a_parent_element , GstElement* a_child_element) ;
+
 
   // pipeline
   static GstElement* Pipeline ;
@@ -159,18 +163,16 @@ private:
   static GstElement* AudioCaps ;
   static GstElement* MuxerBin ;
   static GstElement* OutputBin ;
-  static guintptr    PreviewXwin ;
+  static GstElement* OutputQueue ;
+  static GstElement* OutputFileSink ;
+  static GstElement* OutputRtmpSink ;
+  static GstElement* OutputFauxSink ;
 
   // configuration
   static ValueTree ConfigStore ;
-  static bool      IsMediaEnabled ;
-  static bool      IsScreenEnabled ;
-  static bool      IsCameraEnabled ;
-  static bool      IsTextEnabled ;
-  static bool      IsImageEnabled ;
-  static bool      IsCompositorEnabled ;
-  static bool      IsPreviewEnabled ;
-  static bool      IsAudioEnabled ;
+
+  // external handles
+  static guintptr PreviewXwin ;
 } ;
 
 #endif // _GSTREAMER_H_

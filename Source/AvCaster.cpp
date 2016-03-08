@@ -35,8 +35,9 @@ MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
 ScopedPointer<IrcClient> AvCaster::Irc ;                      // Initialize()
 #endif // DISABLE_CHAT
 bool                     AvCaster::IsInitialized  = false ;   // Initialize()
-bool                     AvCaster::IsMediaEnabled = true ;    // ProcessCliParams()
-bool                     AvCaster::IsChatEnabled  = true ;    // ProcessCliParams()
+Array<Identifier>        AvCaster::DisabledFeatures ;         // Initialize()
+bool                     AvCaster::IsMediaEnabled = true ;    // Initialize()
+bool                     AvCaster::IsChatEnabled  = true ;    // Initialize()
 Array<Alert*>            AvCaster::Alerts ;                   // Warning() , Error()
 bool                     AvCaster::IsAlertModal   = false ;   // GetModalCb() , OnModalDismissed()
 
@@ -164,8 +165,6 @@ void AvCaster::UpdateChatters(StringArray nicks) { Store->updateChatters(nicks) 
 
 bool AvCaster::Initialize(JUCEApplicationBase* main_app , MainContent* main_content)
 {
-ValueTree config = ValueTree::invalid ; ValueTree fred = config.getChildWithName("fred") ;
-
   App                    = main_app ;
   Gui                    = main_content ;
   StringArray cli_params = JUCEApplicationBase::getCommandLineParameterArray() ;
@@ -188,17 +187,25 @@ DEBUG_TRACE_INIT_PHASE_2
 DEBUG_SEED_IRC_NETWORKS
 DEBUG_TRACE_INIT_PHASE_3
 
-  // initialze GUI
-  Gui->initialize(Store->config , Store->network , Store->chatters) ;
+  // disable features and controls per cli args
+  DisabledFeatures = ProcessCliParams(cli_params) ;
+  IsMediaEnabled   = !DisabledFeatures.contains(CONFIG::OUTPUT_ID ) ;
+  IsChatEnabled    = !DisabledFeatures.contains(CONFIG::NETWORK_ID) ;
+  for (int feature_n = 0 ; feature_n < DisabledFeatures.size() ; ++feature_n)
+    DeactivateControl(DisabledFeatures[feature_n]) ;
 
+DEBUG_DISABLE_FEATURES_NYI
 DEBUG_TRACE_INIT_PHASE_4
 
-  if (!ProcessCliParams(cli_params)) return false ;
+  // initialze GUI
+  Array<Identifier> disabled_features = Array<Identifier>(DisabledFeatures) ;
+  Gui->initialize(Store->config , Store->network , Store->chatters , disabled_features) ;
 
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libgtreamer
-  if (IsMediaEnabled && !Gstreamer::Initialize(Store->config , Gui->getWindowHandle()))
+  void* x_window = Gui->getWindowHandle() ;
+  if (IsMediaEnabled && !Gstreamer::Initialize(Store->config , x_window , disabled_features))
     return false ;
 
 DEBUG_TRACE_INIT_PHASE_6
@@ -277,13 +284,13 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
   if (GetPresetIdx() == CONFIG::INVALID_IDX) return ; // renaming
 
-  bool      is_stream_active           = bool(Store->config[CONFIG::OUTPUT_ID]) ;
-  bool      was_preset_combo_changed   = a_key == CONFIG::PRESET_ID ;
-  bool      was_config_button_pressed  = a_key == CONFIG::IS_PENDING_ID ;
-  bool      is_config_pending          = AvCaster::GetIsConfigPending() ;
-  bool      is_swapping_presets        = was_preset_combo_changed  && !is_config_pending ;
-  bool      is_exiting_config_mode     = was_config_button_pressed && !is_config_pending ;
-  bool      should_login_chat          = is_swapping_presets || is_exiting_config_mode ;
+  bool is_stream_active           = bool(Store->config[CONFIG::OUTPUT_ID]) ;
+  bool was_preset_combo_changed   = a_key == CONFIG::PRESET_ID ;
+  bool was_config_button_pressed  = a_key == CONFIG::IS_PENDING_ID ;
+  bool is_config_pending          = AvCaster::GetIsConfigPending() ;
+  bool is_swapping_presets        = was_preset_combo_changed  && !is_config_pending ;
+  bool is_exiting_config_mode     = was_config_button_pressed && !is_config_pending ;
+  bool should_login_chat          = is_swapping_presets || is_exiting_config_mode ;
 
 DEBUG_TRACE_HANDLE_CONFIG_CHANGE
 
@@ -306,8 +313,7 @@ DEBUG_TRACE_HANDLE_CONFIG_CHANGE
 void AvCaster::RefreshGui()
 {
   bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID]) ;
-  bool       is_preview_on     = bool(Store->config[CONFIG::PREVIEW_ID   ]) &&
-                                 Gstreamer::IsPreviewEnabled                 ;
+  bool       is_preview_on     = bool(Store->config[CONFIG::PREVIEW_ID   ]) ;
   Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets   ) :
                                                        static_cast<Component*>(Gui->controls  ) ;
   Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config    ) :
@@ -377,7 +383,7 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
   return false ;
 }
 
-bool AvCaster::ProcessCliParams(StringArray cli_params)
+Array<Identifier> AvCaster::ProcessCliParams(StringArray cli_params)
 {
 DEBUG_TRACE_PROCESS_CLI_PARAMS
 
@@ -392,17 +398,14 @@ DEBUG_TRACE_PROCESS_CLI_PARAMS
   }
 
   // disable features
-  bool& is_screen_enabled     = Gstreamer::IsScreenEnabled ;
-  bool& is_camera_enabled     = Gstreamer::IsCameraEnabled ;
-  bool& is_text_enabled       = Gstreamer::IsTextEnabled ;
-  bool& is_image_enabled      = Gstreamer::IsImageEnabled ;
-  bool& is_compositor_enabled = Gstreamer::IsCompositorEnabled ;
-  bool& is_preview_enabled    = Gstreamer::IsPreviewEnabled ;
-  bool& is_audio_enabled      = Gstreamer::IsAudioEnabled ;
+  bool is_media_enabled , is_screen_enabled  , is_camera_enabled , is_text_enabled ,
+       is_image_enabled , is_preview_enabled , is_audio_enabled  , is_chat_enabled ;
+       is_media_enabled = is_screen_enabled  = is_camera_enabled = is_text_enabled =
+       is_image_enabled = is_preview_enabled = is_audio_enabled  = is_chat_enabled = true ;
   for (String* token = cli_params.begin() ; token != cli_params.end() ; ++token)
     if      (*token == APP::CLI_DISABLE_MEDIA_TOKEN  )
-      IsMediaEnabled   = is_screen_enabled     = is_camera_enabled  = is_text_enabled  =
-      is_image_enabled = is_compositor_enabled = is_preview_enabled = is_audio_enabled = false ;
+      is_media_enabled = is_screen_enabled = is_camera_enabled  =
+      is_text_enabled  = is_image_enabled  = is_preview_enabled = is_audio_enabled = false ;
     else if (*token == APP::CLI_SCREEN_ONLY_TOKEN    )
       is_camera_enabled = is_text_enabled   = is_image_enabled = false ;
     else if (*token == APP::CLI_CAMERA_ONLY_TOKEN    )
@@ -413,22 +416,19 @@ DEBUG_TRACE_PROCESS_CLI_PARAMS
       is_screen_enabled = is_camera_enabled = is_text_enabled  = false ;
     else if (*token == APP::CLI_DISABLE_PREVIEW_TOKEN) is_preview_enabled = false ;
     else if (*token == APP::CLI_DISABLE_AUDIO_TOKEN  ) is_audio_enabled   = false ;
-    else if (*token == APP::CLI_DISABLE_CHAT_TOKEN   ) IsChatEnabled      = false ;
+    else if (*token == APP::CLI_DISABLE_CHAT_TOKEN   ) is_chat_enabled    = false ;
 
-  // assert dependent compositor elements (TODO: remove these restrictions allowing any configuration)
-  int n_video_inputs    = ((is_screen_enabled) ? 1 : 0) + ((is_camera_enabled) ? 1 : 0) +
-                          ((is_text_enabled  ) ? 1 : 0) + ((is_image_enabled ) ? 1 : 0) ;
-  is_compositor_enabled = n_video_inputs == APP::N_COMPOSITOR_INPUTS ;
-  is_preview_enabled    = is_preview_enabled && is_compositor_enabled ;
-  bool is_sane          = !IsMediaEnabled || is_compositor_enabled || n_video_inputs == 1 ;
+  Array<Identifier> disabled_features ;
+  if (!is_media_enabled  ) disabled_features.add(CONFIG::OUTPUT_ID ) ;
+  if (!is_screen_enabled ) disabled_features.add(CONFIG::SCREEN_ID ) ;
+  if (!is_camera_enabled ) disabled_features.add(CONFIG::CAMERA_ID ) ;
+  if (!is_text_enabled   ) disabled_features.add(CONFIG::TEXT_ID   ) ;
+  if (!is_image_enabled  ) disabled_features.add(CONFIG::IMAGE_ID  ) ;
+  if (!is_preview_enabled) disabled_features.add(CONFIG::PREVIEW_ID) ;
+  if (!is_audio_enabled  ) disabled_features.add(CONFIG::AUDIO_ID  ) ;
+  if (!is_chat_enabled   ) disabled_features.add(CONFIG::NETWORK_ID) ;
 
-  Gui->disableControls(IsMediaEnabled   , is_screen_enabled , is_camera_enabled  ,
-                       is_text_enabled  , is_image_enabled  , is_preview_enabled ,
-                       is_audio_enabled                                          ) ;
-
-DEBUG_DUMP_MEDIA_SWITCHES
-
-  return is_sane ;
+  return disabled_features ;
 }
 
 bool AvCaster::ValidateEnvironment()

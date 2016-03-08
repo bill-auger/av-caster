@@ -51,7 +51,7 @@ ValueTree PresetSeed::PresetSeeds()
 
 PresetSeed::PresetSeed()
 {
-  this->isScreencapActive   = CONFIG::DEFAULT_IS_SCREENCAP_ACTIVE ;
+  this->isScreencapActive   = CONFIG::DEFAULT_IS_SCREEN_ACTIVE ;
   this->isCameraActive      = CONFIG::DEFAULT_IS_CAMERA_ACTIVE ;
   this->isTextActive        = CONFIG::DEFAULT_IS_TEXT_ACTIVE ;
   this->isImageActive       = CONFIG::DEFAULT_IS_IMAGE_ACTIVE ;
@@ -103,7 +103,7 @@ void PresetSeed::createPreset()
   this->presetStore = ValueTree(presetId) ;
 
   setValue(this->presetStore , CONFIG::PRESET_NAME_ID   , var(this->presetName         )) ;
-  setValue(this->presetStore , CONFIG::SCREENCAP_ID     , var(this->isScreencapActive  )) ;
+  setValue(this->presetStore , CONFIG::SCREEN_ID        , var(this->isScreencapActive  )) ;
   setValue(this->presetStore , CONFIG::CAMERA_ID        , var(this->isCameraActive     )) ;
   setValue(this->presetStore , CONFIG::TEXT_ID          , var(this->isTextActive       )) ;
   setValue(this->presetStore , CONFIG::IMAGE_ID         , var(this->isImageActive      )) ;

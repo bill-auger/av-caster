@@ -108,6 +108,9 @@ private:
   bool        isMediaKey          (const Identifier& a_key) ;
   bool        isReconfigureKey    (const Identifier& a_key) ;
   void        deactivateControl   (const Identifier& a_key) ;
+  bool        isKnownProperty     (ValueTree a_node  , const Identifier& a_key) ;
+  void        setProperty         (ValueTree a_node  , const Identifier& a_key ,
+                                   const var a_value                           ) ;
   void        setValue            (ValueTree storage_node , const Identifier& a_key ,
                                    const var a_value                                ) ;
   void        setValueViaGui      (ValueTree storage_node , const Identifier& a_key ,

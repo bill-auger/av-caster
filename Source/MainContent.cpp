@@ -185,23 +185,12 @@ void MainContent::loadPresetsCombo(ComboBox* a_combobox)
   a_combobox->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
 }
 
-void MainContent::initialize(ValueTree config_store   , ValueTree network_store ,
-                             ValueTree chatters_store                           )
+void MainContent::initialize(ValueTree config_store   , ValueTree network_store             ,
+                             ValueTree chatters_store , Array<Identifier> disabled_features )
 {
-  this->controls      ->initialize(config_store                  ) ;
-  this->config        ->initialize(config_store  , network_store ) ;
-  this->chat->chatList->initialize(network_store , chatters_store) ;
-}
-
-void MainContent::disableControls(bool is_media_enabled  , bool is_screen_enabled  ,
-                                  bool is_camera_enabled , bool is_text_enabled    ,
-                                  bool is_image_enabled  , bool is_preview_enabled ,
-                                  bool is_audio_enabled                            )
-{
-  this->controls->disableControls(is_media_enabled  , is_screen_enabled  ,
-                                  is_camera_enabled , is_text_enabled    ,
-                                  is_image_enabled  , is_preview_enabled ,
-                                  is_audio_enabled                       ) ;
+  this->controls      ->initialize(config_store  , disabled_features) ;
+  this->config        ->initialize(config_store  , network_store    ) ;
+  this->chat->chatList->initialize(network_store , chatters_store   ) ;
 }
 
 void MainContent::warning(String message_text)

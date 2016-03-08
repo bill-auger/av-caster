@@ -133,21 +133,34 @@
   Trace::TraceConfig("deleting preset[" + String(preset_idx)             + \
                      "] '"              + AvCaster::GetPresetName() + "'") ;
 
-#  define DEBUG_TRACE_DEACTIVATE_CONTROL                                       \
-  Trace::TraceConfig("error configuring media - deactivating control toggle" + \
-                     String(a_key) + "'"                                     ) ;
+#  define DEBUG_TRACE_DEACTIVATE_CONTROL                                          \
+  String err = (AvCaster::IsInitialized) ? "error configuring media - " : "" ;    \
+  Trace::TraceConfig(err + "deactivating control toggle '" + String(a_key) + "'") ;
 
-#  define DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , prefix , postfix)     \
-  String change_msg = Trace::TraceSetValue(a_node , a_key , a_value) ;           \
-  if (AvCaster::IsInitialized && change_msg.isNotEmpty())                        \
-    if (!a_node.isValid()) Trace::TraceError   (prefix + change_msg + postfix) ; \
-    else                   Trace::TraceConfigVb(         change_msg + postfix)   ;
+#  define DEBUG_TRACE_SET_PROPERTY                                           \
+  if (AvCaster::IsInitialized && AvCaster::DisabledFeatures.contains(a_key)) \
+    Trace::TraceError("attempting to set disabled media key - ignoring") ;
 
-#  define DEBUG_TRACE_STORE_SET_VALUE                                  \
-  DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , "invalid node " , "")
+#  define DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , postfix)                      \
+  String err_prefix = (isKnownProperty(a_node , a_key))        ? ""             :        \
+                      (a_node             != this->root     &&                           \
+                       a_node             != this->config   &&                           \
+                       a_node             != this->network  &&                           \
+                       a_node.getParent() != this->presets  &&                           \
+                       a_node.getParent() != this->chatters &&                           \
+                       a_node.getParent() != this->cameras  &&                           \
+                       a_node.getParent() != this->audios    ) ? "unknown node" :        \
+                                                                 "unknown key"  ;        \
+  String change_msg = Trace::TraceSetValue(a_node , a_key , a_value) ;                   \
+  if (AvCaster::IsInitialized && change_msg.isNotEmpty())                                \
+    if (!err_prefix.isEmpty()) Trace::TraceError   (err_prefix + change_msg + postfix) ; \
+    else                       Trace::TraceConfigVb(             change_msg + postfix)   ;
 
-#  define DEBUG_TRACE_GUI_SET_VALUE                                            \
-  DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , "unknown key "  , " via GUI")
+#  define DEBUG_TRACE_STORE_SET_VALUE                \
+  DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , "")
+
+#  define DEBUG_TRACE_GUI_SET_VALUE                          \
+  DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , " via GUI")
 
 #  define DEBUG_TRACE_UPDATE_CHAT_NICKS_IN                                      \
   String network_id = STRING(this->network[CONFIG::NETWORK_ID]) ;               \

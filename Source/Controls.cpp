@@ -38,11 +38,11 @@ Controls::Controls (MainContent* main_content)
     controlsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     controlsGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (screencapToggle = new ToggleButton ("screencapToggle"));
-    screencapToggle->setExplicitFocusOrder (1);
-    screencapToggle->setButtonText (TRANS("Screen"));
-    screencapToggle->addListener (this);
-    screencapToggle->setColour (ToggleButton::textColourId, Colours::white);
+    addAndMakeVisible (screenToggle = new ToggleButton ("screenToggle"));
+    screenToggle->setExplicitFocusOrder (1);
+    screenToggle->setButtonText (TRANS("Screen"));
+    screenToggle->addListener (this);
+    screenToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (cameraToggle = new ToggleButton ("cameraToggle"));
     cameraToggle->setExplicitFocusOrder (2);
@@ -56,11 +56,11 @@ Controls::Controls (MainContent* main_content)
     textToggle->addListener (this);
     textToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (interstitialToggle = new ToggleButton ("interstitialToggle"));
-    interstitialToggle->setExplicitFocusOrder (4);
-    interstitialToggle->setButtonText (TRANS("Pause"));
-    interstitialToggle->addListener (this);
-    interstitialToggle->setColour (ToggleButton::textColourId, Colours::white);
+    addAndMakeVisible (imageToggle = new ToggleButton ("imageToggle"));
+    imageToggle->setExplicitFocusOrder (4);
+    imageToggle->setButtonText (TRANS("Pause"));
+    imageToggle->addListener (this);
+    imageToggle->setColour (ToggleButton::textColourId, Colours::white);
 
     addAndMakeVisible (previewToggle = new ToggleButton ("previewToggle"));
     previewToggle->setExplicitFocusOrder (5);
@@ -116,10 +116,10 @@ Controls::~Controls()
     //[/Destructor_pre]
 
     controlsGroup = nullptr;
-    screencapToggle = nullptr;
+    screenToggle = nullptr;
     cameraToggle = nullptr;
     textToggle = nullptr;
-    interstitialToggle = nullptr;
+    imageToggle = nullptr;
     previewToggle = nullptr;
     audioToggle = nullptr;
     outputToggle = nullptr;
@@ -150,10 +150,10 @@ void Controls::resized()
     //[/UserPreResize]
 
     controlsGroup->setBounds (16, 12, getWidth() - 32, 64);
-    screencapToggle->setBounds (32, 36, 72, 24);
+    screenToggle->setBounds (32, 36, 72, 24);
     cameraToggle->setBounds (108, 36, 76, 24);
     textToggle->setBounds (188, 36, 52, 24);
-    interstitialToggle->setBounds (244, 36, 64, 24);
+    imageToggle->setBounds (244, 36, 64, 24);
     previewToggle->setBounds (314, 36, 78, 24);
     audioToggle->setBounds (396, 36, 64, 24);
     outputToggle->setBounds (464, 36, 90, 24);
@@ -172,13 +172,10 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == screencapToggle)
+    if (buttonThatWasClicked == screenToggle)
     {
-        //[UserButtonCode_screencapToggle] -- add your button handler code here..
-
-      key = CONFIG::SCREENCAP_ID ;
-
-        //[/UserButtonCode_screencapToggle]
+        //[UserButtonCode_screenToggle] -- add your button handler code here..
+        //[/UserButtonCode_screenToggle]
     }
     else if (buttonThatWasClicked == cameraToggle)
     {
@@ -196,13 +193,10 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_textToggle]
     }
-    else if (buttonThatWasClicked == interstitialToggle)
+    else if (buttonThatWasClicked == imageToggle)
     {
-        //[UserButtonCode_interstitialToggle] -- add your button handler code here..
-
-      key = CONFIG::IMAGE_ID ;
-
-        //[/UserButtonCode_interstitialToggle]
+        //[UserButtonCode_imageToggle] -- add your button handler code here..
+        //[/UserButtonCode_imageToggle]
     }
     else if (buttonThatWasClicked == previewToggle)
     {
@@ -269,53 +263,51 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 void Controls::broughtToFront() { loadConfig() ; }
 
-void Controls::disableControls(bool is_media_enabled  , bool is_screen_enabled  ,
-                               bool is_camera_enabled , bool is_text_enabled    ,
-                               bool is_image_enabled  , bool is_preview_enabled ,
-                               bool is_audio_enabled                            )
+void Controls::initialize(ValueTree config_store , Array<Identifier> disabled_features)
 {
-  // disable controls per cli args
-  this->screencapToggle   ->setEnabled(is_screen_enabled ) ;
-  this->cameraToggle      ->setEnabled(is_camera_enabled ) ;
-  this->textToggle        ->setEnabled(is_text_enabled   ) ;
-  this->interstitialToggle->setEnabled(is_image_enabled  ) ;
-  this->previewToggle     ->setEnabled(is_preview_enabled) ;
-  this->audioToggle       ->setEnabled(is_audio_enabled  ) ;
-  this->outputToggle      ->setEnabled(is_media_enabled  ) ;
-}
+  this->configStore  = config_store ;
 
-void Controls::initialize(ValueTree config_store) { this->configStore  = config_store ; }
+  // disable controls per cli args
+  this->screenToggle ->setEnabled(!disabled_features.contains(CONFIG::SCREEN_ID )) ;
+  this->cameraToggle ->setEnabled(!disabled_features.contains(CONFIG::CAMERA_ID )) ;
+  this->textToggle   ->setEnabled(!disabled_features.contains(CONFIG::TEXT_ID   )) ;
+  this->imageToggle  ->setEnabled(!disabled_features.contains(CONFIG::IMAGE_ID  )) ;
+  this->previewToggle->setEnabled(!disabled_features.contains(CONFIG::PREVIEW_ID)) ;
+  this->audioToggle  ->setEnabled(!disabled_features.contains(CONFIG::AUDIO_ID  )) ;
+  this->outputToggle ->setEnabled(!disabled_features.contains(CONFIG::OUTPUT_ID )) ;
+}
 
 void Controls::loadConfig()
 {
-  bool   is_screencap_on    = bool(this->configStore[CONFIG::SCREENCAP_ID  ]) ;
-  bool   is_camera_on       = bool(this->configStore[CONFIG::CAMERA_ID     ]) ;
-  bool   is_text_on         = bool(this->configStore[CONFIG::TEXT_ID       ]) ;
-  bool   is_interstitial_on = bool(this->configStore[CONFIG::IMAGE_ID      ]) ;
-  bool   is_preview_on      = bool(this->configStore[CONFIG::PREVIEW_ID    ]) ;
-  bool   is_audio_on        = bool(this->configStore[CONFIG::AUDIO_ID      ]) ;
-  bool   is_output_on       = bool(this->configStore[CONFIG::OUTPUT_ID     ]) ;
-  int    sink_idx           = int (this->configStore[CONFIG::OUTPUT_SINK_ID]) ;
-  String xmit_btn_text      = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
-                              (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
-                                                                      String::empty       ;
+  bool   is_screen_on  = bool(this->configStore[CONFIG::SCREEN_ID     ]) ;
+  bool   is_camera_on  = bool(this->configStore[CONFIG::CAMERA_ID     ]) ;
+  bool   is_text_on    = bool(this->configStore[CONFIG::TEXT_ID       ]) ;
+  bool   is_image_on   = bool(this->configStore[CONFIG::IMAGE_ID      ]) ;
+  bool   is_preview_on = bool(this->configStore[CONFIG::PREVIEW_ID    ]) ;
+  bool   is_audio_on   = bool(this->configStore[CONFIG::AUDIO_ID      ]) ;
+  bool   is_output_on  = bool(this->configStore[CONFIG::OUTPUT_ID     ]) ;
+  int    sink_idx      = int (this->configStore[CONFIG::OUTPUT_SINK_ID]) ;
+  String xmit_btn_text = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
+                         (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
+                                                                 String::empty       ;
 
-  this->screencapToggle   ->setToggleState  (is_screencap_on    , juce::dontSendNotification) ;
-  this->cameraToggle      ->setToggleState  (is_camera_on       , juce::dontSendNotification) ;
-  this->textToggle        ->setToggleState  (is_text_on         , juce::dontSendNotification) ;
-  this->interstitialToggle->setToggleState  (is_interstitial_on , juce::dontSendNotification) ;
-  this->previewToggle     ->setToggleState  (is_preview_on      , juce::dontSendNotification) ;
-  this->audioToggle       ->setToggleState  (is_audio_on        , juce::dontSendNotification) ;
-  this->outputToggle      ->setToggleState  (is_output_on       , juce::dontSendNotification) ;
-  this->outputToggle      ->setButtonText   (xmit_btn_text) ;
-  this->mainContent       ->loadPresetsCombo(this->presetsCombo) ;
-  this->presetsCombo      ->setEditableText (false) ;
+  this->screenToggle ->setToggleState  (is_screen_on   , juce::dontSendNotification) ;
+  this->cameraToggle ->setToggleState  (is_camera_on   , juce::dontSendNotification) ;
+  this->textToggle   ->setToggleState  (is_text_on     , juce::dontSendNotification) ;
+  this->imageToggle  ->setToggleState  (is_image_on    , juce::dontSendNotification) ;
+  this->previewToggle->setToggleState  (is_preview_on  , juce::dontSendNotification) ;
+  this->audioToggle  ->setToggleState  (is_audio_on    , juce::dontSendNotification) ;
+  this->outputToggle ->setToggleState  (is_output_on   , juce::dontSendNotification) ;
+  this->outputToggle ->setButtonText   (xmit_btn_text) ;
+  this->mainContent  ->loadPresetsCombo(this->presetsCombo) ;
+  this->presetsCombo ->setEditableText (false) ;
 }
 
 void Controls::handlePresetsCombo()
 {
   int option_n = this->presetsCombo->getSelectedItemIndex() ;
 
+  // should loadConfig() asynchronously
   AvCaster::SetValue(CONFIG::PRESET_ID , option_n) ;
 }
 
@@ -342,7 +334,7 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="controlsGroup" id="5f4ffe47101cb73b" memberName="controlsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"
                   textcol="ffffffff" title="Controls"/>
-  <TOGGLEBUTTON name="screencapToggle" id="ccd6f9830703071b" memberName="screencapToggle"
+  <TOGGLEBUTTON name="screenToggle" id="ccd6f9830703071b" memberName="screenToggle"
                 virtualName="" explicitFocusOrder="1" pos="32 36 72 24" txtcol="ffffffff"
                 buttonText="Screen" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
@@ -354,7 +346,7 @@ BEGIN_JUCER_METADATA
                 virtualName="" explicitFocusOrder="3" pos="188 36 52 24" txtcol="ffffffff"
                 buttonText="Text" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
-  <TOGGLEBUTTON name="interstitialToggle" id="6a66a5d35080c1cd" memberName="interstitialToggle"
+  <TOGGLEBUTTON name="imageToggle" id="6a66a5d35080c1cd" memberName="imageToggle"
                 virtualName="" explicitFocusOrder="4" pos="244 36 64 24" txtcol="ffffffff"
                 buttonText="Pause" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
