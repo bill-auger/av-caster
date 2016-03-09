@@ -39,10 +39,10 @@ $ ./build/Introjucer
 
 
 ### Pull requests
-* Developers: please issue pull requests against the development branch.
-* Designers: please issue pull requests against the design branch.
+* Developers: please issue pull requests against the [upstream 'development' branch: https://github.com/bill-auger/av-caster](https://github.com/bill-auger/av-caster/tree/development).
+* Designers: please issue pull requests against the [upstream 'design' branch: https://github.com/bill-auger/av-caster](https://github.com/bill-auger/av-caster/tree/design).
 
-Note that branches other than 'master' tend to be rebased often so you may need to force pull those.  Please rebase all pull requests on/into the latest development HEAD.  Ideally, all branches should be a fast-foreward from master so re-sync should be simple. If you repo becomes out of sync with upstream, please re-sync or rebase before issuing a pull request. Also, please squash trivial commits but try to retain significant notable commits (see example below).
+Note that branches other than 'master' tend to be rebased often so you may need to force pull those.  Please rebase all pull requests on/into the latest development or design HEAD and squash trivial commits but try to retain significant notable commits (see example below).  Ideally in this way, all upstream branches should be a fast-foreward from master so re-sync should be simple.
 
 
 ### commit messages
@@ -68,4 +68,4 @@ add bar powers to the mighty foo (issue #42)
 
 
 ### Issue Tracker
-Please do not hesitate to use the issue tracker for constructive notes related to that specific issue and significant progress updates that are not yet in a pull request; but use the gitter chat or other channels for new issues and lengthy discussions.
+Please do not hesitate to use the issue tracker for bug reports or constructive notes related to that specific issue and significant progress updates that are not yet in a pull request; but use the gitter chat or other channels for other issues and lengthy discussions.

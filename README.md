@@ -1,29 +1,40 @@
-<table><tr valign="top">
-  <td align="center">
-    <h2>AvCaster<br /><a href="https://gitter.im/bill-auger/av-caster">
-      <img alt="Gitter" src="https://badges.gitter.im/Join%20Chat.svg" /></a></h2>
+<table>
+  <tr valign="top">
+    <td align="center">
+      <h2>AvCaster</h2>
+      <table>
+        <tr>
+          <td align="left">Chat:</td>
+          <td><a href="https://gitter.im/bill-auger/av-caster">
+            <img src="https://badges.gitter.im/Join%20Chat.svg"
+                 alt="Gitter" width="100" height="18" /></a></td></tr>
+        <tr>
+          <td align="left">Issues:</td>
+          <td><a href="https://github.com/bill-auger/av-caster/issues">
+            <img src="https://img.shields.io/github/issues/bill-auger/av-caster.svg"
+                 alt="Issues" width="100" height="18" /></a></td></tr></table></td>
+    <td rowspan="2"><h2><i>A light-weight native gStreamer GUI for screencast, webcam, and audio streaming</i></h2>
+    AvCaster is a native GNU/linux appliction built with the <a href="https://www.juce.com/">JUCE</a> framework and uses <a href="https://gstreamer.freedesktop.org/">gStreamer</a> as the media backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture, webcam, and stereo audio.  This initial implementation is specialized for full-screen screencast with webcam overlay.  It is moderately configurable, with a preset configuration for streaming via <a href="https://www.livecoding.tv/">livecoding.tv</a>, and allows custom user-defined configurations to be stored as additional presets.  If one is handy with bits it could be easily customized for webcam-only, screencap-only, audio-only, or for any streaming server.  Also, it has been designed for portability, anticipating Windows and Mac ports.  These and more are planned to be standard features along with presets for other hosts.</td></tr>
+  <tr><td>
     <table>
       <tr><th colspan="2">Build Status</th></tr>
       <tr>
-        <td align="left">Release</td>
+        <td align="left">Release:</td>
         <td><a href="https://travis-ci.org/bill-auger/av-caster">
-          <img src="https://travis-ci.org/bill-auger/av-caster.svg?branch=master" width="100" height="18"
-               alt="release build status" /></a></td></tr>
+          <img src="https://travis-ci.org/bill-auger/av-caster.svg?branch=master"
+               alt="release build status" width="100" height="18" /></a></td></tr>
       <tr>
-        <td align="left">Development</td>
+        <td align="left">Development:</td>
         <td><a href="https://travis-ci.org/bill-auger/av-caster">
-          <img src="https://travis-ci.org/bill-auger/av-caster.svg" width="100" height="18"
-               alt="development build status" /></a></td></tr>
+          <img src="https://travis-ci.org/bill-auger/av-caster.svg"
+               alt="development build status" width="100" height="18" /></a></td></tr>
       <tr>
-        <td align="left">Lint</td>
+        <td align="left">Lint:</td>
         <td><a href="https://scan.coverity.com/projects/bill-auger-av-caster">
-          <img src="https://scan.coverity.com/projects/bill-auger-av-caster/badge.svg" width="100" height="18"
-               alt="static analysis status" /></a></td></tr></table>
-  </td>
-  <td><h2>*A light-weight native gStreamer GUI for screencast, webcam, and audio streaming*</h2></td></tr></table>
-
-
-AvCaster is a native GNU/linux appliction built with the [JUCE][juce] framework and using [gStreamer][gstreamer] as the media backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture, webcam, and stereo audio.  This initial implementation is specialized for full-screen screencast with webcam overlay.  It is moderately configurable, with a preset configuration for streaming via [livecoding.tv][lctv], and allows custom user-defined configurations to be stored as additional presets.  If one is handy with bits it could be easily customized for webcam-only, screencap-only, audio-only, or for any streaming server.  Also, it has been designed for portability, anticipating Windows and Mac ports.  These and more are planned to become standard features along with presets for other hosts.
+          <img src="https://scan.coverity.com/projects/bill-auger-av-caster/badge.svg"
+               alt="static analysis status" width="100" height="18" /></a></td></tr>
+    </table>
+  </td></tr></table>
 
 
 ### Motivation
