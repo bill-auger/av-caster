@@ -121,11 +121,12 @@ String Trace::VarType(var a_var) // juce var dynamic datatypes
 void Trace::TraceTreeChanged(ValueTree& a_node , const Identifier& a_key)
 {
   String parent_id = String(a_node.getParent().getType()) ;
-  String node_id   = String(a_node.getType()            ) ;
-  String key       = String(a_key                       ) ;
-  String val       = STRING(a_node[a_key]               ) ;
-  Trace::TraceEvent("value changed for " + node_id             + "['" + key +
-                    "'] => ("            + Trace::VarType(val) + ")'" + val + "'") ;
+  String node_id   = parent_id + ((parent_id.isEmpty()) ? "" : "::") + String(a_node.getType()) ;
+  var    a_value   = a_node[a_key] ;
+  String var_type  = VarType(a_value) ;
+
+  Trace::TraceEvent("value changed for " + node_id  + "['" + String(a_key)        +
+                    "'] => ("            + var_type + ")'" + STRING(a_value) + "'") ;
 }
 
 void Trace::TraceValueChanged(Value& a_value , String name)

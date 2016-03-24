@@ -256,10 +256,8 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
   if (is_err) Trace::TraceError("error creating" + dbg) ;               \
   else        Trace::TraceMedia("created"        + dbg)                 ;
 
-#  define DEBUG_TRACE_MAKE_CAPS                          \
-  bool   is_err = new_caps == nullptr ;                  \
-  if (is_err) Trace::TraceError("error creating caps") ; \
-  else        Trace::TraceMedia("created caps"      )    ;
+#  define DEBUG_TRACE_MAKE_CAPS                                     \
+  if (new_caps == nullptr) Trace::TraceError("error creating caps") ;
 
 #  define DEBUG_TRACE_ADD_ELEMENT                          \
   String dbg = " element '" + GetElementId(an_element)   + \

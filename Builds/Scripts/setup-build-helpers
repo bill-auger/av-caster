@@ -14,12 +14,13 @@ cp $SCRIPTS_DIR/mk-reset          $PROJECT_DIR/ ; chmod a+x $PROJECT_DIR/mk-rese
 
 echo "copied helper scripts to the project root directory - they can be now run from there"
 exit # TODO: chat feature next version?
-if [ -d $LIBIRC_INC_DIR ] ; then
-  sudo cp $INC_DIR/libircclient.h      $LIBIRC_INC_DIR
-  sudo cp $INC_DIR/libirc_errors.h     $LIBIRC_INC_DIR
-  sudo cp $INC_DIR/libirc_events.h     $LIBIRC_INC_DIR
-  sudo cp $INC_DIR/libirc_options.h    $LIBIRC_INC_DIR
-  sudo cp $INC_DIR/libirc_rfcnumeric.h $LIBIRC_INC_DIR
+if [ ! -d $LIBIRC_INC_DIR ] ; then
+  sudo mkdir                                $LIBIRC_INC_DIR
+  sudo cp $BASE_INC_DIR/libircclient.h      $LIBIRC_INC_DIR
+  sudo cp $BASE_INC_DIR/libirc_errors.h     $LIBIRC_INC_DIR
+  sudo cp $BASE_INC_DIR/libirc_events.h     $LIBIRC_INC_DIR
+  sudo cp $BASE_INC_DIR/libirc_options.h    $LIBIRC_INC_DIR
+  sudo cp $BASE_INC_DIR/libirc_rfcnumeric.h $LIBIRC_INC_DIR
 
   echo "copied libircclient headers to $LIBIRC_INC_DIR"
 fi

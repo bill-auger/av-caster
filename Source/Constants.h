@@ -171,8 +171,8 @@ namespace APP
 // more XDG_CONFIG_HOME ('~/.config')
 //   static const File   PICTURES_DIR     = File::getSpecialLocation(File::userPicturesDirectory       ) ;
 //   static const File   VIDEOS_DIR       = File::getSpecialLocation(File::userMoviesDirectory         ) ;
-  static const File   PICTURES_DIR     = File("/home/bill/pics") ;
-  static const File   VIDEOS_DIR       = File("/home/bill/vids") ;
+  static const File   PICTURES_DIR     = HOME_DIR ;
+  static const File   VIDEOS_DIR       = HOME_DIR ;
   static const File   LOGO_FILE        = BIN_FILE.getSiblingFile(ICON_FILENAME                ) ;
   static const File   ICON_FILE        = HOME_DIR.getChildFile  (ICONS_PATH + ICON_FILENAME   ) ;
   static const File   DESKTOP_FILE     = HOME_DIR.getChildFile  (APPS_PATH  + DESKTOP_FILENAME) ;
@@ -826,8 +826,8 @@ namespace GUI
   static const String CAMERA_INIT_ERROR_MSG       = "Error creating CameraBin GstElements." ;
   static const String TEXT_INIT_ERROR_MSG         = "Error creating TextBin GstElements." ;
   static const String IMAGE_INIT_ERROR_MSG        = "Error creating ImageBin GstElements." ;
-  static const String MIXER_INIT_ERROR_MSG        = "Error creating CompositorBin GstElements." ;
-  static const String MIXER_PAD_INIT_ERROR_MSG    = "Error creating CompositorBin GstPads." ;
+  static const String VMIXER_INIT_ERROR_MSG       = "Error creating CompositorBin GstElements." ;
+  static const String VMIXER_PAD_INIT_ERROR_MSG   = "Error creating CompositorBin GstPads." ;
   static const String PREVIEW_INIT_ERROR_MSG      = "Error creating PreviewBin GstElements." ;
   static const String AUDIO_INIT_ERROR_MSG        = "Error creating AudioBin GstElements." ;
   static const String MUXER_INIT_ERROR_MSG        = "Error creating MuxerBin GstElements." ;
@@ -836,9 +836,9 @@ namespace GUI
   static const String CAMERA_LINK_ERROR_MSG       = "Error linking CameraBin GstElements." ;
   static const String TEXT_LINK_ERROR_MSG         = "Error linking TextBin GstElements." ;
   static const String IMAGE_LINK_ERROR_MSG        = "Error linking ImageBin GstElements." ;
-  static const String MIXER_LINK_ERROR_MSG        = "Error linking CompositorBin GstElements." ;
-  static const String MIXER_PAD_LINK_ERROR_MSG    = "Error linking CompositorBin GstPads." ;
-  static const String MIXER_BIN_LINK_ERROR_MSG    = "Error linking CompositorBin to other bins." ;
+  static const String VMIXER_LINK_ERROR_MSG       = "Error linking CompositorBin GstElements." ;
+  static const String VMIXER_PAD_LINK_ERROR_MSG   = "Error linking CompositorBin GstPads." ;
+  static const String VMIXER_BIN_LINK_ERROR_MSG   = "Error linking CompositorBin to other bins." ;
   static const String PREVIEW_LINK_ERROR_MSG      = "Error linking PreviewBin GstElements." ;
   static const String AUDIO_LINK_ERROR_MSG        = "Error linking AudioBin GstElements." ;
   static const String MUXER_LINK_ERROR_MSG        = "Error linking MuxerBin GstElements." ;

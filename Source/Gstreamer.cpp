@@ -154,7 +154,7 @@ DEBUG_TRACE_GST_INIT_PHASE_5
         (is_image_enabled   && !LinkElements(ImageBin      , CompositorBin)) ||
         (is_vmixer_enabled  && !LinkElements(CompositorBin , MuxerBin     )) ||
         (is_preview_enabled && !LinkElements(CompositorBin , PreviewBin   ))  )
-    { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
+    { AvCaster::Error(GUI::VMIXER_BIN_LINK_ERROR_MSG) ; return false ; }
   }
   else
   {
@@ -162,11 +162,13 @@ DEBUG_TRACE_GST_INIT_PHASE_5
         (is_camera_enabled && !LinkElements(CameraBin    , MuxerBin)) ||
         (is_text_enabled   && !LinkElements(TextBin      , MuxerBin)) ||
         (is_image_enabled  && !LinkElements(ImageBin     , MuxerBin))  )
-    { AvCaster::Error(GUI::MIXER_BIN_LINK_ERROR_MSG) ; return false ; }
+    { AvCaster::Error(GUI::VMIXER_BIN_LINK_ERROR_MSG) ; return false ; }
   }
   if ((is_audio_enabled && !LinkElements(AudioBin , MuxerBin )) ||
       (is_media_enabled && !LinkElements(MuxerBin , OutputBin))  )
-  { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ; return false ; }
+  { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ;
+DEBUG_MAKE_GRAPHVIZ
+                                                     return false ; }
 
 DEBUG_TRACE_GST_INIT_PHASE_6
 
@@ -199,6 +201,9 @@ void Gstreamer::Shutdown()
   if (!IsInBin(AudioBin     , AudioPulseSource)) DestroyElement(AudioPulseSource) ;
   if (!IsInBin(AudioBin     , AudioJackSource )) DestroyElement(AudioJackSource ) ;
   if (!IsInBin(AudioBin     , AudioFauxSource )) DestroyElement(AudioFauxSource ) ;
+  if (!IsInBin(OutputBin    , OutputFileSink  )) DestroyElement(OutputFileSink  ) ;
+  if (!IsInBin(OutputBin    , OutputRtmpSink  )) DestroyElement(OutputRtmpSink  ) ;
+  if (!IsInBin(OutputBin    , OutputFauxSink  )) DestroyElement(OutputFauxSink  ) ;
   DestroyElement(Pipeline) ;
 
   ConfigStore = ValueTree::invalid ;
@@ -471,7 +476,7 @@ DEBUG_TRACE_BUILD_COMPOSITOR_BIN
       !(composite_tee        = NewElement("tee"          , "compositor-tee"             )) ||
       !(composite_sink_queue = NewElement("queue"        , "compositor-sink-queue"      )) ||
       !(composite_thru_queue = NewElement("queue"        , "compositor-thru-queue"      ))  )
-  { AvCaster::Error(GUI::MIXER_INIT_ERROR_MSG) ; return false ; }
+  { AvCaster::Error(GUI::VMIXER_INIT_ERROR_MSG) ; return false ; }
 
 DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
 
@@ -495,7 +500,7 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
       !LinkElements(compositor           , capsfilter    ) ||
       !LinkElements(capsfilter           , converter     ) ||
       !LinkElements(converter            , composite_tee )  )
-  { AvCaster::Error(GUI::MIXER_LINK_ERROR_MSG) ; return false ; }
+  { AvCaster::Error(GUI::VMIXER_LINK_ERROR_MSG) ; return false ; }
 
   // instantiate request pads
   GstPad *composite_tee_thru_srcpad , *composite_tee_monitor_srcpad ;
@@ -506,7 +511,7 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
       !(compositor_overlay_sinkpad    = NewRequestSinkPad(compositor   )              ) ||
       !(composite_tee_thru_srcpad     = NewRequestSrcPad (composite_tee)              ) ||
       !(composite_tee_monitor_srcpad  = NewRequestSrcPad (composite_tee)              )  )
-  { AvCaster::Error(GUI::MIXER_PAD_INIT_ERROR_MSG) ; return false ; }
+  { AvCaster::Error(GUI::VMIXER_PAD_INIT_ERROR_MSG) ; return false ; }
 
   // configure request pads
   ConfigureCompositorSink(compositor_fullscreen_sinkpad , fullscreen_w , fullscreen_h ,
@@ -527,7 +532,7 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
       !LinkPads       (composite_tee_monitor_srcpad , composite_sink_sinkpad       ) ||
       !NewGhostSrcPad(CompositorBin , composite_thru_queue , "compositor-source")    ||
       !NewGhostSrcPad(CompositorBin , composite_sink_queue , "preview-source"   )     )
-  { AvCaster::Error(GUI::MIXER_PAD_LINK_ERROR_MSG) ; return false ; }
+  { AvCaster::Error(GUI::VMIXER_PAD_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
 }

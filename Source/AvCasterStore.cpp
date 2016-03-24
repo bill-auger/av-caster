@@ -670,7 +670,7 @@ bool AvCasterStore::isKnownProperty(ValueTree a_node  , const Identifier& a_key)
 {
   ValueTree a_parent_node = a_node.getParent() ;
 
-  // TODO: camers and audio nyi
+  // TODO: cameras and audio nyi
   return (a_node        == this->root    ) ? CONFIG::ROOT_KEYS   .contains(a_key) :
          (a_node        == this->config  ) ? CONFIG::PRESET_KEYS .contains(a_key) :
          (a_node        == this->network ) ? CONFIG::NETWORK_KEYS.contains(a_key) :
