@@ -175,6 +175,9 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == screenToggle)
     {
         //[UserButtonCode_screenToggle] -- add your button handler code here..
+
+      key = CONFIG::SCREEN_ID ;
+
         //[/UserButtonCode_screenToggle]
     }
     else if (buttonThatWasClicked == cameraToggle)
@@ -196,6 +199,9 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == imageToggle)
     {
         //[UserButtonCode_imageToggle] -- add your button handler code here..
+
+      key = CONFIG::IMAGE_ID ;
+
         //[/UserButtonCode_imageToggle]
     }
     else if (buttonThatWasClicked == previewToggle)

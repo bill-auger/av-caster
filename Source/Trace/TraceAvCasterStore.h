@@ -142,19 +142,22 @@
     Trace::TraceError("attempting to set disabled media key - ignoring") ;
 
 #  define DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , postfix)                      \
-  String err_prefix = (isKnownProperty(a_node , a_key))        ? ""             :        \
-                      (a_node             != this->root     &&                           \
-                       a_node             != this->config   &&                           \
-                       a_node             != this->network  &&                           \
-                       a_node.getParent() != this->presets  &&                           \
-                       a_node.getParent() != this->chatters &&                           \
-                       a_node.getParent() != this->cameras  &&                           \
-                       a_node.getParent() != this->audios    ) ? "unknown node" :        \
-                                                                 "unknown key"  ;        \
+  ValueTree a_parent_node = a_node.getParent() ;                                         \
+  String    node_id       = String(a_node.getType()) ;                                   \
+  String    key           = String(a_key           ) ;                                   \
+  String err = (isKnownProperty(a_node , a_key))    ? ""                               : \
+               (a_node        != this->root     &&                                       \
+                a_node        != this->config   &&                                       \
+                a_node        != this->network  &&                                       \
+                a_parent_node != this->presets  &&                                       \
+                a_parent_node != this->chatters &&                                       \
+                a_parent_node != this->cameras  &&                                       \
+                a_parent_node != this->audios    ) ? "unknown node '" + node_id + "' " : \
+                                                     "unknown key '"  + key     + "' " ; \
   String change_msg = Trace::TraceSetValue(a_node , a_key , a_value) ;                   \
   if (AvCaster::IsInitialized && change_msg.isNotEmpty())                                \
-    if (!err_prefix.isEmpty()) Trace::TraceError   (err_prefix + change_msg + postfix) ; \
-    else                       Trace::TraceConfigVb(             change_msg + postfix)   ;
+    if (!err.isEmpty()) Trace::TraceError   (err + change_msg + postfix) ;               \
+    else                Trace::TraceConfigVb(      change_msg + postfix)                 ;
 
 #  define DEBUG_TRACE_STORE_SET_VALUE                \
   DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , "")

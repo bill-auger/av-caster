@@ -14,7 +14,7 @@
             <img src="https://img.shields.io/github/issues/bill-auger/av-caster.svg"
                  alt="Issues" width="100" height="18" /></a></td></tr></table></td>
     <td rowspan="2"><h2><i>A light-weight native gStreamer GUI for screencast, webcam, and audio streaming</i></h2>
-    AvCaster is a native GNU/linux appliction built with the <a href="https://www.juce.com/">JUCE</a> framework and uses <a href="https://gstreamer.freedesktop.org/">gStreamer</a> as the media backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture, webcam, and stereo audio.  This initial implementation is specialized for full-screen screencast with webcam overlay.  It is moderately configurable, with a preset configuration for streaming via <a href="https://www.livecoding.tv/">livecoding.tv</a>, and allows custom user-defined configurations to be stored as additional presets.  If one is handy with bits it could be easily customized for webcam-only, screencap-only, audio-only, or for any streaming server.  Also, it has been designed for portability, anticipating Windows and Mac ports.  These and more are planned to be standard features along with presets for other hosts.</td></tr>
+    AvCaster is a native appliction built upon the <a href="https://www.juce.com/">JUCE</a> framework, utilizing <a href="https://gstreamer.freedesktop.org/">gStreamer</a> as the media backend and <a href="http://www.ulduzsoft.com/libircclient/">libircclient</a> as the chat backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture (full-screen), webcam (full-screen or overlay), and audio (mono or stereo).  It is moderately configurable, with preset configurations for streaming via popular servers such as <a href="https://www.livecoding.tv/">livecoding.tv</a>, and allows custom user-defined configurations to be stored as additional presets.  This initial implementation is only compatible with GNU/Linux, but it has been designed for portability.  Let us know if it would interest you to see AvCaster ported to another platform (e.g. Windows, Mac, mobile) by leaving a note on the relevant [Cross-platform Milestone](https://github.com/bill-auger/av-caster/issues?q=is%3Aopen+milestone%3A%22cross-platform+version%22+label%3Aepic) issue.  Feel free to open issues for other platforms if they are not yet listed.</td></tr>
   <tr><td>
     <table>
       <tr><th colspan="2">Build Status</th></tr>
@@ -38,9 +38,9 @@
 
 
 ### Motivation
-The motivation behind this project is that streaming with a feature-rich, bleeding-edge client such as OBS and FMLE is very CPU intensive even on reasonably capable machines.  In situations such as live code streaming, where the broadcast is an auxiliary concern, there is more utility in reserving those extra cycles for primary development tasks.
+The motivation behind this project is that streaming with a feature-rich, bleeding-edge client such as OBS and FMLE is very CPU intensive even on reasonably capable machines.  Those are well suited as a substitute for dedicated capture hardware for high-performance scenarios such as game-casting; but in less demanding scenarios such as live performance, design-casting, and code-casting, there is more utility in reserving your CPU cycles for primary tasks such as audio processing, source compiling, or graphics rendering.
 
-A command-line solution is the obvious choice for such scenarios but obviously lacks real-time control and preview.  This project was created to mark a reasonable balance between headless performance and a graphical feature set.
+A command-line solution is the obvious choice for such scenarios but obviously lacks real-time control and preview.  The primary design goal for AvCaster is to strike a reasonable balance between headless performance and a graphical feature set.
 
 
 ### Get AvCaster
@@ -86,26 +86,13 @@ $ makepkg --install ./PKGCONFIG
 ```
 ### build dependencies ###
 $ sudo apt-get install build-essential libfreetype6-dev libgstreamer-plugins-base1.0-dev \
-                       libx11-dev libxcursor-dev libxinerama-dev
+                       libircclient-dev libx11-dev libxcursor-dev libxinerama-dev
 ### runtime dependencies (Debian 'testing/unstable' , Ubuntu 'wily universe') ###
-$ sudo apt-get install freeglut3 gstreamer1.0-alsa gstreamer1.0-plugins-bad \
-                       gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly  \
-                       gstreamer1.0-pulseaudio libfreetype6 libgl1-mesa-glx \
-                       libx11-6 libxcomposite1 libxcursor1 libxext6         \
+$ sudo apt-get install freeglut3 gstreamer1.0-alsa gstreamer1.0-plugins-bad       \
+                       gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly        \
+                       gstreamer1.0-pulseaudio libfreetype6 libgl1-mesa-glx       \
+                       libircclient1 libx11-6 libxcomposite1 libxcursor1 libxext6 \
                        libxinerama1 libxrender1
-### compile ###
-$ cd Builds/Makefile
-$ make CONFIG=Release
-$ ./build/av-caster
-```
-#### Suse:
-```
-### build dependencies ###
-$ sudo zypper install gcc-c++ libX11-devel freetype2-devel libXinerama-devel \
-                      libXcursor-devel gstreamer-plugins-base-devel
-### runtime dependencies ###
-$ sudo zypper install gstreamer-plugins-good gstreamer-plugins-bad-free \
-                      gstreamer-plugins-ugly
 ### compile ###
 $ cd Builds/Makefile
 $ make CONFIG=Release
@@ -114,8 +101,8 @@ $ ./build/av-caster
 #### Fedora:
 ```
 ### build dependencies ###
-$ sudo dnf install gcc-c++ libX11-devel freetype-devel libXinerama-devel \
-                   libXcursor-devel gstreamer1-plugins-base-devel
+$ sudo dnf install freetype-devel gcc-c++ libircclient-devel libX11-devel           \
+                   libXinerama-devel libXcursor-devel gstreamer1-plugins-base-devel
 ### runtime dependencies (rpmfusion repositories) ###
 $ RPMFUSION_URL=http://download1.rpmfusion.org
 $ FEDORA_VERSION=$(rpm -E %fedora)
@@ -123,7 +110,20 @@ $ REPO1=$RPMFUSION_URL/free/fedora/rpmfusion-free-release-$FEDORA_VERSION.noarch
 $ REPO2=$RPMFUSION_URL/nonfree/fedora/rpmfusion-nonfree-release-$FEDORA_VERSION.noarch.rpm
 $ sudo dnf install $REPO1 $REPO2
 $ sudo dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
-                   gstreamer1-plugins-ugly
+                   gstreamer1-plugins-ugly libircclient1
+### compile ###
+$ cd Builds/Makefile
+$ make CONFIG=Release
+$ ./build/av-caster
+```
+#### Suse:
+```
+### build dependencies ###
+$ sudo zypper install freetype2-devel gcc-c++ libircclient-devel libX11-devel         \
+                      libXinerama-devel libXcursor-devel gstreamer-plugins-base-devel
+### runtime dependencies ###
+$ sudo zypper install gstreamer-plugins-good gstreamer-plugins-bad-free \
+                      gstreamer-plugins-ugly libircclient1
 ### compile ###
 $ cd Builds/Makefile
 $ make CONFIG=Release
