@@ -22,7 +22,7 @@
 
 #include <gst/gst.h>
 
-#include "Constants.h"
+#include "../Constants/Constants.h"
 
 
 /**
@@ -36,8 +36,8 @@ class Gstreamer
 private:
 
   // setup
-  static bool Initialize  (ValueTree         config_store      , void* x_window ,
-                           Array<Identifier> disabled_features                  ) ;
+  static bool Initialize  (ValueTree      config_store      , void* x_window ,
+                           NamedValueSet& disabled_features , File videos_dir) ;
   static void ReloadConfig() ;
   static void Shutdown    () ;
 
@@ -129,6 +129,7 @@ private:
   // getters/setters
   static String GetElementId(GstElement* an_element) ;
   static String GetPadId    (GstPad* a_pad) ;
+  static String VersionMsg  () ;
 
   // state helpers
   static bool IsSufficientVersion() ;
@@ -168,11 +169,10 @@ private:
   static GstElement* OutputRtmpSink ;
   static GstElement* OutputFauxSink ;
 
-  // configuration
-  static ValueTree ConfigStore ;
-
   // external handles
-  static guintptr PreviewXwin ;
+  static ValueTree ConfigStore ;
+  static guintptr  PreviewXwin ;
+  static File      VideosDir ;
 } ;
 
 #endif // _GSTREAMER_H_

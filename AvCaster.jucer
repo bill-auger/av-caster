@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.000"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.002"
               bundleIdentifier="com.yourcompany.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="3.1.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
@@ -8,6 +8,43 @@
       <FILE id="ytyANP" name="av-caster.png" compile="0" resource="1" file="Assets/av-caster.png"/>
     </GROUP>
     <GROUP id="{12F99024-8A51-4F04-3891-07F59C6B6881}" name="Headers">
+      <GROUP id="{DC8F1EBF-1412-35CC-9623-015550E67D03}" name="Views">
+        <FILE id="YpkpyX" name="Background.h" compile="0" resource="0" file="Source/Views/Background.h"/>
+        <FILE id="KpYPJn" name="Chat.h" compile="0" resource="0" file="Source/Views/Chat.h"/>
+        <FILE id="DPJSNO" name="ChatList.h" compile="0" resource="0" file="Source/Views/ChatList.h"/>
+        <FILE id="sZZxtU" name="ChatListItem.h" compile="0" resource="0" file="Source/Views/ChatListItem.h"/>
+        <FILE id="P6JOXz" name="Config.h" compile="0" resource="0" file="Source/Views/Config.h"/>
+        <FILE id="yVtZZz" name="ConfigAudio.h" compile="0" resource="0" file="Source/Views/ConfigAudio.h"/>
+        <FILE id="vYa2Cw" name="ConfigCamera.h" compile="0" resource="0" file="Source/Views/ConfigCamera.h"/>
+        <FILE id="rcrLrt" name="ConfigChat.h" compile="0" resource="0" file="Source/Views/ConfigChat.h"/>
+        <FILE id="AQ2dwI" name="ConfigImage.h" compile="0" resource="0" file="Source/Views/ConfigImage.h"/>
+        <FILE id="O8fXVO" name="ConfigOutput.h" compile="0" resource="0" file="Source/Views/ConfigOutput.h"/>
+        <FILE id="C6PrUn" name="ConfigScreen.h" compile="0" resource="0" file="Source/Views/ConfigScreen.h"/>
+        <FILE id="qtcvxe" name="ConfigText.h" compile="0" resource="0" file="Source/Views/ConfigText.h"/>
+        <FILE id="aMH02z" name="Controls.h" compile="0" resource="0" file="Source/Views/Controls.h"/>
+        <FILE id="pAvXb6" name="MainContent.h" compile="0" resource="0" file="Source/Views/MainContent.h"/>
+        <FILE id="ke3zGo" name="Presets.h" compile="0" resource="0" file="Source/Views/Presets.h"/>
+        <FILE id="KL3xzz" name="Preview.h" compile="0" resource="0" file="Source/Views/Preview.h"/>
+        <FILE id="VjCVUp" name="Statusbar.h" compile="0" resource="0" file="Source/Views/Statusbar.h"/>
+      </GROUP>
+      <GROUP id="{E6435E5A-2EC1-B05C-0E70-FE2051EE7ACB}" name="Controllers">
+        <FILE id="sEuPJd" name="AvCaster.h" compile="0" resource="0" file="Source/Controllers/AvCaster.h"/>
+        <FILE id="FQevmF" name="Gstreamer.h" compile="0" resource="0" file="Source/Controllers/Gstreamer.h"/>
+        <FILE id="l437D6" name="IrcClient.h" compile="0" resource="0" file="Source/Controllers/IrcClient.h"/>
+      </GROUP>
+      <GROUP id="{449EB608-F7A7-9902-3D45-62AA93237D8C}" name="Models">
+        <FILE id="jy2eVq" name="AvCasterStore.h" compile="0" resource="0" file="Source/Models/AvCasterStore.h"/>
+        <FILE id="qqog3V" name="PresetSeed.h" compile="0" resource="0" file="Source/Models/PresetSeed.h"/>
+      </GROUP>
+      <GROUP id="{3B152D14-E544-D7E4-5FA0-64C563FEA7B6}" name="Constants">
+        <FILE id="kNVY1r" name="AppConstants.h" compile="0" resource="0" file="Source/Constants/AppConstants.h"/>
+        <FILE id="OIkoML" name="ConfigConstants.h" compile="0" resource="0"
+              file="Source/Constants/ConfigConstants.h"/>
+        <FILE id="Vbp0EX" name="Constants.h" compile="0" resource="0" file="Source/Constants/Constants.h"/>
+        <FILE id="gcK8jK" name="GstConstants.h" compile="0" resource="0" file="Source/Constants/GstConstants.h"/>
+        <FILE id="UNSn5F" name="GuiConstants.h" compile="0" resource="0" file="Source/Constants/GuiConstants.h"/>
+        <FILE id="YxWL0E" name="IrcConstants.h" compile="0" resource="0" file="Source/Constants/IrcConstants.h"/>
+      </GROUP>
       <GROUP id="{E5A092F4-256B-C2BA-D268-F46AC54BD85A}" name="Trace">
         <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>
         <FILE id="VpzAMB" name="TraceAvCaster.h" compile="0" resource="0" file="Source/Trace/TraceAvCaster.h"/>
@@ -21,60 +58,57 @@
               file="Source/Trace/TraceIrcClient.h"/>
         <FILE id="ltIPwf" name="TraceMain.h" compile="0" resource="0" file="Source/Trace/TraceMain.h"/>
       </GROUP>
-      <FILE id="IHfl77" name="AvCaster.h" compile="0" resource="0" file="Source/AvCaster.h"/>
-      <FILE id="y9Co3C" name="AvCasterStore.h" compile="0" resource="0" file="Source/AvCasterStore.h"/>
-      <FILE id="DrBwb8" name="Background.h" compile="0" resource="0" file="Source/Background.h"/>
-      <FILE id="DXlvqs" name="Chat.h" compile="0" resource="0" file="Source/Chat.h"/>
-      <FILE id="u48sjw" name="ChatList.h" compile="0" resource="0" file="Source/ChatList.h"/>
-      <FILE id="DJ4nMG" name="ChatListItem.h" compile="0" resource="0" file="Source/ChatListItem.h"/>
-      <FILE id="uoYh4l" name="Config.h" compile="0" resource="0" file="Source/Config.h"/>
-      <FILE id="j4K0YH" name="ConfigAudio.h" compile="0" resource="0" file="Source/ConfigAudio.h"/>
-      <FILE id="uW4054" name="ConfigCamera.h" compile="0" resource="0" file="Source/ConfigCamera.h"/>
-      <FILE id="qFUIyX" name="ConfigChat.h" compile="0" resource="0" file="Source/ConfigChat.h"/>
-      <FILE id="IIcdyq" name="ConfigImage.h" compile="0" resource="0" file="Source/ConfigImage.h"/>
-      <FILE id="X6W4rM" name="ConfigOutput.h" compile="0" resource="0" file="Source/ConfigOutput.h"/>
-      <FILE id="PFaUxv" name="ConfigScreen.h" compile="0" resource="0" file="Source/ConfigScreen.h"/>
-      <FILE id="umJrEp" name="ConfigText.h" compile="0" resource="0" file="Source/ConfigText.h"/>
-      <FILE id="zCkODj" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
-      <FILE id="mkIaLi" name="Controls.h" compile="0" resource="0" file="Source/Controls.h"/>
-      <FILE id="o1VbMJ" name="Gstreamer.h" compile="0" resource="0" file="Source/Gstreamer.h"/>
-      <FILE id="O1cSgN" name="IrcClient.h" compile="0" resource="0" file="Source/IrcClient.h"/>
-      <FILE id="U6Fm4Z" name="MainContent.h" compile="0" resource="0" file="Source/MainContent.h"/>
-      <FILE id="IxdH9Q" name="Presets.h" compile="0" resource="0" file="Source/Presets.h"/>
-      <FILE id="Fz2IkW" name="PresetSeed.h" compile="0" resource="0" file="Source/PresetSeed.h"/>
-      <FILE id="Ks1yxc" name="Preview.h" compile="0" resource="0" file="Source/Preview.h"/>
-      <FILE id="X0O50Z" name="Statusbar.h" compile="0" resource="0" file="Source/Statusbar.h"/>
     </GROUP>
     <GROUP id="{B76039D2-8BDF-7740-0816-1A69395E900D}" name="Source">
-      <FILE id="zm6wrJ" name="AvCaster.cpp" compile="1" resource="0" file="Source/AvCaster.cpp"/>
-      <FILE id="zF9KTX" name="AvCasterStore.cpp" compile="1" resource="0"
-            file="Source/AvCasterStore.cpp"/>
-      <FILE id="j4Ctdm" name="Background.cpp" compile="1" resource="0" file="Source/Background.cpp"/>
-      <FILE id="pLt0m5" name="Chat.cpp" compile="1" resource="0" file="Source/Chat.cpp"/>
-      <FILE id="OcodLB" name="ChatList.cpp" compile="1" resource="0" file="Source/ChatList.cpp"/>
-      <FILE id="ZeuPdR" name="ChatListItem.cpp" compile="1" resource="0"
-            file="Source/ChatListItem.cpp"/>
-      <FILE id="nRcwV3" name="Config.cpp" compile="1" resource="0" file="Source/Config.cpp"/>
-      <FILE id="l95AtA" name="ConfigAudio.cpp" compile="1" resource="0" file="Source/ConfigAudio.cpp"/>
-      <FILE id="TpXZpv" name="ConfigCamera.cpp" compile="1" resource="0"
-            file="Source/ConfigCamera.cpp"/>
-      <FILE id="fl0C4R" name="ConfigChat.cpp" compile="1" resource="0" file="Source/ConfigChat.cpp"/>
-      <FILE id="YrMWef" name="ConfigImage.cpp" compile="1" resource="0" file="Source/ConfigImage.cpp"/>
-      <FILE id="YD8GAL" name="ConfigOutput.cpp" compile="1" resource="0"
-            file="Source/ConfigOutput.cpp"/>
-      <FILE id="Zl8uMX" name="ConfigScreen.cpp" compile="1" resource="0"
-            file="Source/ConfigScreen.cpp"/>
-      <FILE id="I5UpGq" name="ConfigText.cpp" compile="1" resource="0" file="Source/ConfigText.cpp"/>
-      <FILE id="hx0s0h" name="Controls.cpp" compile="1" resource="0" file="Source/Controls.cpp"/>
-      <FILE id="z1biaf" name="Gstreamer.cpp" compile="1" resource="0" file="Source/Gstreamer.cpp"/>
-      <FILE id="V586WS" name="IrcClient.cpp" compile="1" resource="0" file="Source/IrcClient.cpp"/>
+      <GROUP id="{FE879823-A057-5C58-FFBB-4369879578C2}" name="Controllers">
+        <FILE id="woBIF5" name="AvCaster.cpp" compile="1" resource="0" file="Source/Controllers/AvCaster.cpp"/>
+        <FILE id="DWdbyP" name="Gstreamer.cpp" compile="1" resource="0" file="Source/Controllers/Gstreamer.cpp"/>
+        <FILE id="MeBpm1" name="IrcClient.cpp" compile="1" resource="0" file="Source/Controllers/IrcClient.cpp"/>
+      </GROUP>
+      <GROUP id="{A993E6CB-8F67-8126-E003-0C32349C13AF}" name="Views">
+        <FILE id="gPKxO9" name="Background.cpp" compile="1" resource="0" file="Source/Views/Background.cpp"/>
+        <FILE id="sAh2zA" name="Chat.cpp" compile="1" resource="0" file="Source/Views/Chat.cpp"/>
+        <FILE id="TmuTtf" name="ChatList.cpp" compile="1" resource="0" file="Source/Views/ChatList.cpp"/>
+        <FILE id="sDoH7I" name="ChatListItem.cpp" compile="1" resource="0"
+              file="Source/Views/ChatListItem.cpp"/>
+        <FILE id="Yo0DVm" name="Config.cpp" compile="1" resource="0" file="Source/Views/Config.cpp"/>
+        <FILE id="pF6IG5" name="ConfigAudio.cpp" compile="1" resource="0" file="Source/Views/ConfigAudio.cpp"/>
+        <FILE id="pz8fzf" name="ConfigCamera.cpp" compile="1" resource="0"
+              file="Source/Views/ConfigCamera.cpp"/>
+        <FILE id="Z3mdSK" name="ConfigChat.cpp" compile="1" resource="0" file="Source/Views/ConfigChat.cpp"/>
+        <FILE id="F3FWjk" name="ConfigImage.cpp" compile="1" resource="0" file="Source/Views/ConfigImage.cpp"/>
+        <FILE id="wtVmRZ" name="ConfigOutput.cpp" compile="1" resource="0"
+              file="Source/Views/ConfigOutput.cpp"/>
+        <FILE id="qweC0N" name="ConfigScreen.cpp" compile="1" resource="0"
+              file="Source/Views/ConfigScreen.cpp"/>
+        <FILE id="XomgcA" name="ConfigText.cpp" compile="1" resource="0" file="Source/Views/ConfigText.cpp"/>
+        <FILE id="LDMbzU" name="Controls.cpp" compile="1" resource="0" file="Source/Views/Controls.cpp"/>
+        <FILE id="TWIrmh" name="MainContent.cpp" compile="1" resource="0" file="Source/Views/MainContent.cpp"/>
+        <FILE id="GjcK36" name="Presets.cpp" compile="1" resource="0" file="Source/Views/Presets.cpp"/>
+        <FILE id="McNOOA" name="Preview.cpp" compile="1" resource="0" file="Source/Views/Preview.cpp"/>
+        <FILE id="CESgWr" name="Statusbar.cpp" compile="1" resource="0" file="Source/Views/Statusbar.cpp"/>
+      </GROUP>
+      <GROUP id="{7C73B5B3-CA01-0491-6468-F3AA66E67B45}" name="Models">
+        <FILE id="Bn3TIV" name="AvCasterStore.cpp" compile="1" resource="0"
+              file="Source/Models/AvCasterStore.cpp"/>
+        <FILE id="LBD3gN" name="PresetSeed.cpp" compile="1" resource="0" file="Source/Models/PresetSeed.cpp"/>
+      </GROUP>
+      <GROUP id="{2DCE1912-CE55-49BC-C4AA-34580ABA4D56}" name="Trace">
+        <FILE id="iZf5Wa" name="Trace.cpp" compile="1" resource="0" file="Source/Trace/Trace.cpp"/>
+      </GROUP>
+      <GROUP id="{0B2DBDF6-4255-99CE-3692-AEFBE3303178}" name="Constants">
+        <FILE id="J2IYe3" name="AppConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/AppConstants.cpp"/>
+        <FILE id="Z9kdnJ" name="ConfigConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/ConfigConstants.cpp"/>
+        <FILE id="tLFx56" name="GstConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/GstConstants.cpp"/>
+        <FILE id="Y4wapo" name="GuiConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/GuiConstants.cpp"/>
+        <FILE id="oMPKh7" name="IrcConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/IrcConstants.cpp"/>
+      </GROUP>
       <FILE id="CQoHWx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
-      <FILE id="eLauah" name="MainContent.cpp" compile="1" resource="0" file="Source/MainContent.cpp"/>
-      <FILE id="XO1kq5" name="Presets.cpp" compile="1" resource="0" file="Source/Presets.cpp"/>
-      <FILE id="yA08dL" name="PresetSeed.cpp" compile="1" resource="0" file="Source/PresetSeed.cpp"/>
-      <FILE id="LaU84G" name="Preview.cpp" compile="1" resource="0" file="Source/Preview.cpp"/>
-      <FILE id="XuwkKa" name="Statusbar.cpp" compile="1" resource="0" file="Source/Statusbar.cpp"/>
-      <FILE id="iZf5Wa" name="Trace.cpp" compile="1" resource="0" file="Source/Trace/Trace.cpp"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

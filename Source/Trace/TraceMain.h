@@ -27,7 +27,7 @@
 
 /* state */
 
-#  define DEBUG_TRACE_INIT_VERSION LOG(APP::CLI_VERSION_MSG) ;
+#  define DEBUG_TRACE_INIT_VERSION LOG(AvCaster::GstVersionMsg()) ; LOG(APP::CLI_VERSION_MSG) ;
 
 #  define DEBUG_TRACE_SHUTDOWN_IN  Trace::TraceState("shutting down") ;
 

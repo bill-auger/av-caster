@@ -57,7 +57,7 @@ private:
 
   void broughtToFront() override ;
 
-  void initialize        (ValueTree config_store , Array<Identifier> disabled_features) ;
+  void initialize        (ValueTree config_store , NamedValueSet& disabled_features) ;
   void loadConfig        () ;
   void handlePresetsCombo() ;
 

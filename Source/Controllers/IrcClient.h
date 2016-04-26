@@ -17,7 +17,7 @@
 \*/
 
 
-#include "Constants.h"
+#include "../Constants/Constants.h"
 #ifndef DISABLE_CHAT
 
 #ifndef _IRCCLIENT_H_
@@ -26,7 +26,7 @@
 
 #include <libircclient/libircclient.h>
 
-#include "Constants.h"
+#include "../Constants/Constants.h"
 
 
 /**

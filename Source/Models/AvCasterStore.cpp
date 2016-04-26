@@ -18,9 +18,9 @@
 
 
 #include "AvCasterStore.h"
-#include "AvCaster.h"
 #include "PresetSeed.h"
-#include "Trace/TraceAvCasterStore.h"
+#include "../Controllers/AvCaster.h"
+#include "../Trace/TraceAvCasterStore.h"
 
 
 /* AvCasterStore private class methods */
@@ -52,7 +52,7 @@ AvCasterStore::~AvCasterStore() { }
 AvCasterStore::AvCasterStore()
 {
   // load persistent storage
-  this->configDir                = APP::APPDATA_DIR.getChildFile(CONFIG::STORAGE_DIRNAME ) ;
+  this->configDir                = AvCaster::App->APPDATA_DIR.getChildFile(CONFIG::STORAGE_DIRNAME ) ;
   this->configFile               = this->configDir .getChildFile(CONFIG::STORAGE_FILENAME) ;
   FileInputStream* config_stream = new FileInputStream(this->configFile) ;
   ValueTree        stored_config = ValueTree::invalid ;
@@ -574,8 +574,8 @@ void AvCasterStore::detectCaptureDevices()
   Array<File> device_info_dirs ;
 
   this->cameras.removeAllChildren(nullptr) ;
-  if (APP::CAMERAS_DEV_DIR.containsSubDirectories())
-    APP::CAMERAS_DEV_DIR.findChildFiles(device_info_dirs , File::findDirectories , false) ;
+  if (AvCaster::App->CAMERAS_DEV_DIR.containsSubDirectories())
+    AvCaster::App->CAMERAS_DEV_DIR.findChildFiles(device_info_dirs , File::findDirectories , false) ;
 
   File* device_info_dir = device_info_dirs.begin() ;
   while (device_info_dir != device_info_dirs.end())

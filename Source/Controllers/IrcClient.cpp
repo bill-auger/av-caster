@@ -24,7 +24,7 @@
 
 #include "AvCaster.h"
 #include "IrcClient.h"
-#include "Trace/TraceIrcClient.h"
+#include "../Trace/TraceIrcClient.h"
 
 
 /* IrcClient class variables */

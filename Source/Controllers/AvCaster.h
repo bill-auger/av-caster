@@ -20,9 +20,9 @@
 #ifndef _AVCASTER_H_
 #define _AVCASTER_H_
 
-#include "Constants.h"
-#include "AvCasterStore.h"
-#include "MainContent.h"
+#include "../Constants/Constants.h"
+#include "../Models/AvCasterStore.h"
+#include "../Views/MainContent.h"
 #include "IrcClient.h"
 
 
@@ -69,6 +69,7 @@ public:
   static void                   SendChat  (String chat_message) ;
 
   // getters/setters
+  static String         GstVersionMsg       () ;
   static Rectangle<int> GetPreviewBounds    () ;
   static void           DeactivateControl   (const Identifier& a_key) ;
   static void           SetValue            (const Identifier& a_key , const var a_value) ;
@@ -109,20 +110,21 @@ private:
   static void UpdateStatus       () ;
 
   // init args handlers and validations
-  static bool              HandleCliParams    (StringArray cli_params) ;
-  static Array<Identifier> ProcessCliParams   (StringArray cli_params) ;
-  static bool              ValidateEnvironment() ;
+  static bool HandleCliParams    (StringArray cli_params) ;
+  static void ProcessCliParams   (StringArray cli_params) ;
+  static bool ValidateEnvironment() ;
 
   // helpers
-  static void DisplayAlert         () ;
-  static bool InitFail             () ;
+  static void DisplayAlert () ;
+  static bool InitFail     () ;
 #ifndef DISABLE_CHAT
-  static void PumpIrcClient        () ;
+  static void PumpIrcClient() ;
 #endif // DISABLE_CHAT
 
 
   // collaborator handles
-  static JUCEApplicationBase*     App ;
+  static ScopedPointer<APP>       App ;
+  static JUCEApplicationBase*     Main ;
   static MainContent*             Gui ;
 #ifndef DISABLE_CHAT
   static ScopedPointer<IrcClient> Irc ;
@@ -132,10 +134,10 @@ private:
   static ScopedPointer<AvCasterStore> Store ;
 
   // intialization flags
-  static bool              IsInitialized ;
-  static Array<Identifier> DisabledFeatures ;
-  static bool              IsMediaEnabled ;
-  static bool              IsChatEnabled ;
+  static bool          IsInitialized ;
+  static NamedValueSet DisabledFeatures ;
+  static bool          IsMediaEnabled ;
+  static bool          IsChatEnabled ;
 
   // runtime data
   static Array<Alert*> Alerts ;

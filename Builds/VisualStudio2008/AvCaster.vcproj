@@ -32,7 +32,7 @@
             BufferSecurityCheck=""
             DebugInformationFormat="4"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.000;JUCE_APP_VERSION_HEX=0x1000"
+            PreprocessorDefinitions="WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.002;JUCE_APP_VERSION_HEX=0x1002"
             RuntimeLibrary="1"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -88,7 +88,7 @@
             InlineFunctionExpansion="1"
             StringPooling="true"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.000;JUCE_APP_VERSION_HEX=0x1000"
+            PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.002;JUCE_APP_VERSION_HEX=0x1002"
             RuntimeLibrary="0"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -140,6 +140,42 @@
         </File>
       </Filter>
       <Filter Name="Headers">
+        <Filter Name="Views">
+          <File RelativePath="..\..\Source\Views\Background.h"/>
+          <File RelativePath="..\..\Source\Views\Chat.h"/>
+          <File RelativePath="..\..\Source\Views\ChatList.h"/>
+          <File RelativePath="..\..\Source\Views\ChatListItem.h"/>
+          <File RelativePath="..\..\Source\Views\Config.h"/>
+          <File RelativePath="..\..\Source\Views\ConfigAudio.h"/>
+          <File RelativePath="..\..\Source\Views\ConfigCamera.h"/>
+          <File RelativePath="..\..\Source\Views\ConfigChat.h"/>
+          <File RelativePath="..\..\Source\Views\ConfigImage.h"/>
+          <File RelativePath="..\..\Source\Views\ConfigOutput.h"/>
+          <File RelativePath="..\..\Source\Views\ConfigScreen.h"/>
+          <File RelativePath="..\..\Source\Views\ConfigText.h"/>
+          <File RelativePath="..\..\Source\Views\Controls.h"/>
+          <File RelativePath="..\..\Source\Views\MainContent.h"/>
+          <File RelativePath="..\..\Source\Views\Presets.h"/>
+          <File RelativePath="..\..\Source\Views\Preview.h"/>
+          <File RelativePath="..\..\Source\Views\Statusbar.h"/>
+        </Filter>
+        <Filter Name="Controllers">
+          <File RelativePath="..\..\Source\Controllers\AvCaster.h"/>
+          <File RelativePath="..\..\Source\Controllers\Gstreamer.h"/>
+          <File RelativePath="..\..\Source\Controllers\IrcClient.h"/>
+        </Filter>
+        <Filter Name="Models">
+          <File RelativePath="..\..\Source\Models\AvCasterStore.h"/>
+          <File RelativePath="..\..\Source\Models\PresetSeed.h"/>
+        </Filter>
+        <Filter Name="Constants">
+          <File RelativePath="..\..\Source\Constants\AppConstants.h"/>
+          <File RelativePath="..\..\Source\Constants\ConfigConstants.h"/>
+          <File RelativePath="..\..\Source\Constants\Constants.h"/>
+          <File RelativePath="..\..\Source\Constants\GstConstants.h"/>
+          <File RelativePath="..\..\Source\Constants\GuiConstants.h"/>
+          <File RelativePath="..\..\Source\Constants\IrcConstants.h"/>
+        </Filter>
         <Filter Name="Trace">
           <File RelativePath="..\..\Source\Trace\Trace.h"/>
           <File RelativePath="..\..\Source\Trace\TraceAvCaster.h"/>
@@ -150,55 +186,47 @@
           <File RelativePath="..\..\Source\Trace\TraceIrcClient.h"/>
           <File RelativePath="..\..\Source\Trace\TraceMain.h"/>
         </Filter>
-        <File RelativePath="..\..\Source\AvCaster.h"/>
-        <File RelativePath="..\..\Source\AvCasterStore.h"/>
-        <File RelativePath="..\..\Source\Background.h"/>
-        <File RelativePath="..\..\Source\Chat.h"/>
-        <File RelativePath="..\..\Source\ChatList.h"/>
-        <File RelativePath="..\..\Source\ChatListItem.h"/>
-        <File RelativePath="..\..\Source\Config.h"/>
-        <File RelativePath="..\..\Source\ConfigAudio.h"/>
-        <File RelativePath="..\..\Source\ConfigCamera.h"/>
-        <File RelativePath="..\..\Source\ConfigChat.h"/>
-        <File RelativePath="..\..\Source\ConfigImage.h"/>
-        <File RelativePath="..\..\Source\ConfigOutput.h"/>
-        <File RelativePath="..\..\Source\ConfigScreen.h"/>
-        <File RelativePath="..\..\Source\ConfigText.h"/>
-        <File RelativePath="..\..\Source\Constants.h"/>
-        <File RelativePath="..\..\Source\Controls.h"/>
-        <File RelativePath="..\..\Source\Gstreamer.h"/>
-        <File RelativePath="..\..\Source\IrcClient.h"/>
-        <File RelativePath="..\..\Source\MainContent.h"/>
-        <File RelativePath="..\..\Source\Presets.h"/>
-        <File RelativePath="..\..\Source\PresetSeed.h"/>
-        <File RelativePath="..\..\Source\Preview.h"/>
-        <File RelativePath="..\..\Source\Statusbar.h"/>
       </Filter>
       <Filter Name="Source">
-        <File RelativePath="..\..\Source\AvCaster.cpp"/>
-        <File RelativePath="..\..\Source\AvCasterStore.cpp"/>
-        <File RelativePath="..\..\Source\Background.cpp"/>
-        <File RelativePath="..\..\Source\Chat.cpp"/>
-        <File RelativePath="..\..\Source\ChatList.cpp"/>
-        <File RelativePath="..\..\Source\ChatListItem.cpp"/>
-        <File RelativePath="..\..\Source\Config.cpp"/>
-        <File RelativePath="..\..\Source\ConfigAudio.cpp"/>
-        <File RelativePath="..\..\Source\ConfigCamera.cpp"/>
-        <File RelativePath="..\..\Source\ConfigChat.cpp"/>
-        <File RelativePath="..\..\Source\ConfigImage.cpp"/>
-        <File RelativePath="..\..\Source\ConfigOutput.cpp"/>
-        <File RelativePath="..\..\Source\ConfigScreen.cpp"/>
-        <File RelativePath="..\..\Source\ConfigText.cpp"/>
-        <File RelativePath="..\..\Source\Controls.cpp"/>
-        <File RelativePath="..\..\Source\Gstreamer.cpp"/>
-        <File RelativePath="..\..\Source\IrcClient.cpp"/>
+        <Filter Name="Controllers">
+          <File RelativePath="..\..\Source\Controllers\AvCaster.cpp"/>
+          <File RelativePath="..\..\Source\Controllers\Gstreamer.cpp"/>
+          <File RelativePath="..\..\Source\Controllers\IrcClient.cpp"/>
+        </Filter>
+        <Filter Name="Views">
+          <File RelativePath="..\..\Source\Views\Background.cpp"/>
+          <File RelativePath="..\..\Source\Views\Chat.cpp"/>
+          <File RelativePath="..\..\Source\Views\ChatList.cpp"/>
+          <File RelativePath="..\..\Source\Views\ChatListItem.cpp"/>
+          <File RelativePath="..\..\Source\Views\Config.cpp"/>
+          <File RelativePath="..\..\Source\Views\ConfigAudio.cpp"/>
+          <File RelativePath="..\..\Source\Views\ConfigCamera.cpp"/>
+          <File RelativePath="..\..\Source\Views\ConfigChat.cpp"/>
+          <File RelativePath="..\..\Source\Views\ConfigImage.cpp"/>
+          <File RelativePath="..\..\Source\Views\ConfigOutput.cpp"/>
+          <File RelativePath="..\..\Source\Views\ConfigScreen.cpp"/>
+          <File RelativePath="..\..\Source\Views\ConfigText.cpp"/>
+          <File RelativePath="..\..\Source\Views\Controls.cpp"/>
+          <File RelativePath="..\..\Source\Views\MainContent.cpp"/>
+          <File RelativePath="..\..\Source\Views\Presets.cpp"/>
+          <File RelativePath="..\..\Source\Views\Preview.cpp"/>
+          <File RelativePath="..\..\Source\Views\Statusbar.cpp"/>
+        </Filter>
+        <Filter Name="Models">
+          <File RelativePath="..\..\Source\Models\AvCasterStore.cpp"/>
+          <File RelativePath="..\..\Source\Models\PresetSeed.cpp"/>
+        </Filter>
+        <Filter Name="Trace">
+          <File RelativePath="..\..\Source\Trace\Trace.cpp"/>
+        </Filter>
+        <Filter Name="Constants">
+          <File RelativePath="..\..\Source\Constants\AppConstants.cpp"/>
+          <File RelativePath="..\..\Source\Constants\ConfigConstants.cpp"/>
+          <File RelativePath="..\..\Source\Constants\GstConstants.cpp"/>
+          <File RelativePath="..\..\Source\Constants\GuiConstants.cpp"/>
+          <File RelativePath="..\..\Source\Constants\IrcConstants.cpp"/>
+        </Filter>
         <File RelativePath="..\..\Source\Main.cpp"/>
-        <File RelativePath="..\..\Source\MainContent.cpp"/>
-        <File RelativePath="..\..\Source\Presets.cpp"/>
-        <File RelativePath="..\..\Source\PresetSeed.cpp"/>
-        <File RelativePath="..\..\Source\Preview.cpp"/>
-        <File RelativePath="..\..\Source\Statusbar.cpp"/>
-        <File RelativePath="..\..\Source\Trace\Trace.cpp"/>
       </Filter>
     </Filter>
     <Filter Name="Juce Modules">

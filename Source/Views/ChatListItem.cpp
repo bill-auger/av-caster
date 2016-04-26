@@ -19,7 +19,7 @@
 
 //[Headers] You can add your own extra header files here...
 
-#include "Constants.h"
+#include "../Constants/Constants.h"
 #include "ChatList.h"
 
 //[/Headers]

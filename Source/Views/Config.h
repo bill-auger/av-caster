@@ -23,7 +23,7 @@
 //[Headers]     -- You can add your own extra header files here --
 
 #include "JuceHeader.h"
-#include "Constants.h"
+#include "../Constants/Constants.h"
 #include "ConfigAudio.h"
 #include "ConfigCamera.h"
 #include "ConfigChat.h"
@@ -78,7 +78,7 @@ private:
   void textEditorTextChanged(TextEditor& a_text_editor) override ;
   void textEditorFocusLost  (TextEditor& a_text_editor) override ;
 
-  void initialize        (ValueTree config_store , ValueTree network_store) ;
+  void initialize        (ValueTree config_store , ValueTree network_store , File pictures_dir) ;
   void loadConfig        () ;
   void enableComponents  () ;
   void updateVisibility  (Component* front_component , String group_text ,
@@ -98,6 +98,7 @@ private:
   MainContent*  mainContent ;
   ValueTree     configStore ;
   ValueTree     networkStore ;
+  File          picturesDir ;
   Slider*       displaySlider ;
   Slider*       screenSlider ;
   TextEditor*   screenWidthText ;

@@ -1,6 +1,6 @@
 <table>
   <tr valign="top">
-    <td align="center">
+    <td width="250" align="center">
       <h2>AvCaster</h2>
       <table>
         <tr>
@@ -14,7 +14,7 @@
             <img src="https://img.shields.io/github/issues/bill-auger/av-caster.svg"
                  alt="Issues" width="100" height="18" /></a></td></tr></table></td>
     <td rowspan="2"><h2><i>A light-weight native gStreamer GUI for screencast, webcam, and audio streaming</i></h2>
-    AvCaster is a native appliction built upon the <a href="https://www.juce.com/">JUCE</a> framework, utilizing <a href="https://gstreamer.freedesktop.org/">gStreamer</a> as the media backend and <a href="http://www.ulduzsoft.com/libircclient/">libircclient</a> as the chat backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture (full-screen), webcam (full-screen or overlay), and audio (mono or stereo).  It is moderately configurable, with preset configurations for streaming via popular servers such as <a href="https://www.livecoding.tv/">livecoding.tv</a>, and allows custom user-defined configurations to be stored as additional presets.  This initial implementation is only compatible with GNU/Linux, but it has been designed for portability.  Let us know if it would interest you to see AvCaster ported to another platform (e.g. Windows, Mac, mobile) by leaving a note on the relevant [Cross-platform Milestone](https://github.com/bill-auger/av-caster/issues?q=is%3Aopen+milestone%3A%22cross-platform+version%22+label%3Aepic) issue.  Feel free to open issues for other platforms if they are not yet listed.</td></tr>
+    AvCaster is a native appliction built upon the <a href="https://www.juce.com/">JUCE</a> framework, utilizing <a href="https://gstreamer.freedesktop.org/">gStreamer</a> as the media backend and <a href="http://www.ulduzsoft.com/libircclient/">libircclient</a> as the chat backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture (full-screen), webcam (full-screen or overlay), and audio (mono or stereo).  It is moderately configurable, with preset configurations for streaming via popular servers such as <a href="https://www.livecoding.tv/">livecoding.tv</a>, and allows custom user-defined configurations to be stored as additional presets.  This initial implementation is only compatible with GNU/Linux, but it has been designed for portability.  Let us know if it would interest you to see AvCaster ported to another platform (e.g. Windows, Mac, mobile) by leaving a note on the relevant <a href="https://github.com/bill-auger/av-caster/issues?q=is%3Aopen+milestone%3A%22cross-platform+version%22+label%3Aepic">Cross-platform Milestone</a> issue.  Feel free to open issues for other platforms if they are not yet listed.</td></tr>
   <tr><td>
     <table>
       <tr><th colspan="2">Build Status</th></tr>
@@ -44,12 +44,12 @@ A command-line solution is the obvious choice for such scenarios but obviously l
 
 
 ### Get AvCaster
-*NOTE: AvCaster requires gStreamer >= v1.6.0 and the non-free 'ugly' plugins which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below)*
+_NOTE: AvCaster requires gStreamer >= v1.6.0 and the non-free 'ugly' plugins which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below).  These packages may be available in third-party repositories for some distros; but use of third-party repositories can neither be supported nor endorsed.  For this reason we are currently supporting only Arch , Debian/Ubuntu , and OpenSuse/Suse._
 #### AvCaster Package Repositories
-The [OpenSUSE Build Service][obs] hosts AvCaster x86 and x86-64 binary package repositories for the following distributions:
+The [OpenSuse Build Service][obs] hosts AvCaster x86 and x86-64 binary package repositories for the following distributions:
+  * Debian 8 , Ubuntu 15.10
   * Fedora 23
   * OpenSuse Tumbleweed , Suse SLE 12
-  * Ubuntu 15.10
 
 Follow the [instructions][obs] there to subscribe your package manager or download the latest package for your distribution directly.  Let us know if you would like packaging for another distribution or architecture.
 #### Other GNU/Linux:
@@ -75,7 +75,7 @@ Feel free join the [Gitter Chat][gitter] to post any questions or comments or, w
 
 
 ### Building from Source
-*NOTE: AvCaster requires gStreamer >= v1.6.0*
+_NOTE: AvCaster requires gStreamer >= v1.6.0 and the non-free 'ugly' plugins which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below).  These packages may be available in third-party repositories for some distros; but use of third-party repositories can neither be supported nor endorsed.  For this reason we are currently supporting only Arch , Debian/Ubuntu , and OpenSuse/Suse._
 #### ArchLinux:
 ```
 ### build and install via makepkg ###
@@ -87,7 +87,7 @@ $ makepkg --install ./PKGCONFIG
 ### build dependencies ###
 $ sudo apt-get install build-essential libfreetype6-dev libgstreamer-plugins-base1.0-dev \
                        libircclient-dev libx11-dev libxcursor-dev libxinerama-dev
-### runtime dependencies (Debian 'testing/unstable' , Ubuntu 'wily universe') ###
+### runtime dependencies (Debian 'testing/unstable' , Ubuntu >= 15.10) ###
 $ sudo apt-get install freeglut3 gstreamer1.0-alsa gstreamer1.0-plugins-bad       \
                        gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly        \
                        gstreamer1.0-pulseaudio libfreetype6 libgl1-mesa-glx       \
@@ -101,26 +101,26 @@ $ ./build/av-caster
 #### Fedora:
 ```
 ### build dependencies ###
-$ sudo dnf install freetype-devel gcc-c++ libircclient-devel libX11-devel           \
-                   libXinerama-devel libXcursor-devel gstreamer1-plugins-base-devel
+$ su -c "dnf install freetype-devel gcc-c++ gstreamer1-plugins-base-devel                \
+                     libircclient-devel libX11-devel libXinerama-devel libXcursor-devel"
 ### runtime dependencies (rpmfusion repositories) ###
 $ RPMFUSION_URL=http://download1.rpmfusion.org
 $ FEDORA_VERSION=$(rpm -E %fedora)
-$ REPO1=$RPMFUSION_URL/free/fedora/rpmfusion-free-release-$FEDORA_VERSION.noarch.rpm
-$ REPO2=$RPMFUSION_URL/nonfree/fedora/rpmfusion-nonfree-release-$FEDORA_VERSION.noarch.rpm
-$ sudo dnf install $REPO1 $REPO2
-$ sudo dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
-                   gstreamer1-plugins-ugly libircclient1
+$ REPO1_PKG=$RPMFUSION_URL/free/fedora/rpmfusion-free-release-$FEDORA_VERSION.noarch.rpm
+$ REPO2_PKG=$RPMFUSION_URL/nonfree/fedora/rpmfusion-nonfree-release-$FEDORA_VERSION.noarch.rpm
+$ su -c "dnf install $REPO1_PKG $REPO2_PKG"
+$ su -c "dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
+                     gstreamer1-plugins-ugly libircclient1"
 ### compile ###
 $ cd Builds/Makefile
 $ make CONFIG=Release
 $ ./build/av-caster
 ```
-#### Suse:
+#### OpenSuse/Suse:
 ```
 ### build dependencies ###
-$ sudo zypper install freetype2-devel gcc-c++ libircclient-devel libX11-devel         \
-                      libXinerama-devel libXcursor-devel gstreamer-plugins-base-devel
+$ sudo zypper install freetype2-devel gcc-c++ gstreamer-plugins-base-devel               \
+                      libircclient-devel libX11-devel libXinerama-devel libXcursor-devel
 ### runtime dependencies ###
 $ sudo zypper install gstreamer-plugins-good gstreamer-plugins-bad-free \
                       gstreamer-plugins-ugly libircclient1
@@ -129,6 +129,28 @@ $ cd Builds/Makefile
 $ make CONFIG=Release
 $ ./build/av-caster
 ```
+<!--
+#### RedHat/Centos7:
+```
+### build dependencies (epel and awel repositories) ###
+$ su -c "yum install epel-release"
+$ su -c "yum install http://awel.domblogger.net/7/media/x86_64/awel-media-release-7-3.noarch.rpm"
+$ su -c "yum install awel-gstreamer-release"
+$ su -c "yum clean all && yum update"
+$ su -c "yum install freetype-devel gcc-c++ gstreamer1-plugins-base-devel                \
+                     libircclient-devel libX11-devel libXinerama-devel libXcursor-devel"
+### runtime dependencies (awel repositories) ###
+$ su -c "yum install gstreamer1-plugins-good gstreamer1-plugins-good-jack              \
+                     gstreamer1-plugins-bad-free gstreamer1-plugins-ugly libircclient1 \
+                     gstreamer1-plugins-ugly-mp3 gstreamer1-plugins-ugly-x264"
+### compile ###
+$ su -c "mkdir /usr/include/libircclient/"
+$ su -c "cp /usr/include/libirc*.h /usr/include/libircclient/"
+$ cd Builds/Makefile
+$ make CONFIG=Release
+$ ./build/av-caster
+```
+-->
 #### Other GNU/Linux:
 Install the corresponding libraries as above for your system and compile similarly.
 

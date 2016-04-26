@@ -19,7 +19,7 @@
 
 #include "Gstreamer.h"
 #include "AvCaster.h"
-#include "Trace/TraceAvCaster.h"
+#include "../Trace/TraceAvCaster.h"
 
 
 /* AvCaster public class variables */
@@ -29,13 +29,14 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 /* AvCaster private class variables */
 
-JUCEApplicationBase*     AvCaster::App            = nullptr ; // Initialize()
+ScopedPointer<APP>       AvCaster::App            = nullptr ; // Initialize()
+JUCEApplicationBase*     AvCaster::Main           = nullptr ; // Initialize()
 MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
 #ifndef DISABLE_CHAT
 ScopedPointer<IrcClient> AvCaster::Irc ;                      // Initialize()
 #endif // DISABLE_CHAT
 bool                     AvCaster::IsInitialized  = false ;   // Initialize()
-Array<Identifier>        AvCaster::DisabledFeatures ;         // Initialize()
+NamedValueSet            AvCaster::DisabledFeatures ;         // Initialize()
 bool                     AvCaster::IsMediaEnabled = true ;    // Initialize()
 bool                     AvCaster::IsChatEnabled  = true ;    // Initialize()
 Array<Alert*>            AvCaster::Alerts ;                   // Warning() , Error()
@@ -75,6 +76,8 @@ void AvCaster::SendChat(String chat_message)
   IrcClient::AddUserChat(String::empty , IRC::YOU_NICK , chat_message) ;
 }
 #endif // DISABLE_CHAT
+
+String AvCaster::GstVersionMsg() { return Gstreamer::VersionMsg() ; }
 
 Rectangle<int> AvCaster::GetPreviewBounds() { return Gui->getPreviewBounds() ; }
 
@@ -165,13 +168,10 @@ void AvCaster::UpdateChatters(StringArray nicks) { Store->updateChatters(nicks) 
 
 bool AvCaster::Initialize(JUCEApplicationBase* main_app , MainContent* main_content)
 {
-  App                    = main_app ;
+  App                    = new APP() ;
+  Main                   = main_app ;
   Gui                    = main_content ;
   StringArray cli_params = JUCEApplicationBase::getCommandLineParameterArray() ;
-
-  cli_params.removeEmptyStrings() ; cli_params.removeDuplicates(false) ;
-
-DEBUG_DISABLE_FEATURES
 
   if (HandleCliParams(cli_params)) return false ;
 
@@ -184,31 +184,33 @@ DEBUG_TRACE_INIT_PHASE_2
   // load persistent configuration
   if ((Store = new AvCasterStore()) == nullptr) return false ;
 
-DEBUG_SEED_IRC_NETWORKS
 DEBUG_TRACE_INIT_PHASE_3
+DEBUG_DISABLE_FEATURES
 
   // disable features and controls per cli args
-  DisabledFeatures = ProcessCliParams(cli_params) ;
+  ProcessCliParams(cli_params) ;
   IsMediaEnabled   = !DisabledFeatures.contains(CONFIG::OUTPUT_ID ) ;
   IsChatEnabled    = !DisabledFeatures.contains(CONFIG::NETWORK_ID) ;
   for (int feature_n = 0 ; feature_n < DisabledFeatures.size() ; ++feature_n)
-    DeactivateControl(DisabledFeatures[feature_n]) ;
+    DeactivateControl(DisabledFeatures.getName(feature_n)) ;
 
-DEBUG_DISABLE_FEATURES_NYI
 DEBUG_TRACE_INIT_PHASE_4
 
   // initialze GUI
-  Array<Identifier> disabled_features = Array<Identifier>(DisabledFeatures) ;
-  Gui->initialize(Store->config , Store->network , Store->chatters , disabled_features) ;
+  NamedValueSet disabled_features = NamedValueSet(DisabledFeatures) ;
+  Gui->initialize(Store->config     , Store->network , Store->chatters ,
+                  disabled_features , App->PICTURES_DIR                ) ;
 
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libgtreamer
   void* x_window = Gui->getWindowHandle() ;
-  if (IsMediaEnabled && !Gstreamer::Initialize(Store->config , x_window , disabled_features))
+  if (IsMediaEnabled &&
+     !Gstreamer::Initialize(Store->config , x_window , disabled_features , App->VIDEOS_DIR))
     return false ;
 
 DEBUG_TRACE_INIT_PHASE_6
+DEBUG_SEED_IRC_NETWORKS
 
   // initialize libircclient
 #ifndef DISABLE_CHAT
@@ -251,6 +253,7 @@ DEBUG_TRACE_SHUTDOWN_PHASE_3
   // shutdown storage
   if (Store != nullptr) Store->listen(false) ; IsInitialized = false ;
   if (Store != nullptr) Store->storeConfig() ; Store         = nullptr ;
+  App = nullptr ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
@@ -383,7 +386,7 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
   return false ;
 }
 
-Array<Identifier> AvCaster::ProcessCliParams(StringArray cli_params)
+void AvCaster::ProcessCliParams(StringArray cli_params)
 {
 DEBUG_TRACE_PROCESS_CLI_PARAMS
 
@@ -418,17 +421,14 @@ DEBUG_TRACE_PROCESS_CLI_PARAMS
     else if (*token == APP::CLI_DISABLE_AUDIO_TOKEN  ) is_audio_enabled   = false ;
     else if (*token == APP::CLI_DISABLE_CHAT_TOKEN   ) is_chat_enabled    = false ;
 
-  Array<Identifier> disabled_features ;
-  if (!is_media_enabled  ) disabled_features.add(CONFIG::OUTPUT_ID ) ;
-  if (!is_screen_enabled ) disabled_features.add(CONFIG::SCREEN_ID ) ;
-  if (!is_camera_enabled ) disabled_features.add(CONFIG::CAMERA_ID ) ;
-  if (!is_text_enabled   ) disabled_features.add(CONFIG::TEXT_ID   ) ;
-  if (!is_image_enabled  ) disabled_features.add(CONFIG::IMAGE_ID  ) ;
-  if (!is_preview_enabled) disabled_features.add(CONFIG::PREVIEW_ID) ;
-  if (!is_audio_enabled  ) disabled_features.add(CONFIG::AUDIO_ID  ) ;
-  if (!is_chat_enabled   ) disabled_features.add(CONFIG::NETWORK_ID) ;
-
-  return disabled_features ;
+  if (!is_screen_enabled ) DisabledFeatures.set(CONFIG::SCREEN_ID  , var::null) ;
+  if (!is_camera_enabled ) DisabledFeatures.set(CONFIG::CAMERA_ID  , var::null) ;
+  if (!is_text_enabled   ) DisabledFeatures.set(CONFIG::TEXT_ID    , var::null) ;
+  if (!is_image_enabled  ) DisabledFeatures.set(CONFIG::IMAGE_ID   , var::null) ;
+  if (!is_preview_enabled) DisabledFeatures.set(CONFIG::PREVIEW_ID , var::null) ;
+  if (!is_audio_enabled  ) DisabledFeatures.set(CONFIG::AUDIO_ID   , var::null) ;
+  if (!is_media_enabled  ) DisabledFeatures.set(CONFIG::OUTPUT_ID  , var::null) ;
+  if (!is_chat_enabled   ) DisabledFeatures.set(CONFIG::NETWORK_ID , var::null) ;
 }
 
 bool AvCaster::ValidateEnvironment()
@@ -439,9 +439,10 @@ bool AvCaster::ValidateEnvironment()
 #else // DISABLE_CHAT
   bool is_sufficient_irc_version = true ;
 #endif // DISABLE_CHAT
-  bool is_valid_home_dir         = APP::HOME_DIR   .isDirectory() ;
-  bool is_valid_appdata_dir      = APP::APPDATA_DIR.isDirectory() ;
-  bool is_valid_videos_dir       = APP::VIDEOS_DIR .isDirectory() ;
+  bool is_valid_home_dir         = App->HOME_DIR    .isDirectory() ;
+  bool is_valid_appdata_dir      = App->APPDATA_DIR .isDirectory() ;
+  bool is_valid_pictures_dir     = App->PICTURES_DIR.isDirectory() ;
+  bool is_valid_videos_dir       = App->VIDEOS_DIR  .isDirectory() ;
 
 DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
@@ -477,17 +478,14 @@ Alerts.remove(0) ; return ;
 
 bool AvCaster::InitFail()
 {
-  bool init_fail_pending = App->getApplicationReturnValue() != 0 ;
+  bool init_fail_pending = Main->getApplicationReturnValue() != 0 ;
   bool should_quit       = init_fail_pending && !IsAlertModal && Alerts.size() == 0 ;
 
-  if (should_quit) { App->shutdown() ; App->quit() ; }
+  if (should_quit) { Main->shutdown() ; Main->quit() ; }
 
   return init_fail_pending ;
 }
 
 #ifndef DISABLE_CHAT
-void AvCaster::PumpIrcClient()
-{
-  if (!Irc->isThreadRunning()) Irc->startThread() ;
-}
+void AvCaster::PumpIrcClient() { if (!Irc->isThreadRunning()) Irc->startThread() ; }
 #endif // DISABLE_CHAT

@@ -17,8 +17,8 @@
 \*/
 
 
-#include "AvCaster.h"
-#include "./Trace/TraceMain.h"
+#include "Controllers/AvCaster.h"
+#include "Trace/TraceMain.h"
 
 
 class AvCasterApplication : public JUCEApplication , public MultiTimer
@@ -36,14 +36,17 @@ DEBUG_TRACE_INIT_VERSION
     if (AvCaster::Initialize(this , this->mainWindow->mainContent))
     {
 #ifdef JUCE_LINUX
-      if (APP::DESKTOP_FILE.loadFileAsString() != APP::DESKTOP_TEXT)
-        APP::DESKTOP_FILE.replaceWithText(APP::DESKTOP_TEXT) ;
-      if (APP::ICON_FILE.getSize() != APP::LOGO_FILE.getSize())
+      // create desktop launch file
+      if (AvCaster::App->DESKTOP_FILE.loadFileAsString() != AvCaster::App->DESKTOP_TEXT)
+        AvCaster::App->DESKTOP_FILE.replaceWithText(AvCaster::App->DESKTOP_TEXT) ;
+
+      // create desktop icon
+      if (AvCaster::App->ICON_FILE.getSize() != AvCaster::App->LOGO_FILE.getSize())
       {
         PNGImageFormat    image_format = PNGImageFormat() ;
         Image             icon_image   = ImageCache::getFromMemory(BinaryData::avcaster_png    ,
                                                                    BinaryData::avcaster_pngSize) ;
-        FileOutputStream* icon_stream  = new FileOutputStream(APP::ICON_FILE) ;
+        FileOutputStream* icon_stream  = new FileOutputStream(AvCaster::App->ICON_FILE) ;
         if (!icon_stream->failedToOpen())
           image_format.writeImageToStream(icon_image , *icon_stream) ;
         delete icon_stream ;
@@ -60,8 +63,12 @@ DEBUG_TRACE_INIT_VERSION
 
   void startTimers()
   {
+#ifndef DEBUG_QUIT_BEFORE_MAIN_LOOP
     for (int timer_n = 0 ; timer_n < APP::N_TIMERS ; ++timer_n)
       startTimer(APP::TIMER_IDS[timer_n] , APP::TIMER_IVLS[timer_n]) ;
+#else // DEBUG_QUIT_BEFORE_MAIN_LOOP
+    Trace::TraceEvent("forced quit") ; shutdown() ; quit() ;
+#endif // DEBUG_QUIT_BEFORE_MAIN_LOOP
   }
 
   void stopTimers()
@@ -152,15 +159,15 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
 private:
 
-#ifndef DEBUG_QUIT_IMMEDIATELY
+#ifndef DEBUG_QUIT_AFTER_MAIN_LOOP
   void timerCallback(int timer_id) override { AvCaster::HandleTimer(timer_id) ; }
-#else // DEBUG_QUIT_IMMEDIATELY
+#else // DEBUG_QUIT_AFTER_MAIN_LOOP
   void timerCallback(int timer_id) override
   {
     if (timer_id != APP::TIMER_LO_ID) AvCaster::HandleTimer(timer_id) ;
     else                              { Trace::TraceEvent("forced quit") ; quit() ; }
   }
-#endif // DEBUG_QUIT_IMMEDIATELY
+#endif // DEBUG_QUIT_AFTER_MAIN_LOOP
 
   ScopedPointer<MainWindow> mainWindow ;
 } ;

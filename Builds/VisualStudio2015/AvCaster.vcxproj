@@ -58,7 +58,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.16.000;JUCE_APP_VERSION_HEX=0x1000;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.16.002;JUCE_APP_VERSION_HEX=0x1002;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -99,7 +99,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.16.000;JUCE_APP_VERSION_HEX=0x1000;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2015_78A5022=1;JUCE_APP_VERSION=0.16.002;JUCE_APP_VERSION_HEX=0x1002;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader/>
@@ -131,30 +131,35 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\AvCaster.cpp"/>
-    <ClCompile Include="..\..\Source\AvCasterStore.cpp"/>
-    <ClCompile Include="..\..\Source\Background.cpp"/>
-    <ClCompile Include="..\..\Source\Chat.cpp"/>
-    <ClCompile Include="..\..\Source\ChatList.cpp"/>
-    <ClCompile Include="..\..\Source\ChatListItem.cpp"/>
-    <ClCompile Include="..\..\Source\Config.cpp"/>
-    <ClCompile Include="..\..\Source\ConfigAudio.cpp"/>
-    <ClCompile Include="..\..\Source\ConfigCamera.cpp"/>
-    <ClCompile Include="..\..\Source\ConfigChat.cpp"/>
-    <ClCompile Include="..\..\Source\ConfigImage.cpp"/>
-    <ClCompile Include="..\..\Source\ConfigOutput.cpp"/>
-    <ClCompile Include="..\..\Source\ConfigScreen.cpp"/>
-    <ClCompile Include="..\..\Source\ConfigText.cpp"/>
-    <ClCompile Include="..\..\Source\Controls.cpp"/>
-    <ClCompile Include="..\..\Source\Gstreamer.cpp"/>
-    <ClCompile Include="..\..\Source\IrcClient.cpp"/>
-    <ClCompile Include="..\..\Source\Main.cpp"/>
-    <ClCompile Include="..\..\Source\MainContent.cpp"/>
-    <ClCompile Include="..\..\Source\Presets.cpp"/>
-    <ClCompile Include="..\..\Source\PresetSeed.cpp"/>
-    <ClCompile Include="..\..\Source\Preview.cpp"/>
-    <ClCompile Include="..\..\Source\Statusbar.cpp"/>
+    <ClCompile Include="..\..\Source\Controllers\AvCaster.cpp"/>
+    <ClCompile Include="..\..\Source\Controllers\Gstreamer.cpp"/>
+    <ClCompile Include="..\..\Source\Controllers\IrcClient.cpp"/>
+    <ClCompile Include="..\..\Source\Views\Background.cpp"/>
+    <ClCompile Include="..\..\Source\Views\Chat.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ChatList.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ChatListItem.cpp"/>
+    <ClCompile Include="..\..\Source\Views\Config.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ConfigAudio.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ConfigCamera.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ConfigChat.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ConfigImage.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ConfigOutput.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ConfigScreen.cpp"/>
+    <ClCompile Include="..\..\Source\Views\ConfigText.cpp"/>
+    <ClCompile Include="..\..\Source\Views\Controls.cpp"/>
+    <ClCompile Include="..\..\Source\Views\MainContent.cpp"/>
+    <ClCompile Include="..\..\Source\Views\Presets.cpp"/>
+    <ClCompile Include="..\..\Source\Views\Preview.cpp"/>
+    <ClCompile Include="..\..\Source\Views\Statusbar.cpp"/>
+    <ClCompile Include="..\..\Source\Models\AvCasterStore.cpp"/>
+    <ClCompile Include="..\..\Source\Models\PresetSeed.cpp"/>
     <ClCompile Include="..\..\Source\Trace\Trace.cpp"/>
+    <ClCompile Include="..\..\Source\Constants\AppConstants.cpp"/>
+    <ClCompile Include="..\..\Source\Constants\ConfigConstants.cpp"/>
+    <ClCompile Include="..\..\Source\Constants\GstConstants.cpp"/>
+    <ClCompile Include="..\..\Source\Constants\GuiConstants.cpp"/>
+    <ClCompile Include="..\..\Source\Constants\IrcConstants.cpp"/>
+    <ClCompile Include="..\..\Source\Main.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharacterFunctions.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -910,6 +915,34 @@
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_gui_basics\juce_gui_basics.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Views\Background.h"/>
+    <ClInclude Include="..\..\Source\Views\Chat.h"/>
+    <ClInclude Include="..\..\Source\Views\ChatList.h"/>
+    <ClInclude Include="..\..\Source\Views\ChatListItem.h"/>
+    <ClInclude Include="..\..\Source\Views\Config.h"/>
+    <ClInclude Include="..\..\Source\Views\ConfigAudio.h"/>
+    <ClInclude Include="..\..\Source\Views\ConfigCamera.h"/>
+    <ClInclude Include="..\..\Source\Views\ConfigChat.h"/>
+    <ClInclude Include="..\..\Source\Views\ConfigImage.h"/>
+    <ClInclude Include="..\..\Source\Views\ConfigOutput.h"/>
+    <ClInclude Include="..\..\Source\Views\ConfigScreen.h"/>
+    <ClInclude Include="..\..\Source\Views\ConfigText.h"/>
+    <ClInclude Include="..\..\Source\Views\Controls.h"/>
+    <ClInclude Include="..\..\Source\Views\MainContent.h"/>
+    <ClInclude Include="..\..\Source\Views\Presets.h"/>
+    <ClInclude Include="..\..\Source\Views\Preview.h"/>
+    <ClInclude Include="..\..\Source\Views\Statusbar.h"/>
+    <ClInclude Include="..\..\Source\Controllers\AvCaster.h"/>
+    <ClInclude Include="..\..\Source\Controllers\Gstreamer.h"/>
+    <ClInclude Include="..\..\Source\Controllers\IrcClient.h"/>
+    <ClInclude Include="..\..\Source\Models\AvCasterStore.h"/>
+    <ClInclude Include="..\..\Source\Models\PresetSeed.h"/>
+    <ClInclude Include="..\..\Source\Constants\AppConstants.h"/>
+    <ClInclude Include="..\..\Source\Constants\ConfigConstants.h"/>
+    <ClInclude Include="..\..\Source\Constants\Constants.h"/>
+    <ClInclude Include="..\..\Source\Constants\GstConstants.h"/>
+    <ClInclude Include="..\..\Source\Constants\GuiConstants.h"/>
+    <ClInclude Include="..\..\Source\Constants\IrcConstants.h"/>
     <ClInclude Include="..\..\Source\Trace\Trace.h"/>
     <ClInclude Include="..\..\Source\Trace\TraceAvCaster.h"/>
     <ClInclude Include="..\..\Source\Trace\TraceAvCasterStore.h"/>
@@ -918,29 +951,6 @@
     <ClInclude Include="..\..\Source\Trace\TraceGstreamer.h"/>
     <ClInclude Include="..\..\Source\Trace\TraceIrcClient.h"/>
     <ClInclude Include="..\..\Source\Trace\TraceMain.h"/>
-    <ClInclude Include="..\..\Source\AvCaster.h"/>
-    <ClInclude Include="..\..\Source\AvCasterStore.h"/>
-    <ClInclude Include="..\..\Source\Background.h"/>
-    <ClInclude Include="..\..\Source\Chat.h"/>
-    <ClInclude Include="..\..\Source\ChatList.h"/>
-    <ClInclude Include="..\..\Source\ChatListItem.h"/>
-    <ClInclude Include="..\..\Source\Config.h"/>
-    <ClInclude Include="..\..\Source\ConfigAudio.h"/>
-    <ClInclude Include="..\..\Source\ConfigCamera.h"/>
-    <ClInclude Include="..\..\Source\ConfigChat.h"/>
-    <ClInclude Include="..\..\Source\ConfigImage.h"/>
-    <ClInclude Include="..\..\Source\ConfigOutput.h"/>
-    <ClInclude Include="..\..\Source\ConfigScreen.h"/>
-    <ClInclude Include="..\..\Source\ConfigText.h"/>
-    <ClInclude Include="..\..\Source\Constants.h"/>
-    <ClInclude Include="..\..\Source\Controls.h"/>
-    <ClInclude Include="..\..\Source\Gstreamer.h"/>
-    <ClInclude Include="..\..\Source\IrcClient.h"/>
-    <ClInclude Include="..\..\Source\MainContent.h"/>
-    <ClInclude Include="..\..\Source\Presets.h"/>
-    <ClInclude Include="..\..\Source\PresetSeed.h"/>
-    <ClInclude Include="..\..\Source\Preview.h"/>
-    <ClInclude Include="..\..\Source\Statusbar.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharacterFunctions.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharPointer_ASCII.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharPointer_UTF8.h"/>

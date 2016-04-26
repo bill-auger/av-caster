@@ -64,33 +64,15 @@ StringArray DisableFeatures()
 
 #  define DEBUG_DISABLE_FEATURES                                                \
   String dbg = "disabling feature per #define constant '" ;                     \
+  cli_params.removeEmptyStrings() ;                                             \
   cli_params.addArray(DisableFeatures()) ; cli_params.removeDuplicates(false) ; \
 /*cli_params.mergeArray(DisabledFeatures()) ; // TODO: JUCE 4 feature */        \
   for (int switch_n = 0 ; switch_n < cli_params.size() ; ++switch_n)            \
-    Trace::TraceState(dbg + cli_params[switch_n] + "'")                         ;
-
-#  if TEXT_BIN_NYI && IMAGE_BIN_NYI
-#    define DEBUG_DISABLE_FEATURES_NYI        \
-  Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ; \
-  Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ; \
-  DisabledFeatures.add(CONFIG::TEXT_ID ) ;    \
-  DisabledFeatures.add(CONFIG::IMAGE_ID) ;    \
-  DeactivateControl(CONFIG::TEXT_ID ) ;       \
-  DeactivateControl(CONFIG::IMAGE_ID)         ;
-#  else // TEXT_BIN_NYI && IMAGE_BIN_NYI
-#    if TEXT_BIN_NYI
-#      define DEBUG_DISABLE_FEATURES_NYI      \
-  Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ; \
-  DisabledFeatures.add(CONFIG::TEXT_ID ) ;    \
-  DeactivateControl(CONFIG::TEXT_ID )         ;
-#    endif // TEXT_BIN_NYI
-#    if IMAGE_BIN_NYI
-#      define DEBUG_DISABLE_FEATURES_NYI      \
-  Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ; \
-  DisabledFeatures.add(CONFIG::IMAGE_ID) ;    \
-  DeactivateControl(CONFIG::IMAGE_ID)         ;
-#    endif // IMAGE_BIN_NYI
-#  endif // TEXT_BIN_NYI && IMAGE_BIN_NYI
+    Trace::TraceState(dbg + cli_params[switch_n] + "'") ;                       \
+  if (TEXT_BIN_NYI ) { Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ;              \
+                       DisabledFeatures.set(CONFIG::TEXT_ID  , var::null) ; }   \
+  if (IMAGE_BIN_NYI) { Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ;              \
+                       DisabledFeatures.set(CONFIG::IMAGE_ID , var::null) ; }
 
 
 void SeedIrcNetworks()
@@ -161,6 +143,7 @@ void SeedIrcNetworks()
   if (!is_sufficient_irc_version) { is_err = true ; dbg += " insufficient libircclient version" ; } \
   if (!is_valid_home_dir        ) { is_err = true ; dbg += " invlaid HOME_DIR" ;                  } \
   if (!is_valid_appdata_dir     ) { is_err = true ; dbg += " invlaid APPDATA_DIR" ;               } \
+  if (!is_valid_pictures_dir    ) { is_err = true ; dbg += " invlaid PICTURES_DIR" ;              } \
   if (!is_valid_videos_dir      ) { is_err = true ; dbg += " invlaid VIDEOS_DIR" ;                } \
   if (is_err) Trace::TraceError(dbg) ; else Trace::TraceState("environment is sane")                ;
 
@@ -202,26 +185,25 @@ void SeedIrcNetworks()
 
 #else // DEBUG_TRACE
 
-#  define DEBUG_DISABLE_FEATURES                    ;
-#  define DEBUG_DISABLE_FEATURES_NYI                ;
-#  define DEBUG_SEED_IRC_NETWORKS                   ;
-#  define DEBUG_TRACE_INIT_PHASE_1                  ;
-#  define DEBUG_TRACE_INIT_PHASE_2                  ;
-#  define DEBUG_TRACE_INIT_PHASE_3                  ;
-#  define DEBUG_TRACE_INIT_PHASE_4                  ;
-#  define DEBUG_TRACE_INIT_PHASE_5                  ;
-#  define DEBUG_TRACE_INIT_PHASE_6                  ;
-#  define DEBUG_TRACE_INIT_PHASE_7                  ;
-#  define DEBUG_TRACE_INIT_PHASE_8                  ;
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS             ;
-#  define DEBUG_TRACE_PROCESS_CLI_PARAMS            ;
-#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT          ;
-#  define DEBUG_TRACE_REFRESH_GUI                   ;
-#  define DEBUG_TRACE_SHUTDOWN_PHASE_1              ;
-#  define DEBUG_TRACE_SHUTDOWN_PHASE_2              ;
-#  define DEBUG_TRACE_SHUTDOWN_PHASE_3              ;
-#  define DEBUG_TRACE_HANDLE_CONFIG_CHANGE          ;
-#  define DEBUG_TRACE_DISPLAY_ALERT                 ;
+#  define DEBUG_DISABLE_FEATURES           ;
+#  define DEBUG_SEED_IRC_NETWORKS          ;
+#  define DEBUG_TRACE_INIT_PHASE_1         ;
+#  define DEBUG_TRACE_INIT_PHASE_2         ;
+#  define DEBUG_TRACE_INIT_PHASE_3         ;
+#  define DEBUG_TRACE_INIT_PHASE_4         ;
+#  define DEBUG_TRACE_INIT_PHASE_5         ;
+#  define DEBUG_TRACE_INIT_PHASE_6         ;
+#  define DEBUG_TRACE_INIT_PHASE_7         ;
+#  define DEBUG_TRACE_INIT_PHASE_8         ;
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS    ;
+#  define DEBUG_TRACE_PROCESS_CLI_PARAMS   ;
+#  define DEBUG_TRACE_VALIDATE_ENVIRONMENT ;
+#  define DEBUG_TRACE_REFRESH_GUI          ;
+#  define DEBUG_TRACE_SHUTDOWN_PHASE_1     ;
+#  define DEBUG_TRACE_SHUTDOWN_PHASE_2     ;
+#  define DEBUG_TRACE_SHUTDOWN_PHASE_3     ;
+#  define DEBUG_TRACE_HANDLE_CONFIG_CHANGE ;
+#  define DEBUG_TRACE_DISPLAY_ALERT        ;
 
 #endif // DEBUG_TRACE
 #endif // _TRACEAVCASTER_H_

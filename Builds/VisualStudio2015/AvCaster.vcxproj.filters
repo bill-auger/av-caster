@@ -11,11 +11,38 @@
     <Filter Include="AvCaster\Headers">
       <UniqueIdentifier>{F7EC2F34-0A47-6CA9-C26A-387406BEF86F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AvCaster\Headers\Views">
+      <UniqueIdentifier>{5E34CC95-1E47-8BD1-7CFB-F73827CEFC1C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvCaster\Headers\Controllers">
+      <UniqueIdentifier>{67BE24C5-0277-23E6-9108-42337C29F792}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvCaster\Headers\Models">
+      <UniqueIdentifier>{6EF8008C-4CD6-2451-3626-5935E9DC5FAC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvCaster\Headers\Constants">
+      <UniqueIdentifier>{98EA8235-5B6C-CE87-AA05-0878243EAD1B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="AvCaster\Headers\Trace">
       <UniqueIdentifier>{3B7F33ED-6B8B-CFE6-60A9-C49913C31EAC}</UniqueIdentifier>
     </Filter>
     <Filter Include="AvCaster\Source">
       <UniqueIdentifier>{4F03CD23-F21F-9C0D-B349-86305356DA89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvCaster\Source\Controllers">
+      <UniqueIdentifier>{8AD59A18-F0D1-75D5-5057-B1E2683D73C7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvCaster\Source\Views">
+      <UniqueIdentifier>{1BB63251-0E34-5976-0877-850581B546FF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvCaster\Source\Models">
+      <UniqueIdentifier>{EA4170E5-49FC-E277-75B0-A8888198943D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvCaster\Source\Trace">
+      <UniqueIdentifier>{392D1D45-DC42-2690-5F1E-78CAF65BA45F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvCaster\Source\Constants">
+      <UniqueIdentifier>{C4A1A736-CEBB-A718-11EA-05D60208BCF4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Juce Modules">
       <UniqueIdentifier>{422C46B7-0467-2DB0-BF3C-16DFCAFD69AC}</UniqueIdentifier>
@@ -193,76 +220,91 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\AvCaster.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Controllers\AvCaster.cpp">
+      <Filter>AvCaster\Source\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\AvCasterStore.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Controllers\Gstreamer.cpp">
+      <Filter>AvCaster\Source\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Background.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Controllers\IrcClient.cpp">
+      <Filter>AvCaster\Source\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Chat.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\Background.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ChatList.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\Chat.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ChatListItem.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ChatList.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Config.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ChatListItem.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ConfigAudio.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\Config.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ConfigCamera.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ConfigAudio.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ConfigChat.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ConfigCamera.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ConfigImage.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ConfigChat.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ConfigOutput.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ConfigImage.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ConfigScreen.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ConfigOutput.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ConfigText.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ConfigScreen.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Controls.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\ConfigText.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Gstreamer.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\Controls.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\IrcClient.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\MainContent.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Main.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\Presets.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\MainContent.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\Preview.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Presets.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Views\Statusbar.cpp">
+      <Filter>AvCaster\Source\Views</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\PresetSeed.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Models\AvCasterStore.cpp">
+      <Filter>AvCaster\Source\Models</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Preview.cpp">
-      <Filter>AvCaster\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Statusbar.cpp">
-      <Filter>AvCaster\Source</Filter>
+    <ClCompile Include="..\..\Source\Models\PresetSeed.cpp">
+      <Filter>AvCaster\Source\Models</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Trace\Trace.cpp">
+      <Filter>AvCaster\Source\Trace</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Constants\AppConstants.cpp">
+      <Filter>AvCaster\Source\Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Constants\ConfigConstants.cpp">
+      <Filter>AvCaster\Source\Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Constants\GstConstants.cpp">
+      <Filter>AvCaster\Source\Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Constants\GuiConstants.cpp">
+      <Filter>AvCaster\Source\Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Constants\IrcConstants.cpp">
+      <Filter>AvCaster\Source\Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Main.cpp">
       <Filter>AvCaster\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharacterFunctions.cpp">
@@ -1080,6 +1122,90 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Views\Background.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\Chat.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ChatList.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ChatListItem.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\Config.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ConfigAudio.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ConfigCamera.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ConfigChat.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ConfigImage.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ConfigOutput.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ConfigScreen.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\ConfigText.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\Controls.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\MainContent.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\Presets.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\Preview.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Views\Statusbar.h">
+      <Filter>AvCaster\Headers\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Controllers\AvCaster.h">
+      <Filter>AvCaster\Headers\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Controllers\Gstreamer.h">
+      <Filter>AvCaster\Headers\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Controllers\IrcClient.h">
+      <Filter>AvCaster\Headers\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Models\AvCasterStore.h">
+      <Filter>AvCaster\Headers\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Models\PresetSeed.h">
+      <Filter>AvCaster\Headers\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Constants\AppConstants.h">
+      <Filter>AvCaster\Headers\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Constants\ConfigConstants.h">
+      <Filter>AvCaster\Headers\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Constants\Constants.h">
+      <Filter>AvCaster\Headers\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Constants\GstConstants.h">
+      <Filter>AvCaster\Headers\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Constants\GuiConstants.h">
+      <Filter>AvCaster\Headers\Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Constants\IrcConstants.h">
+      <Filter>AvCaster\Headers\Constants</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Trace\Trace.h">
       <Filter>AvCaster\Headers\Trace</Filter>
     </ClInclude>
@@ -1103,75 +1229,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Trace\TraceMain.h">
       <Filter>AvCaster\Headers\Trace</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\AvCaster.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\AvCasterStore.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Background.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Chat.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ChatList.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ChatListItem.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Config.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ConfigAudio.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ConfigCamera.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ConfigChat.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ConfigImage.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ConfigOutput.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ConfigScreen.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\ConfigText.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Constants.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Controls.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Gstreamer.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\IrcClient.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\MainContent.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Presets.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PresetSeed.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Preview.h">
-      <Filter>AvCaster\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Statusbar.h">
-      <Filter>AvCaster\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharacterFunctions.h">
       <Filter>Juce Modules\juce_core\text</Filter>

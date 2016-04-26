@@ -19,7 +19,7 @@
 
 //[Headers] You can add your own extra header files here...
 
-#include "AvCaster.h"
+#include "../Controllers/AvCaster.h"
 
 //[/Headers]
 
@@ -269,9 +269,9 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 void Controls::broughtToFront() { loadConfig() ; }
 
-void Controls::initialize(ValueTree config_store , Array<Identifier> disabled_features)
+void Controls::initialize(ValueTree config_store , NamedValueSet& disabled_features)
 {
-  this->configStore  = config_store ;
+  this->configStore = config_store ;
 
   // disable controls per cli args
   this->screenToggle ->setEnabled(!disabled_features.contains(CONFIG::SCREEN_ID )) ;

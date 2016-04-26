@@ -4,6 +4,12 @@ sudo:     required
 dist:     trusty
 group:    edge
 
+git:
+  depth: 1
+
+branches:
+  except: master
+
 notifications:
   email: false
   irc:
@@ -12,8 +18,7 @@ notifications:
     on_failure: always
     on_start:   never
   webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/1fcf27221a4243f787d8
+    urls: https://webhooks.gitter.im/e/1fcf27221a4243f787d8
     on_success: always
     on_failure: always
     on_start:   never
@@ -37,11 +42,10 @@ script:
   - wget $LIBIRCCLIENT_MIRROR/$LIBIRCCLIENTDEV
   - sudo dpkg -i $LIBIRCCLIENT
   - sudo dpkg -i $LIBIRCCLIENTDEV
-  - mkdir libircclient
-  - cp /usr/include/libirc* libircclient/
-  - sudo mv libircclient/ /usr/include/
+  - sudo mkdir /usr/include/libircclient/
+  - sudo mv    /usr/include/libirc*.h     /usr/include/libircclient/
   - make CONFIG=Release # TARGET_ARCH='-march=x86-64'
-  - # $BUILD_DIR/build/$PROJECT_NAME --version
+
 
 after_script:
   - echo "build stage ended"

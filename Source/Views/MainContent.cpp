@@ -19,8 +19,8 @@
 
 //[Headers] You can add your own extra header files here...
 
-#include "AvCaster.h"
-#include "Trace/Trace.h"
+#include "../Controllers/AvCaster.h"
+#include "../Trace/Trace.h"
 
 //[/Headers]
 
@@ -185,12 +185,13 @@ void MainContent::loadPresetsCombo(ComboBox* a_combobox)
   a_combobox->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
 }
 
-void MainContent::initialize(ValueTree config_store   , ValueTree network_store             ,
-                             ValueTree chatters_store , Array<Identifier> disabled_features )
+void MainContent::initialize(ValueTree config_store   , ValueTree network_store          ,
+                             ValueTree chatters_store , NamedValueSet& disabled_features ,
+                             File      pictures_dir                                      )
 {
-  this->controls      ->initialize(config_store  , disabled_features) ;
-  this->config        ->initialize(config_store  , network_store    ) ;
-  this->chat->chatList->initialize(network_store , chatters_store   ) ;
+  this->controls      ->initialize(config_store  , disabled_features              ) ;
+  this->config        ->initialize(config_store  , network_store    , pictures_dir) ;
+  this->chat->chatList->initialize(network_store , chatters_store                 ) ;
 }
 
 void MainContent::warning(String message_text)

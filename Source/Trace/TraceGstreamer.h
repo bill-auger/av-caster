@@ -41,8 +41,9 @@
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_7 Trace::TraceState("Gstreamer ready") ;
 
-#  define DEBUG_DUMP_MEDIA_SWITCHES                                                        \
-  Trace::TraceMediaVb(String("pipeline configuration params =>")             + \
+#  define DEBUG_DUMP_MEDIA_SWITCHES                                            \
+  if (!is_config_sane || DEBUG_TRACE_MEDIA_VB)                                 \
+    Trace::TraceMedia(String("pipeline configuration params =>")             + \
                       "\n\tn_video_inputs="     + String(n_video_inputs    ) + \
                       "\n\tis_media_enabled="   + String(is_media_enabled  ) + \
                       "\n\tis_screen_enabled="  + String(is_screen_enabled ) + \
@@ -330,10 +331,6 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_GET_STATIC_PAD  String pad_avail = "static " ; DEBUG_TRACE_GET_PAD
 #  define DEBUG_TRACE_GET_REQUEST_PAD String pad_avail = "request" ; DEBUG_TRACE_GET_PAD
 
-#  define DEBUG_TRACE_VERSION                                                                      \
-  Trace::TraceMedia("detected gStreamer v" + String(major_version) + "." + String(minor_version) + \
-                                       "." + String(micro_version) + "." + String(nano_version))   ;
-
 #  define DEBUG_MAKE_GRAPHVIZ                                                                  \
   String color = (DEBUG_ANSI_COLORS) ? "\033[1;34m" : "" ;                                     \
   String cend  = (DEBUG_ANSI_COLORS) ? "\033[0m"    : "" ;                                     \
@@ -407,7 +404,6 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_GET_PAD                   ;
 #  define DEBUG_TRACE_GET_STATIC_PAD            ;
 #  define DEBUG_TRACE_GET_REQUEST_PAD           ;
-#  define DEBUG_TRACE_VERSION                   ;
 #  define DEBUG_MAKE_GRAPHVIZ                   ;
 
 #endif // DEBUG_TRACE

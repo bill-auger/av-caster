@@ -21,7 +21,7 @@
 #define _TRACE_H_
 
 #include "JuceHeader.h"
-#include "../Constants.h"
+#include "../Constants/Constants.h"
 
 
 #ifdef DEBUG_TRACE

@@ -19,8 +19,8 @@
 
 //[Headers] You can add your own extra header files here...
 
-#include "AvCaster.h"
-#include "Trace/TraceConfig.h"
+#include "../Controllers/AvCaster.h"
+#include "../Trace/TraceConfig.h"
 
 //[/Headers]
 
@@ -466,7 +466,7 @@ void Config::buttonClicked(Button* a_button)
   // Image buttons
   else if (a_button == this->browseButton)
   {
-    FileChooser           file_chooser(GUI::IMAGE_CHOOSER_TEXT  , APP::PICTURES_DIR ,
+    FileChooser           file_chooser(GUI::IMAGE_CHOOSER_TEXT  , this->picturesDir ,
                                        GUI::IMG_FILE_EXTENSIONS , false             ) ;
     ImagePreviewComponent image_preview ;
 //     image_preview.setSize(GUI::IMG_PREVIEW_W , GUI::IMG_PREVIEW_H) ; // NFG
@@ -530,10 +530,11 @@ void Config::textEditorFocusLost(TextEditor& a_text_editor)
   AvCaster::SetValue(key , value) ;
 }
 
-void Config::initialize(ValueTree config_store , ValueTree network_store)
+void Config::initialize(ValueTree config_store , ValueTree network_store , File pictures_dir)
 {
   this->configStore  = config_store ;
   this->networkStore = network_store ;
+  this->picturesDir  = pictures_dir ;
 }
 
 void Config::loadConfig()

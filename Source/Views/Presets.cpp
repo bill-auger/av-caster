@@ -19,8 +19,8 @@
 
 //[Headers] You can add your own extra header files here...
 
-#include "AvCaster.h"
-#include "Trace/TraceConfig.h"
+#include "../Controllers/AvCaster.h"
+#include "../Trace/TraceConfig.h"
 
 //[/Headers]
 

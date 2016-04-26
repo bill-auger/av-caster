@@ -23,10 +23,10 @@
 
 #include "AvCaster.h"
 #include "Gstreamer.h"
-#include "Trace/TraceGstreamer.h"
+#include "../Trace/TraceGstreamer.h"
 
 
-/* GstElement private class variables */
+/* Gstreamer private class variables */
 
 GstElement* Gstreamer::Pipeline         = nullptr ;            // Initialize()
 GstElement* Gstreamer::ScreencapBin     = nullptr ;            // Initialize()
@@ -55,18 +55,20 @@ GstElement* Gstreamer::OutputBin        = nullptr ;            // Initialize()
 GstElement* Gstreamer::OutputQueue      = nullptr ;            // BuildOutputBin()
 GstElement* Gstreamer::OutputFileSink   = nullptr ;            // BuildOutputBin()
 GstElement* Gstreamer::OutputRtmpSink   = nullptr ;            // BuildOutputBin()
-GstElement* Gstreamer::OutputFauxSink   = nullptr ;            // BuildOutputBin()            // Initialize()
+GstElement* Gstreamer::OutputFauxSink   = nullptr ;            // BuildOutputBin()
 ValueTree   Gstreamer::ConfigStore      = ValueTree::invalid ; // Initialize()
 guintptr    Gstreamer::PreviewXwin      = 0    ;               // Initialize()
+File        Gstreamer::VideosDir ;                             // Initialize()
 
 
-/* GstElement private class methods */
+/* Gstreamer private class methods */
 
-bool Gstreamer::Initialize(ValueTree         config_store      , void* x_window ,
-                           Array<Identifier> disabled_features                  )
+bool Gstreamer::Initialize(ValueTree      config_store      , void* x_window ,
+                           NamedValueSet& disabled_features , File videos_dir)
 {
   ConfigStore = config_store ;
   PreviewXwin = (guintptr)x_window ;
+  VideosDir   = videos_dir ;
 
 DEBUG_TRACE_GST_INIT_PHASE_1
 
@@ -92,7 +94,7 @@ DEBUG_TRACE_GST_INIT_PHASE_2
   // assert dependent compositor elements (TODO: remove these restrictions allowing any configuration)
   int n_video_inputs  = ((is_screen_enabled) ? 1 : 0) + ((is_camera_enabled) ? 1 : 0) +
                         ((is_text_enabled  ) ? 1 : 0) + ((is_image_enabled ) ? 1 : 0) ;
-  is_vmixer_enabled   = is_media_enabled && n_video_inputs == APP::N_COMPOSITOR_INPUTS ;
+  is_vmixer_enabled   = is_media_enabled && n_video_inputs == GST::N_COMPOSITOR_INPUTS ;
   is_preview_enabled  = is_preview_enabled && is_vmixer_enabled ;
   bool is_config_sane = !is_media_enabled || is_vmixer_enabled || n_video_inputs == 1 ;
 
@@ -489,17 +491,28 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
   ConfigureQueue     (composite_thru_queue , 0    , 0 , 0) ;
 
   // link elements
-  if (!AddElement  (CompositorBin , fullscreen_queue    )  ||
-      !AddElement  (CompositorBin , overlay_queue       )  ||
-      !AddElement  (CompositorBin , compositor          )  ||
-      !AddElement  (CompositorBin , capsfilter          )  ||
-      !AddElement  (CompositorBin , converter           )  ||
-      !AddElement  (CompositorBin , composite_tee       )  ||
-      !AddElement  (CompositorBin , composite_sink_queue)  ||
-      !AddElement  (CompositorBin , composite_thru_queue)  ||
-      !LinkElements(compositor           , capsfilter    ) ||
-      !LinkElements(capsfilter           , converter     ) ||
-      !LinkElements(converter            , composite_tee )  )
+#define GST_COMPOSITOR_BUG
+#ifndef GST_COMPOSITOR_BUG
+  if (!AddElement  (CompositorBin , fullscreen_queue    ) ||
+      !AddElement  (CompositorBin , overlay_queue       ) ||
+      !AddElement  (CompositorBin , compositor          ) ||
+      !AddElement  (CompositorBin , capsfilter          ) ||
+      !AddElement  (CompositorBin , converter           ) ||
+      !AddElement  (CompositorBin , composite_tee       ) ||
+      !AddElement  (CompositorBin , composite_sink_queue) ||
+      !AddElement  (CompositorBin , composite_thru_queue) ||
+      !LinkElements(compositor , capsfilter   )           ||
+      !LinkElements(capsfilter , converter    )           ||
+      !LinkElements(converter  , composite_tee)            )
+#else // GST_COMPOSITOR_BUG
+  if (!AddElement  (CompositorBin , fullscreen_queue    ) ||
+      !AddElement  (CompositorBin , overlay_queue       ) ||
+      !AddElement  (CompositorBin , compositor          ) ||
+      !AddElement  (CompositorBin , composite_tee       ) ||
+      !AddElement  (CompositorBin , composite_sink_queue) ||
+      !AddElement  (CompositorBin , composite_thru_queue) ||
+      !LinkElements(compositor , composite_tee)            )
+#endif // GST_COMPOSITOR_BUG
   { AvCaster::Error(GUI::VMIXER_LINK_ERROR_MSG) ; return false ; }
 
   // instantiate request pads
@@ -1429,9 +1442,9 @@ String Gstreamer::MakeMp3CapsString(int samplerate , int n_channels)
 
 String Gstreamer::MakeFileName(String destination , String file_ext)
 {
-  String filename    = (destination.isEmpty()) ? APP::APP_NAME                   :
+  String filename    = (destination.isEmpty()) ? APP::APP_NAME         :
                        destination.upToLastOccurrenceOf(file_ext , false , true) ;
-  File   output_file = APP::VIDEOS_DIR.getNonexistentChildFile(filename , file_ext , false) ;
+  File   output_file = VideosDir.getNonexistentChildFile(filename , file_ext , false) ;
 
   return output_file.getFullPathName() ;
 }
@@ -1458,13 +1471,21 @@ String Gstreamer::MakeRtmpUrl(String destination)
   return destination ;
 }
 
-bool Gstreamer::IsSufficientVersion()
+String Gstreamer::VersionMsg()
 {
   guint major_version , minor_version , micro_version , nano_version ;
 
   gst_version(&major_version , &minor_version , &micro_version , &nano_version) ;
 
-DEBUG_TRACE_VERSION
+  return "gStreamer v" + String(major_version) + "." + String(minor_version) +
+                   "." + String(micro_version) + "." + String(nano_version ) ;
+}
+
+bool Gstreamer::IsSufficientVersion()
+{
+  guint major_version , minor_version , micro_version , nano_version ;
+
+  gst_version(&major_version , &minor_version , &micro_version , &nano_version) ;
 
   return major_version >= GST::MIN_MAJOR_VERSION &&
          minor_version >= GST::MIN_MINOR_VERSION  ;
