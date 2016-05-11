@@ -29,20 +29,20 @@
     Trace::TraceGui((is_visible) ? "showing chat panel" : "hiding chat panel") ;
 
 #  define DEBUG_TRACE_ADD_CHATLIST_ITEM                                        \
-  String userid = String(chatter_store.getType()) ;                            \
+  String userid = STRING(chatter_store.getType()) ;                            \
   String nick   = STRING(chatter_store[CONFIG::NICK_ID]) ;                     \
   Trace::TraceGui("adding chatter '" + userid           + "' (" + nick + ")" + \
                   " at index "       + String(item_idx)                      ) ;
 
 #  define DEBUG_TRACE_REMOVE_CHATLIST_ITEM                                           \
-  String userid = String(chatter_store.getType()) ;                                  \
+  String userid = STRING(chatter_store.getType()) ;                                  \
   String nick   = STRING(chatter_store[CONFIG::NICK_ID]) ;                           \
   String dbg    = "removing chatter '" + userid           + "' (" + nick + ")" +     \
                   " from index "       + String(item_idx) ;                          \
   if (!chat_list_item) Trace::TraceError("error " + dbg) ; else Trace::TraceGui(dbg) ;
 
 #  define DEBUG_TRACE_LOCATE_SORTED_CHILD                                             \
-  String userid   = String(chatter_store.getType()) ;                                 \
+  String userid   = STRING(chatter_store.getType()) ;                                 \
   int    nick_idx = nicks.indexOf(nick) ;                                             \
   String dbg      = String(" chatter ("              + String(nick_idx)   + ") '")  + \
                            userid                    + "' (" + nick + ")" + " in (" + \

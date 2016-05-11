@@ -119,7 +119,7 @@ DEBUG_TRACE_ADD_CHATLIST_ITEM
   refresh() ;
 }
 
-void ChatList::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node)
+void ChatList::valueTreeChildRemoved(ValueTree& a_parent_node , ValueTree& a_node , int idx)
 {
   if (a_parent_node != this->chattersStore) return ;
 

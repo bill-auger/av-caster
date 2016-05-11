@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission to use, copy, modify, and/or distribute this software for any purpose with
    or without fee is hereby granted, provided that the above copyright notice and this
@@ -56,7 +56,7 @@
     can use the release() method.
 
     Something to note is the main difference between this class and the std::auto_ptr class,
-    which is that ScopedPointer provides a cast-to-object operator, wheras std::auto_ptr
+    which is that ScopedPointer provides a cast-to-object operator, whereas std::auto_ptr
     requires that you always call get() to retrieve the pointer. The advantages of providing
     the cast is that you don't need to call get(), so can use the ScopedPointer in pretty much
     exactly the same way as a raw pointer. The disadvantage is that the compiler is free to

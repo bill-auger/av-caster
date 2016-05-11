@@ -123,8 +123,7 @@ private:
 
 
   // collaborator handles
-  static ScopedPointer<APP>       App ;
-  static JUCEApplicationBase*     Main ;
+  static JUCEApplicationBase*     App ;
   static MainContent*             Gui ;
 #ifndef DISABLE_CHAT
   static ScopedPointer<IrcClient> Irc ;

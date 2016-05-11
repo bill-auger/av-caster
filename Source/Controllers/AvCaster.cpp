@@ -29,8 +29,7 @@ ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
 
 /* AvCaster private class variables */
 
-ScopedPointer<APP>       AvCaster::App            = nullptr ; // Initialize()
-JUCEApplicationBase*     AvCaster::Main           = nullptr ; // Initialize()
+JUCEApplicationBase*     AvCaster::App            = nullptr ; // Initialize()
 MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
 #ifndef DISABLE_CHAT
 ScopedPointer<IrcClient> AvCaster::Irc ;                      // Initialize()
@@ -85,10 +84,10 @@ void AvCaster::DeactivateControl(const Identifier& a_key) { Store->deactivateCon
 
 void AvCaster::SetValue(const Identifier& a_key , const var a_value)
 {
-  ValueTree storage_node = (CONFIG::ROOT_KEYS   .contains(a_key)) ? Store->root        :
-                           (CONFIG::PRESET_KEYS .contains(a_key)) ? Store->config      :
-                           (CONFIG::NETWORK_KEYS.contains(a_key)) ? Store->network     :
-                                                                    ValueTree::invalid ;
+  ValueTree storage_node = (CONFIG::RootKeys()   .contains(a_key)) ? Store->root        :
+                           (CONFIG::PresetKeys() .contains(a_key)) ? Store->config      :
+                           (CONFIG::NetworkKeys().contains(a_key)) ? Store->network     :
+                                                                     ValueTree::invalid ;
 
   Store->setValueViaGui(storage_node , a_key , a_value) ;
 }
@@ -168,8 +167,7 @@ void AvCaster::UpdateChatters(StringArray nicks) { Store->updateChatters(nicks) 
 
 bool AvCaster::Initialize(JUCEApplicationBase* main_app , MainContent* main_content)
 {
-  App                    = new APP() ;
-  Main                   = main_app ;
+  App                    = main_app ;
   Gui                    = main_content ;
   StringArray cli_params = JUCEApplicationBase::getCommandLineParameterArray() ;
 
@@ -199,14 +197,14 @@ DEBUG_TRACE_INIT_PHASE_4
   // initialze GUI
   NamedValueSet disabled_features = NamedValueSet(DisabledFeatures) ;
   Gui->initialize(Store->config     , Store->network , Store->chatters ,
-                  disabled_features , App->PICTURES_DIR                ) ;
+                  disabled_features , APP::picturesDir()               ) ;
 
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libgtreamer
   void* x_window = Gui->getWindowHandle() ;
   if (IsMediaEnabled &&
-     !Gstreamer::Initialize(Store->config , x_window , disabled_features , App->VIDEOS_DIR))
+     !Gstreamer::Initialize(Store->config , x_window , disabled_features , APP::videosDir()))
     return false ;
 
 DEBUG_TRACE_INIT_PHASE_6
@@ -253,7 +251,6 @@ DEBUG_TRACE_SHUTDOWN_PHASE_3
   // shutdown storage
   if (Store != nullptr) Store->listen(false) ; IsInitialized = false ;
   if (Store != nullptr) Store->storeConfig() ; Store         = nullptr ;
-  App = nullptr ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
@@ -439,10 +436,10 @@ bool AvCaster::ValidateEnvironment()
 #else // DISABLE_CHAT
   bool is_sufficient_irc_version = true ;
 #endif // DISABLE_CHAT
-  bool is_valid_home_dir         = App->HOME_DIR    .isDirectory() ;
-  bool is_valid_appdata_dir      = App->APPDATA_DIR .isDirectory() ;
-  bool is_valid_pictures_dir     = App->PICTURES_DIR.isDirectory() ;
-  bool is_valid_videos_dir       = App->VIDEOS_DIR  .isDirectory() ;
+  bool is_valid_home_dir         = APP::homeDir()    .isDirectory() ;
+  bool is_valid_appdata_dir      = APP::appdataDir() .isDirectory() ;
+  bool is_valid_pictures_dir     = APP::picturesDir().isDirectory() ;
+  bool is_valid_videos_dir       = APP::videosDir()  .isDirectory() ;
 
 DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
@@ -478,10 +475,10 @@ Alerts.remove(0) ; return ;
 
 bool AvCaster::InitFail()
 {
-  bool init_fail_pending = Main->getApplicationReturnValue() != 0 ;
+  bool init_fail_pending = App->getApplicationReturnValue() != 0 ;
   bool should_quit       = init_fail_pending && !IsAlertModal && Alerts.size() == 0 ;
 
-  if (should_quit) { Main->shutdown() ; Main->quit() ; }
+  if (should_quit) { App->shutdown() ; App->quit() ; }
 
   return init_fail_pending ;
 }

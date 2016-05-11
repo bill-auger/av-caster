@@ -33,8 +33,8 @@
 #define DISABLE_AUDIO   (! JUCE_LINUX) // replace audio-real-source with fakesrc
 #define DISABLE_PREVIEW (! JUCE_LINUX) // replace preview-sink with fakesink
 //#define DISABLE_OUTPUT               // replace filesink or rtmpsink with fakesink
-// #define DISABLE_CHAT
-#define SEED_IRC_NETWORKS (!defined(DISABLE_CHAT)) && 0
+#define DISABLE_CHAT
+#define SEED_IRC_NETWORKS ((!defined(DISABLE_CHAT)) && 0)
 #define SUPRESS_GREETING_MESSAGES
 #define SUPRESS_ALERTS
 // #define CHATLIST_KICK_BTN_NYI
@@ -76,9 +76,9 @@
 
 #include "JuceHeader.h"
 #include "AppConstants.h"
-#include "ConfigConstants.h"
-#include "IrcConstants.h"
 #include "GstConstants.h"
+#include "IrcConstants.h"
 #include "GuiConstants.h"
+#include "ConfigConstants.h"
 
 #endif // _CONSTANTS_H_

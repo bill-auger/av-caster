@@ -69,12 +69,12 @@ private:
   static void ConfigureScreenSource  (GstElement* a_screen_source ,
                                       guint       capture_w       , guint capture_h) ;
   static void ConfigureCameraSource  (GstElement* a_camera_source , String device_path) ;
-  static void ConfigureTestVideo     (GstElement* a_test_source , guint pattern_n) ;
+  static void ConfigureTestVideo     (GstElement* a_test_source , bool is_active , guint pattern_n) ;
   static void ConfigureTextSource    (GstElement* a_text_source , String font_desc) ;
   static void ConfigureFileSource    (GstElement* a_file_source , String location) ;
   static void ConfigureFileSink      (GstElement* a_file_sink , String location) ;
   static void ConfigureCompositor    (GstElement* a_compositor , guint background_n) ;
-  static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y) ;
+  static void ConfigureCompositorSink(GstPad* sinkpad , gint w , gint h , gint x , gint y , gint z) ;
   static bool ConfigureVideoSink     (GstElement* a_video_sink) ;
   static void ConfigureTestAudio     (GstElement* a_test_source) ;
   static void ConfigureX264Encoder   (GstElement* an_x264_encoder , guint bitrate) ;

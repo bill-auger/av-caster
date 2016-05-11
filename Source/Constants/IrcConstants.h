@@ -1,6 +1,8 @@
 #ifndef _IRCCONSTANTS_H_
 #define _IRCCONSTANTS_H_
 
+#include "JuceHeader.h"
+
 
 /** the IRC class defines configuration constants
         pertaining to the libircclient network backend */

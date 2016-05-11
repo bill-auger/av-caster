@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -32,12 +32,12 @@ ColourGradient::ColourGradient() noexcept
    #endif
 }
 
-ColourGradient::ColourGradient (Colour colour1, const float x1_, const float y1_,
-                                Colour colour2, const float x2_, const float y2_,
-                                const bool isRadial_)
-    : point1 (x1_, y1_),
-      point2 (x2_, y2_),
-      isRadial (isRadial_)
+ColourGradient::ColourGradient (Colour colour1, const float x1, const float y1,
+                                Colour colour2, const float x2, const float y2,
+                                const bool radial)
+    : point1 (x1, y1),
+      point2 (x2, y2),
+      isRadial (radial)
 {
     colours.add (ColourPoint (0.0, colour1));
     colours.add (ColourPoint (1.0, colour2));
@@ -70,7 +70,13 @@ int ColourGradient::addColour (const double proportionAlongGradient, Colour colo
     // must be within the two end-points
     jassert (proportionAlongGradient >= 0 && proportionAlongGradient <= 1.0);
 
-    const double pos = jlimit (0.0, 1.0, proportionAlongGradient);
+    if (proportionAlongGradient <= 0)
+    {
+        colours.set (0, ColourPoint (0.0, colour));
+        return 0;
+    }
+
+    const double pos = jmin (1.0, proportionAlongGradient);
 
     int i;
     for (i = 0; i < colours.size(); ++i)
@@ -178,7 +184,7 @@ void ColourGradient::createLookupTable (PixelARGB* const lookupTable, const int 
         lookupTable [index++] = pix1;
 }
 
-int ColourGradient::createLookupTable (const AffineTransform& transform, HeapBlock <PixelARGB>& lookupTable) const
+int ColourGradient::createLookupTable (const AffineTransform& transform, HeapBlock<PixelARGB>& lookupTable) const
 {
     JUCE_COLOURGRADIENT_CHECK_COORDS_INITIALISED // Trying to use this object without setting its coordinates?
     jassert (colours.size() >= 2);

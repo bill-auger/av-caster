@@ -16,6 +16,7 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
+
 //[Headers] You can add your own extra header files here...
 //[/Headers]
 
@@ -28,11 +29,15 @@
 //==============================================================================
 Preview::Preview ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (previewGroup = new GroupComponent ("previewGroup",
                                                           TRANS("Preview")));
     previewGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     previewGroup->setColour (GroupComponent::textColourId, Colours::white);
 
+    drawable1 = Drawable::createFromImageData (BinaryData::avcasterlogo128_png, BinaryData::avcasterlogo128_pngSize);
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -50,6 +55,7 @@ Preview::~Preview()
     //[/Destructor_pre]
 
     previewGroup = nullptr;
+    drawable1 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -64,6 +70,12 @@ void Preview::paint (Graphics& g)
 
     g.setColour (Colours::black);
     g.fillRoundedRectangle (18.0f, 18.0f, static_cast<float> (getWidth() - 36), static_cast<float> (getHeight() - 36), 5.000f);
+
+    g.setColour (Colours::black);
+    jassert (drawable1 != 0);
+    if (drawable1 != 0)
+        drawable1->drawWithin (g, Rectangle<float> (proportionOfWidth (0.5000f) - (100 / 2), proportionOfHeight (0.5000f) - (100 / 2), 100, 100),
+                               RectanglePlacement::stretchToFit, 1.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -87,9 +99,9 @@ void Preview::resized()
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -100,6 +112,8 @@ BEGIN_JUCER_METADATA
                  fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
     <ROUNDRECT pos="18 18 36M 36M" cornerSize="5" fill="solid: ff000000" hasStroke="0"/>
+    <IMAGE pos="50%c 50%c 100 100" resource="BinaryData::avcasterlogo128_png"
+           opacity="1" mode="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="previewGroup" id="6607ba656d5c8919" memberName="previewGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 8 32M 24M" outlinecol="ffffffff"

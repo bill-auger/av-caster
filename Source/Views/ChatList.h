@@ -50,9 +50,9 @@ private:
   friend class MainContent ;
 
 
-  void valueTreeChildAdded     (ValueTree& a_parent_node , ValueTree& a_node) override ;
-  void valueTreeChildRemoved   (ValueTree& a_parent_node , ValueTree& a_node) override ;
-  void valueTreePropertyChanged(ValueTree& a_node , const Identifier& a_key ) override ;
+  void valueTreeChildAdded     (ValueTree& a_parent_node , ValueTree&        a_node          ) override ;
+  void valueTreeChildRemoved   (ValueTree& a_parent_node , ValueTree&        a_node , int idx) override ;
+  void valueTreePropertyChanged(ValueTree& a_node        , const Identifier& a_key           ) override ;
 
   void initialize        (ValueTree network_store , ValueTree chatters_store) ;
   void createChatListItem(int child_idx) ;
@@ -60,10 +60,9 @@ private:
   void refresh           () ;
 
   // unused ValueTree::Listener interface implementations
-  void valueTreeChildOrderChanged(ValueTree& /*a_parent_node*/)                        override {} ;
-  void valueTreeParentChanged    (ValueTree& /*a_node*/)                               override {} ;
-  void valueTreeRedirected       (ValueTree& /*a_node*/)                               override {} ;
-
+  void valueTreeChildOrderChanged(ValueTree& /*a_parent_node*/ , int /*prev_idx*/ , int /*curr_idx*/) override {}
+  void valueTreeParentChanged    (ValueTree& /*a_node*/                                             ) override {}
+  void valueTreeRedirected       (ValueTree& /*a_node*/                                             ) override {}
 
     //[/UserMethods]
 

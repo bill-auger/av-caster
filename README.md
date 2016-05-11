@@ -95,8 +95,10 @@ $ sudo apt-get install freeglut3 gstreamer1.0-alsa gstreamer1.0-plugins-bad     
                        libxinerama1 libxrender1
 ### compile ###
 $ cd Builds/Makefile
-$ make CONFIG=Release
-$ ./build/av-caster
+$ make
+$ sudo make install
+### run ###
+$ av-caster
 ```
 #### Fedora:
 ```
@@ -113,8 +115,10 @@ $ su -c "dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
                      gstreamer1-plugins-ugly libircclient1"
 ### compile ###
 $ cd Builds/Makefile
-$ make CONFIG=Release
-$ ./build/av-caster
+$ make
+$ su -c "make install"
+### run ###
+$ av-caster
 ```
 #### OpenSuse/Suse:
 ```
@@ -126,8 +130,10 @@ $ sudo zypper install gstreamer-plugins-good gstreamer-plugins-bad-free \
                       gstreamer-plugins-ugly libircclient1
 ### compile ###
 $ cd Builds/Makefile
-$ make CONFIG=Release
-$ ./build/av-caster
+$ make
+$ sudo make install
+### run ###
+$ av-caster
 ```
 <!--
 #### RedHat/Centos7:
@@ -147,8 +153,10 @@ $ su -c "yum install gstreamer1-plugins-good gstreamer1-plugins-good-jack       
 $ su -c "mkdir /usr/include/libircclient/"
 $ su -c "cp /usr/include/libirc*.h /usr/include/libircclient/"
 $ cd Builds/Makefile
-$ make CONFIG=Release
-$ ./build/av-caster
+$ make
+$ su -c "make install"
+### run ###
+$ av-caster
 ```
 -->
 #### Other GNU/Linux:

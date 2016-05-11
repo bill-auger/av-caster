@@ -96,12 +96,12 @@ const String GUI::MODAL_ERROR_TITLE   = APP::APP_NAME + " Error" ;
 
 // user error messages
 const String GUI::GST_INSUFFICIENT_ERROR_MSG  = "Insufficient gStreamer version detected.\n\n"       +
-                                                APP::APP_NAME + " requires gStreamer v"    +
+                                                APP::APP_NAME + " requires gStreamer v"              +
                                                 String(GST::MIN_MAJOR_VERSION) + "."                 +
                                                 String(GST::MIN_MINOR_VERSION) + " or greater.\n\n"  +
                                                 "See the README.md for detailed build instructions." ;
 const String GUI::IRC_INSUFFICIENT_ERROR_MSG  = "Insufficient libircclient version detected.\n\n"    +
-                                                APP::APP_NAME + " requires libircclient v" +
+                                                APP::APP_NAME + " requires libircclient v"           +
                                                 String(IRC::MIN_MAJOR_VERSION) + "."                 +
                                                 String(IRC::MIN_MINOR_VERSION) + " or greater.\n\n"  +
                                                 "See the README.md for detailed build instructions." ;

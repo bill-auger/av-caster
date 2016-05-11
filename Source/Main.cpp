@@ -37,16 +37,16 @@ DEBUG_TRACE_INIT_VERSION
     {
 #ifdef JUCE_LINUX
       // create desktop launch file
-      if (AvCaster::App->DESKTOP_FILE.loadFileAsString() != AvCaster::App->DESKTOP_TEXT)
-        AvCaster::App->DESKTOP_FILE.replaceWithText(AvCaster::App->DESKTOP_TEXT) ;
+      if (APP::desktopFile().loadFileAsString() != APP::desktopText())
+        APP::desktopFile().replaceWithText(APP::desktopText()) ;
 
       // create desktop icon
-      if (AvCaster::App->ICON_FILE.getSize() != AvCaster::App->LOGO_FILE.getSize())
+      if (APP::iconFile().getSize() != APP::logoFile().getSize())
       {
         PNGImageFormat    image_format = PNGImageFormat() ;
-        Image             icon_image   = ImageCache::getFromMemory(BinaryData::avcaster_png    ,
-                                                                   BinaryData::avcaster_pngSize) ;
-        FileOutputStream* icon_stream  = new FileOutputStream(AvCaster::App->ICON_FILE) ;
+        Image             icon_image   = ImageCache::getFromMemory(BinaryData::avcasterlogo48_png    ,
+                                                                   BinaryData::avcasterlogo48_pngSize) ;
+        FileOutputStream* icon_stream  = new FileOutputStream(APP::iconFile()) ;
         if (!icon_stream->failedToOpen())
           image_format.writeImageToStream(icon_image , *icon_stream) ;
         delete icon_stream ;
@@ -119,8 +119,8 @@ DEBUG_TRACE_SHUTDOWN_OUT
       // TODO: load from BinaryData
       setUsingNativeTitleBar(false) ;
       setResizable(true , false) ;
-      Image icon_image = ImageCache::getFromMemory(BinaryData::avcaster_png    ,
-                                                   BinaryData::avcaster_pngSize) ;
+      Image icon_image = ImageCache::getFromMemory(BinaryData::avcasterlogo48_png    ,
+                                                   BinaryData::avcasterlogo48_pngSize) ;
       setIcon(icon_image) ; getPeer()->setIcon(icon_image) ;
 #ifdef TRAY_ICON
         this->mainContent->trayIcon->setIconImage(icon_image) ;

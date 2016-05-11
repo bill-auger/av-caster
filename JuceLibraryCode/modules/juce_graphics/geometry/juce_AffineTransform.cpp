@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -219,11 +219,9 @@ AffineTransform AffineTransform::inverted() const noexcept
         return AffineTransform (dst00, dst01, -mat02 * dst00 - mat12 * dst01,
                                 dst10, dst11, -mat02 * dst10 - mat12 * dst11);
     }
-    else
-    {
-        // singularity..
-        return *this;
-    }
+
+    // singularity..
+    return *this;
 }
 
 bool AffineTransform::isSingularity() const noexcept

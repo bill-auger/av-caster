@@ -1,7 +1,6 @@
 #ifndef _CONFIGCONSTANTS_H_
 #define _CONFIGCONSTANTS_H_
 
-
 #include "JuceHeader.h"
 
 
@@ -152,6 +151,41 @@ class CONFIG
 
 public:
 
+  // initialization
+  static void Initialize() ;
+
+  // config strings
+  static StringArray CameraResolutions() ;
+  static StringArray AudioApis()         ;
+  static StringArray AudioCodecs()       ;
+  static StringArray AudioSampleRates()  ;
+  static StringArray AudioBitRates()     ;
+  static StringArray TextStyles()        ;
+  static StringArray TextPositions()     ;
+  static StringArray OutputSinks()       ;
+  static StringArray OutputMuxers()      ;
+  static StringArray FrameRates()        ;
+  static StringArray VideoBitRates()     ;
+
+  // filter keys
+  static StringArray RootPersistentNodes()    ;
+  static StringArray RootNodes()              ;
+  static StringArray RootPersistentKeys()     ;
+  static StringArray RootKeys()               ;
+  static StringArray PresetPersistentNodes()  ;
+  static StringArray PresetNodes()            ;
+  static StringArray PresetPersistentKeys()   ;
+  static StringArray PresetKeys()             ;
+  static StringArray NetworkPersistentNodes() ;
+  static StringArray NetworkNodes()           ;
+  static StringArray NetworkPersistentKeys()  ;
+  static StringArray NetworkKeys()            ;
+  static StringArray ChatterKeys()            ;
+  static StringArray CameraKeys()             ;
+  static StringArray AudioKeys()              ;
+  static StringArray MediaKeys()              ;
+  static StringArray ReconfigureKeys()        ;
+
   // helpers
   static Identifier FilterId(String a_string , String retain_chars) ;
 
@@ -162,19 +196,6 @@ public:
   enum             AudioApi     { ALSA_AUDIO_IDX , PULSE_AUDIO_IDX , JACK_AUDIO_IDX } ;
   enum             AudioCodec   { MP3_AUDIO_IDX , AAC_AUDIO_IDX } ;
   enum             OutputStream { FILE_OUTPUT_IDX , RTMP_OUTPUT_IDX } ;
-
-  // config strings
-  static const StringArray CAMERA_RESOLUTIONS ;
-  static const StringArray AUDIO_APIS ;
-  static const StringArray AUDIO_CODECS ;
-  static const StringArray AUDIO_SAMPLERATES ;
-  static const StringArray AUDIO_BITRATES ;
-  static const StringArray TEXT_STYLES ;
-  static const StringArray TEXT_POSITIONS ;
-  static const StringArray OUTPUT_SINKS ;
-  static const StringArray OUTPUT_MUXERS ;
-  static const StringArray FRAMERATES ;
-  static const StringArray VIDEO_BITRATES ;
 
   // storage nodes
   static const Identifier STORAGE_ID ;
@@ -316,25 +337,6 @@ public:
   static const bool       DEFAULT_SHOW_JOINPARTS ;
   static const String     DEFAULT_GREETING ;
   static const int        DEFAULT_N_RETRIES ;
-
-  // filter keys
-  static const StringArray ROOT_PERSISTENT_NODES ;
-  static const StringArray ROOT_NODES ;
-  static const StringArray ROOT_PERSISTENT_KEYS ;
-  static const StringArray ROOT_KEYS ;
-  static const StringArray PRESET_PERSISTENT_NODES ;
-  static const StringArray PRESET_NODES ;
-  static const StringArray PRESET_PERSISTENT_KEYS ;
-  static const StringArray PRESET_KEYS ;
-  static const StringArray NETWORK_PERSISTENT_NODES ;
-  static const StringArray NETWORK_NODES ;
-  static const StringArray NETWORK_PERSISTENT_KEYS ;
-  static const StringArray NETWORK_KEYS ;
-  static const StringArray CHATTER_KEYS ;
-  static const StringArray CAMERA_KEYS ;
-  static const StringArray AUDIO_KEYS ;
-  static const StringArray MEDIA_KEYS ;
-  static const StringArray RECONFIGURE_KEYS ;
 } ;
 
 #endif // _CONFIGCONSTANTS_H_

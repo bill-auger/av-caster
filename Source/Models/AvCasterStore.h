@@ -92,17 +92,17 @@ private:
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
   // unused ValueTree::Listener interface implementations
-  void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
-  void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
-  void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ;                  }
-  void valueTreeParentChanged    (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
-  void valueTreeRedirected       (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
+//   void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
+//   void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
+//   void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ;                  }
+//   void valueTreeParentChanged    (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
+//   void valueTreeRedirected       (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
 //   TODO: API change after upgrade to v >= 3.2.0
-//   void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node)           override { UNUSED(a_parent_node) , UNUSED(a_node) ;                      }
-//   void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node , int idx) override { UNUSED(a_parent_node) , UNUSED(a_node) ; UNUSED(idx) ;        }
-//   void valueTreeChildOrderChanged(ValueTree& a_parent_node , int prev_idx , int curr_idx) override { UNUSED(a_parent_node) ; UNUSED(prev_idx) ; UNUSED(curr_idx) ; }
-//   void valueTreeParentChanged    (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
-//   void valueTreeRedirected       (ValueTree& a_node)                                      override { UNUSED(a_node) ;                                              }
+  void valueTreeChildAdded       (ValueTree& /*a_parent_node*/ , ValueTree& /*a_node*/                   ) override {}
+  void valueTreeChildRemoved     (ValueTree& /*a_parent_node*/ , ValueTree& /*a_node*/ , int /*idx*/     ) override {}
+  void valueTreeChildOrderChanged(ValueTree& /*a_parent_node*/ , int /*prev_idx*/      , int /*curr_idx*/) override {}
+  void valueTreeParentChanged    (ValueTree& /*a_node*/                                                  ) override {}
+  void valueTreeRedirected       (ValueTree& /*a_node*/                                                  ) override {}
 
   // getters/setters
   bool        isMediaKey          (const Identifier& a_key) ;

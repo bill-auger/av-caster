@@ -52,7 +52,7 @@ AvCasterStore::~AvCasterStore() { }
 AvCasterStore::AvCasterStore()
 {
   // load persistent storage
-  this->configDir                = AvCaster::App->APPDATA_DIR.getChildFile(CONFIG::STORAGE_DIRNAME ) ;
+  this->configDir                = APP::appdataDir().getChildFile(CONFIG::STORAGE_DIRNAME ) ;
   this->configFile               = this->configDir .getChildFile(CONFIG::STORAGE_FILENAME) ;
   FileInputStream* config_stream = new FileInputStream(this->configFile) ;
   ValueTree        stored_config = ValueTree::invalid ;
@@ -196,12 +196,12 @@ DEBUG_TRACE_VERIFY_PRESET
   verifyNetworkProperty(CONFIG::GREETING_ID      , var(CONFIG::DEFAULT_GREETING         )) ;
 
   // filter any rogue data
-  filterRogueKeys (this->root    , CONFIG::ROOT_PERSISTENT_KEYS    ) ;
-  filterRogueKeys (this->config  , CONFIG::PRESET_PERSISTENT_KEYS  ) ;
-  filterRogueKeys (this->network , CONFIG::NETWORK_PERSISTENT_KEYS ) ;
-  filterRogueNodes(this->root    , CONFIG::ROOT_PERSISTENT_NODES   ) ;
-  filterRogueNodes(this->config  , CONFIG::PRESET_PERSISTENT_NODES ) ;
-  filterRogueNodes(this->network , CONFIG::NETWORK_PERSISTENT_NODES) ;
+  filterRogueKeys (this->root    , CONFIG::RootPersistentKeys()    ) ;
+  filterRogueKeys (this->config  , CONFIG::PresetPersistentKeys()  ) ;
+  filterRogueKeys (this->network , CONFIG::NetworkPersistentKeys() ) ;
+  filterRogueNodes(this->root    , CONFIG::RootPersistentNodes()   ) ;
+  filterRogueNodes(this->config  , CONFIG::PresetPersistentNodes() ) ;
+  filterRogueNodes(this->network , CONFIG::NetworkPersistentNodes()) ;
 }
 
 void AvCasterStore::sanitizeRoot()
@@ -226,19 +226,19 @@ DEBUG_TRACE_SANITIZE_PRESETS
 
 void AvCasterStore::sanitizePreset()
 {
-  sanitizePresetComboProperty(CONFIG::CAMERA_RES_ID    , getCameraResolutions()   ) ;
-  sanitizePresetComboProperty(CONFIG::CAMERA_DEVICE_ID , cameraNames()            ) ;
-  sanitizePresetComboProperty(CONFIG::AUDIO_API_ID     , CONFIG::AUDIO_APIS       ) ;
-  sanitizePresetComboProperty(CONFIG::AUDIO_DEVICE_ID  , audioNames()             ) ;
-  sanitizePresetComboProperty(CONFIG::AUDIO_CODEC_ID   , CONFIG::AUDIO_CODECS     ) ;
-  sanitizePresetComboProperty(CONFIG::SAMPLERATE_ID    , CONFIG::AUDIO_SAMPLERATES) ;
-  sanitizePresetComboProperty(CONFIG::AUDIO_BITRATE_ID , CONFIG::AUDIO_BITRATES   ) ;
-  sanitizePresetComboProperty(CONFIG::TEXT_STYLE_ID    , CONFIG::TEXT_STYLES      ) ;
-  sanitizePresetComboProperty(CONFIG::TEXT_POSITION_ID , CONFIG::TEXT_POSITIONS   ) ;
-  sanitizePresetComboProperty(CONFIG::OUTPUT_SINK_ID   , CONFIG::OUTPUT_SINKS     ) ;
-  sanitizePresetComboProperty(CONFIG::OUTPUT_MUXER_ID  , CONFIG::OUTPUT_MUXERS    ) ;
-  sanitizePresetComboProperty(CONFIG::FRAMERATE_ID     , CONFIG::FRAMERATES       ) ;
-  sanitizePresetComboProperty(CONFIG::VIDEO_BITRATE_ID , CONFIG::VIDEO_BITRATES   ) ;
+  sanitizePresetComboProperty(CONFIG::CAMERA_RES_ID    , getCameraResolutions()    ) ;
+  sanitizePresetComboProperty(CONFIG::CAMERA_DEVICE_ID , cameraNames()             ) ;
+  sanitizePresetComboProperty(CONFIG::AUDIO_API_ID     , CONFIG::AudioApis()       ) ;
+  sanitizePresetComboProperty(CONFIG::AUDIO_DEVICE_ID  , audioNames()              ) ;
+  sanitizePresetComboProperty(CONFIG::AUDIO_CODEC_ID   , CONFIG::AudioCodecs()     ) ;
+  sanitizePresetComboProperty(CONFIG::SAMPLERATE_ID    , CONFIG::AudioSampleRates()) ;
+  sanitizePresetComboProperty(CONFIG::AUDIO_BITRATE_ID , CONFIG::AudioBitRates()   ) ;
+  sanitizePresetComboProperty(CONFIG::TEXT_STYLE_ID    , CONFIG::TextStyles()      ) ;
+  sanitizePresetComboProperty(CONFIG::TEXT_POSITION_ID , CONFIG::TextPositions()   ) ;
+  sanitizePresetComboProperty(CONFIG::OUTPUT_SINK_ID   , CONFIG::OutputSinks()     ) ;
+  sanitizePresetComboProperty(CONFIG::OUTPUT_MUXER_ID  , CONFIG::OutputMuxers()    ) ;
+  sanitizePresetComboProperty(CONFIG::FRAMERATE_ID     , CONFIG::FrameRates()      ) ;
+  sanitizePresetComboProperty(CONFIG::VIDEO_BITRATE_ID , CONFIG::VideoBitRates()   ) ;
 }
 
 void AvCasterStore::storeConfig()
@@ -256,7 +256,7 @@ DEBUG_TRACE_STORE_CONFIG
 
   // filter transient data and append presets and networks to persistent storage
   root_clone.removeProperty(CONFIG::IS_PENDING_ID , nullptr) ;
-  root_clone.addChild(presets_clone  , -1 , nullptr) ;
+  root_clone.addChild      (presets_clone , -1    , nullptr) ;
   for (int preset_n = 0 ; preset_n < presets_clone.getNumChildren() ; ++preset_n)
   {
     ValueTree preset_clone  = presets_clone.getChild(preset_n) ;
@@ -424,9 +424,9 @@ void AvCasterStore::restoreStaticPresets()
 
 bool AvCasterStore::hasDuplicatedNodes(ValueTree stored_config)
 {
-  StringArray root_node_ids      = CONFIG::ROOT_PERSISTENT_NODES ;
-  StringArray preset_node_ids    = CONFIG::PRESET_PERSISTENT_NODES ;
-  StringArray network_node_ids   = CONFIG::NETWORK_PERSISTENT_NODES ;
+  StringArray root_node_ids      = CONFIG::RootPersistentNodes() ;
+  StringArray preset_node_ids    = CONFIG::PresetPersistentNodes() ;
+  StringArray network_node_ids   = CONFIG::NetworkPersistentNodes() ;
   int         n_duplicated_nodes = 0 ;
   bool        has_duplicates     = false ;
 
@@ -479,9 +479,9 @@ void AvCasterStore::verifyNetworkProperty(Identifier a_key , var a_default_value
 
 void AvCasterStore::filterRogueKeys(ValueTree parent_node , StringArray persistent_keys)
 {
-  for (int key_n = 0 ; key_n <    parent_node.getNumProperties() ; ++key_n)
+  for (int key_n = 0 ; key_n < parent_node.getNumProperties() ; ++key_n)
   {
-    String property_id = String(parent_node.getPropertyName(key_n)) ;
+    String property_id = STRING(parent_node.getPropertyName(key_n)) ;
 
 DEBUG_TRACE_FILTER_ROGUE_KEY
 
@@ -494,7 +494,7 @@ void AvCasterStore::filterRogueNodes(ValueTree parent_node , StringArray persist
 {
   for (int child_n = 0 ; child_n <    parent_node.getNumChildren() ; ++child_n)
   {
-    String node_id = String(parent_node.getChild(child_n).getType()) ;
+    String node_id = STRING(parent_node.getChild(child_n).getType()) ;
 
 DEBUG_TRACE_FILTER_ROGUE_NODE
 
@@ -570,12 +570,12 @@ void AvCasterStore::detectCaptureDevices()
 #if JUCE_LINUX
   // TODO: query device for framerates and resolutions
   int         camera_rate = CONFIG::DEFAULT_CAMERA_RATE ;
-  String      resolutions = CONFIG::CAMERA_RESOLUTIONS.joinIntoString(newLine) ;
+  String      resolutions = CONFIG::CameraResolutions().joinIntoString(newLine) ;
   Array<File> device_info_dirs ;
 
   this->cameras.removeAllChildren(nullptr) ;
-  if (AvCaster::App->CAMERAS_DEV_DIR.containsSubDirectories())
-    AvCaster::App->CAMERAS_DEV_DIR.findChildFiles(device_info_dirs , File::findDirectories , false) ;
+  if (APP::camerasDevDir().containsSubDirectories())
+    APP::camerasDevDir().findChildFiles(device_info_dirs , File::findDirectories , false) ;
 
   File* device_info_dir = device_info_dirs.begin() ;
   while (device_info_dir != device_info_dirs.end())
@@ -649,12 +649,12 @@ DEBUG_TRACE_CONFIG_TREE_CHANGED
 
 bool AvCasterStore::isMediaKey(const Identifier& a_key)
 {
-  return CONFIG::MEDIA_KEYS.contains(String(a_key)) ;
+  return CONFIG::MediaKeys().contains(STRING(a_key)) ;
 }
 
 bool AvCasterStore::isReconfigureKey(const Identifier& a_key)
 {
-  return CONFIG::RECONFIGURE_KEYS.contains(String(a_key)) ;
+  return CONFIG::ReconfigureKeys().contains(STRING(a_key)) ;
 }
 
 void AvCasterStore::deactivateControl(const Identifier& a_key)
@@ -671,13 +671,13 @@ bool AvCasterStore::isKnownProperty(ValueTree a_node  , const Identifier& a_key)
   ValueTree a_parent_node = a_node.getParent() ;
 
   // TODO: cameras and audio nyi
-  return (a_node        == this->root    ) ? CONFIG::ROOT_KEYS   .contains(a_key) :
-         (a_node        == this->config  ) ? CONFIG::PRESET_KEYS .contains(a_key) :
-         (a_node        == this->network ) ? CONFIG::NETWORK_KEYS.contains(a_key) :
-         (a_parent_node == this->presets ) ? CONFIG::PRESET_KEYS .contains(a_key) :
-         (a_parent_node == this->chatters) ? CONFIG::CHATTER_KEYS.contains(a_key) :
-         (a_parent_node == this->cameras ) ? CONFIG::CAMERA_KEYS .contains(a_key) :
-         (a_parent_node == this->audios  ) ? CONFIG::AUDIO_KEYS  .contains(a_key) :
+  return (a_node        == this->root    ) ? CONFIG::RootKeys()   .contains(a_key) :
+         (a_node        == this->config  ) ? CONFIG::PresetKeys() .contains(a_key) :
+         (a_node        == this->network ) ? CONFIG::NetworkKeys().contains(a_key) :
+         (a_parent_node == this->presets ) ? CONFIG::PresetKeys() .contains(a_key) :
+         (a_parent_node == this->chatters) ? CONFIG::ChatterKeys().contains(a_key) :
+         (a_parent_node == this->cameras ) ? CONFIG::CameraKeys() .contains(a_key) :
+         (a_parent_node == this->audios  ) ? CONFIG::AudioKeys()  .contains(a_key) :
                                              false                                ;
 }
 
@@ -787,7 +787,7 @@ StringArray AvCasterStore::getCameraResolutions()
   String    resolutions  = STRING(camera_store[CONFIG::CAMERA_RESOLUTIONS_ID]) ;
 
   return (camera_store.isValid()) ? StringArray::fromLines(resolutions) :
-                                    CONFIG::CAMERA_RESOLUTIONS          ;
+                                    CONFIG::CameraResolutions()         ;
 }
 
 StringArray AvCasterStore::getChatNicks()

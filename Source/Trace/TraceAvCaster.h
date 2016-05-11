@@ -166,7 +166,7 @@ void SeedIrcNetworks()
   bool is_enter_config_mode = was_config_button_pressed &&  is_config_pending ;  \
   bool should_logout_chat   = is_swapping_presets || is_enter_config_mode ;      \
   String pad = "\n              " ;                                              \
-  Trace::TraceConfigVb("handling config value change '" + String(a_key) + "'"  + \
+  Trace::TraceConfigVb("handling config value change '" + STRING(a_key) + "'"  + \
       pad + "isMediaKey           = " + String(Store->isMediaKey(a_key)      ) + \
       pad + "isReconfigureKey     = " + String(Store->isReconfigureKey(a_key)) + \
       pad + "is_config_pending    = " + String(is_config_pending             ) + \

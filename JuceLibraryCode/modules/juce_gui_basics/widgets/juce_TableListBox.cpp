@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -38,19 +38,28 @@ public:
 
             const TableHeaderComponent& headerComp = owner.getHeader();
             const int numColumns = headerComp.getNumColumns (true);
+            const Rectangle<int> clipBounds (g.getClipBounds());
 
             for (int i = 0; i < numColumns; ++i)
             {
                 if (columnComponents[i] == nullptr)
                 {
-                    const int columnId = headerComp.getColumnIdOfIndex (i, true);
                     const Rectangle<int> columnRect (headerComp.getColumnPosition(i).withHeight (getHeight()));
 
-                    Graphics::ScopedSaveState ss (g);
+                    if (columnRect.getX() >= clipBounds.getRight())
+                        break;
 
-                    g.reduceClipRegion (columnRect);
-                    g.setOrigin (columnRect.getX(), 0);
-                    tableModel->paintCell (g, row, columnId, columnRect.getWidth(), columnRect.getHeight(), isSelected);
+                    if (columnRect.getRight() > clipBounds.getX())
+                    {
+                        Graphics::ScopedSaveState ss (g);
+
+                        if (g.reduceClipRegion (columnRect))
+                        {
+                            g.setOrigin (columnRect.getX(), 0);
+                            tableModel->paintCell (g, row, headerComp.getColumnIdOfIndex (i, true),
+                                                   columnRect.getWidth(), columnRect.getHeight(), isSelected);
+                        }
+                    }
                 }
             }
         }
@@ -144,18 +153,26 @@ public:
 
     void mouseDrag (const MouseEvent& e) override
     {
-        if (isEnabled() && owner.getModel() != nullptr && ! (e.mouseWasClicked() || isDragging))
+        if (isEnabled()
+             && owner.getModel() != nullptr
+             && e.mouseWasDraggedSinceMouseDown()
+             && ! isDragging)
         {
-            const SparseSet<int> selectedRows (owner.getSelectedRows());
+            SparseSet<int> rowsToDrag;
 
-            if (selectedRows.size() > 0)
+            if (owner.selectOnMouseDown || owner.isRowSelected (row))
+                rowsToDrag = owner.getSelectedRows();
+            else
+                rowsToDrag.addRange (Range<int>::withStartAndLength (row, 1));
+
+            if (rowsToDrag.size() > 0)
             {
-                const var dragDescription (owner.getModel()->getDragSourceDescription (selectedRows));
+                const var dragDescription (owner.getModel()->getDragSourceDescription (rowsToDrag));
 
                 if (! (dragDescription.isVoid() || (dragDescription.isString() && dragDescription.toString().isEmpty())))
                 {
                     isDragging = true;
-                    owner.startDragAndDrop (e, dragDescription, true);
+                    owner.startDragAndDrop (e, rowsToDrag, dragDescription, true);
                 }
             }
         }
@@ -465,7 +482,7 @@ var TableListBoxModel::getDragSourceDescription (const SparseSet<int>&)         
 
 Component* TableListBoxModel::refreshComponentForCell (int, int, bool, Component* existingComponentToUpdate)
 {
-    (void) existingComponentToUpdate;
+    ignoreUnused (existingComponentToUpdate);
     jassert (existingComponentToUpdate == nullptr); // indicates a failure in the code that recycles the components
     return nullptr;
 }

@@ -60,7 +60,7 @@ ChatListItem::ChatListItem (ValueTree chatter_store)
 
     //[Constructor] You can add your own custom stuff here..
 
-  String user_id = String(chatter_store.getType()) ;
+  String user_id = STRING(chatter_store.getType()) ;
   String nick    = STRING(this->chatterStore[CONFIG::NICK_ID]) ;
 
   setComponentID(user_id) ; setSize(GUI::CHATLIST_ITEM_W , GUI::CHATLIST_ITEM_H) ;

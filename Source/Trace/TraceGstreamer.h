@@ -100,20 +100,14 @@
 
 /* bus messages */
 
-#  define DEBUG_TRACE_GST_ERROR_MESSAGE                                                     \
-  bool   is_audio_error = is_alsa_init_error || is_pulse_init_error || is_jack_init_error ; \
-  String is_handled_msg = (is_audio_error) ? "" : " (unhandled)" ;                          \
-  Trace::TraceError("GSTError:" + is_handled_msg + " '" + error_message + "'") ;            \
-  if (is_audio_error) Trace::TraceMedia("deactivating audio")                               ;
+#define DEBUG_TRACE_MESSAGE_EOS Trace::TraceMediaVb("GST_MESSAGE_EOS") ;
 
-#  define DEBUG_TRACE_UNHANDLED_MESSAGE                                                         \
-  Trace::TraceMediaVb("got unhandled message '" + String(GST_MESSAGE_TYPE_NAME(message)) + "'") ;
+#define DEBUG_TRACE_MESSAGE_STATE_CHANGED Trace::TraceMediaVb("GST_MESSAGE_STATE_CHANGED") ;
 
 void MessageStructEach(GstMessage* message ,  GstStructureForeachFunc each_fn)
 {
   gst_structure_foreach(gst_message_get_structure(message) , each_fn , NULL) ;
 }
-
 gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data) // aka GstStructureForeachFunc
 {
   gchar* gvalue_str = g_strdup_value_contents(gvalue) ;
@@ -122,28 +116,39 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 
   g_free(gvalue_str) ;
 }
-#  define DEBUG_TRACE_DUMP_MESSAGE_STRUCT MessageStructEach(message , DumpMessage) ;
+#  define DEBUG_TRACE_DUMP_MESSAGE_STRUCT                            \
+  if (DEBUG_TRACE_MEDIA_VB) MessageStructEach(message , DumpMessage) ;
+
+#  define DEBUG_TRACE_MESSAGE_UNHANDLED                                                         \
+  Trace::TraceMediaVb("got unhandled message '" + String(GST_MESSAGE_TYPE_NAME(message)) + "'") ;
+
+#  define DEBUG_TRACE_GST_ERROR_MESSAGE                                                     \
+  bool   is_audio_error = is_alsa_init_error || is_pulse_init_error || is_jack_init_error ; \
+  String is_handled_msg = (is_audio_error) ? "" : " (unhandled)" ;                          \
+  Trace::TraceError("GSTError:" + is_handled_msg + " '" + error_message + "'") ;            \
+  if (is_audio_error) Trace::TraceMedia("deactivating audio")                               ;
 
 
 /* configuration */
 
 #  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN                                         \
   String plugin_id = (is_active) ? GST::SCREEN_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ; \
-  Trace::TraceState("configuring ScreencapBin @ "                   +                 \
-                    String(screencap_w) + "x" + String(screencap_h) +                 \
-                    " using "           + plugin_id                 )                 ;
+  Trace::TraceState("configuring ScreencapBin @ "                         +           \
+                    String(screencap_w) + "x" + String(screencap_h)       +           \
+                    " @ "                     + String(framerate) + "fps" +           \
+                    " using "                 + plugin_id                 )           ;
 
-#  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN                                            \
-  String plugin_id = (is_active) ? GST::CAMERA_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ; \
-  String dev_path = (device_path.isEmpty()) ? "n/a" : device_path ;                   \
-  Trace::TraceState("configuring CameraBin '" + dev_path    +                         \
-                    "' -> "     + resolution                +                         \
-                    " @ "       + String(framerate) + "fps" +                         \
-                    " using "   + plugin_id                 )                         ;
+#  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN                                               \
+  String plugin_id = (use_real_src) ? GST::CAMERA_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ; \
+  String dev_path  = (use_real_src) ? device_path : "testsrc" ;                          \
+  Trace::TraceState("configuring CameraBin '" + dev_path                  +              \
+                    "' -> "                   + resolution                +              \
+                    " @ "                     + String(framerate) + "fps" +              \
+                    " using "                 + plugin_id                 )              ;
 
-#  define DEBUG_TRACE_CONFIGURE_TEXT_BIN                                            \
-  Trace::TraceState("configuring TextBin " + CONFIG::TEXT_STYLES   [text_style_n] + \
-                    " overlay @ "          + CONFIG::TEXT_POSITIONS[text_pos_n  ] ) ;
+#  define DEBUG_TRACE_CONFIGURE_TEXT_BIN                                             \
+  Trace::TraceState("configuring TextBin " + CONFIG::TextStyles()   [text_style_n] + \
+                    " overlay @ "          + CONFIG::TextPositions()[text_pos_n  ] ) ;
 
 #  define DEBUG_TRACE_CONFIGURE_IMAGE_BIN                            \
   Trace::TraceState("configuring ImageBin '" + image_filename + "'") ;
@@ -189,19 +194,18 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
                      " => '" + url + ((url.endsWith("?")) ? "...'" : "'") ;    \
   Trace::TraceState("configuring OutputBin using " + plugin_id + server )      ;
 
-#  define DEBUG_TRACE_RECONFIGURE_IN                                     \
-  String element = (configure_all    ) ? "pipeline" :                    \
-                   (configure_screen ) ? "screen"   :                    \
-                   (configure_camera ) ? "camera"   :                    \
-                   (configure_text   ) ? "text"     :                    \
-                   (configure_image  ) ? "image"    :                    \
-                   (configure_preview) ? "preview"  :                    \
-                   (configure_audio  ) ? "audio"    :                    \
-                   (configure_output ) ? "output"   : "none" ;           \
-  String dbg     = "reconfiguring pipeline elements (" + element + ")" ; \
-  Trace::TraceMedia(dbg)                                                 ;
+#  define DEBUG_TRACE_RECONFIGURE_IN                                 \
+  String bin = (configure_all    ) ? "Pipeline"     :                \
+               (configure_screen ) ? "ScreencapBin" :                \
+               (configure_camera ) ? "CameraBin"    :                \
+               (configure_text   ) ? "TextBin"      :                \
+               (configure_image  ) ? "ImageBin"     :                \
+               (configure_preview) ? "PreviewBin"   :                \
+               (configure_audio  ) ? "AudioBin"     :                \
+               (configure_output ) ? "OutputBin"    : "n/a" ;        \
+  String dbg = "reconfiguring " + bin + ")" ; Trace::TraceMedia(dbg) ;
 
-#  define DEBUG_TRACE_RECONFIGURE_OUT if (is_error) Trace::TraceMedia("error " + dbg) ;
+#  define DEBUG_TRACE_RECONFIGURE_OUT if (is_error) Trace::TraceError("error " + dbg) ;
 
 #  define DEBUG_TRACE_CONFIGURE_CAPS                                    \
   Trace::TraceMedia("configuring '" + GetElementId(a_capsfilter) + "'") ;

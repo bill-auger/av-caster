@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission to use, copy, modify, and/or distribute this software for any purpose with
    or without fee is hereby granted, provided that the above copyright notice and this
@@ -260,7 +260,7 @@ public:
     */
     template <class Convertible>
     ReferenceCountedObjectPtr (const ReferenceCountedObjectPtr<Convertible>& other) noexcept
-        : referencedObject (static_cast <ReferencedType*> (other.get()))
+        : referencedObject (static_cast<ReferencedType*> (other.get()))
     {
         incIfNotNull (referencedObject);
     }
@@ -369,42 +369,42 @@ private:
 
 
 //==============================================================================
-/** Compares two ReferenceCountedObjectPointers. */
+/** Compares two ReferenceCountedObjectPtrs. */
 template <class ReferenceCountedObjectClass>
 bool operator== (const ReferenceCountedObjectPtr<ReferenceCountedObjectClass>& object1, ReferenceCountedObjectClass* const object2) noexcept
 {
     return object1.get() == object2;
 }
 
-/** Compares two ReferenceCountedObjectPointers. */
+/** Compares two ReferenceCountedObjectPtrs. */
 template <class ReferenceCountedObjectClass>
 bool operator== (const ReferenceCountedObjectPtr<ReferenceCountedObjectClass>& object1, const ReferenceCountedObjectPtr<ReferenceCountedObjectClass>& object2) noexcept
 {
     return object1.get() == object2.get();
 }
 
-/** Compares two ReferenceCountedObjectPointers. */
+/** Compares two ReferenceCountedObjectPtrs. */
 template <class ReferenceCountedObjectClass>
 bool operator== (ReferenceCountedObjectClass* object1, const ReferenceCountedObjectPtr<ReferenceCountedObjectClass>& object2) noexcept
 {
     return object1 == object2.get();
 }
 
-/** Compares two ReferenceCountedObjectPointers. */
+/** Compares two ReferenceCountedObjectPtrs. */
 template <class ReferenceCountedObjectClass>
 bool operator!= (const ReferenceCountedObjectPtr<ReferenceCountedObjectClass>& object1, const ReferenceCountedObjectClass* object2) noexcept
 {
     return object1.get() != object2;
 }
 
-/** Compares two ReferenceCountedObjectPointers. */
+/** Compares two ReferenceCountedObjectPtrs. */
 template <class ReferenceCountedObjectClass>
 bool operator!= (const ReferenceCountedObjectPtr<ReferenceCountedObjectClass>& object1, const ReferenceCountedObjectPtr<ReferenceCountedObjectClass>& object2) noexcept
 {
     return object1.get() != object2.get();
 }
 
-/** Compares two ReferenceCountedObjectPointers. */
+/** Compares two ReferenceCountedObjectPtrs. */
 template <class ReferenceCountedObjectClass>
 bool operator!= (ReferenceCountedObjectClass* object1, const ReferenceCountedObjectPtr<ReferenceCountedObjectClass>& object2) noexcept
 {

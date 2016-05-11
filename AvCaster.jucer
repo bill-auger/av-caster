@@ -2,12 +2,51 @@
 
 <JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.002"
               bundleIdentifier="com.yourcompany.AvCaster" includeBinaryInAppConfig="1"
-              jucerVersion="3.1.1">
+              jucerVersion="4.2.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
     <GROUP id="{B968229C-6218-718C-8F23-4791DDD13A93}" name="Assets">
-      <FILE id="ytyANP" name="av-caster.png" compile="0" resource="1" file="Assets/av-caster.png"/>
+      <FILE id="ehff61" name="avcaster-logo-48.png" compile="0" resource="1"
+            file="Assets/avcaster-logo-48.png"/>
+      <FILE id="Hb9d9U" name="avcaster-logo-128.png" compile="0" resource="1"
+            file="Assets/avcaster-logo-128.png"/>
+      <FILE id="klnYyc" name="config-hover.png" compile="0" resource="1"
+            file="Assets/config-hover.png"/>
+      <FILE id="YmSqkp" name="config-pushed.png" compile="0" resource="1"
+            file="Assets/config-pushed.png"/>
+      <FILE id="wYhzGX" name="config.png" compile="0" resource="1" file="Assets/config.png"/>
     </GROUP>
     <GROUP id="{12F99024-8A51-4F04-3891-07F59C6B6881}" name="Headers">
+      <GROUP id="{3B152D14-E544-D7E4-5FA0-64C563FEA7B6}" name="Constants">
+        <FILE id="kNVY1r" name="AppConstants.h" compile="0" resource="0" file="Source/Constants/AppConstants.h"/>
+        <FILE id="OIkoML" name="ConfigConstants.h" compile="0" resource="0"
+              file="Source/Constants/ConfigConstants.h"/>
+        <FILE id="Vbp0EX" name="Constants.h" compile="0" resource="0" file="Source/Constants/Constants.h"/>
+        <FILE id="gcK8jK" name="GstConstants.h" compile="0" resource="0" file="Source/Constants/GstConstants.h"/>
+        <FILE id="UNSn5F" name="GuiConstants.h" compile="0" resource="0" file="Source/Constants/GuiConstants.h"/>
+        <FILE id="YxWL0E" name="IrcConstants.h" compile="0" resource="0" file="Source/Constants/IrcConstants.h"/>
+      </GROUP>
+      <GROUP id="{E6435E5A-2EC1-B05C-0E70-FE2051EE7ACB}" name="Controllers">
+        <FILE id="sEuPJd" name="AvCaster.h" compile="0" resource="0" file="Source/Controllers/AvCaster.h"/>
+        <FILE id="FQevmF" name="Gstreamer.h" compile="0" resource="0" file="Source/Controllers/Gstreamer.h"/>
+        <FILE id="l437D6" name="IrcClient.h" compile="0" resource="0" file="Source/Controllers/IrcClient.h"/>
+      </GROUP>
+      <GROUP id="{449EB608-F7A7-9902-3D45-62AA93237D8C}" name="Models">
+        <FILE id="jy2eVq" name="AvCasterStore.h" compile="0" resource="0" file="Source/Models/AvCasterStore.h"/>
+        <FILE id="qqog3V" name="PresetSeed.h" compile="0" resource="0" file="Source/Models/PresetSeed.h"/>
+      </GROUP>
+      <GROUP id="{E5A092F4-256B-C2BA-D268-F46AC54BD85A}" name="Trace">
+        <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>
+        <FILE id="VpzAMB" name="TraceAvCaster.h" compile="0" resource="0" file="Source/Trace/TraceAvCaster.h"/>
+        <FILE id="XY5wkX" name="TraceAvCasterStore.h" compile="0" resource="0"
+              file="Source/Trace/TraceAvCasterStore.h"/>
+        <FILE id="h9pAwt" name="TraceChat.h" compile="0" resource="0" file="Source/Trace/TraceChat.h"/>
+        <FILE id="NyIKTu" name="TraceConfig.h" compile="0" resource="0" file="Source/Trace/TraceConfig.h"/>
+        <FILE id="dToFg4" name="TraceGstreamer.h" compile="0" resource="0"
+              file="Source/Trace/TraceGstreamer.h"/>
+        <FILE id="hB9rdH" name="TraceIrcClient.h" compile="0" resource="0"
+              file="Source/Trace/TraceIrcClient.h"/>
+        <FILE id="ltIPwf" name="TraceMain.h" compile="0" resource="0" file="Source/Trace/TraceMain.h"/>
+      </GROUP>
       <GROUP id="{DC8F1EBF-1412-35CC-9623-015550E67D03}" name="Views">
         <FILE id="YpkpyX" name="Background.h" compile="0" resource="0" file="Source/Views/Background.h"/>
         <FILE id="KpYPJn" name="Chat.h" compile="0" resource="0" file="Source/Views/Chat.h"/>
@@ -27,43 +66,32 @@
         <FILE id="KL3xzz" name="Preview.h" compile="0" resource="0" file="Source/Views/Preview.h"/>
         <FILE id="VjCVUp" name="Statusbar.h" compile="0" resource="0" file="Source/Views/Statusbar.h"/>
       </GROUP>
-      <GROUP id="{E6435E5A-2EC1-B05C-0E70-FE2051EE7ACB}" name="Controllers">
-        <FILE id="sEuPJd" name="AvCaster.h" compile="0" resource="0" file="Source/Controllers/AvCaster.h"/>
-        <FILE id="FQevmF" name="Gstreamer.h" compile="0" resource="0" file="Source/Controllers/Gstreamer.h"/>
-        <FILE id="l437D6" name="IrcClient.h" compile="0" resource="0" file="Source/Controllers/IrcClient.h"/>
-      </GROUP>
-      <GROUP id="{449EB608-F7A7-9902-3D45-62AA93237D8C}" name="Models">
-        <FILE id="jy2eVq" name="AvCasterStore.h" compile="0" resource="0" file="Source/Models/AvCasterStore.h"/>
-        <FILE id="qqog3V" name="PresetSeed.h" compile="0" resource="0" file="Source/Models/PresetSeed.h"/>
-      </GROUP>
-      <GROUP id="{3B152D14-E544-D7E4-5FA0-64C563FEA7B6}" name="Constants">
-        <FILE id="kNVY1r" name="AppConstants.h" compile="0" resource="0" file="Source/Constants/AppConstants.h"/>
-        <FILE id="OIkoML" name="ConfigConstants.h" compile="0" resource="0"
-              file="Source/Constants/ConfigConstants.h"/>
-        <FILE id="Vbp0EX" name="Constants.h" compile="0" resource="0" file="Source/Constants/Constants.h"/>
-        <FILE id="gcK8jK" name="GstConstants.h" compile="0" resource="0" file="Source/Constants/GstConstants.h"/>
-        <FILE id="UNSn5F" name="GuiConstants.h" compile="0" resource="0" file="Source/Constants/GuiConstants.h"/>
-        <FILE id="YxWL0E" name="IrcConstants.h" compile="0" resource="0" file="Source/Constants/IrcConstants.h"/>
-      </GROUP>
-      <GROUP id="{E5A092F4-256B-C2BA-D268-F46AC54BD85A}" name="Trace">
-        <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>
-        <FILE id="VpzAMB" name="TraceAvCaster.h" compile="0" resource="0" file="Source/Trace/TraceAvCaster.h"/>
-        <FILE id="XY5wkX" name="TraceAvCasterStore.h" compile="0" resource="0"
-              file="Source/Trace/TraceAvCasterStore.h"/>
-        <FILE id="h9pAwt" name="TraceChat.h" compile="0" resource="0" file="Source/Trace/TraceChat.h"/>
-        <FILE id="NyIKTu" name="TraceConfig.h" compile="0" resource="0" file="Source/Trace/TraceConfig.h"/>
-        <FILE id="dToFg4" name="TraceGstreamer.h" compile="0" resource="0"
-              file="Source/Trace/TraceGstreamer.h"/>
-        <FILE id="hB9rdH" name="TraceIrcClient.h" compile="0" resource="0"
-              file="Source/Trace/TraceIrcClient.h"/>
-        <FILE id="ltIPwf" name="TraceMain.h" compile="0" resource="0" file="Source/Trace/TraceMain.h"/>
-      </GROUP>
     </GROUP>
     <GROUP id="{B76039D2-8BDF-7740-0816-1A69395E900D}" name="Source">
+      <GROUP id="{0B2DBDF6-4255-99CE-3692-AEFBE3303178}" name="Constants">
+        <FILE id="J2IYe3" name="AppConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/AppConstants.cpp"/>
+        <FILE id="Z9kdnJ" name="ConfigConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/ConfigConstants.cpp"/>
+        <FILE id="tLFx56" name="GstConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/GstConstants.cpp"/>
+        <FILE id="Y4wapo" name="GuiConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/GuiConstants.cpp"/>
+        <FILE id="oMPKh7" name="IrcConstants.cpp" compile="1" resource="0"
+              file="Source/Constants/IrcConstants.cpp"/>
+      </GROUP>
       <GROUP id="{FE879823-A057-5C58-FFBB-4369879578C2}" name="Controllers">
         <FILE id="woBIF5" name="AvCaster.cpp" compile="1" resource="0" file="Source/Controllers/AvCaster.cpp"/>
         <FILE id="DWdbyP" name="Gstreamer.cpp" compile="1" resource="0" file="Source/Controllers/Gstreamer.cpp"/>
         <FILE id="MeBpm1" name="IrcClient.cpp" compile="1" resource="0" file="Source/Controllers/IrcClient.cpp"/>
+      </GROUP>
+      <GROUP id="{7C73B5B3-CA01-0491-6468-F3AA66E67B45}" name="Models">
+        <FILE id="Bn3TIV" name="AvCasterStore.cpp" compile="1" resource="0"
+              file="Source/Models/AvCasterStore.cpp"/>
+        <FILE id="LBD3gN" name="PresetSeed.cpp" compile="1" resource="0" file="Source/Models/PresetSeed.cpp"/>
+      </GROUP>
+      <GROUP id="{2DCE1912-CE55-49BC-C4AA-34580ABA4D56}" name="Trace">
+        <FILE id="iZf5Wa" name="Trace.cpp" compile="1" resource="0" file="Source/Trace/Trace.cpp"/>
       </GROUP>
       <GROUP id="{A993E6CB-8F67-8126-E003-0C32349C13AF}" name="Views">
         <FILE id="gPKxO9" name="Background.cpp" compile="1" resource="0" file="Source/Views/Background.cpp"/>
@@ -87,26 +115,6 @@
         <FILE id="GjcK36" name="Presets.cpp" compile="1" resource="0" file="Source/Views/Presets.cpp"/>
         <FILE id="McNOOA" name="Preview.cpp" compile="1" resource="0" file="Source/Views/Preview.cpp"/>
         <FILE id="CESgWr" name="Statusbar.cpp" compile="1" resource="0" file="Source/Views/Statusbar.cpp"/>
-      </GROUP>
-      <GROUP id="{7C73B5B3-CA01-0491-6468-F3AA66E67B45}" name="Models">
-        <FILE id="Bn3TIV" name="AvCasterStore.cpp" compile="1" resource="0"
-              file="Source/Models/AvCasterStore.cpp"/>
-        <FILE id="LBD3gN" name="PresetSeed.cpp" compile="1" resource="0" file="Source/Models/PresetSeed.cpp"/>
-      </GROUP>
-      <GROUP id="{2DCE1912-CE55-49BC-C4AA-34580ABA4D56}" name="Trace">
-        <FILE id="iZf5Wa" name="Trace.cpp" compile="1" resource="0" file="Source/Trace/Trace.cpp"/>
-      </GROUP>
-      <GROUP id="{0B2DBDF6-4255-99CE-3692-AEFBE3303178}" name="Constants">
-        <FILE id="J2IYe3" name="AppConstants.cpp" compile="1" resource="0"
-              file="Source/Constants/AppConstants.cpp"/>
-        <FILE id="Z9kdnJ" name="ConfigConstants.cpp" compile="1" resource="0"
-              file="Source/Constants/ConfigConstants.cpp"/>
-        <FILE id="tLFx56" name="GstConstants.cpp" compile="1" resource="0"
-              file="Source/Constants/GstConstants.cpp"/>
-        <FILE id="Y4wapo" name="GuiConstants.cpp" compile="1" resource="0"
-              file="Source/Constants/GuiConstants.cpp"/>
-        <FILE id="oMPKh7" name="IrcConstants.cpp" compile="1" resource="0"
-              file="Source/Constants/IrcConstants.cpp"/>
       </GROUP>
       <FILE id="CQoHWx" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
@@ -157,12 +165,12 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </VS2008>
-    <LINUX_MAKE targetFolder="Builds/Makefile" extraCompilerFlags="&#96;pkg-config --cflags gstreamer-1.0&#96;"
+    <LINUX_MAKE targetFolder="Builds/Makefile" extraCompilerFlags="$(if $(filter-out x86_64 , $(shell uname -m)) , -malign-double , -fPIC)&#10;&#96;pkg-config --cflags gstreamer-1.0&#96;&#10;-I /usr/include/libircclient"
                 extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;"
                 externalLibraries="ircclient">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" libraryPath="" isDebug="1" optimisation="1" targetName="av-caster-dbg"/>
         <CONFIGURATION name="Release" libraryPath="" isDebug="0" optimisation="3" targetName="av-caster"/>
+        <CONFIGURATION name="Debug" libraryPath="" isDebug="1" optimisation="1" targetName="av-caster-dbg"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../juce/modules"/>

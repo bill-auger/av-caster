@@ -47,8 +47,8 @@ void Trace::TraceError   (String msg) { if (DEBUG_TRACE_STATE    ) LOG("\033[0;3
 void Trace::TraceMissingNode(ValueTree config_store , Identifier a_node_id)
 {
   if (!config_store.getChildWithName(a_node_id).isValid())
-    Trace::TraceConfig("missing node of '" + String(config_store.getType())      +
-                       "' - adding '"      + String(a_node_id             ) + "'") ;
+    Trace::TraceConfig("missing node of '" + STRING(config_store.getType())      +
+                       "' - adding '"      + STRING(a_node_id             ) + "'") ;
 }
 
 void Trace::TraceMissingProperty(ValueTree config_store    , Identifier a_property_id ,
@@ -56,8 +56,8 @@ void Trace::TraceMissingProperty(ValueTree config_store    , Identifier a_proper
 {
   if (!config_store.hasProperty(a_property_id))
   {
-    Trace::TraceConfig("missing property of '"       + String(config_store.getType())     +
-                       "' - restoring default for '" + String(a_property_id)   + "' => '" +
+    Trace::TraceConfig("missing property of '"       + STRING(config_store.getType())     +
+                       "' - restoring default for '" + STRING(a_property_id)   + "' => '" +
                                                        STRING(a_default_value) + "'"      ) ;
     DumpConfig(config_store , "missing property ") ;
   }
@@ -70,7 +70,7 @@ void Trace::DumpConfig(ValueTree config_store , String node_desc)
   if (!config_store.isValid())
   { Trace::TraceError("Trace::DumpConfig() - invalid node: " + node_desc) ; return ; }
 
-  String node_name    = String(config_store.getType()) ;
+  String node_name    = STRING(config_store.getType()) ;
   int    n_properties =        config_store.getNumProperties() ;
   int    n_children   =        config_store.getNumChildren() ;
 
@@ -95,7 +95,7 @@ void Trace::DumpConfig(ValueTree config_store , String node_desc)
   for (int child_n = 0 ; child_n < n_children ; ++child_n)
   {
     ValueTree child_node      = config_store.getChild(child_n) ;
-    String    child_id        = String(child_node.getType()) ;
+    String    child_id        = STRING(child_node.getType()) ;
     String    child_node_desc = String("'") + node_name + "[" + String(child_n) +
                                 "]] ('"     + child_id  + "')"                  ;
     DumpConfig(child_node , child_node_desc) ;
@@ -120,13 +120,14 @@ String Trace::VarType(var a_var) // juce var dynamic datatypes
 
 void Trace::TraceTreeChanged(ValueTree& a_node , const Identifier& a_key)
 {
-  String parent_id = String(a_node.getParent().getType()) ;
-  String node_id   = parent_id + ((parent_id.isEmpty()) ? "" : "::") + String(a_node.getType()) ;
-  var    a_value   = a_node[a_key] ;
-  String var_type  = VarType(a_value) ;
+  String parent_id = STRING(a_node.getParent().getType()) ;
+  String node_id   = parent_id + ((parent_id.isEmpty()) ? "" : "::") + STRING(a_node.getType()) ;
+  String var_type  = VarType(a_node[a_key]) ;
+  String a_value   = STRING(a_node[a_key]).upToFirstOccurrenceOf("?" , true  , true) ;
+  if (a_key == CONFIG::OUTPUT_DEST_ID && a_value.containsChar('?')) a_value += "...'" ;
 
-  Trace::TraceEvent("value changed for " + node_id  + "['" + String(a_key)        +
-                    "'] => ("            + var_type + ")'" + STRING(a_value) + "'") ;
+  Trace::TraceEvent("value changed for tree " + node_id  + "['" + STRING(a_key) +
+                    "'] => ("                 + var_type + ")'" + a_value       + "'" ) ;
 }
 
 void Trace::TraceValueChanged(Value& a_value , String name)
@@ -142,7 +143,7 @@ String Trace::TraceSetValue(ValueTree a_node , const Identifier& a_key , var a_v
   String node_id    = (a_node.isValid()) ? STRING(a_node.getType()) : String("NULL") ;
   String prev_val   = (a_node.isValid()) ? STRING(a_node[a_key]   ) : String("NULL") ;
   String next_val   = STRING(a_value) ;
-  String key        = (a_key .isValid()) ? String(a_key           ) : String("NULL") ;
+  String key        = (a_key .isValid()) ? STRING(a_key           ) : String("NULL") ;
   String change_msg = "key "               + node_id   + "['"  + key      +
                       "'] changing from (" + prev_type + ")'"  + prev_val +
                       "' to ("             + next_type + ")'"  + next_val + "'" ;

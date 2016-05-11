@@ -56,7 +56,7 @@
 
 #  define DEBUG_TRACE_SANITIZE_INT_PROPERTY                                                     \
   String relation = String(min_value) + " <= " + String(a_value) + " <= " + String(max_value) ; \
-  String node_id = String(config_store.getType()) ; String property_id = String(a_key) ;        \
+  String node_id = STRING(config_store.getType()) ; String property_id = STRING(a_key) ;        \
   if (a_value < min_value || a_value > max_value)                                               \
     Trace::TraceConfig("value (" + relation + ") out of range for '"  +                         \
                        node_id + "['" + property_id + "'] - removing" )                         ;
@@ -64,12 +64,12 @@
 #  define DEBUG_TRACE_FILTER_ROGUE_KEY                                                    \
   if (!persistent_keys.contains(property_id))                                             \
     Trace::TraceConfig("removing rogue property '" + String(property_id)                + \
-                       "' from '"                  + String(parent_node.getType()) + "'") ;
+                       "' from '"                  + STRING(parent_node.getType()) + "'") ;
 
 #  define DEBUG_TRACE_FILTER_ROGUE_NODE                                               \
   if (!persistent_node_ids.contains(node_id))                                         \
     Trace::TraceConfig("removing rogue node '" + String(node_id)                    + \
-                       "' from '"              + String(parent_node.getType()) + "'") ;
+                       "' from '"              + STRING(parent_node.getType()) + "'") ;
 
 #  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)                   \
   Trace::TraceConfigVb("dumping config per " + String(__FUNCTION__) + "()") ; \
@@ -135,7 +135,7 @@
 
 #  define DEBUG_TRACE_DEACTIVATE_CONTROL                                          \
   String err = (AvCaster::IsInitialized) ? "error configuring media - " : "" ;    \
-  Trace::TraceConfig(err + "deactivating control toggle '" + String(a_key) + "'") ;
+  Trace::TraceConfig(err + "deactivating control toggle '" + STRING(a_key) + "'") ;
 
 #  define DEBUG_TRACE_SET_PROPERTY                                           \
   if (AvCaster::IsInitialized && AvCaster::DisabledFeatures.contains(a_key)) \
@@ -143,8 +143,8 @@
 
 #  define DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , postfix)                      \
   ValueTree a_parent_node = a_node.getParent() ;                                         \
-  String    node_id       = String(a_node.getType()) ;                                   \
-  String    key           = String(a_key           ) ;                                   \
+  String    node_id       = STRING(a_node.getType()) ;                                   \
+  String    key           = STRING(a_key           ) ;                                   \
   String err = (isKnownProperty(a_node , a_key))    ? ""                               : \
                (a_node        != this->root     &&                                       \
                 a_node        != this->config   &&                                       \
@@ -181,13 +181,13 @@
   String nickidx = String(stored_nicks.indexOf(active_nick)) ;                         \
   String nnicks  = String(stored_nicks.size()        ) ;                               \
   Trace::TraceConfig("adding chatter ("         + nickidx     + "/" + nnicks + ") '" + \
-                     String(chatter_id) + "' (" + active_nick + ")" + " to '"        + \
+                     STRING(chatter_id) + "' (" + active_nick + ")" + " to '"        + \
                      String(network_id) + "' (" + network_id  + ")"                  ) ;
 
 #  define DEBUG_TRACE_REMOVE_CHAT_NICK                                                      \
   String nnicks  = String(this->chatters.getNumChildren()) ;                                \
   String nickidx = String(chatter_idx                    ) ;                                \
-  String userid  = String(chatter_store.getType()        ) ;                                \
+  String userid  = STRING(chatter_store.getType()        ) ;                                \
   if (!active_nicks.contains(stored_nick))                                                  \
     Trace::TraceConfig(String("removing chatter (") + nickidx + "/" + nnicks + ") '"      + \
                        userid  + "' (" + stored_nick + ")" + " from '" + network_id + "'" ) ;

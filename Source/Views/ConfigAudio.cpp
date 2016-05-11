@@ -16,7 +16,6 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
 //[Headers] You can add your own extra header files here...
 //[/Headers]
 
@@ -29,6 +28,9 @@
 //==============================================================================
 ConfigAudio::ConfigAudio ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (audioApiLabel = new Label ("audioApiLabel",
                                                   TRANS("Interface:")));
     audioApiLabel->setFont (Font (15.00f, Font::plain));
@@ -42,7 +44,7 @@ ConfigAudio::ConfigAudio ()
     audioApiCombo->setExplicitFocusOrder (1);
     audioApiCombo->setEditableText (false);
     audioApiCombo->setJustificationType (Justification::centredLeft);
-    audioApiCombo->setTextWhenNothingSelected (String::empty);
+    audioApiCombo->setTextWhenNothingSelected (String());
     audioApiCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     audioApiCombo->addListener (this);
 
@@ -76,7 +78,7 @@ ConfigAudio::ConfigAudio ()
     audioCodecCombo->setExplicitFocusOrder (3);
     audioCodecCombo->setEditableText (false);
     audioCodecCombo->setJustificationType (Justification::centredLeft);
-    audioCodecCombo->setTextWhenNothingSelected (String::empty);
+    audioCodecCombo->setTextWhenNothingSelected (String());
     audioCodecCombo->setTextWhenNoChoicesAvailable (TRANS("(no devices)"));
     audioCodecCombo->addListener (this);
 
@@ -109,7 +111,7 @@ ConfigAudio::ConfigAudio ()
     samplerateCombo->setExplicitFocusOrder (5);
     samplerateCombo->setEditableText (false);
     samplerateCombo->setJustificationType (Justification::centredLeft);
-    samplerateCombo->setTextWhenNothingSelected (String::empty);
+    samplerateCombo->setTextWhenNothingSelected (String());
     samplerateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     samplerateCombo->addListener (this);
 
@@ -126,7 +128,7 @@ ConfigAudio::ConfigAudio ()
     audioBitrateCombo->setExplicitFocusOrder (6);
     audioBitrateCombo->setEditableText (false);
     audioBitrateCombo->setJustificationType (Justification::centredLeft);
-    audioBitrateCombo->setTextWhenNothingSelected (String::empty);
+    audioBitrateCombo->setTextWhenNothingSelected (String());
     audioBitrateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     audioBitrateCombo->addListener (this);
 
@@ -253,9 +255,6 @@ void ConfigAudio::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == nChannelsSlider)
     {
         //[UserSliderCode_nChannelsSlider] -- add your slider handling code here..
-
-      // NOTE: handled in Config
-
         //[/UserSliderCode_nChannelsSlider]
     }
 
@@ -271,9 +270,9 @@ void ConfigAudio::sliderValueChanged (Slider* sliderThatWasMoved)
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -316,7 +315,8 @@ BEGIN_JUCER_METADATA
   <SLIDER name="nChannelsSlider" id="f465840b69633eb" memberName="nChannelsSlider"
           virtualName="" explicitFocusOrder="4" pos="88 128 64 24" min="0"
           max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
+          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"
+          needsCallback="1"/>
   <LABEL name="samplerateLabel" id="9744752cbe30d209" memberName="samplerateLabel"
          virtualName="" explicitFocusOrder="0" pos="0 168 76 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Samplerate:" editableSingleClick="0"

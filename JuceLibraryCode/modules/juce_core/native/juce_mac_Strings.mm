@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the juce_core module of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission to use, copy, modify, and/or distribute this software for any purpose with
    or without fee is hereby granted, provided that the above copyright notice and this
@@ -45,8 +45,14 @@ String String::fromCFString (CFStringRef cfString)
 CFStringRef String::toCFString() const
 {
     const char* const utf8 = toRawUTF8();
-    return CFStringCreateWithBytes (kCFAllocatorDefault, (const UInt8*) utf8,
-                                    (CFIndex) strlen (utf8), kCFStringEncodingUTF8, false);
+
+    if (CFStringRef result = CFStringCreateWithBytes (kCFAllocatorDefault, (const UInt8*) utf8,
+                                                      (CFIndex) strlen (utf8), kCFStringEncodingUTF8, false))
+        return result;
+
+    // If CFStringCreateWithBytes fails, it probably means there was a UTF8 format
+    // error, so we'll return an empty string rather than a null pointer.
+    return String().toCFString();
 }
 
 String String::convertToPrecomposedUnicode() const

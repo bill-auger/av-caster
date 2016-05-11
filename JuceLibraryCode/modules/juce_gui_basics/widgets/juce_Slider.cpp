@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -35,8 +35,6 @@ public:
         minimum (0), maximum (10), interval (0), doubleClickReturnValue (0),
         skewFactor (1.0), velocityModeSensitivity (1.0),
         velocityModeOffset (0.0), velocityModeThreshold (1),
-        rotaryStart (float_Pi * 1.2f),
-        rotaryEnd (float_Pi * 2.8f),
         sliderRegionStart (0), sliderRegionSize (1), sliderBeingDragged (-1),
         pixelsForFullDragExtent (250),
         textBoxPos (textBoxPosition),
@@ -47,7 +45,6 @@ public:
         doubleClickToValue (false),
         isVelocityBased (false),
         userKeyOverridesVelocity (true),
-        rotaryStop (true),
         incDecButtonsSideBySide (false),
         sendChangeOnlyOnRelease (false),
         popupDisplayEnabled (false),
@@ -57,6 +54,9 @@ public:
         snapsToMousePos (true),
         parentForPopupDisplay (nullptr)
     {
+        rotaryParams.startAngleRadians = float_Pi * 1.2f;
+        rotaryParams.endAngleRadians   = float_Pi * 2.8f;
+        rotaryParams.stopAtEnd = true;
     }
 
     ~Pimpl()
@@ -97,6 +97,12 @@ public:
             || style == RotaryHorizontalDrag
             || style == RotaryVerticalDrag
             || style == RotaryHorizontalVerticalDrag;
+    }
+
+    bool isBar() const noexcept
+    {
+        return style == LinearBar
+            || style == LinearBarVertical;
     }
 
     bool incDecDragDirectionIsHorizontal() const noexcept
@@ -459,20 +465,6 @@ public:
         }
     }
 
-    void setRotaryParameters (const float startAngleRadians,
-                              const float endAngleRadians,
-                              const bool stopAtEnd)
-    {
-        // make sure the values are sensible..
-        jassert (startAngleRadians >= 0 && endAngleRadians >= 0);
-        jassert (startAngleRadians < float_Pi * 4.0f && endAngleRadians < float_Pi * 4.0f);
-        jassert (startAngleRadians < endAngleRadians);
-
-        rotaryStart = startAngleRadians;
-        rotaryEnd = endAngleRadians;
-        rotaryStop = stopAtEnd;
-    }
-
     void setVelocityModeParameters (const double sensitivity, const int threshold,
                                     const double offset, const bool userCanPressKeyToSwapMode)
     {
@@ -521,9 +513,7 @@ public:
     void setTextBoxIsEditable (const bool shouldBeEditable)
     {
         editableText = shouldBeEditable;
-
-        if (valueBox != nullptr)
-            valueBox->setEditable (shouldBeEditable && owner.isEnabled());
+        updateTextBoxEnablement();
     }
 
     void showTextBox()
@@ -554,6 +544,17 @@ public:
         }
     }
 
+    void updateTextBoxEnablement()
+    {
+        if (valueBox != nullptr)
+        {
+            const bool shouldBeEditable = editableText && owner.isEnabled();
+
+            if (valueBox->isEditable() != shouldBeEditable) // (to avoid changing the single/double click flags unless we need to)
+                valueBox->setEditable (shouldBeEditable);
+        }
+    }
+
     void lookAndFeelChanged (LookAndFeel& lf)
     {
         if (textBoxPos != NoTextBox)
@@ -567,10 +568,7 @@ public:
             valueBox->setWantsKeyboardFocus (false);
             valueBox->setText (previousTextBoxContent, dontSendNotification);
             valueBox->setTooltip (owner.getTooltip());
-
-            if (valueBox->isEditable() != editableText) // (avoid overriding the single/double click flags unless we have to)
-                valueBox->setEditable (editableText && owner.isEnabled());
-
+            updateTextBoxEnablement();
             valueBox->addListener (this);
 
             if (style == LinearBar || style == LinearBarVertical)
@@ -695,7 +693,7 @@ public:
             while (angle < 0.0)
                 angle += double_Pi * 2.0;
 
-            if (rotaryStop && ! e.mouseWasClicked())
+            if (rotaryParams.stopAtEnd && e.mouseWasDraggedSinceMouseDown())
             {
                 if (std::abs (angle - lastAngle) > double_Pi)
                 {
@@ -706,26 +704,26 @@ public:
                 }
 
                 if (angle >= lastAngle)
-                    angle = jmin (angle, (double) jmax (rotaryStart, rotaryEnd));
+                    angle = jmin (angle, (double) jmax (rotaryParams.startAngleRadians, rotaryParams.endAngleRadians));
                 else
-                    angle = jmax (angle, (double) jmin (rotaryStart, rotaryEnd));
+                    angle = jmax (angle, (double) jmin (rotaryParams.startAngleRadians, rotaryParams.endAngleRadians));
             }
             else
             {
-                while (angle < rotaryStart)
+                while (angle < rotaryParams.startAngleRadians)
                     angle += double_Pi * 2.0;
 
-                if (angle > rotaryEnd)
+                if (angle > rotaryParams.endAngleRadians)
                 {
-                    if (smallestAngleBetween (angle, rotaryStart)
-                         <= smallestAngleBetween (angle, rotaryEnd))
-                        angle = rotaryStart;
+                    if (smallestAngleBetween (angle, rotaryParams.startAngleRadians)
+                         <= smallestAngleBetween (angle, rotaryParams.endAngleRadians))
+                        angle = rotaryParams.startAngleRadians;
                     else
-                        angle = rotaryEnd;
+                        angle = rotaryParams.endAngleRadians;
                 }
             }
 
-            const double proportion = (angle - rotaryStart) / (rotaryEnd - rotaryStart);
+            const double proportion = (angle - rotaryParams.startAngleRadians) / (rotaryParams.endAngleRadians - rotaryParams.startAngleRadians);
             valueWhenLastDragged = owner.proportionOfLengthToValue (jlimit (0.0, 1.0, proportion));
             lastAngle = angle;
         }
@@ -734,7 +732,7 @@ public:
     void handleAbsoluteDrag (const MouseEvent& e)
     {
         const float mousePos = (isHorizontal() || style == RotaryHorizontalDrag) ? e.position.x : e.position.y;
-        double newPos = (mousePos - sliderRegionStart) / (double) sliderRegionSize;
+        double newPos = 0;
 
         if (style == RotaryHorizontalDrag
             || style == RotaryVerticalDrag
@@ -768,6 +766,8 @@ public:
         }
         else
         {
+            newPos = (mousePos - sliderRegionStart) / (double) sliderRegionSize;
+
             if (isVertical())
                 newPos = 1.0 - newPos;
         }
@@ -823,7 +823,8 @@ public:
             {
                 showPopupMenu();
             }
-            else if (canDoubleClickToValue() && e.mods.isAltDown())
+            else if (canDoubleClickToValue()
+                      && e.mods.withoutMouseButtons() == ModifierKeys (ModifierKeys::altModifier))
             {
                 mouseDoubleClick();
             }
@@ -838,8 +839,9 @@ public:
 
                 minMaxDiff = (double) valueMax.getValue() - (double) valueMin.getValue();
 
-                lastAngle = rotaryStart + (rotaryEnd - rotaryStart)
-                                            * owner.valueToProportionOfLength (currentValue.getValue());
+                lastAngle = rotaryParams.startAngleRadians
+                                + (rotaryParams.endAngleRadians - rotaryParams.startAngleRadians)
+                                     * owner.valueToProportionOfLength (currentValue.getValue());
 
                 valueWhenLastDragged = (sliderBeingDragged == 2 ? valueMax
                                                                 : (sliderBeingDragged == 1 ? valueMin
@@ -854,7 +856,7 @@ public:
                     if (parentForPopupDisplay != nullptr)
                         parentForPopupDisplay->addChildComponent (popup);
                     else
-                        popup->addToDesktop (0);
+                        popup->addToDesktop (ComponentPeer::windowIsTemporary);
 
                     popup->setVisible (true);
                 }
@@ -881,7 +883,7 @@ public:
             {
                 if (style == IncDecButtons && ! incDecDragged)
                 {
-                    if (e.getDistanceFromDragStart() < 10 || e.mouseWasClicked())
+                    if (e.getDistanceFromDragStart() < 10 || ! e.mouseWasDraggedSinceMouseDown())
                         return;
 
                     incDecDragged = true;
@@ -1093,7 +1095,8 @@ public:
                 lf.drawRotarySlider (g,
                                      sliderRect.getX(), sliderRect.getY(),
                                      sliderRect.getWidth(), sliderRect.getHeight(),
-                                     sliderPos, rotaryStart, rotaryEnd, owner);
+                                     sliderPos, rotaryParams.startAngleRadians,
+                                     rotaryParams.endAngleRadians, owner);
             }
             else
             {
@@ -1114,97 +1117,33 @@ public:
         }
     }
 
-    void resized (const Rectangle<int>& localBounds, LookAndFeel& lf)
+    //==============================================================================
+    void resized (LookAndFeel& lf)
     {
-        int minXSpace = 0;
-        int minYSpace = 0;
+        SliderLayout layout = lf.getSliderLayout (owner);
 
-        if (textBoxPos == TextBoxLeft || textBoxPos == TextBoxRight)
-            minXSpace = 30;
-        else
-            minYSpace = 15;
+        sliderRect = layout.sliderBounds;
 
-        const int tbw = jmax (0, jmin (textBoxWidth,  localBounds.getWidth() - minXSpace));
-        const int tbh = jmax (0, jmin (textBoxHeight, localBounds.getHeight() - minYSpace));
+        if (valueBox != nullptr)
+            valueBox->setBounds (layout.textBoxBounds);
 
-        if (style == LinearBar || style == LinearBarVertical)
+        if (isHorizontal())
         {
-            if (valueBox != nullptr)
-                valueBox->setBounds (localBounds);
-        }
-        else
-        {
-            if (textBoxPos == NoTextBox)
-            {
-                sliderRect = localBounds;
-            }
-            else if (textBoxPos == TextBoxLeft)
-            {
-                valueBox->setBounds (0, (localBounds.getHeight() - tbh) / 2, tbw, tbh);
-                sliderRect.setBounds (tbw, 0, localBounds.getWidth() - tbw, localBounds.getHeight());
-            }
-            else if (textBoxPos == TextBoxRight)
-            {
-                valueBox->setBounds (localBounds.getWidth() - tbw, (localBounds.getHeight() - tbh) / 2, tbw, tbh);
-                sliderRect.setBounds (0, 0, localBounds.getWidth() - tbw, localBounds.getHeight());
-            }
-            else if (textBoxPos == TextBoxAbove)
-            {
-                valueBox->setBounds ((localBounds.getWidth() - tbw) / 2, 0, tbw, tbh);
-                sliderRect.setBounds (0, tbh, localBounds.getWidth(), localBounds.getHeight() - tbh);
-            }
-            else if (textBoxPos == TextBoxBelow)
-            {
-                valueBox->setBounds ((localBounds.getWidth() - tbw) / 2, localBounds.getHeight() - tbh, tbw, tbh);
-                sliderRect.setBounds (0, 0, localBounds.getWidth(), localBounds.getHeight() - tbh);
-            }
-        }
-
-        const int indent = lf.getSliderThumbRadius (owner);
-
-        if (style == LinearBar)
-        {
-            const int barIndent = 1;
-            sliderRegionStart = barIndent;
-            sliderRegionSize = localBounds.getWidth() - barIndent * 2;
-
-            sliderRect.setBounds (sliderRegionStart, barIndent,
-                                  sliderRegionSize, localBounds.getHeight() - barIndent * 2);
-        }
-        else if (style == LinearBarVertical)
-        {
-            const int barIndent = 1;
-            sliderRegionStart = barIndent;
-            sliderRegionSize = localBounds.getHeight() - barIndent * 2;
-
-            sliderRect.setBounds (barIndent, sliderRegionStart,
-                                  localBounds.getWidth() - barIndent * 2, sliderRegionSize);
-        }
-        else if (isHorizontal())
-        {
-            sliderRegionStart = sliderRect.getX() + indent;
-            sliderRegionSize = jmax (1, sliderRect.getWidth() - indent * 2);
-
-            sliderRect.setBounds (sliderRegionStart, sliderRect.getY(),
-                                  sliderRegionSize, sliderRect.getHeight());
+            sliderRegionStart = layout.sliderBounds.getX();
+            sliderRegionSize = layout.sliderBounds.getWidth();
         }
         else if (isVertical())
         {
-            sliderRegionStart = sliderRect.getY() + indent;
-            sliderRegionSize = jmax (1, sliderRect.getHeight() - indent * 2);
-
-            sliderRect.setBounds (sliderRect.getX(), sliderRegionStart,
-                                  sliderRect.getWidth(), sliderRegionSize);
+            sliderRegionStart = layout.sliderBounds.getY();
+            sliderRegionSize = layout.sliderBounds.getHeight();
         }
-        else
+        else if (style == IncDecButtons)
         {
-            sliderRegionStart = 0;
-            sliderRegionSize = 100;
-        }
-
-        if (style == IncDecButtons)
             resizeIncDecButtons();
+        }
     }
+
+    //==============================================================================
 
     void resizeIncDecButtons()
     {
@@ -1244,7 +1183,7 @@ public:
     double valueWhenLastDragged, valueOnMouseDown, skewFactor, lastAngle;
     double velocityModeSensitivity, velocityModeOffset, minMaxDiff;
     int velocityModeThreshold;
-    float rotaryStart, rotaryEnd;
+    RotaryParameters rotaryParams;
     Point<float> mouseDragStartPos, mousePosWhenLastDragged;
     int sliderRegionStart, sliderRegionSize;
     int sliderBeingDragged;
@@ -1263,7 +1202,6 @@ public:
     bool doubleClickToValue;
     bool isVelocityBased;
     bool userKeyOverridesVelocity;
-    bool rotaryStop;
     bool incDecButtonsSideBySide;
     bool sendChangeOnlyOnRelease;
     bool popupDisplayEnabled;
@@ -1290,14 +1228,14 @@ public:
             setLookAndFeel (&s.getLookAndFeel());
         }
 
-        void paintContent (Graphics& g, int w, int h)
+        void paintContent (Graphics& g, int w, int h) override
         {
             g.setFont (font);
             g.setColour (owner.findColour (TooltipWindow::textColourId, true));
             g.drawFittedText (text, Rectangle<int> (w, h), Justification::centred, 1);
         }
 
-        void getContentSize (int& w, int& h)
+        void getContentSize (int& w, int& h) override
         {
             w = font.getStringWidth (text) + 18;
             h = (int) (font.getHeight() * 1.6f);
@@ -1375,9 +1313,25 @@ void Slider::removeListener (SliderListener* const listener)    { pimpl->listene
 Slider::SliderStyle Slider::getSliderStyle() const noexcept     { return pimpl->style; }
 void Slider::setSliderStyle (const SliderStyle newStyle)        { pimpl->setSliderStyle (newStyle); }
 
-void Slider::setRotaryParameters (const float startAngleRadians, const float endAngleRadians, const bool stopAtEnd)
+void Slider::setRotaryParameters (RotaryParameters p) noexcept
 {
-    pimpl->setRotaryParameters (startAngleRadians, endAngleRadians, stopAtEnd);
+    // make sure the values are sensible..
+    jassert (p.startAngleRadians >= 0 && p.endAngleRadians >= 0);
+    jassert (p.startAngleRadians < float_Pi * 4.0f && p.endAngleRadians < float_Pi * 4.0f);
+    jassert (p.startAngleRadians < p.endAngleRadians);
+
+    pimpl->rotaryParams = p;
+}
+
+void Slider::setRotaryParameters (float startAngleRadians, float endAngleRadians, bool stopAtEnd) noexcept
+{
+    RotaryParameters p = { startAngleRadians, endAngleRadians, stopAtEnd };
+    setRotaryParameters (p);
+}
+
+Slider::RotaryParameters Slider::getRotaryParameters() const noexcept
+{
+    return pimpl->rotaryParams;
 }
 
 void Slider::setVelocityBasedMode (bool vb)                 { pimpl->isVelocityBased = vb; }
@@ -1450,7 +1404,7 @@ Component* Slider::getCurrentPopupDisplay() const noexcept      { return pimpl->
 //==============================================================================
 void Slider::colourChanged()        { lookAndFeelChanged(); }
 void Slider::lookAndFeelChanged()   { pimpl->lookAndFeelChanged (getLookAndFeel()); }
-void Slider::enablementChanged()    { repaint(); }
+void Slider::enablementChanged()    { repaint(); pimpl->updateTextBoxEnablement(); }
 
 //==============================================================================
 double Slider::getMaximum() const noexcept      { return pimpl->maximum; }
@@ -1497,11 +1451,8 @@ void Slider::setDoubleClickReturnValue (bool isDoubleClickEnabled,  double value
     pimpl->doubleClickReturnValue = valueToSetOnDoubleClick;
 }
 
-double Slider::getDoubleClickReturnValue (bool& isEnabledResult) const
-{
-    isEnabledResult = pimpl->doubleClickToValue;
-    return pimpl->doubleClickReturnValue;
-}
+double Slider::getDoubleClickReturnValue() const noexcept       { return pimpl->doubleClickReturnValue; }
+bool Slider::isDoubleClickReturnEnabled() const noexcept        { return pimpl->doubleClickToValue; }
 
 void Slider::updateText()
 {
@@ -1576,14 +1527,16 @@ void Slider::valueChanged() {}
 void Slider::setPopupMenuEnabled (const bool menuEnabled)   { pimpl->menuEnabled = menuEnabled; }
 void Slider::setScrollWheelEnabled (const bool enabled)     { pimpl->scrollWheelEnabled = enabled; }
 
-bool Slider::isHorizontal() const noexcept   { return pimpl->isHorizontal(); }
-bool Slider::isVertical() const noexcept     { return pimpl->isVertical(); }
+bool Slider::isHorizontal() const noexcept                  { return pimpl->isHorizontal(); }
+bool Slider::isVertical() const noexcept                    { return pimpl->isVertical(); }
+bool Slider::isRotary() const noexcept                      { return pimpl->isRotary(); }
+bool Slider::isBar() const noexcept                         { return pimpl->isBar(); }
 
-float Slider::getPositionOfValue (const double value)   { return pimpl->getPositionOfValue (value); }
+float Slider::getPositionOfValue (const double value) const { return pimpl->getPositionOfValue (value); }
 
 //==============================================================================
 void Slider::paint (Graphics& g)        { pimpl->paint (g, getLookAndFeel()); }
-void Slider::resized()                  { pimpl->resized (getLocalBounds(), getLookAndFeel()); }
+void Slider::resized()                  { pimpl->resized (getLookAndFeel()); }
 
 void Slider::focusOfChildComponentChanged (FocusChangeType)     { repaint(); }
 

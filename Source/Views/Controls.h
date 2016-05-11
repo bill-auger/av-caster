@@ -16,9 +16,8 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
-#ifndef _CONTROLS_H_
-#define _CONTROLS_H_
+#ifndef _CONTROLS_H
+#define _CONTROLS_H
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -63,18 +62,11 @@ private:
 
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void paint (Graphics& g) override;
+    void resized() override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
-    // Binary resources:
-    static const char* preferencessystem_png;
-    static const int preferencessystem_pngSize;
-    static const char* confighover_png;
-    static const int confighover_pngSize;
-    static const char* configpushed_png;
-    static const int configpushed_pngSize;
 
 
 private:
@@ -105,4 +97,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONTROLS_H_
+#endif // _CONTROLS_H

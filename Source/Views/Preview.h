@@ -16,7 +16,6 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-
 #ifndef _PREVIEW_H_
 #define _PREVIEW_H_
 
@@ -44,8 +43,8 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
+    void paint (Graphics& g) override;
+    void resized() override;
 
 
 
@@ -55,6 +54,7 @@ private:
 
     //==============================================================================
     ScopedPointer<GroupComponent> previewGroup;
+    ScopedPointer<Drawable> drawable1;
 
 
     //==============================================================================

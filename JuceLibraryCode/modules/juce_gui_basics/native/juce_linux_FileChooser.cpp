@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -131,11 +131,11 @@ static void addZenityArgs (StringArray& args, String& separator,
 
     if (filters.isNotEmpty() && filters != "*" && filters != "*.*")
     {
-        args.add ("--file-filter");
-        args.add (filters.replaceCharacter (';', ' '));
+        StringArray tokens;
+        tokens.addTokens (filters, ";,|", "\"");
 
-        args.add ("--file-filter");
-        args.add ("All files | *");
+        for (int i = 0; i < tokens.size(); ++i)
+            args.add ("--file-filter=" + tokens[i]);
     }
 
     if (file.isDirectory())
@@ -157,6 +157,7 @@ void FileChooser::showPlatformDialog (Array<File>& results,
                                       const String& title, const File& file, const String& filters,
                                       bool isDirectory, bool /* selectsFiles */,
                                       bool isSave, bool /* warnAboutOverwritingExistingFiles */,
+                                      bool /*treatFilePackagesAsDirs*/,
                                       bool selectMultipleFiles, FilePreviewComponent*)
 {
     const File previousWorkingDirectory (File::getCurrentWorkingDirectory());

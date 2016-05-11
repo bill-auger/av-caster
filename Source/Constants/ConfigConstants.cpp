@@ -1,115 +1,75 @@
 
 #include "Constants.h"
 
-
-Identifier CONFIG::FilterId(String a_string , String retain_chars)
-{
-  return a_string.retainCharacters(retain_chars)
-                 .toLowerCase()
-                 .replaceCharacters(APP::FILTER_CHARS , APP::REPLACE_CHARS) ;
-}
-
-
 // config indices
 const int CONFIG::INVALID_IDX = -1 ;
 
-// config strings
-const StringArray CONFIG::CAMERA_RESOLUTIONS = StringArray::fromLines("160x120" + newLine +
-                                                                      "320x240" + newLine +
-                                                                      "640x480"           ) ;
-const StringArray CONFIG::AUDIO_APIS         = StringArray::fromLines("ALSA"    + newLine +
-                                                                      "Pulse"   + newLine +
-                                                                      "JACK"              ) ;
-const StringArray CONFIG::AUDIO_CODECS       = StringArray::fromLines("MP3"     + newLine +
-                                                                      "AAC"               ) ;
-const StringArray CONFIG::AUDIO_SAMPLERATES  = StringArray::fromLines("11025"   + newLine +
-                                                                      "22050"   + newLine +
-                                                                      "44100"   + newLine +
-                                                                      "48000"             ) ;
-const StringArray CONFIG::AUDIO_BITRATES     = StringArray::fromLines("64k"     + newLine +
-                                                                      "96k"     + newLine +
-                                                                      "128k"    + newLine +
-                                                                      "192k"              ) ;
-const StringArray CONFIG::TEXT_STYLES        = StringArray::fromLines("Static"  + newLine +
-                                                                      "Marquee"           ) ;
-const StringArray CONFIG::TEXT_POSITIONS     = StringArray::fromLines("Top"     + newLine +
-                                                                      "Bottom"            ) ;
-const StringArray CONFIG::OUTPUT_SINKS       = StringArray::fromLines("File"    + newLine +
-                                                                      "RTMP"              ) ;
-const StringArray CONFIG::OUTPUT_MUXERS      = StringArray::fromLines(".flv"              ) ;
-const StringArray CONFIG::FRAMERATES         = StringArray::fromLines("8"       + newLine +
-                                                                      "12"      + newLine +
-                                                                      "20"      + newLine +
-                                                                      "30"                ) ;
-const StringArray CONFIG::VIDEO_BITRATES     = StringArray::fromLines("800k"    + newLine +
-                                                                      "1200k"             ) ;
-
 // storage nodes
-const Identifier CONFIG::STORAGE_ID            = "av-caster-config" ;
-const Identifier CONFIG::PRESETS_ID            = "presets" ;
-const Identifier CONFIG::VOLATILE_CONFIG_ID    = "volatile-config" ;
-const Identifier CONFIG::CAMERA_DEVICES_ID     = "camera-devices" ;
-const Identifier CONFIG::AUDIO_DEVICES_ID      = "audio-devices" ;
+const Identifier CONFIG::STORAGE_ID            = "av-caster-config"   ;
+const Identifier CONFIG::PRESETS_ID            = "presets"            ;
+const Identifier CONFIG::VOLATILE_CONFIG_ID    = "volatile-config"    ;
+const Identifier CONFIG::CAMERA_DEVICES_ID     = "camera-devices"     ;
+const Identifier CONFIG::AUDIO_DEVICES_ID      = "audio-devices"      ;
 // root IDs
-const Identifier CONFIG::CONFIG_VERSION_ID     = "config-version" ;
+const Identifier CONFIG::CONFIG_VERSION_ID     = "config-version"     ;
 const Identifier CONFIG::PRESET_ID             = "current-preset-idx" ;
-const Identifier CONFIG::IS_PENDING_ID         = "is-config-pending" ;
+const Identifier CONFIG::IS_PENDING_ID         = "is-config-pending"  ;
 // Controls IDs
-const Identifier CONFIG::PRESET_NAME_ID        = "preset-name" ;
-const Identifier CONFIG::SCREEN_ID             = "is-screencap-on" ;
-const Identifier CONFIG::CAMERA_ID             = "is-camera-on" ;
-const Identifier CONFIG::TEXT_ID               = "is-text-on" ;
-const Identifier CONFIG::PREVIEW_ID            = "is-preview-on" ;
-const Identifier CONFIG::AUDIO_ID              = "is-audio-on" ;
+const Identifier CONFIG::PRESET_NAME_ID        = "preset-name"        ;
+const Identifier CONFIG::SCREEN_ID             = "is-screencap-on"    ;
+const Identifier CONFIG::CAMERA_ID             = "is-camera-on"       ;
+const Identifier CONFIG::TEXT_ID               = "is-text-on"         ;
+const Identifier CONFIG::PREVIEW_ID            = "is-preview-on"      ;
+const Identifier CONFIG::AUDIO_ID              = "is-audio-on"        ;
 const Identifier CONFIG::IMAGE_ID              = "is-interstitial-on" ;
-const Identifier CONFIG::OUTPUT_ID             = "is-output-on" ;
+const Identifier CONFIG::OUTPUT_ID             = "is-output-on"       ;
 // ConfigScreen IDs
-const Identifier CONFIG::DISPLAY_N_ID          = "display-n" ;
-const Identifier CONFIG::SCREEN_N_ID           = "screen-n" ;
-const Identifier CONFIG::SCREENCAP_W_ID        = "sceencap-w" ;
-const Identifier CONFIG::SCREENCAP_H_ID        = "sceencap-h" ;
-const Identifier CONFIG::OFFSET_X_ID           = "offset-x" ;
-const Identifier CONFIG::OFFSET_Y_ID           = "offset-y" ;
+const Identifier CONFIG::DISPLAY_N_ID          = "display-n"          ;
+const Identifier CONFIG::SCREEN_N_ID           = "screen-n"           ;
+const Identifier CONFIG::SCREENCAP_W_ID        = "sceencap-w"         ;
+const Identifier CONFIG::SCREENCAP_H_ID        = "sceencap-h"         ;
+const Identifier CONFIG::OFFSET_X_ID           = "offset-x"           ;
+const Identifier CONFIG::OFFSET_Y_ID           = "offset-y"           ;
 // ConfigCamera IDs
-const Identifier CONFIG::CAMERA_DEVICE_ID      = "camera-dev-idx" ;
-const Identifier CONFIG::CAMERA_RES_ID         = "camera-res-idx" ;
-const Identifier CONFIG::CAMERA_PATH_ID        = "camera-dev-path" ;
-const Identifier CONFIG::CAMERA_NAME_ID        = "camera-dev-name" ;
-const Identifier CONFIG::CAMERA_RATE_ID        = "camera-framerate" ;
+const Identifier CONFIG::CAMERA_DEVICE_ID      = "camera-dev-idx"     ;
+const Identifier CONFIG::CAMERA_RES_ID         = "camera-res-idx"     ;
+const Identifier CONFIG::CAMERA_PATH_ID        = "camera-dev-path"    ;
+const Identifier CONFIG::CAMERA_NAME_ID        = "camera-dev-name"    ;
+const Identifier CONFIG::CAMERA_RATE_ID        = "camera-framerate"   ;
 const Identifier CONFIG::CAMERA_RESOLUTIONS_ID = "camera-resolutions" ;
 // ConfigAudio IDs
-const Identifier CONFIG::AUDIO_API_ID          = "audio-api-idx" ;
-const Identifier CONFIG::AUDIO_DEVICE_ID       = "audio-dev-idx" ;
-const Identifier CONFIG::AUDIO_CODEC_ID        = "audio-codec-idx" ;
-const Identifier CONFIG::N_CHANNELS_ID         = "n-channels" ;
-const Identifier CONFIG::SAMPLERATE_ID         = "samplerate-idx" ;
-const Identifier CONFIG::AUDIO_BITRATE_ID      = "audio-bitrate-idx" ;
+const Identifier CONFIG::AUDIO_API_ID          = "audio-api-idx"      ;
+const Identifier CONFIG::AUDIO_DEVICE_ID       = "audio-dev-idx"      ;
+const Identifier CONFIG::AUDIO_CODEC_ID        = "audio-codec-idx"    ;
+const Identifier CONFIG::N_CHANNELS_ID         = "n-channels"         ;
+const Identifier CONFIG::SAMPLERATE_ID         = "samplerate-idx"     ;
+const Identifier CONFIG::AUDIO_BITRATE_ID      = "audio-bitrate-idx"  ;
 // ConfigText IDs
-const Identifier CONFIG::MOTD_TEXT_ID          = "motd-text" ;
-const Identifier CONFIG::TEXT_STYLE_ID         = "text-style-idx" ;
-const Identifier CONFIG::TEXT_POSITION_ID      = "text-pos-idx" ;
+const Identifier CONFIG::MOTD_TEXT_ID          = "motd-text"          ;
+const Identifier CONFIG::TEXT_STYLE_ID         = "text-style-idx"     ;
+const Identifier CONFIG::TEXT_POSITION_ID      = "text-pos-idx"       ;
 // ConfigImage IDs
-const Identifier CONFIG::IMAGE_LOC_ID          = "interstitial-img" ;
+const Identifier CONFIG::IMAGE_LOC_ID          = "interstitial-img"   ;
 // ConfigOutput IDs
-const Identifier CONFIG::OUTPUT_SINK_ID        = "output-sink-idx" ;
-const Identifier CONFIG::OUTPUT_MUXER_ID       = "output-muxer-idx" ;
-const Identifier CONFIG::OUTPUT_W_ID           = "output-w" ;
-const Identifier CONFIG::OUTPUT_H_ID           = "output-h" ;
-const Identifier CONFIG::FRAMERATE_ID          = "framerate-idx" ;
-const Identifier CONFIG::VIDEO_BITRATE_ID      = "video-bitrate-idx" ;
-const Identifier CONFIG::OUTPUT_DEST_ID        = "output-dest" ;
+const Identifier CONFIG::OUTPUT_SINK_ID        = "output-sink-idx"    ;
+const Identifier CONFIG::OUTPUT_MUXER_ID       = "output-muxer-idx"   ;
+const Identifier CONFIG::OUTPUT_W_ID           = "output-w"           ;
+const Identifier CONFIG::OUTPUT_H_ID           = "output-h"           ;
+const Identifier CONFIG::FRAMERATE_ID          = "framerate-idx"      ;
+const Identifier CONFIG::VIDEO_BITRATE_ID      = "video-bitrate-idx"  ;
+const Identifier CONFIG::OUTPUT_DEST_ID        = "output-dest"        ;
 // ConfigChat IDs
-const Identifier CONFIG::NETWORK_ID            = "chat-network" ;
-const Identifier CONFIG::HOST_ID               = "chat-host" ;
-const Identifier CONFIG::PORT_ID               = "chat-port" ;
-const Identifier CONFIG::NICK_ID               = "chat-nick" ;
-const Identifier CONFIG::PASS_ID               = "chat-pass" ;
-const Identifier CONFIG::CHANNEL_ID            = "chat-channel" ;
-const Identifier CONFIG::TIMESTAMPS_ID         = "show-timestamps" ;
-const Identifier CONFIG::JOINPARTS_ID          = "show-joins-parts" ;
-const Identifier CONFIG::GREETING_ID           = "chat-greeting" ;
-const Identifier CONFIG::RETRIES_ID            = "n-connect-retries" ;
-const Identifier CONFIG::CHATTERS_ID           = "active-chatters" ;
+const Identifier CONFIG::NETWORK_ID            = "chat-network"       ;
+const Identifier CONFIG::HOST_ID               = "chat-host"          ;
+const Identifier CONFIG::PORT_ID               = "chat-port"          ;
+const Identifier CONFIG::NICK_ID               = "chat-nick"          ;
+const Identifier CONFIG::PASS_ID               = "chat-pass"          ;
+const Identifier CONFIG::CHANNEL_ID            = "chat-channel"       ;
+const Identifier CONFIG::TIMESTAMPS_ID         = "show-timestamps"    ;
+const Identifier CONFIG::JOINPARTS_ID          = "show-joins-parts"   ;
+const Identifier CONFIG::GREETING_ID           = "chat-greeting"      ;
+const Identifier CONFIG::RETRIES_ID            = "n-connect-retries"  ;
+const Identifier CONFIG::CHATTERS_ID           = "active-chatters"    ;
 
 // root defaults
 #if JUCE_LINUX
@@ -172,7 +132,7 @@ const int        CONFIG::DEFAULT_OUTPUT_W          = 640 ;
 const int        CONFIG::DEFAULT_OUTPUT_H          = 480 ;
 const int        CONFIG::DEFAULT_FRAMERATE_IDX     = 0 ;
 const int        CONFIG::DEFAULT_VIDEO_BITRATE_IDX = 0 ;
-const String     CONFIG::DEFAULT_OUTPUT_DEST       = APP::APP_NAME + ".flv" ;
+const String     CONFIG::DEFAULT_OUTPUT_DEST       = APP::APP_NAME + APP::FLV_FILE_EXT ;
 // ConfigChat defaults
 const String     CONFIG::DEFAULT_NETWORK           = "" ;
 const String     CONFIG::DEFAULT_HOST              = "" ;
@@ -185,68 +145,110 @@ const bool       CONFIG::DEFAULT_SHOW_JOINPARTS    = true ;
 const String     CONFIG::DEFAULT_GREETING          = "" ;
 const int        CONFIG::DEFAULT_N_RETRIES         = IRC::STATE_FAILED ; // 0
 
+
+Identifier CONFIG::FilterId(String a_string , String retain_chars)
+{
+  return a_string.retainCharacters(retain_chars)
+                 .toLowerCase()
+                 .replaceCharacters(APP::FILTER_CHARS , APP::REPLACE_CHARS) ;
+}
+
+
+// GUI/config strings
+StringArray CONFIG::CameraResolutions() { return StringArray::fromLines(String("160x120") + newLine +
+                                                                        String("320x240") + newLine +
+                                                                        String("640x480")           ) ; }
+StringArray CONFIG::AudioApis()         { return StringArray::fromLines(String("ALSA"   ) + newLine +
+                                                                        String("Pulse"  ) + newLine +
+                                                                        String("JACK"   )           ) ; }
+StringArray CONFIG::AudioCodecs()       { return StringArray::fromLines(String("MP3"    ) + newLine +
+                                                                        String("AAC"    )           ) ; }
+StringArray CONFIG::AudioSampleRates()  { return StringArray::fromLines(String("11025"  ) + newLine +
+                                                                        String("22050"  ) + newLine +
+                                                                        String("44100"  ) + newLine +
+                                                                        String("48000"  )           ) ; }
+StringArray CONFIG::AudioBitRates()     { return StringArray::fromLines(String("64k"    ) + newLine +
+                                                                        String("96k"    ) + newLine +
+                                                                        String("128k"   ) + newLine +
+                                                                        String("192k"   )           ) ; }
+StringArray CONFIG::TextStyles()        { return StringArray::fromLines(String("Static" ) + newLine +
+                                                                        String("Marquee")           ) ; }
+StringArray CONFIG::TextPositions()     { return StringArray::fromLines(String("Top"    ) + newLine +
+                                                                        String("Bottom" )           ) ; }
+StringArray CONFIG::OutputSinks()       { return StringArray::fromLines(String("File"   ) + newLine +
+                                                                        String("RTMP"   )           ) ; }
+StringArray CONFIG::OutputMuxers()      { return StringArray::fromLines(String(".flv"   )           ) ; }
+StringArray CONFIG::FrameRates()        { return StringArray::fromLines(String("8"      ) + newLine +
+                                                                        String("12"     ) + newLine +
+                                                                        String("20"     ) + newLine +
+                                                                        String("30"     )           ) ; }
+StringArray CONFIG::VideoBitRates()     { return StringArray::fromLines(String("800k"   ) + newLine +
+                                                                        String("1200k"  )           ) ; }
+
 // filter keys
-#define ROOT_PERSISTENT_NODE_IDS    String(PRESETS_ID       )
-#define ROOT_TRANSIENT_NODE_IDS     String(""               )
-#define ROOT_PERSISTENT_IDS         String(CONFIG_VERSION_ID) + " " + String(PRESET_ID       ) + " " + \
-                                    String(PRESETS_ID       )
-#define ROOT_TRANSIENT_IDS          String(IS_PENDING_ID    )
-#define PRESET_PERSISTENT_NODE_IDS  String(NETWORK_ID)
-#define PRESET_TRANSIENT_NODE_IDS   String(""               )
-#define PRESET_PERSISTENT_IDS       String(PRESET_NAME_ID   ) + " " + String(SCREEN_ID       ) + " " + \
-                                    String(CAMERA_ID        ) + " " + String(TEXT_ID         ) + " " + \
-                                    String(IMAGE_ID         ) + " " + String(PREVIEW_ID      ) + " " + \
-                                    String(AUDIO_ID         )                                  + " " + \
-                                    String(DISPLAY_N_ID     ) + " " + String(SCREEN_N_ID     ) + " " + \
-                                    String(SCREENCAP_W_ID   ) + " " + String(SCREENCAP_H_ID  ) + " " + \
-                                    String(OFFSET_X_ID      ) + " " + String(OFFSET_Y_ID     ) + " " + \
-                                    String(CAMERA_DEVICE_ID ) + " " + String(CAMERA_RES_ID   ) + " " + \
-                                    String(AUDIO_API_ID     ) + " " + String(AUDIO_DEVICE_ID ) + " " + \
-                                    String(AUDIO_CODEC_ID   ) + " " + String(N_CHANNELS_ID   ) + " " + \
-                                    String(SAMPLERATE_ID    ) + " " + String(AUDIO_BITRATE_ID) + " " + \
-                                    String(MOTD_TEXT_ID     ) + " " + String(TEXT_STYLE_ID   ) + " " + \
-                                    String(TEXT_POSITION_ID ) + " "                                  + \
-                                    String(IMAGE_LOC_ID     ) + " "                                  + \
-                                    String(OUTPUT_SINK_ID   ) + " " + String(OUTPUT_MUXER_ID ) + " " + \
-                                    String(OUTPUT_W_ID      ) + " " + String(OUTPUT_H_ID     ) + " " + \
-                                    String(FRAMERATE_ID     ) + " " + String(VIDEO_BITRATE_ID) + " " + \
-                                    String(OUTPUT_DEST_ID   )
-#define PRESET_TRANSIENT_IDS        String(OUTPUT_ID)
-#define NETWORK_PERSISTENT_NODE_IDS String(""               )
-#define NETWORK_TRANSIENT_NODE_IDS  String(CHATTERS_ID      )
-#define NETWORK_PERSISTENT_IDS      String(NETWORK_ID       ) + " " + String(PORT_ID         ) + " " + \
-                                    String(NICK_ID          ) + " " + String(PASS_ID         ) + " " + \
-                                    String(CHANNEL_ID       ) + " " + String(TIMESTAMPS_ID   ) + " " + \
-                                    String(JOINPARTS_ID     ) + " " + String(GREETING_ID     )
-#define NETWORK_TRANSIENT_IDS       String(HOST_ID          ) + " " + String(RETRIES_ID      )
-#define CHATTER_TRANSIENT_IDS       String(NICK_ID          )
-#define CAMERA_TRANSIENT_IDS        String(""               )
-#define AUDIO_TRANSIENT_IDS         String(""               )
-#define MEDIA_IDS                   String(SCREEN_ID        ) + " " + String(CAMERA_ID       ) + " " + \
-                                    String(TEXT_ID          ) + " " + String(IMAGE_ID        ) + " " + \
-                                    String(PREVIEW_ID       ) + " " + String(AUDIO_ID        ) + " " + \
-                                    String(OUTPUT_ID        )
-#define RECONFIGURE_IDS             String(IS_PENDING_ID    ) + " " + String(PRESET_ID)
-const StringArray CONFIG::ROOT_PERSISTENT_NODES    = StringArray::fromTokens(ROOT_PERSISTENT_NODE_IDS    , false) ;
-const StringArray CONFIG::ROOT_NODES               = StringArray::fromTokens(ROOT_PERSISTENT_NODE_IDS    + " "  +
-                                                                             ROOT_TRANSIENT_NODE_IDS     , false) ;
-const StringArray CONFIG::ROOT_PERSISTENT_KEYS     = StringArray::fromTokens(ROOT_PERSISTENT_IDS         , false) ;
-const StringArray CONFIG::ROOT_KEYS                = StringArray::fromTokens(ROOT_PERSISTENT_IDS         + " "  +
-                                                                             ROOT_TRANSIENT_IDS          , false) ;
-const StringArray CONFIG::PRESET_PERSISTENT_NODES  = StringArray::fromTokens(PRESET_PERSISTENT_NODE_IDS  , false) ;
-const StringArray CONFIG::PRESET_NODES             = StringArray::fromTokens(PRESET_PERSISTENT_NODE_IDS  + " "  +
-                                                                             PRESET_TRANSIENT_NODE_IDS   , false) ;
-const StringArray CONFIG::PRESET_PERSISTENT_KEYS   = StringArray::fromTokens(PRESET_PERSISTENT_IDS       , false) ;
-const StringArray CONFIG::PRESET_KEYS              = StringArray::fromTokens(PRESET_PERSISTENT_IDS       + " "  +
-                                                                             PRESET_TRANSIENT_IDS        , false) ;
-const StringArray CONFIG::NETWORK_PERSISTENT_NODES = StringArray::fromTokens(NETWORK_PERSISTENT_NODE_IDS , false) ;
-const StringArray CONFIG::NETWORK_NODES            = StringArray::fromTokens(NETWORK_PERSISTENT_NODE_IDS + " "  +
-                                                                             NETWORK_TRANSIENT_NODE_IDS  , false) ;
-const StringArray CONFIG::NETWORK_PERSISTENT_KEYS  = StringArray::fromTokens(NETWORK_PERSISTENT_IDS      , false) ;
-const StringArray CONFIG::NETWORK_KEYS             = StringArray::fromTokens(NETWORK_PERSISTENT_IDS      + " "  +
-                                                                             NETWORK_TRANSIENT_IDS       , false) ;
-const StringArray CONFIG::CHATTER_KEYS             = StringArray::fromTokens(CHATTER_TRANSIENT_IDS       , false) ;
-const StringArray CONFIG::CAMERA_KEYS              = StringArray::fromTokens(CAMERA_TRANSIENT_IDS        , false) ;
-const StringArray CONFIG::AUDIO_KEYS               = StringArray::fromTokens(AUDIO_TRANSIENT_IDS         , false) ;
-const StringArray CONFIG::MEDIA_KEYS               = StringArray::fromTokens(MEDIA_IDS                   , false) ;
-const StringArray CONFIG::RECONFIGURE_KEYS         = StringArray::fromTokens(RECONFIGURE_IDS             , false) ;
+#define ROOT_PERSISTENT_NODE_IDS    STRING(PRESETS_ID       )
+#define ROOT_TRANSIENT_NODE_IDS     String::empty
+#define ROOT_PERSISTENT_IDS         STRING(CONFIG_VERSION_ID) + newLine + STRING(PRESET_ID       ) + newLine + \
+                                    STRING(PRESETS_ID       )
+#define ROOT_TRANSIENT_IDS          STRING(IS_PENDING_ID    )
+#define PRESET_PERSISTENT_NODE_IDS  STRING(NETWORK_ID       )
+#define PRESET_TRANSIENT_NODE_IDS   String::empty
+#define PRESET_PERSISTENT_IDS       STRING(PRESET_NAME_ID   ) + newLine + STRING(SCREEN_ID       ) + newLine + \
+                                    STRING(CAMERA_ID        ) + newLine + STRING(TEXT_ID         ) + newLine + \
+                                    STRING(IMAGE_ID         ) + newLine + STRING(PREVIEW_ID      ) + newLine + \
+                                    STRING(AUDIO_ID         ) +                                      newLine + \
+                                    STRING(DISPLAY_N_ID     ) + newLine + STRING(SCREEN_N_ID     ) + newLine + \
+                                    STRING(SCREENCAP_W_ID   ) + newLine + STRING(SCREENCAP_H_ID  ) + newLine + \
+                                    STRING(OFFSET_X_ID      ) + newLine + STRING(OFFSET_Y_ID     ) + newLine + \
+                                    STRING(CAMERA_DEVICE_ID ) + newLine + STRING(CAMERA_RES_ID   ) + newLine + \
+                                    STRING(AUDIO_API_ID     ) + newLine + STRING(AUDIO_DEVICE_ID ) + newLine + \
+                                    STRING(AUDIO_CODEC_ID   ) + newLine + STRING(N_CHANNELS_ID   ) + newLine + \
+                                    STRING(SAMPLERATE_ID    ) + newLine + STRING(AUDIO_BITRATE_ID) + newLine + \
+                                    STRING(MOTD_TEXT_ID     ) + newLine + STRING(TEXT_STYLE_ID   ) + newLine + \
+                                    STRING(TEXT_POSITION_ID ) +                                      newLine + \
+                                    STRING(IMAGE_LOC_ID     ) +                                      newLine + \
+                                    STRING(OUTPUT_SINK_ID   ) + newLine + STRING(OUTPUT_MUXER_ID ) + newLine + \
+                                    STRING(OUTPUT_W_ID      ) + newLine + STRING(OUTPUT_H_ID     ) + newLine + \
+                                    STRING(FRAMERATE_ID     ) + newLine + STRING(VIDEO_BITRATE_ID) + newLine + \
+                                    STRING(OUTPUT_DEST_ID   )
+#define PRESET_TRANSIENT_IDS        STRING(OUTPUT_ID        )
+#define NETWORK_PERSISTENT_NODE_IDS String::empty
+#define NETWORK_TRANSIENT_NODE_IDS  STRING(CHATTERS_ID      )
+#define NETWORK_PERSISTENT_IDS      STRING(NETWORK_ID       ) + newLine + STRING(PORT_ID         ) + newLine + \
+                                    STRING(NICK_ID          ) + newLine + STRING(PASS_ID         ) + newLine + \
+                                    STRING(CHANNEL_ID       ) + newLine + STRING(TIMESTAMPS_ID   ) + newLine + \
+                                    STRING(JOINPARTS_ID     ) + newLine + STRING(GREETING_ID     )
+#define NETWORK_TRANSIENT_IDS       STRING(HOST_ID          ) + newLine + STRING(RETRIES_ID      )
+#define CHATTER_TRANSIENT_IDS       STRING(NICK_ID          )
+#define CAMERA_TRANSIENT_IDS        String::empty
+#define AUDIO_TRANSIENT_IDS         String::empty
+#define MEDIA_IDS                   STRING(SCREEN_ID        ) + newLine + STRING(CAMERA_ID       ) + newLine + \
+                                    STRING(TEXT_ID          ) + newLine + STRING(IMAGE_ID        ) + newLine + \
+                                    STRING(PREVIEW_ID       ) + newLine + STRING(AUDIO_ID        ) + newLine + \
+                                    STRING(OUTPUT_ID        )
+#define RECONFIGURE_IDS             STRING(IS_PENDING_ID    ) + newLine + STRING(PRESET_ID)
+
+
+StringArray CONFIG::RootPersistentNodes()    { return StringArray::fromLines(ROOT_PERSISTENT_NODE_IDS              ) ; }
+StringArray CONFIG::RootNodes()              { return StringArray::fromLines(ROOT_PERSISTENT_NODE_IDS    + newLine +
+                                                                             ROOT_TRANSIENT_NODE_IDS               ) ; }
+StringArray CONFIG::RootPersistentKeys()     { return StringArray::fromLines(ROOT_PERSISTENT_IDS                   ) ; }
+StringArray CONFIG::RootKeys()               { return StringArray::fromLines(ROOT_PERSISTENT_IDS         + newLine +
+                                                                             ROOT_TRANSIENT_IDS                    ) ; }
+StringArray CONFIG::PresetPersistentNodes()  { return StringArray::fromLines(PRESET_PERSISTENT_NODE_IDS            ) ; }
+StringArray CONFIG::PresetNodes()            { return StringArray::fromLines(PRESET_PERSISTENT_NODE_IDS  + newLine +
+                                                                             PRESET_TRANSIENT_NODE_IDS             ) ; }
+StringArray CONFIG::PresetPersistentKeys()   { return StringArray::fromLines(PRESET_PERSISTENT_IDS                 ) ; }
+StringArray CONFIG::PresetKeys()             { return StringArray::fromLines(PRESET_PERSISTENT_IDS       + newLine +
+                                                                             PRESET_TRANSIENT_IDS                  ) ; }
+StringArray CONFIG::NetworkPersistentNodes() { return StringArray::fromLines(NETWORK_PERSISTENT_NODE_IDS           ) ; }
+StringArray CONFIG::NetworkNodes()           { return StringArray::fromLines(NETWORK_PERSISTENT_NODE_IDS + newLine +
+                                                                             NETWORK_TRANSIENT_NODE_IDS            ) ; }
+StringArray CONFIG::NetworkPersistentKeys()  { return StringArray::fromLines(NETWORK_PERSISTENT_IDS                ) ; }
+StringArray CONFIG::NetworkKeys()            { return StringArray::fromLines(NETWORK_PERSISTENT_IDS      + newLine +
+                                                                             NETWORK_TRANSIENT_IDS                 ) ; }
+StringArray CONFIG::ChatterKeys()            { return StringArray::fromLines(CHATTER_TRANSIENT_IDS                 ) ; }
+StringArray CONFIG::CameraKeys()             { return StringArray::fromLines(CAMERA_TRANSIENT_IDS                  ) ; }
+StringArray CONFIG::AudioKeys()              { return StringArray::fromLines(AUDIO_TRANSIENT_IDS                   ) ; }
+StringArray CONFIG::MediaKeys()              { return StringArray::fromLines(MEDIA_IDS                             ) ; }
+StringArray CONFIG::ReconfigureKeys()        { return StringArray::fromLines(RECONFIGURE_IDS                       ) ; }
