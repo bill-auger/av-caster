@@ -139,24 +139,29 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
                     " using "                 + plugin_id                 )           ;
 
 #  define DEBUG_TRACE_CONFIGURE_CAMERA_BIN                                               \
-  String plugin_id = (use_real_src) ? GST::CAMERA_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ; \
   String dev_path  = (use_real_src) ? device_path : "testsrc" ;                          \
-  Trace::TraceState("configuring CameraBin '" + dev_path                  +              \
-                    "' -> "                   + resolution                +              \
-                    " @ "                     + String(framerate) + "fps" +              \
-                    " using "                 + plugin_id                 )              ;
+  String res       = String(resolution.getX()) + "x" + String(resolution.getY()) ;       \
+  String fps       = String(framerate) + "fps" ;                                         \
+  String plugin_id = (use_real_src) ? GST::CAMERA_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ; \
+  Trace::TraceState("configuring CameraBin '" + dev_path  +                              \
+                    "' -> "                   + res       +                              \
+                    " @ "                     + fps       +                              \
+                    " using "                 + plugin_id )                              ;
 
-#  define DEBUG_TRACE_CONFIGURE_TEXT_BIN                                             \
-  Trace::TraceState("configuring TextBin " + CONFIG::TextStyles()   [text_style_n] + \
-                    " overlay @ "          + CONFIG::TextPositions()[text_pos_n  ] ) ;
+#  define DEBUG_TRACE_CONFIGURE_TEXT_BIN                                               \
+  Trace::TraceState("configuring TextBin " + CONFIG::TextStyles()   [text_style_idx] + \
+                    " overlay @ "          + CONFIG::TextPositions()[text_pos_idx  ] ) ;
 
 #  define DEBUG_TRACE_CONFIGURE_IMAGE_BIN                            \
   Trace::TraceState("configuring ImageBin '" + image_filename + "'") ;
 
-#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN                          \
-  Trace::TraceState("configuring CompositorBin @ "                    + \
-                    String(output_w) + "x" + String(output_h)         + \
-                    " @ "                  + String(framerate) + "fps") ;
+#  define DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN                                            \
+  Trace::TraceState("configuring CompositorBin @ "                    +                   \
+                    String(output_w) + "x" + String(output_h)         +                   \
+                    " @ "                  + String(framerate) + "fps") ;                 \
+  Trace::TraceMedia("configuring compositor sinks screen_z="         + String(screen_z) + \
+                                                " camera_z="         + String(camera_z) + \
+                                                " image_z="          + String(image_z ) ) ;
 
 #  define DEBUG_TRACE_CONFIGURE_PREVIEW_BIN                                           \
   String plugin_id = (is_active) ? GST::PREVIEW_PLUGIN_ID : GST::FAUXSINK_PLUGIN_ID ; \

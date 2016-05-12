@@ -33,8 +33,8 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "AvCaster";
-    const char* const  versionString  = "0.16.002";
-    const int          versionNumber  = 0x1002;
+    const char* const  versionString  = "0.16.003";
+    const int          versionNumber  = 0x1003;
 }
 #endif
 

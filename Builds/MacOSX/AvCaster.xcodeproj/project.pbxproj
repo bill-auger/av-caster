@@ -1798,14 +1798,14 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=0.16.002",
-					"JUCE_APP_VERSION_HEX=0x1002", );
+					"JUCE_APP_VERSION=0.16.003",
+					"JUCE_APP_VERSION_HEX=0x1003", );
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = ("../../JuceLibraryCode", "../../JuceLibraryCode/modules", "$(inherited)");
 				INFOPLIST_FILE = Info-App.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.AvCaster;
+				PRODUCT_BUNDLE_IDENTIFIER = org.bill-auger.AvCaster;
 				SDKROOT_ppc = macosx10.5; }; name = Debug; };
 		0383B67B17E718411DA437FE = {isa = XCBuildConfiguration; buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
@@ -1819,15 +1819,15 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=0.16.002",
-					"JUCE_APP_VERSION_HEX=0x1002", );
+					"JUCE_APP_VERSION=0.16.003",
+					"JUCE_APP_VERSION_HEX=0x1003", );
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = ("../../JuceLibraryCode", "../../JuceLibraryCode/modules", "$(inherited)");
 				INFOPLIST_FILE = Info-App.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET_ppc = 10.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.AvCaster;
+				PRODUCT_BUNDLE_IDENTIFIER = org.bill-auger.AvCaster;
 				SDKROOT_ppc = macosx10.5; }; name = Release; };
 		9B4BE8729A058ADC127279DB = {isa = XCBuildConfiguration; buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;

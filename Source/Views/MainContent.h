@@ -53,14 +53,17 @@ public:
   friend class AvCaster ;
 
 
-  void configureButton    (Button* a_button , Button::Listener* a_button_listener) ;
-  void configureSlider    (Slider* a_slider , Slider::Listener* a_slider_listener ,
-                           double  min_val  , double            max_val           ,
-                           double  step                                           ) ;
-  void configureTextEditor(TextEditor* a_text_editor , TextEditor::Listener* a_text_listener ,
-                           int         max_n_chars   , const String          allowed_chars   ) ;
-  void configureCombobox  (ComboBox* a_combobox , ComboBox::Listener* a_combobox_listener = nullptr) ;
-  void loadPresetsCombo   (ComboBox* a_combobox) ;
+  void   configureButton    (Button* a_button , Button::Listener* a_button_listener) ;
+  void   configureSlider    (Slider* a_slider , Slider::Listener* a_slider_listener ,
+                             double  min_val  , double            max_val           ,
+                             double  step                                           ) ;
+  void   configureTextEditor(TextEditor* a_text_editor , TextEditor::Listener* a_text_listener ,
+                             int         max_n_chars   , const String          allowed_chars   ) ;
+  void   configureCombobox  (ComboBox*           a_combobox                   ,
+                             ComboBox::Listener* a_combobox_listener = nullptr) ;
+  void   loadPresetsCombo   (ComboBox* a_combobox) ;
+  Colour btnTickColor       (bool is_active) ;
+  Colour btnTextColor       (bool is_active) ;
 
 
 private:

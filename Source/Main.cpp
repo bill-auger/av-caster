@@ -116,21 +116,19 @@ DEBUG_TRACE_SHUTDOWN_OUT
       setContentOwned(this->mainContent , true) ;
 
       // this main desktop window
-      // TODO: load from BinaryData
-      setUsingNativeTitleBar(false) ;
-      setResizable(true , false) ;
       Image icon_image = ImageCache::getFromMemory(BinaryData::avcasterlogo48_png    ,
                                                    BinaryData::avcasterlogo48_pngSize) ;
       setIcon(icon_image) ; getPeer()->setIcon(icon_image) ;
 #ifdef TRAY_ICON
         this->mainContent->trayIcon->setIconImage(icon_image) ;
 #endif // TRAY_ICON
-
+      setUsingNativeTitleBar(false) ;
 #ifdef JUCE_MAC
       setTitleBarButtonsRequired(DocumentWindow::allButtons , true) ;
 #endif // JUCE_MAC
       setTitleBarHeight(GUI::TITLEBAR_H) ;
       centreWithSize(getWidth() , getHeight()) ;
+//       setResizable(true , false) ; // TODO: resizeable preview ?
       setVisible(true) ;
     }
 

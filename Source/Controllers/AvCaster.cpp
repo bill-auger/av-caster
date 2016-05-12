@@ -128,12 +128,16 @@ StringArray AvCaster::GetAudioNames() { return Store->audioNames() ; }
 
 StringArray AvCaster::GetCameraResolutions() { return Store->getCameraResolutions() ; }
 
-String AvCaster::GetCameraResolution()
+Point<int> AvCaster::GetCameraResolution()
 {
   int         resolution_n = int(Store->config[CONFIG::CAMERA_RES_ID]) ;
   StringArray resolutions  = Store->getCameraResolutions() ;
+  String      resolution   = resolutions[(~resolution_n) ? resolution_n : 0] ;
+  StringArray res_tokens   = StringArray::fromTokens(resolution , "x" , "") ;
+  int         camera_w     = res_tokens[0].getIntValue() ;
+  int         camera_h     = res_tokens[1].getIntValue() ;
 
-  return resolutions[(~resolution_n) ? resolution_n : 0] ;
+  return Point<int>(camera_w , camera_h) ;
 }
 
 String AvCaster::GetCameraPath()

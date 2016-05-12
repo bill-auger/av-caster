@@ -28,7 +28,7 @@
 // #define IMAGE_ONLY
 // #define TRAY_ICON // TODO: requires juce_gui_extras package
 #define TEXT_BIN_NYI  1
-#define IMAGE_BIN_NYI 1
+#define IMAGE_BIN_NYI 0 // faux src
 #define DISABLE_GUI_CONFIG_NYI
 #define DISABLE_AUDIO   (! JUCE_LINUX) // replace audio-real-source with fakesrc
 #define DISABLE_PREVIEW (! JUCE_LINUX) // replace preview-sink with fakesink

@@ -255,6 +255,9 @@ void ConfigAudio::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == nChannelsSlider)
     {
         //[UserSliderCode_nChannelsSlider] -- add your slider handling code here..
+
+      // NOTE: handled in Config
+
         //[/UserSliderCode_nChannelsSlider]
     }
 

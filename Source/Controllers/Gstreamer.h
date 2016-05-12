@@ -53,14 +53,15 @@ private:
   static bool BuildOutputBin    () ;
 
   // bin configuration
-  static bool        Reconfigure     (const Identifier& config_key) ;
-  static GstElement* ConfigureScreen () ;
-  static GstElement* ConfigureCamera () ;
-  static GstElement* ConfigureText   () ;
-  static GstElement* ConfigureImage  () ;
-  static GstElement* ConfigurePreview() ;
-  static GstElement* ConfigureAudio  () ;
-  static GstElement* ConfigureOutput () ;
+  static bool        Reconfigure           (const Identifier& config_key) ;
+  static GstElement* ConfigureScreenBin    () ;
+  static GstElement* ConfigureCameraBin    () ;
+  static GstElement* ConfigureTextBin      () ;
+  static GstElement* ConfigureImageBin     () ;
+  static bool        ConfigureCompositorBin() ;
+  static GstElement* ConfigurePreviewBin   () ;
+  static GstElement* ConfigureAudioBin     () ;
+  static GstElement* ConfigureOutputBin    () ;
 
   // element configuration
   static void ConfigureCaps          (GstElement* a_capsfilter , String caps_str) ;
@@ -69,7 +70,7 @@ private:
   static void ConfigureScreenSource  (GstElement* a_screen_source ,
                                       guint       capture_w       , guint capture_h) ;
   static void ConfigureCameraSource  (GstElement* a_camera_source , String device_path) ;
-  static void ConfigureTestVideo     (GstElement* a_test_source , bool is_active , guint pattern_n) ;
+  static void ConfigureTestVideo     (GstElement* a_test_source , guint pattern_n) ;
   static void ConfigureTextSource    (GstElement* a_text_source , String font_desc) ;
   static void ConfigureFileSource    (GstElement* a_file_source , String location) ;
   static void ConfigureFileSink      (GstElement* a_file_sink , String location) ;
@@ -144,14 +145,19 @@ private:
   static GstElement* ScreencapBin ;
   static GstElement* ScreenRealSource ;
   static GstElement* ScreenFauxSource ;
-  static GstElement* ScreenCaps ;
+  static GstElement* ScreenCapsfilter ;
   static GstElement* CameraBin ;
   static GstElement* CameraRealSource ;
   static GstElement* CameraFauxSource ;
-  static GstElement* CameraCaps ;
+  static GstElement* CameraCapsfilter ;
   static GstElement* TextBin ;
   static GstElement* ImageBin ;
   static GstElement* CompositorBin ;
+  static GstPad*     CompositorScreenSinkpad ;
+  static GstPad*     CompositorCameraSinkpad ;
+  static GstPad*     CompositorTextSinkpad ;
+  static GstPad*     CompositorImageSinkpad ;
+  static GstElement* CompositorCapsfilter ;
   static GstElement* PreviewBin ;
   static GstElement* PreviewQueue ;
   static GstElement* PreviewFauxSink ;

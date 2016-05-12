@@ -26,7 +26,7 @@ notifications:
 before_install:
   - PROJECT_NAME='av-caster'
   - DEPS='libfreetype6-dev libgstreamer-plugins-base1.0-dev libx11-dev
-          libxcursor-dev libxinerama-dev'
+          libxcursor-dev libxinerama-dev libxrandr-dev'
   - # the trusty version of libircclient is incompatible
   - LIBIRCCLIENT_MIRROR="http://mirrors.kernel.org/ubuntu/pool/universe/libi/libircclient"
   - LIBIRCCLIENT="libircclient1_1.8-2_amd64.deb"
@@ -44,8 +44,7 @@ script:
   - sudo dpkg -i $LIBIRCCLIENTDEV
   - sudo mkdir /usr/include/libircclient/
   - sudo mv    /usr/include/libirc*.h     /usr/include/libircclient/
-  - make CONFIG=Release # TARGET_ARCH='-march=x86-64'
-
+  - CFLAGS="-Wno-dangling-else -Wno-deprecated-register" make
 
 after_script:
   - echo "build stage ended"

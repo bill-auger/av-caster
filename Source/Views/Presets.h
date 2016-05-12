@@ -17,7 +17,7 @@
 \*/
 
 #ifndef _PRESETS_H_
-#define _PRESETS_H
+#define _PRESETS_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -92,4 +92,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _PRESETS_H
+#endif // _PRESETS_H_

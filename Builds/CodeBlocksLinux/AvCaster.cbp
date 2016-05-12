@@ -8,7 +8,7 @@
     <Option compiler="gcc"/>
     <Build>
       <Target title="Debug">
-        <Option output="bin/Debug/AvCaster"
+        <Option output="bin/Debug/AvCasterDbg"
                 prefix_auto="1"
                 extension_auto="1"/>
         <Option object_output="obj/Debug"/>
@@ -19,17 +19,35 @@
           <Add option="-std=c++11"/>
           <Add option="-mstackrealign"/>
           <Add option="-g"/>
+          <Add option="$(if"/>
+          <Add option="$(filter-out"/>
+          <Add option="x86_64"/>
+          <Add option=","/>
+          <Add option="$(shell"/>
+          <Add option="uname"/>
+          <Add option="-m))"/>
+          <Add option="-malign-double"/>
+          <Add option="-fPIC)"/>
+          <Add option="&#96;pkg-config"/>
+          <Add option="--cflags"/>
+          <Add option="gstreamer-1.0&#96;"/>
+          <Add option="-I"/>
+          <Add option="/usr/include/libircclient"/>
           <Add option="-DLINUX=1"/>
           <Add option="-DDEBUG=1"/>
           <Add option="-D_DEBUG=1"/>
           <Add option="-DJUCER_CODEBLOCKS_LINUX_191E0897=1"/>
-          <Add option="-DJUCE_APP_VERSION=0.16.002"/>
-          <Add option="-DJUCE_APP_VERSION_HEX=0x1002"/>
+          <Add option="-DJUCE_APP_VERSION=0.16.003"/>
+          <Add option="-DJUCE_APP_VERSION_HEX=0x1003"/>
           <Add directory="."/>
           <Add directory="..\..\JuceLibraryCode"/>
           <Add directory="/usr/include/freetype2"/>
         </Compiler>
         <Linker>
+          <Add option="&#96;pkg-config"/>
+          <Add option="--libs"/>
+          <Add option="gstreamer-1.0&#96;"/>
+          <Add option="gstreamer-video-1.0&#96;"/>
           <Add library="X11"/>
           <Add library="Xext"/>
           <Add library="Xinerama"/>
@@ -50,17 +68,35 @@
           <Add option="-O3"/>
           <Add option="-std=c++11"/>
           <Add option="-mstackrealign"/>
+          <Add option="$(if"/>
+          <Add option="$(filter-out"/>
+          <Add option="x86_64"/>
+          <Add option=","/>
+          <Add option="$(shell"/>
+          <Add option="uname"/>
+          <Add option="-m))"/>
+          <Add option="-malign-double"/>
+          <Add option="-fPIC)"/>
+          <Add option="&#96;pkg-config"/>
+          <Add option="--cflags"/>
+          <Add option="gstreamer-1.0&#96;"/>
+          <Add option="-I"/>
+          <Add option="/usr/include/libircclient"/>
           <Add option="-DLINUX=1"/>
           <Add option="-DNDEBUG=1"/>
           <Add option="-DJUCER_CODEBLOCKS_LINUX_191E0897=1"/>
-          <Add option="-DJUCE_APP_VERSION=0.16.002"/>
-          <Add option="-DJUCE_APP_VERSION_HEX=0x1002"/>
+          <Add option="-DJUCE_APP_VERSION=0.16.003"/>
+          <Add option="-DJUCE_APP_VERSION_HEX=0x1003"/>
           <Add directory="."/>
           <Add directory="..\..\JuceLibraryCode"/>
           <Add directory="/usr/include/freetype2"/>
         </Compiler>
         <Linker>
           <Add option="-s"/>
+          <Add option="&#96;pkg-config"/>
+          <Add option="--libs"/>
+          <Add option="gstreamer-1.0&#96;"/>
+          <Add option="gstreamer-video-1.0&#96;"/>
           <Add library="X11"/>
           <Add library="Xext"/>
           <Add library="Xinerama"/>
@@ -76,7 +112,9 @@
       <Add option="-Wno-strict-aliasing"/>
       <Add option="-Wno-strict-overflow"/>
     </Compiler>
-    <Linker/>
+    <Linker>
+      <Add library="ircclient"/>
+    </Linker>
     <Unit filename="../../Assets/avcaster-logo-48.png">
       <Option compile="0"/>
       <Option link="0"/>

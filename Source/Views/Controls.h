@@ -16,8 +16,8 @@
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef _CONTROLS_H
-#define _CONTROLS_H
+#ifndef _CONTROLS_H_
+#define _CONTROLS_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -97,4 +97,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONTROLS_H
+#endif // _CONTROLS_H_

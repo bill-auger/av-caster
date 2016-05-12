@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.002"
-              bundleIdentifier="com.yourcompany.AvCaster" includeBinaryInAppConfig="1"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.003"
+              bundleIdentifier="org.bill-auger.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="4.2.1">
   <MAINGROUP id="EzgwIT" name="AvCaster">
     <GROUP id="{B968229C-6218-718C-8F23-4791DDD13A93}" name="Assets">
@@ -167,7 +167,7 @@
     </VS2008>
     <LINUX_MAKE targetFolder="Builds/Makefile" extraCompilerFlags="$(if $(filter-out x86_64 , $(shell uname -m)) , -malign-double , -fPIC)&#10;&#96;pkg-config --cflags gstreamer-1.0&#96;&#10;-I /usr/include/libircclient"
                 extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;"
-                externalLibraries="ircclient">
+                externalLibraries="ircclient" smallIcon="" bigIcon="">
       <CONFIGURATIONS>
         <CONFIGURATION name="Release" libraryPath="" isDebug="0" optimisation="3" targetName="av-caster"/>
         <CONFIGURATION name="Debug" libraryPath="" isDebug="1" optimisation="1" targetName="av-caster-dbg"/>
@@ -193,9 +193,11 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </CODEBLOCKS_WINDOWS>
-    <CODEBLOCKS_LINUX targetFolder="Builds/CodeBlocksLinux">
+    <CODEBLOCKS_LINUX targetFolder="Builds/CodeBlocksLinux" extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;"
+                      extraCompilerFlags="$(if $(filter-out x86_64 , $(shell uname -m)) , -malign-double , -fPIC)&#10;&#96;pkg-config --cflags gstreamer-1.0&#96;&#10;-I /usr/include/libircclient"
+                      externalLibraries="ircclient">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="AvCaster"/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="AvCasterDbg"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

@@ -287,25 +287,51 @@ void Controls::initialize(ValueTree config_store , NamedValueSet& disabled_featu
 
 void Controls::loadConfig()
 {
-  bool   is_screen_on  = bool(this->configStore[CONFIG::SCREEN_ID     ]) ;
-  bool   is_camera_on  = bool(this->configStore[CONFIG::CAMERA_ID     ]) ;
-  bool   is_text_on    = bool(this->configStore[CONFIG::TEXT_ID       ]) ;
-  bool   is_image_on   = bool(this->configStore[CONFIG::IMAGE_ID      ]) ;
-  bool   is_preview_on = bool(this->configStore[CONFIG::PREVIEW_ID    ]) ;
-  bool   is_audio_on   = bool(this->configStore[CONFIG::AUDIO_ID      ]) ;
-  bool   is_output_on  = bool(this->configStore[CONFIG::OUTPUT_ID     ]) ;
-  int    sink_idx      = int (this->configStore[CONFIG::OUTPUT_SINK_ID]) ;
-  String xmit_btn_text = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
-                         (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
-                                                                 String::empty       ;
+  bool   is_screen_active   = bool(this->configStore[CONFIG::SCREEN_ID     ]) ;
+  bool   is_camera_active   = bool(this->configStore[CONFIG::CAMERA_ID     ]) ;
+  bool   is_text_active     = bool(this->configStore[CONFIG::TEXT_ID       ]) ;
+  bool   is_image_active    = bool(this->configStore[CONFIG::IMAGE_ID      ]) ;
+  bool   is_preview_active  = bool(this->configStore[CONFIG::PREVIEW_ID    ]) ;
+  bool   is_audio_active    = bool(this->configStore[CONFIG::AUDIO_ID      ]) ;
+  bool   is_output_active   = bool(this->configStore[CONFIG::OUTPUT_ID     ]) ;
+  int    sink_idx           = int (this->configStore[CONFIG::OUTPUT_SINK_ID]) ;
+  Colour screen_text_color  = this->mainContent->btnTextColor(is_screen_active ) ;
+  Colour screen_tick_color  = this->mainContent->btnTickColor(is_screen_active ) ;
+  Colour camera_text_color  = this->mainContent->btnTextColor(is_camera_active ) ;
+  Colour camera_tick_color  = this->mainContent->btnTickColor(is_camera_active ) ;
+  Colour text_text_color    = this->mainContent->btnTextColor(is_text_active   ) ;
+  Colour text_tick_color    = this->mainContent->btnTickColor(is_text_active   ) ;
+  Colour image_text_color   = this->mainContent->btnTextColor(is_image_active  ) ;
+  Colour image_tick_color   = this->mainContent->btnTickColor(is_image_active  ) ;
+  Colour preview_text_color = this->mainContent->btnTextColor(is_preview_active) ;
+  Colour preview_tick_color = this->mainContent->btnTickColor(is_preview_active) ;
+  Colour audio_text_color   = this->mainContent->btnTextColor(is_audio_active  ) ;
+  Colour audio_tick_color   = this->mainContent->btnTickColor(is_audio_active  ) ;
+  Colour output_text_color  = this->mainContent->btnTextColor(is_output_active ) ;
+  Colour output_tick_color  = this->mainContent->btnTickColor(is_output_active ) ;
+  String xmit_btn_text      = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
+                              (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
+                                                                      String::empty       ;
 
-  this->screenToggle ->setToggleState  (is_screen_on   , juce::dontSendNotification) ;
-  this->cameraToggle ->setToggleState  (is_camera_on   , juce::dontSendNotification) ;
-  this->textToggle   ->setToggleState  (is_text_on     , juce::dontSendNotification) ;
-  this->imageToggle  ->setToggleState  (is_image_on    , juce::dontSendNotification) ;
-  this->previewToggle->setToggleState  (is_preview_on  , juce::dontSendNotification) ;
-  this->audioToggle  ->setToggleState  (is_audio_on    , juce::dontSendNotification) ;
-  this->outputToggle ->setToggleState  (is_output_on   , juce::dontSendNotification) ;
+  this->screenToggle ->setToggleState  (is_screen_active  , juce::dontSendNotification) ;
+  this->cameraToggle ->setToggleState  (is_camera_active  , juce::dontSendNotification) ;
+  this->textToggle   ->setToggleState  (is_text_active    , juce::dontSendNotification) ;
+  this->imageToggle  ->setToggleState  (is_image_active   , juce::dontSendNotification) ;
+  this->previewToggle->setToggleState  (is_preview_active , juce::dontSendNotification) ;
+  this->audioToggle  ->setToggleState  (is_audio_active   , juce::dontSendNotification) ;
+  this->outputToggle ->setToggleState  (is_output_active  , juce::dontSendNotification) ;
+  this->screenToggle ->setColour       (ToggleButton::textColourId , screen_text_color ) ;
+  this->screenToggle ->setColour       (ToggleButton::tickColourId , screen_tick_color ) ;
+  this->cameraToggle ->setColour       (ToggleButton::textColourId , camera_text_color ) ;
+  this->cameraToggle ->setColour       (ToggleButton::tickColourId , camera_tick_color ) ;
+  this->textToggle   ->setColour       (ToggleButton::textColourId , text_text_color   ) ;
+  this->textToggle   ->setColour       (ToggleButton::tickColourId , text_tick_color   ) ;
+  this->imageToggle  ->setColour       (ToggleButton::textColourId , image_text_color  ) ;
+  this->imageToggle  ->setColour       (ToggleButton::tickColourId , image_tick_color  ) ;
+  this->previewToggle->setColour       (ToggleButton::textColourId , preview_text_color) ;
+  this->previewToggle->setColour       (ToggleButton::tickColourId , preview_tick_color) ;
+  this->outputToggle ->setColour       (ToggleButton::textColourId , output_text_color ) ;
+  this->outputToggle ->setColour       (ToggleButton::tickColourId , output_tick_color ) ;
   this->outputToggle ->setButtonText   (xmit_btn_text) ;
   this->mainContent  ->loadPresetsCombo(this->presetsCombo) ;
   this->presetsCombo ->setEditableText (false) ;

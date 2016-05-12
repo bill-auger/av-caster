@@ -292,10 +292,9 @@ DEBUG_TRACE_STORE_PRESET
   int         fullscreen_h    = int(this->config[CONFIG::SCREENCAP_H_ID]) ;
   int         output_w        = int(this->config[CONFIG::OUTPUT_W_ID   ]) ;
   int         output_h        = int(this->config[CONFIG::OUTPUT_H_ID   ]) ;
-  String      resolution      = AvCaster::GetCameraResolution() ;
-  StringArray res_tokens      = StringArray::fromTokens(resolution , "x" , "") ;
-  int         camera_w        = res_tokens[0].getIntValue() ;
-  int         camera_h        = res_tokens[1].getIntValue() ;
+  Point<int>  resolution      = AvCaster::GetCameraResolution() ;
+  int         camera_w        = resolution.getX() ;
+  int         camera_h        = resolution.getY() ;
   var         fit_output_w    = var(jmax(fullscreen_w , camera_w , output_w)) ;
   var         fit_output_h    = var(jmax(fullscreen_h , camera_h , output_h)) ;
   bool        has_idx_changed = preset_idx != AvCaster::GetPresetIdx() ;

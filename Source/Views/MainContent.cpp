@@ -163,7 +163,8 @@ void MainContent::configureTextEditor(TextEditor*           a_text_editor   ,
   a_text_editor->addListener(a_text_listener) ;
 }
 
-void MainContent::configureCombobox(ComboBox* a_combobox , ComboBox::Listener* a_combobox_listener)
+void MainContent::configureCombobox(ComboBox*           a_combobox         ,
+                                    ComboBox::Listener* a_combobox_listener)
 {
   a_combobox->setColour(ComboBox::textColourId              , GUI::TEXT_NORMAL_COLOR  ) ;
   a_combobox->setColour(ComboBox::backgroundColourId        , GUI::TEXT_BG_COLOR      ) ;
@@ -183,6 +184,16 @@ void MainContent::loadPresetsCombo(ComboBox* a_combobox)
   a_combobox->clear               (juce::dontSendNotification) ;
   a_combobox->addItemList         (preset_names , 1) ;
   a_combobox->setSelectedItemIndex(preset_idx , juce::dontSendNotification) ;
+}
+
+Colour MainContent::btnTickColor(bool is_active)
+{
+  return (is_active) ? Colours::green : Colours::white ;
+}
+
+Colour MainContent::btnTextColor(bool is_active)
+{
+  return (is_active) ? Colours::lime  : Colours::white ;
 }
 
 void MainContent::initialize(ValueTree config_store   , ValueTree network_store          ,

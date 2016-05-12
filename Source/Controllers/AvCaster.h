@@ -87,7 +87,7 @@ public:
   static StringArray    GetCameraNames      () ;
   static StringArray    GetAudioNames       () ;
   static StringArray    GetCameraResolutions() ;
-  static String         GetCameraResolution () ;
+  static Point<int>     GetCameraResolution () ;
   static String         GetCameraPath       () ;
   static int            GetCameraRate       () ;
   static StringArray    GetChatNicks        () ;
