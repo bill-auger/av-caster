@@ -196,13 +196,12 @@ Colour MainContent::btnTextColor(bool is_active)
   return (is_active) ? Colours::lime  : Colours::white ;
 }
 
-void MainContent::initialize(ValueTree config_store   , ValueTree network_store          ,
-                             ValueTree chatters_store , NamedValueSet& disabled_features ,
-                             File      pictures_dir                                      )
+void MainContent::initialize(ValueTree config_store   , ValueTree network_store         ,
+                             ValueTree chatters_store , NamedValueSet& disabled_features)
 {
-  this->controls      ->initialize(config_store  , disabled_features              ) ;
-  this->config        ->initialize(config_store  , network_store    , pictures_dir) ;
-  this->chat->chatList->initialize(network_store , chatters_store                 ) ;
+  this->controls      ->initialize(config_store  , disabled_features) ;
+  this->config        ->initialize(config_store  , network_store    ) ;
+  this->chat->chatList->initialize(network_store , chatters_store   ) ;
 }
 
 void MainContent::warning(String message_text)

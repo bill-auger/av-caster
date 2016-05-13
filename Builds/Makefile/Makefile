@@ -68,7 +68,7 @@ OBJECTS := \
   $(OBJDIR)/Gstreamer_6a628f1d.o \
   $(OBJDIR)/IrcClient_3839b5ce.o \
   $(OBJDIR)/AvCasterStore_83095ca4.o \
-  $(OBJDIR)/PresetSeed_9f55d1b6.o \
+  $(OBJDIR)/Seeds_7de92226.o \
   $(OBJDIR)/Trace_fd3024bc.o \
   $(OBJDIR)/Background_ec1b7e98.o \
   $(OBJDIR)/Chat_35024382.o \
@@ -165,9 +165,9 @@ $(OBJDIR)/AvCasterStore_83095ca4.o: ../../Source/Models/AvCasterStore.cpp
 	@echo "Compiling AvCasterStore.cpp ($(CONFIG))"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/PresetSeed_9f55d1b6.o: ../../Source/Models/PresetSeed.cpp
+$(OBJDIR)/Seeds_7de92226.o: ../../Source/Models/Seeds.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PresetSeed.cpp ($(CONFIG))"
+	@echo "Compiling Seeds.cpp ($(CONFIG))"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Trace_fd3024bc.o: ../../Source/Trace/Trace.cpp

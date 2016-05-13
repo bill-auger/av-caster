@@ -40,7 +40,6 @@
 // #define CHATLIST_KICK_BTN_NYI
 
 // debugging tweaks and kludges
-// #define DUMP_COMFIG_VERBOSE
 #define INJECT_DEFAULT_CAMERA_DEVICE_INFO
 #define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
 #define NATIVE_CAMERA_RESOLUTION_ONLY
@@ -71,9 +70,11 @@
 #  define DEBUG_ANSI_COLORS 1
 // #  define DEBUG_QUIT_BEFORE_MAIN_LOOP
 // #  define DEBUG_QUIT_AFTER_MAIN_LOOP
+#define DUMP_CONFIG_VERBOSITY 0          /* 0 => none , 1 => nodes only , 2 => all */
+#define DUMP_CONFIG_XML
 #endif // DEBUG_TRACE
 
-
+// configuration and runtime constants
 #include "JuceHeader.h"
 #include "AppConstants.h"
 #include "GstConstants.h"

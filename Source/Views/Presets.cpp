@@ -227,13 +227,16 @@ bool Presets::createOrUpdatePreset()
 {
   String preset_name           = this->presetsCombo->getText() ;
   int    option_n              = this->presetsCombo->getSelectedItemIndex() ;
+  String stored_name           = AvCaster::GetPresetName() ;
+  int    stored_idx            = AvCaster::GetPresetIdx() ;
   bool   is_create_preset_mode = isCreatePresetMode() ;
-  bool   is_empty_preset_name  = preset_name.isEmpty() ;
-  bool   is_valid_option       = !!(~option_n) ;
   bool   is_static_preset      = AvCaster::IsStaticPreset() ;
-  bool   has_name_changed      = preset_name != AvCaster::GetPresetName() ;
-  bool   should_rename_preset  = !is_valid_option      && !is_static_preset &&
-                                 !is_empty_preset_name && has_name_changed   ;
+  bool   is_valid_option       = !!(~option_n) ;
+  bool   has_selection_changed = option_n != stored_idx ;
+  bool   has_name_changed      = !has_selection_changed && preset_name != stored_name ;
+  bool   is_empty_preset_name  = preset_name.isEmpty() ;
+  bool   should_rename_preset  = !is_static_preset && !is_valid_option     &&
+                                  has_name_changed && !is_empty_preset_name ;
   bool   is_name_collision     = false ;
 
   // reject duplicate preset name if creating or renaming
@@ -242,11 +245,12 @@ bool Presets::createOrUpdatePreset()
 
 DEBUG_TRACE_CREATE_PRESET
 
-  // validate new preset name
+  // validate new preset name existence
   if (is_empty_preset_name) { AvCaster::Warning(GUI::PRESET_NAME_ERROR_MSG) ; return false ; }
 
   if (is_create_preset_mode || should_rename_preset)
   {
+    // validate preset name uniqueness
     if (is_name_collision) { AvCaster::Warning(GUI::PRESET_RENAME_ERROR_MSG) ; return false ; }
 
     // create preset
@@ -255,7 +259,7 @@ DEBUG_TRACE_CREATE_PRESET
     else if (should_rename_preset ) AvCaster::RenamePreset(preset_name) ;
   }
   // update preset
-  else AvCaster::StorePreset(preset_name) ;
+  else AvCaster::StorePreset(stored_name) ;
 
   setCreatePresetMode(false) ;
 
@@ -264,14 +268,16 @@ DEBUG_TRACE_CREATE_PRESET
 
 void Presets::handlePresetsCombo()
 {
-  String preset_name     = this->presetsCombo->getText() ;
-  int    option_n        = this->presetsCombo->getSelectedItemIndex() ;
-  int    stored_option_n = AvCaster::GetPresetIdx() ;
-
   if (this->deletePresetButton->isDown()) return ; // defer to handleDeleteButton()
 
-  // create, rename or update preset
-  if (!createOrUpdatePreset()) AvCaster::SetValue(CONFIG::PRESET_ID , stored_option_n) ;
+  // create, rename or update preset or revert
+  String preset_name       = this->presetsCombo->getText() ;
+  int    option_n          = this->presetsCombo->getSelectedItemIndex() ;
+  int    stored_option_n   = AvCaster::GetPresetIdx() ;
+  bool   should_revert_idx = !createOrUpdatePreset() ;
+  int    current_option_n  = (should_revert_idx)? stored_option_n : option_n ;
+
+  AvCaster::SetValue(CONFIG::PRESET_ID , current_option_n) ;
 }
 
 void Presets::setCreatePresetMode(bool is_pending_new_preset_name)

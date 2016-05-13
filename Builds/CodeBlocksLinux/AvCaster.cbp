@@ -175,7 +175,7 @@
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../Source/Models/PresetSeed.h">
+    <Unit filename="../../Source/Models/Seeds.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
@@ -288,7 +288,7 @@
     <Unit filename="../../Source/Controllers/Gstreamer.cpp"/>
     <Unit filename="../../Source/Controllers/IrcClient.cpp"/>
     <Unit filename="../../Source/Models/AvCasterStore.cpp"/>
-    <Unit filename="../../Source/Models/PresetSeed.cpp"/>
+    <Unit filename="../../Source/Models/Seeds.cpp"/>
     <Unit filename="../../Source/Trace/Trace.cpp"/>
     <Unit filename="../../Source/Views/Background.cpp"/>
     <Unit filename="../../Source/Views/Chat.cpp"/>

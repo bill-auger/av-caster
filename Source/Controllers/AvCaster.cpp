@@ -200,15 +200,14 @@ DEBUG_TRACE_INIT_PHASE_4
 
   // initialze GUI
   NamedValueSet disabled_features = NamedValueSet(DisabledFeatures) ;
-  Gui->initialize(Store->config     , Store->network , Store->chatters ,
-                  disabled_features , APP::picturesDir()               ) ;
+  Gui->initialize(Store->config , Store->network , Store->chatters , disabled_features) ;
 
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libgtreamer
   void* x_window = Gui->getWindowHandle() ;
   if (IsMediaEnabled &&
-     !Gstreamer::Initialize(Store->config , x_window , disabled_features , APP::videosDir()))
+     !Gstreamer::Initialize(Store->config , x_window , disabled_features))
     return false ;
 
 DEBUG_TRACE_INIT_PHASE_6
@@ -288,29 +287,28 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
   if (GetPresetIdx() == CONFIG::INVALID_IDX) return ; // renaming
 
-  bool is_stream_active           = bool(Store->config[CONFIG::OUTPUT_ID]) ;
-  bool was_preset_combo_changed   = a_key == CONFIG::PRESET_ID ;
-  bool was_config_button_pressed  = a_key == CONFIG::IS_PENDING_ID ;
-  bool is_config_pending          = AvCaster::GetIsConfigPending() ;
-  bool is_swapping_presets        = was_preset_combo_changed  && !is_config_pending ;
-  bool is_exiting_config_mode     = was_config_button_pressed && !is_config_pending ;
-  bool should_login_chat          = is_swapping_presets || is_exiting_config_mode ;
+  bool is_preset_control  = Store->isPresetConfigKey(a_key) ;
+  bool is_media_toggle    = Store->isMediaToggleKey(a_key) ;
+  bool is_stream_active   = bool(Store->config[CONFIG::OUTPUT_ID]) ;
+  bool is_config_pending  = AvCaster::GetIsConfigPending() ;
+  bool should_stop_stream =  is_preset_control &&  is_stream_active ;
+  bool should_reconfigure = (is_preset_control && !is_stream_active) || is_media_toggle ;
+  bool should_login_chat  =  is_preset_control && !is_config_pending ;
 
 DEBUG_TRACE_HANDLE_CONFIG_CHANGE
 
-  if (!Store->isMediaKey(a_key) && !Store->isReconfigureKey(a_key)) return ;
-  if (Store->isReconfigureKey(a_key) && is_stream_active)
-  { SetValue(CONFIG::OUTPUT_ID , false) ; return ; } // defer handling
+  if (should_stop_stream ) SetValue(CONFIG::OUTPUT_ID , false) ; // defer handling and recurse
+  if (should_stop_stream || !should_reconfigure) return ;
 
   // reconfigure Gstreamer elements
   Gstreamer::Reconfigure(a_key) ;
 
   // reconfigure Irc networks
 #ifndef DISABLE_CHAT
-  if (Store->isReconfigureKey(a_key)) Irc->configure(should_login_chat) ;
+  if (is_preset_control) Irc->configure(should_login_chat) ;
 #endif // DISABLE_CHAT
 
-  // store changes and refresh GUI
+  // store back changes and refresh GUI
   StorePreset(GetPresetName()) ; RefreshGui() ;
 }
 
@@ -318,11 +316,11 @@ void AvCaster::RefreshGui()
 {
   bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID]) ;
   bool       is_preview_on     = bool(Store->config[CONFIG::PREVIEW_ID   ]) ;
-  Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets   ) :
-                                                       static_cast<Component*>(Gui->controls  ) ;
-  Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config    ) :
-                                 (is_preview_on    ) ? static_cast<Component*>(Gui->preview   ) :
-                                                       static_cast<Component*>(Gui->chat      ) ;
+  Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets ) :
+                                                       static_cast<Component*>(Gui->controls) ;
+  Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config  ) :
+                                 (is_preview_on    ) ? static_cast<Component*>(Gui->preview ) :
+                                                       static_cast<Component*>(Gui->chat    ) ;
 
 DEBUG_TRACE_REFRESH_GUI
 

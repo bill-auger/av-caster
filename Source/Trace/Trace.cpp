@@ -59,13 +59,15 @@ void Trace::TraceMissingProperty(ValueTree config_store    , Identifier a_proper
     Trace::TraceConfig("missing property of '"       + STRING(config_store.getType())     +
                        "' - restoring default for '" + STRING(a_property_id)   + "' => '" +
                                                        STRING(a_default_value) + "'"      ) ;
-    DumpConfig(config_store , "missing property ") ;
+    DEBUG_TRACE_DUMP_CONFIG(config_store , "missing property ") ;
   }
 }
 
 void Trace::DumpConfig(ValueTree config_store , String node_desc)
 {
-  if (!DEBUG_TRACE_CONFIG_VB) return ;
+#if (DUMP_CONFIG_VERBOSITY < 1)
+  return ;
+#endif // DUMP_CONFIG_VERBOSITY
 
   if (!config_store.isValid())
   { Trace::TraceError("Trace::DumpConfig() - invalid node: " + node_desc) ; return ; }
@@ -80,15 +82,15 @@ void Trace::DumpConfig(ValueTree config_store , String node_desc)
                " (properties: "        + String(n_properties) + ")"            +
                " (children: "          + String(n_children)   + ")"            ;
 
-#ifdef DUMP_COMFIG_VERBOSE
+#if (DUMP_CONFIG_VERBOSITY >= 2)
   for (int property_n = 0 ; property_n < n_properties ; ++property_n)
   {
     Identifier key          = config_store.getPropertyName(property_n) ;
     var        stored_value = config_store.getProperty(key , "n/a") ;
-    dbg += "\n" + pad + "  key => "             + String(key)             +
+    dbg += "\n" + pad + "  key => "             + STRING(key)             +
            "\n" + pad + "    stored_value  => " + stored_value.toString() ;
   }
-#endif // DUMP_COMFIG_VERBOSE
+#endif // DUMP_CONFIG_VERBOSITY
 
   Trace::TraceConfig(dbg) ;
 
@@ -100,6 +102,20 @@ void Trace::DumpConfig(ValueTree config_store , String node_desc)
                                 "]] ('"     + child_id  + "')"                  ;
     DumpConfig(child_node , child_node_desc) ;
   }
+}
+
+void Trace::WriteConfigXml(ValueTree config_node , String node_desc)
+{
+#ifdef DUMP_CONFIG_XML
+  return ;
+#endif // DUMP_CONFIG_XML
+
+  String      file_name = "config-dump-" + node_desc + ".xml" ;
+  XmlElement* xml       = config_node.createXml() ;
+
+  xml->writeToFile(File(file_name) , StringRef()) ; delete xml ;
+  Trace::TraceConfig("wrote config XML to file '" + file_name           +
+                     "' per "                     + String(__FUNCTION__)) ;
 }
 
 String Trace::VarType(var a_var) // juce var dynamic datatypes

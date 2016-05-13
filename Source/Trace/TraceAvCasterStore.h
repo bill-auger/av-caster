@@ -71,9 +71,6 @@
     Trace::TraceConfig("removing rogue node '" + String(node_id)                    + \
                        "' from '"              + STRING(parent_node.getType()) + "'") ;
 
-#  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)                   \
-  Trace::TraceConfigVb("dumping config per " + String(__FUNCTION__) + "()") ; \
-  Trace::DumpConfig(config_store , node_desc)                                 ;
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT               \
   DEBUG_TRACE_DUMP_CONFIG(this->root     , "root"    )
 #  define DEBUG_TRACE_DUMP_CONFIG_PRESETS            \
@@ -132,6 +129,10 @@
 #  define DEBUG_TRACE_DELETE_PRESET                                        \
   Trace::TraceConfig("deleting preset[" + String(preset_idx)             + \
                      "] '"              + AvCaster::GetPresetName() + "'") ;
+
+#  define DEBUG_TRACE_LOAD_PRESET                                        \
+  Trace::TraceConfig("loading preset[" + String(preset_idx) + "] '" +    \
+                     STRING(preset_store[CONFIG::PRESET_NAME_ID]) + "'") ;
 
 #  define DEBUG_TRACE_DEACTIVATE_CONTROL                                          \
   String err = (AvCaster::IsInitialized) ? "error configuring media - " : "" ;    \
@@ -223,6 +224,7 @@
 #  define DEBUG_TRACE_STORE_PRESET                          ;
 #  define DEBUG_TRACE_RENAME_PRESET                         ;
 #  define DEBUG_TRACE_DELETE_PRESET                         ;
+#  define DEBUG_TRACE_LOAD_PRESET                           ;
 #  define DEBUG_TRACE_DEACTIVATE_CONTROL                    ;
 #  define DEBUG_TRACE_STORE_SET_VALUE                       ;
 #  define DEBUG_TRACE_GUI_SET_VALUE                         ;

@@ -68,9 +68,8 @@ public:
 
 private:
 
-  void           initialize      (ValueTree config_store   , ValueTree network_store          ,
-                                  ValueTree chatters_store , NamedValueSet& disabled_features ,
-                                  File      pictures_dir                                      ) ;
+  void           initialize      (ValueTree config_store   , ValueTree network_store         ,
+                                  ValueTree chatters_store , NamedValueSet& disabled_features) ;
   void           warning         (String message_text) ;
   void           error           (String message_text) ;
   Rectangle<int> getPreviewBounds() ;

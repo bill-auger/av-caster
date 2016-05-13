@@ -199,16 +199,16 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
                      " => '" + url + ((url.endsWith("?")) ? "...'" : "'") ;    \
   Trace::TraceState("configuring OutputBin using " + plugin_id + server )      ;
 
-#  define DEBUG_TRACE_RECONFIGURE_IN                                 \
-  String bin = (configure_all    ) ? "Pipeline"     :                \
-               (configure_screen ) ? "ScreencapBin" :                \
-               (configure_camera ) ? "CameraBin"    :                \
-               (configure_text   ) ? "TextBin"      :                \
-               (configure_image  ) ? "ImageBin"     :                \
-               (configure_preview) ? "PreviewBin"   :                \
-               (configure_audio  ) ? "AudioBin"     :                \
-               (configure_output ) ? "OutputBin"    : "n/a" ;        \
-  String dbg = "reconfiguring " + bin + ")" ; Trace::TraceMedia(dbg) ;
+#  define DEBUG_TRACE_RECONFIGURE_IN                           \
+  String bin = (configure_all    ) ? "Pipeline"     :          \
+               (configure_screen ) ? "ScreencapBin" :          \
+               (configure_camera ) ? "CameraBin"    :          \
+               (configure_text   ) ? "TextBin"      :          \
+               (configure_image  ) ? "ImageBin"     :          \
+               (configure_preview) ? "PreviewBin"   :          \
+               (configure_audio  ) ? "AudioBin"     :          \
+               (configure_output ) ? "OutputBin"    : "n/a" ;  \
+  String dbg = "reconfiguring " + bin ; Trace::TraceMedia(dbg) ;
 
 #  define DEBUG_TRACE_RECONFIGURE_OUT if (is_error) Trace::TraceError("error " + dbg) ;
 

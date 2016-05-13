@@ -193,7 +193,7 @@
         </Filter>
         <Filter Name="Models">
           <File RelativePath="..\..\Source\Models\AvCasterStore.h"/>
-          <File RelativePath="..\..\Source\Models\PresetSeed.h"/>
+          <File RelativePath="..\..\Source\Models\Seeds.h"/>
         </Filter>
         <Filter Name="Trace">
           <File RelativePath="..\..\Source\Trace\Trace.h"/>
@@ -240,7 +240,7 @@
         </Filter>
         <Filter Name="Models">
           <File RelativePath="..\..\Source\Models\AvCasterStore.cpp"/>
-          <File RelativePath="..\..\Source\Models\PresetSeed.cpp"/>
+          <File RelativePath="..\..\Source\Models\Seeds.cpp"/>
         </Filter>
         <Filter Name="Trace">
           <File RelativePath="..\..\Source\Trace\Trace.cpp"/>

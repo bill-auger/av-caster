@@ -26,7 +26,15 @@
 
 #ifdef DEBUG_TRACE
 
-#define LOG(msg) Logger::outputDebugString(msg)
+#  define LOG(msg) Logger::outputDebugString(msg)
+
+#  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)                                       \
+  Trace::TraceConfigVb("dumping "     + String((!!DUMP_CONFIG_VERBOSITY) ? "verbose" : "terse") + \
+                       " config per " + String(__FUNCTION__) + "()") ;                            \
+  Trace::DumpConfig(config_store , node_desc)                                                     ;
+
+#  define DEBUG_TRACE_DUMP_CONFIG_XML(config_node , node_desc) \
+  Trace::WriteConfigXml(config_node , node_desc)               ;
 
 
 class Trace
@@ -50,6 +58,7 @@ public:
   static void TraceMissingProperty(ValueTree config_store    , Identifier a_property_id ,
                                    var       a_default_value                            ) ;
   static void DumpConfig          (ValueTree config_store , String node_desc) ;
+  static void WriteConfigXml      (ValueTree config_node , String node_desc) ;
 
   static String VarType          (var a_var) ;
   static void   TraceTreeChanged (ValueTree& a_node , const Identifier& a_key) ;
