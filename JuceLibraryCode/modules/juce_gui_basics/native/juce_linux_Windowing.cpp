@@ -1215,7 +1215,7 @@ private:
                                             + ((static_cast<double> (crtc->height) * 25.4 * 0.5) / static_cast<double> (output->mm_height));
 
                                     e.scale = masterScale * getScaleForDisplay (output->name, e);
-e.scale = 1.0 ;
+
                                     infos.add (e);
                                 }
                             }

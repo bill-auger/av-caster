@@ -1189,7 +1189,7 @@
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../../juce/modules/juce_core/juce_core.h">
+    <Unit filename="C:/Users/thoma/Downloads/juce-grapefruit-windows/JUCE/modules/juce_core/juce_core.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
@@ -1265,7 +1265,7 @@
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../../juce/modules/juce_data_structures/juce_data_structures.h">
+    <Unit filename="C:/Users/thoma/Downloads/juce-grapefruit-windows/JUCE/modules/juce_data_structures/juce_data_structures.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
@@ -1437,7 +1437,7 @@
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../../juce/modules/juce_events/juce_events.h">
+    <Unit filename="C:/Users/thoma/Downloads/juce-grapefruit-windows/JUCE/modules/juce_events/juce_events.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
@@ -2077,7 +2077,7 @@
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../../juce/modules/juce_graphics/juce_graphics.h">
+    <Unit filename="C:/Users/thoma/Downloads/juce-grapefruit-windows/JUCE/modules/juce_graphics/juce_graphics.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
@@ -3101,7 +3101,7 @@
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../../juce/modules/juce_gui_basics/juce_gui_basics.h">
+    <Unit filename="C:/Users/thoma/Downloads/juce-grapefruit-windows/JUCE/modules/juce_gui_basics/juce_gui_basics.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>

@@ -143,11 +143,11 @@
                        isDebug="0" optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../juce/modules"/>
-        <MODULEPATH id="juce_events" path="../juce/modules"/>
-        <MODULEPATH id="juce_graphics" path="../juce/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
+        <MODULEPATH id="juce_core" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
       </MODULEPATHS>
     </VS2015>
     <VS2008 targetFolder="Builds/VisualStudio2008">
@@ -208,7 +208,9 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </CODEBLOCKS_LINUX>
-    <ANDROIDSTUDIO targetFolder="Builds/AndroidStudio">
+    <ANDROIDSTUDIO targetFolder="Builds/AndroidStudio" androidSDKPath="" androidNDKPath=""
+                   androidActivityClass="com.bill.auger.avcaster" androidInternetNeeded="1"
+                   androidMicNeeded="1" smallIcon="ehff61" bigIcon="Hb9d9U" gradleToolchain="clang">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" androidArchitectures="armeabi armeabi-v7a x86" isDebug="1"
                        optimisation="1" targetName="AvCaster"/>
@@ -216,11 +218,11 @@
                        isDebug="0" optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
-        <MODULEPATH id="juce_graphics" path="../../juce"/>
-        <MODULEPATH id="juce_events" path="../../juce"/>
-        <MODULEPATH id="juce_data_structures" path="../../juce"/>
-        <MODULEPATH id="juce_core" path="../../juce"/>
+        <MODULEPATH id="juce_gui_basics" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules"/>
       </MODULEPATHS>
     </ANDROIDSTUDIO>
   </EXPORTFORMATS>

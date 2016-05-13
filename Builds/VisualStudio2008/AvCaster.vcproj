@@ -1350,7 +1350,7 @@
         </File>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_core\juce_core.h"/>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_core\juce_core.mm"/>
-        <File RelativePath="..\..\..\juce\modules\juce_core\juce_core.h"/>
+        <File RelativePath="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules\juce_core\juce_core.h"/>
       </Filter>
       <Filter Name="juce_data_structures">
         <Filter Name="app_properties">
@@ -1449,7 +1449,7 @@
         </File>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_data_structures\juce_data_structures.h"/>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_data_structures\juce_data_structures.mm"/>
-        <File RelativePath="..\..\..\juce\modules\juce_data_structures\juce_data_structures.h"/>
+        <File RelativePath="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules\juce_data_structures\juce_data_structures.h"/>
       </Filter>
       <Filter Name="juce_events">
         <Filter Name="broadcasters">
@@ -1648,7 +1648,7 @@
         </File>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_events\juce_events.h"/>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_events\juce_events.mm"/>
-        <File RelativePath="..\..\..\juce\modules\juce_events\juce_events.h"/>
+        <File RelativePath="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules\juce_events\juce_events.h"/>
       </Filter>
       <Filter Name="juce_graphics">
         <Filter Name="colour">
@@ -2732,7 +2732,7 @@
         </File>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_graphics\juce_graphics.h"/>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_graphics\juce_graphics.mm"/>
-        <File RelativePath="..\..\..\juce\modules\juce_graphics\juce_graphics.h"/>
+        <File RelativePath="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules\juce_graphics\juce_graphics.h"/>
       </Filter>
       <Filter Name="juce_gui_basics">
         <Filter Name="application">
@@ -4095,7 +4095,7 @@
         </File>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_gui_basics\juce_gui_basics.h"/>
         <File RelativePath="..\..\JuceLibraryCode\modules\juce_gui_basics\juce_gui_basics.mm"/>
-        <File RelativePath="..\..\..\juce\modules\juce_gui_basics\juce_gui_basics.h"/>
+        <File RelativePath="C:\Users\thoma\Downloads\juce-grapefruit-windows\JUCE\modules\juce_gui_basics\juce_gui_basics.h"/>
       </Filter>
     </Filter>
     <Filter Name="Juce Library Code">

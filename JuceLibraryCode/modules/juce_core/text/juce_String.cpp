@@ -1973,18 +1973,7 @@ int   String::getHexValue32() const noexcept    { return CharacterFunctions::Hex
 int64 String::getHexValue64() const noexcept    { return CharacterFunctions::HexParser<int64>::parse (text); }
 
 //==============================================================================
-static String getStringFromWindows1252Codepage (const char* data, size_t num)
-{
-    HeapBlock<juce_wchar> unicode (num + 1);
-
-    for (size_t i = 0; i < num; ++i)
-        unicode[i] = CharacterFunctions::getUnicodeCharFromWindows1252Codepage ((uint8) data[i]);
-
-    unicode[num] = 0;
-    return CharPointer_UTF32 (unicode);
-}
-
-String String::createStringFromData (const void* const unknownData, int size)
+String String::createStringFromData (const void* const unknownData, const int size)
 {
     const uint8* const data = static_cast<const uint8*> (unknownData);
 
@@ -2018,19 +2007,13 @@ String String::createStringFromData (const void* const unknownData, int size)
         return builder.result;
     }
 
-    const char* start = (const char*) data;
+    const uint8* start = data;
 
     if (size >= 3 && CharPointer_UTF8::isByteOrderMark (data))
-    {
         start += 3;
-        size -= 3;
-    }
 
-    if (CharPointer_UTF8::isValidString (start, size))
-        return String (CharPointer_UTF8 (start),
-                       CharPointer_UTF8 (start + size));
-
-    return getStringFromWindows1252Codepage (start, (size_t) size);
+    return String (CharPointer_UTF8 ((const char*) start),
+                   CharPointer_UTF8 ((const char*) (data + size)));
 }
 
 //==============================================================================

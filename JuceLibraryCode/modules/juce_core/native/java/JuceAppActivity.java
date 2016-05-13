@@ -220,13 +220,6 @@ public class JuceAppActivity   extends Activity
     protected void onPause()
     {
         suspendApp();
-
-        try
-        {
-            Thread.sleep (1000); // This is a bit of a hack to avoid some hard-to-track-down
-                                 // openGL glitches when pausing/resuming apps..
-        } catch (InterruptedException e) {}
-
         super.onPause();
     }
 

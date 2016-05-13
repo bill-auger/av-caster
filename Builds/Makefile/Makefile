@@ -8,16 +8,6 @@ ifndef CONFIG
   CONFIG=Release
 endif
 
-ifndef DESTDIR
-  DESTDIR=
-endif
-
-ifndef PREFIX
-  PREFIX=/usr
-endif
-
-INSTALLDIR=$(DESTDIR)$(PREFIX)
-
 ifeq ($(CONFIG),Release)
   BINDIR := build
   LIBDIR := build
@@ -104,14 +94,6 @@ $(OUTDIR)/$(TARGET): $(OBJECTS) $(RESOURCES)
 	-@mkdir -p $(OUTDIR)
 	@$(BLDCMD)
 
-install:
-	@echo Installing AvCaster
-	@install -m 755 $(OUTDIR)/$(TARGET) $(INSTALLDIR)/bin/
-
-uninstall:
-	@echo Uninstalling AvCaster
-	@rm $(INSTALLDIR)/bin/$(TARGET) > /dev/null
-
 clean:
 	@echo Cleaning AvCaster
 	@$(CLEANCMD)
@@ -122,177 +104,177 @@ strip:
 
 $(OBJDIR)/AppConstants_f2699997.o: ../../Source/Constants/AppConstants.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling AppConstants.cpp ($(CONFIG))"
+	@echo "Compiling AppConstants.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ConfigConstants_11c08e2e.o: ../../Source/Constants/ConfigConstants.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ConfigConstants.cpp ($(CONFIG))"
+	@echo "Compiling ConfigConstants.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/GstConstants_d0de3210.o: ../../Source/Constants/GstConstants.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling GstConstants.cpp ($(CONFIG))"
+	@echo "Compiling GstConstants.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/GuiConstants_d00d5cbd.o: ../../Source/Constants/GuiConstants.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling GuiConstants.cpp ($(CONFIG))"
+	@echo "Compiling GuiConstants.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/IrcConstants_3a6c1ffe.o: ../../Source/Constants/IrcConstants.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling IrcConstants.cpp ($(CONFIG))"
+	@echo "Compiling IrcConstants.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/AvCaster_772dbfa2.o: ../../Source/Controllers/AvCaster.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling AvCaster.cpp ($(CONFIG))"
+	@echo "Compiling AvCaster.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Gstreamer_6a628f1d.o: ../../Source/Controllers/Gstreamer.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Gstreamer.cpp ($(CONFIG))"
+	@echo "Compiling Gstreamer.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/IrcClient_3839b5ce.o: ../../Source/Controllers/IrcClient.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling IrcClient.cpp ($(CONFIG))"
+	@echo "Compiling IrcClient.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/AvCasterStore_83095ca4.o: ../../Source/Models/AvCasterStore.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling AvCasterStore.cpp ($(CONFIG))"
+	@echo "Compiling AvCasterStore.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Seeds_7de92226.o: ../../Source/Models/Seeds.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Seeds.cpp ($(CONFIG))"
+	@echo "Compiling Seeds.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Trace_fd3024bc.o: ../../Source/Trace/Trace.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Trace.cpp ($(CONFIG))"
+	@echo "Compiling Trace.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Background_ec1b7e98.o: ../../Source/Views/Background.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Background.cpp ($(CONFIG))"
+	@echo "Compiling Background.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Chat_35024382.o: ../../Source/Views/Chat.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Chat.cpp ($(CONFIG))"
+	@echo "Compiling Chat.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ChatList_a86aac0.o: ../../Source/Views/ChatList.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ChatList.cpp ($(CONFIG))"
+	@echo "Compiling ChatList.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ChatListItem_22e3caf3.o: ../../Source/Views/ChatListItem.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ChatListItem.cpp ($(CONFIG))"
+	@echo "Compiling ChatListItem.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Config_d1fea52c.o: ../../Source/Views/Config.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Config.cpp ($(CONFIG))"
+	@echo "Compiling Config.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ConfigAudio_65d50354.o: ../../Source/Views/ConfigAudio.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ConfigAudio.cpp ($(CONFIG))"
+	@echo "Compiling ConfigAudio.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ConfigCamera_832c34b1.o: ../../Source/Views/ConfigCamera.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ConfigCamera.cpp ($(CONFIG))"
+	@echo "Compiling ConfigCamera.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ConfigChat_2f3e1d24.o: ../../Source/Views/ConfigChat.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ConfigChat.cpp ($(CONFIG))"
+	@echo "Compiling ConfigChat.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ConfigImage_2645c659.o: ../../Source/Views/ConfigImage.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ConfigImage.cpp ($(CONFIG))"
+	@echo "Compiling ConfigImage.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ConfigOutput_af2d3c8d.o: ../../Source/Views/ConfigOutput.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ConfigOutput.cpp ($(CONFIG))"
+	@echo "Compiling ConfigOutput.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ConfigScreen_e23a3678.o: ../../Source/Views/ConfigScreen.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ConfigScreen.cpp ($(CONFIG))"
+	@echo "Compiling ConfigScreen.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/ConfigText_9dbedc79.o: ../../Source/Views/ConfigText.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ConfigText.cpp ($(CONFIG))"
+	@echo "Compiling ConfigText.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Controls_21545560.o: ../../Source/Views/Controls.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Controls.cpp ($(CONFIG))"
+	@echo "Compiling Controls.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/MainContent_91787020.o: ../../Source/Views/MainContent.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling MainContent.cpp ($(CONFIG))"
+	@echo "Compiling MainContent.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Presets_30a0e894.o: ../../Source/Views/Presets.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Presets.cpp ($(CONFIG))"
+	@echo "Compiling Presets.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Preview_227d08e8.o: ../../Source/Views/Preview.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Preview.cpp ($(CONFIG))"
+	@echo "Compiling Preview.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Statusbar_b88450c1.o: ../../Source/Views/Statusbar.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Statusbar.cpp ($(CONFIG))"
+	@echo "Compiling Statusbar.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Main.cpp ($(CONFIG))"
+	@echo "Compiling Main.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling BinaryData.cpp ($(CONFIG))"
+	@echo "Compiling BinaryData.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_core_75b14332.o: ../../JuceLibraryCode/juce_core.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_core.cpp ($(CONFIG))"
+	@echo "Compiling juce_core.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_data_structures_72d3da2c.o: ../../JuceLibraryCode/juce_data_structures.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_data_structures.cpp ($(CONFIG))"
+	@echo "Compiling juce_data_structures.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_events_d2be882c.o: ../../JuceLibraryCode/juce_events.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_events.cpp ($(CONFIG))"
+	@echo "Compiling juce_events.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_graphics_9c18891e.o: ../../JuceLibraryCode/juce_graphics.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_graphics.cpp ($(CONFIG))"
+	@echo "Compiling juce_graphics.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_gui_basics_8a6da59c.o: ../../JuceLibraryCode/juce_gui_basics.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_gui_basics.cpp ($(CONFIG))"
+	@echo "Compiling juce_gui_basics.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)

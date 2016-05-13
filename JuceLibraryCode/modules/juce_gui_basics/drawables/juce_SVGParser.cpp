@@ -769,13 +769,10 @@ private:
 
         addGradientStopsIn (gradient, fillXml);
 
-        if (int numColours = gradient.getNumColours())
+        if (gradient.getNumColours() > 0)
         {
-            if (gradient.getColourPosition (0) > 0)
-                gradient.addColour (0.0, gradient.getColour (0));
-
-            if (gradient.getColourPosition (numColours - 1) < 1.0)
-                gradient.addColour (1.0, gradient.getColour (numColours - 1));
+            gradient.addColour (0.0, gradient.getColour (0));
+            gradient.addColour (1.0, gradient.getColour (gradient.getNumColours() - 1));
         }
         else
         {
