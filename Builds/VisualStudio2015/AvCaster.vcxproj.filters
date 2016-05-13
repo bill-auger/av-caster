@@ -256,7 +256,7 @@
     <ClCompile Include="..\..\Source\Models\AvCasterStore.cpp">
       <Filter>AvCaster\Source\Models</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Models\PresetSeed.cpp">
+    <ClCompile Include="..\..\Source\Models\Seeds.cpp">
       <Filter>AvCaster\Source\Models</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Trace\Trace.cpp">
@@ -1425,7 +1425,7 @@
     <ClInclude Include="..\..\Source\Models\AvCasterStore.h">
       <Filter>AvCaster\Headers\Models</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Models\PresetSeed.h">
+    <ClInclude Include="..\..\Source\Models\Seeds.h">
       <Filter>AvCaster\Headers\Models</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Trace\Trace.h">

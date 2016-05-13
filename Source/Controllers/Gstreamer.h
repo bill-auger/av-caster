@@ -36,8 +36,8 @@ class Gstreamer
 private:
 
   // setup
-  static bool Initialize  (ValueTree      config_store      , void* x_window ,
-                           NamedValueSet& disabled_features , File videos_dir) ;
+  static bool Initialize  (ValueTree      config_store , void* x_window ,
+                           NamedValueSet& disabled_features             ) ;
   static void ReloadConfig() ;
   static void Shutdown    () ;
 
@@ -178,7 +178,6 @@ private:
   // external handles
   static ValueTree ConfigStore ;
   static guintptr  PreviewXwin ;
-  static File      VideosDir ;
 } ;
 
 #endif // _GSTREAMER_H_

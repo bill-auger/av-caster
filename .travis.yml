@@ -42,8 +42,6 @@ script:
   - wget $LIBIRCCLIENT_MIRROR/$LIBIRCCLIENTDEV
   - sudo dpkg -i $LIBIRCCLIENT
   - sudo dpkg -i $LIBIRCCLIENTDEV
-  - sudo mkdir /usr/include/libircclient/
-  - sudo mv    /usr/include/libirc*.h     /usr/include/libircclient/
   - CFLAGS="-Wno-dangling-else -Wno-deprecated-register" make
 
 after_script:

@@ -73,7 +73,7 @@ private:
   void restoreStaticPresets       () ;
   bool hasDuplicatedNodes         (ValueTree stored_config) ;
   int  nDuplicatedNodes           (ValueTree parent_node , StringArray node_ids) ;
-  void removeDuplicatedNodes      (ValueTree parent_node , Identifier node_id) ;
+  void removeConflictedNodes      (ValueTree parent_node , Identifier node_id) ;
   void filterRogueKeys            (ValueTree parent_node , StringArray persistent_keys) ;
   void filterRogueNodes           (ValueTree parent_node , StringArray persistent_node_ids) ;
   void sanitizeIntProperty        (ValueTree config_store , Identifier a_key ,
@@ -105,8 +105,8 @@ private:
   void valueTreeRedirected       (ValueTree& /*a_node*/                                                  ) override {}
 
   // getters/setters
-  bool        isMediaKey          (const Identifier& a_key) ;
-  bool        isReconfigureKey    (const Identifier& a_key) ;
+  bool        isMediaToggleKey    (const Identifier& a_key) ;
+  bool        isPresetConfigKey   (const Identifier& a_key) ;
   void        deactivateControl   (const Identifier& a_key) ;
   bool        isKnownProperty     (ValueTree a_node  , const Identifier& a_key) ;
   void        setProperty         (ValueTree a_node  , const Identifier& a_key ,

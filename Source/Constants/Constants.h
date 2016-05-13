@@ -40,7 +40,7 @@
 // #define CHATLIST_KICK_BTN_NYI
 
 // debugging tweaks and kludges
-// #define DUMP_COMFIG_VERBOSE
+#define DUMP_CONFIG_VERBOSITY 0                /* 0 => none , 1 => nodes only , 2 => all */
 #define INJECT_DEFAULT_CAMERA_DEVICE_INFO
 #define FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
 #define NATIVE_CAMERA_RESOLUTION_ONLY
@@ -56,7 +56,7 @@
 #define DEBUG_TRACE_EVENTS    (DEBUG_TRACE && 1)
 #define DEBUG_TRACE_GUI       (DEBUG_TRACE && 1)
 #define DEBUG_TRACE_GUI_VB    (DEBUG_TRACE && 0)
-#define DEBUG_TRACE_MEDIA     (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_MEDIA     (DEBUG_TRACE && 0)
 #define DEBUG_TRACE_MEDIA_VB  (DEBUG_TRACE && 0)
 #define DEBUG_TRACE_CONFIG    (DEBUG_TRACE && 1)
 #define DEBUG_TRACE_CONFIG_VB (DEBUG_TRACE && 0)

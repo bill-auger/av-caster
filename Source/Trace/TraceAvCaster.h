@@ -162,19 +162,24 @@ void SeedIrcNetworks()
 
 /* config */
 
-#  define DEBUG_TRACE_HANDLE_CONFIG_CHANGE                                       \
-  bool is_enter_config_mode = was_config_button_pressed &&  is_config_pending ;  \
-  bool should_logout_chat   = is_swapping_presets || is_enter_config_mode ;      \
-  String pad = "\n              " ;                                              \
-  Trace::TraceConfigVb("handling config value change '" + STRING(a_key) + "'"  + \
-      pad + "isMediaKey           = " + String(Store->isMediaKey(a_key)      ) + \
-      pad + "isReconfigureKey     = " + String(Store->isReconfigureKey(a_key)) + \
-      pad + "is_config_pending    = " + String(is_config_pending             ) + \
-      pad + "is_swapping_presets  = " + String(is_swapping_presets           ) + \
-      pad + "is_enter_config_mode = " + String(is_enter_config_mode          ) + \
-      pad + "is_exit_config_mode  = " + String(is_exiting_config_mode        ) + \
-      pad + "should_logout_chat   = " + String(should_logout_chat            ) + \
-      pad + "should_login_chat    = " + String(should_login_chat             ) ) ;
+#  define DEBUG_TRACE_HANDLE_CONFIG_CHANGE                                              \
+  bool   was_preset_combo_changed  = a_key == CONFIG::PRESET_ID ;                       \
+  bool   was_config_button_pressed = a_key == CONFIG::IS_PENDING_ID ;                   \
+  bool   is_swapping_presets       = was_preset_combo_changed  && !is_config_pending ;  \
+  bool   is_enter_config_mode      = was_config_button_pressed &&  is_config_pending ;  \
+  bool   is_exiting_config_mode    = was_config_button_pressed && !is_config_pending ;  \
+  bool   should_logout_chat        = is_swapping_presets || is_enter_config_mode ;      \
+  String pad                       = "\n              " ;                               \
+  Trace::TraceConfigVb("handling config value change '" + STRING(a_key) + "'"   +       \
+      pad + "is_media_toggle      = " + String(is_media_toggle       )          +       \
+      pad + "is_preset_control    = " + String(is_preset_control     )          +       \
+      pad + "is_stream_active     = " + String(is_stream_active      )          +       \
+      pad + "is_config_pending    = " + String(is_config_pending     )          +       \
+      pad + "is_swapping_presets  = " + String(is_swapping_presets   )          +       \
+      pad + "is_enter_config_mode = " + String(is_enter_config_mode  )          +       \
+      pad + "is_exit_config_mode  = " + String(is_exiting_config_mode)          +       \
+      pad + "should_logout_chat   = " + String(should_logout_chat    )          +       \
+      pad + "should_login_chat    = " + String(should_login_chat     )          )       ;
 
 
 /* helpers */

@@ -71,9 +71,6 @@
     Trace::TraceConfig("removing rogue node '" + String(node_id)                    + \
                        "' from '"              + STRING(parent_node.getType()) + "'") ;
 
-#  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)                   \
-  Trace::TraceConfigVb("dumping config per " + String(__FUNCTION__) + "()") ; \
-  Trace::DumpConfig(config_store , node_desc)                                 ;
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT               \
   DEBUG_TRACE_DUMP_CONFIG(this->root     , "root"    )
 #  define DEBUG_TRACE_DUMP_CONFIG_PRESETS            \

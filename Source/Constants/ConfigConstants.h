@@ -4,31 +4,27 @@
 #include "JuceHeader.h"
 
 
-/** the CONFIG class defines keys/value pairs and default value constants
-        pertaining to the configuration/persistence model                 */
-class CONFIG
-{
 /*\ CAVEATS:
 |*|  the application data model is implemented in the AvCasterStore class as JUCE ValueTrees
 |*|      with a JUCE binary file-out for persistence (STORAGE_FILENAME)
 |*|  when defining new nodes or properties be sure to:
 |*|    * update the SCHEMA below
-|*|    * if property                   -> define *_ID and DEFAULT_* below
-|*|                                    -> sanitize data in AvCasterStore::sanitize*ParentNode*()
-|*|    * if node                       -> verify schema in new method AvCasterStore::verifyNewNode()
-|*|                                    -> sanitize data in AvCasterStore::sanitize*NewNode*()
-|*|    * if persistent property        -> add to ROOT_PERSISTENT_IDS
-|*|                                    -> verify in AvCasterStore::verify*ParentNode*()
-|*|    * if persistent node            -> add to ROOT_PERSISTENT_NODE_IDS
-|*|                                    -> verify in AvCasterStore::verify*ParentNode*()
-|*|    * if transient property         -> add to ROOT_TRANSIENT_IDS
-|*|    * if transient node             -> add to ROOT_TRANSIENT_NODE_IDS
+|*|    * if property                   -> declare *_ID and DEFAULT_* below and define in ConfigConstants.cpp
+|*|                                    -> sanitize data in pertinent parent AvCasterStore::sanitize*()
+|*|    * if node                       -> verify schema in new method AvCasterStore::verify*NewNodeName*()
+|*|                                    -> sanitize data in AvCasterStore::sanitize*NewNodeName*()
+|*|    * if persistent property        -> add to pertinent parent *_PERSISTENT_IDS in ConfigConstants.cpp
+|*|                                    -> verify existence in pertinent parent AvCasterStore::verify*()
+|*|    * if persistent node            -> add to pertinent parent *_PERSISTENT_NODE_IDS in ConfigConstants.cpp
+|*|                                    -> verify existence in pertinent parent AvCasterStore::verify*()
+|*|    * if transient property         -> add to pertinent parent *_TRANSIENT_IDS in ConfigConstants.cpp
+|*|    * if transient node             -> add to pertinent parent *_TRANSIENT_NODE_IDS in ConfigConstants.cpp
 |*|    * if transient property or node -> note this in the SCHEMA below as (non-persistent)
 |*|                                    -> filter in AvCasterStore::storeConfig()
-|*|    * if persistent root property   -> add default property to CONFIG::DefaultStore() below
-|*|    * if persistent root node       -> add default node to CONFIG::DefaultStore() below
-|*|    * if persistent preset property -> add instance var and definition in PresetSeed class
-|*|    * if persistent preset node     -> add instance var and definition in PresetSeed class
+|*|    * if persistent root property   -> add default property to Seeds::DefaultStore()
+|*|    * if persistent root node       -> add default node to Seeds::DefaultStore()
+|*|    * if persistent preset property -> add instance var in Seeds class and attach in Seeds::createPreset()
+|*|    * if persistent preset node     -> add instance var in Seeds class and attach in Seeds::createPreset()
 |*|    * if transient root property    -> restore in AvCasterStore::restoreTransients()
 |*|    * if transient root node        -> restore in AvCasterStore::restoreTransients()
 |*|    * if transient preset property  -> restore in AvCasterStore::restorePresetTransients()
@@ -44,7 +40,7 @@ class CONFIG
 |*| STORAGE_ID:
 |*| {
 |*|   // config root
-|*|   CONFIG_VERSION_ID: a_double                             ,
+|*|   CONFIG_VERSION_ID: an_int                               ,
 |*|   IS_PENDING_ID:     a_bool                               , // (non-persistent)
 |*|   PRESET_ID:         an_int                               ,
 |*|   PRESETS_ID:        [ a-preset-id: a_preset_node , ... ]   // preset nodes as below
@@ -61,7 +57,6 @@ class CONFIG
 |*| VOLATILE_CONFIG_ID:
 |*| {
 |*|   // Controls
-|*|   PRESET_NAME_ID:   a_string  ,
 |*|   SCREENCAP_ID:     a_bool    ,
 |*|   CAMERA_ID:        a_bool    ,
 |*|   TEXT_ID:          a_bool    ,
@@ -69,6 +64,9 @@ class CONFIG
 |*|   PREVIEW_ID:       a_bool    ,
 |*|   AUDIO_ID:         a_bool    ,
 |*|   OUTPUT_ID:        a_bool    , // (non-persistent)
+|*|   // Presets
+|*|   PRESET_NAME_ID:   a_string  ,
+|*|   CONFIG_PANE_ID:   a_string  ,
 |*|   // ConfigScreen
 |*|   DISPLAY_N_ID:     an_int    ,
 |*|   SCREEN_N_ID:      an_int    ,
@@ -149,6 +147,10 @@ class CONFIG
 \*/
 
 
+/** the CONFIG class defines keys/value pairs and default value constants
+        pertaining to the configuration/persistence model                 */
+class CONFIG
+{
 public:
 
   // initialization
@@ -183,8 +185,8 @@ public:
   static StringArray ChatterKeys()            ;
   static StringArray CameraKeys()             ;
   static StringArray AudioKeys()              ;
-  static StringArray MediaKeys()              ;
-  static StringArray ReconfigureKeys()        ;
+  static StringArray MediaToggleKeys()        ;
+  static StringArray PresetConfigKeys()       ;
 
   // helpers
   static Identifier FilterId(String a_string , String retain_chars) ;
@@ -208,7 +210,6 @@ public:
   static const Identifier PRESET_ID ;
   static const Identifier IS_PENDING_ID ;
   // Controls IDs
-  static const Identifier PRESET_NAME_ID ;
   static const Identifier SCREEN_ID ;
   static const Identifier CAMERA_ID ;
   static const Identifier TEXT_ID ;
@@ -216,6 +217,9 @@ public:
   static const Identifier AUDIO_ID ;
   static const Identifier IMAGE_ID ;
   static const Identifier OUTPUT_ID ;
+  // Presets IDs
+  static const Identifier PRESET_NAME_ID ;
+  static const Identifier CONFIG_PANE_ID ;
   // ConfigScreen IDs
   static const Identifier DISPLAY_N_ID ;
   static const Identifier SCREEN_N_ID ;
@@ -273,7 +277,7 @@ public:
   static const String     STORAGE_DIRNAME ;
   static const String     STORAGE_FILENAME ;
 #endif // JUCE_WINDOWS
-  static const double     CONFIG_VERSION ;
+  static const int        CONFIG_VERSION ;
   static const int        DEFAULT_PRESET_IDX ;
   static const int        N_STATIC_PRESETS ;
   static const bool       DEFAULT_IS_PENDING ;
@@ -290,10 +294,11 @@ public:
   static const String     RTMP_PRESET_NAME ;
   static const String     LCTV_PRESET_NAME ;
   static const String     DEFAULT_PRESET_NAME ;
+  static const String     DEFAULT_CONFIG_PANE ;
+  static const Identifier DEFAULT_PRESET_ID ;
   static const Identifier FILE_PRESET_ID ;
   static const Identifier RTMP_PRESET_ID ;
   static const Identifier LCTV_PRESET_ID ;
-  static const Identifier DEFAULT_PRESET_ID ;
   // ConfigScreen defaults
   static const int        DEFAULT_DISPLAY_N ;
   static const int        DEFAULT_SCREEN_N ;

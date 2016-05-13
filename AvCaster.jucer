@@ -32,7 +32,7 @@
       </GROUP>
       <GROUP id="{449EB608-F7A7-9902-3D45-62AA93237D8C}" name="Models">
         <FILE id="jy2eVq" name="AvCasterStore.h" compile="0" resource="0" file="Source/Models/AvCasterStore.h"/>
-        <FILE id="qqog3V" name="PresetSeed.h" compile="0" resource="0" file="Source/Models/PresetSeed.h"/>
+        <FILE id="qqog3V" name="Seeds.h" compile="0" resource="0" file="Source/Models/Seeds.h"/>
       </GROUP>
       <GROUP id="{E5A092F4-256B-C2BA-D268-F46AC54BD85A}" name="Trace">
         <FILE id="DOiEtS" name="Trace.h" compile="0" resource="0" file="Source/Trace/Trace.h"/>
@@ -88,7 +88,7 @@
       <GROUP id="{7C73B5B3-CA01-0491-6468-F3AA66E67B45}" name="Models">
         <FILE id="Bn3TIV" name="AvCasterStore.cpp" compile="1" resource="0"
               file="Source/Models/AvCasterStore.cpp"/>
-        <FILE id="LBD3gN" name="PresetSeed.cpp" compile="1" resource="0" file="Source/Models/PresetSeed.cpp"/>
+        <FILE id="LBD3gN" name="Seeds.cpp" compile="1" resource="0" file="Source/Models/Seeds.cpp"/>
       </GROUP>
       <GROUP id="{2DCE1912-CE55-49BC-C4AA-34580ABA4D56}" name="Trace">
         <FILE id="iZf5Wa" name="Trace.cpp" compile="1" resource="0" file="Source/Trace/Trace.cpp"/>
@@ -208,6 +208,21 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </CODEBLOCKS_LINUX>
+    <ANDROIDSTUDIO targetFolder="Builds/AndroidStudio">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" androidArchitectures="armeabi armeabi-v7a x86" isDebug="1"
+                       optimisation="1" targetName="AvCaster"/>
+        <CONFIGURATION name="Release" androidArchitectures="armeabi armeabi-v7a x86"
+                       isDebug="0" optimisation="3" targetName="AvCaster"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
+        <MODULEPATH id="juce_graphics" path="../../juce"/>
+        <MODULEPATH id="juce_events" path="../../juce"/>
+        <MODULEPATH id="juce_data_structures" path="../../juce"/>
+        <MODULEPATH id="juce_core" path="../../juce"/>
+      </MODULEPATHS>
+    </ANDROIDSTUDIO>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="1"/>

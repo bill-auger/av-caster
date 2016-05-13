@@ -236,8 +236,7 @@ Config::Config (MainContent* main_content)
   // NOTE: dummyPane is a non-functional dummy - most siblings bounds are coupled to it
   dummyConfigPane->toBack() ;
 
-  Component* front_component = static_cast<Component*>(this->configScreen) ;
-  updateVisibility(front_component , GUI::SCREEN_GROUP_TEXT , GUI::SCREEN_HELP_TEXT) ;
+  updateVisibility(this->configStore[CONFIG::CONFIG_PANE_ID]) ;
 
     //[/Constructor]
 }
@@ -339,135 +338,52 @@ void Config::sliderValueChanged(Slider* a_slider)
 
 void Config::comboBoxChanged(ComboBox* a_combobox)
 {
-  int        option_n    = a_combobox->getSelectedItemIndex() ;
-  int        default_idx ;
-  Identifier key ;
-  var        value ;
+  Identifier key      = (a_combobox == this->cameraDevCombo   ) ? CONFIG::CAMERA_DEVICE_ID :
+                        (a_combobox == this->cameraResCombo   ) ? CONFIG::CAMERA_RES_ID    :
+                        (a_combobox == this->audioApiCombo    ) ? CONFIG::AUDIO_API_ID     :
+                        (a_combobox == this->audioDevCombo    ) ? CONFIG::AUDIO_DEVICE_ID  :
+                        (a_combobox == this->audioCodecCombo  ) ? CONFIG::AUDIO_CODEC_ID   :
+                        (a_combobox == this->samplerateCombo  ) ? CONFIG::SAMPLERATE_ID    :
+                        (a_combobox == this->audioBitrateCombo) ? CONFIG::AUDIO_BITRATE_ID :
+                        (a_combobox == this->textStyleCombo   ) ? CONFIG::TEXT_STYLE_ID    :
+                        (a_combobox == this->textPosCombo     ) ? CONFIG::TEXT_POSITION_ID :
+                        (a_combobox == this->outputSinkCombo  ) ? CONFIG::OUTPUT_SINK_ID   :
+                        (a_combobox == this->framerateCombo   ) ? CONFIG::FRAMERATE_ID     :
+                        (a_combobox == this->videoBitrateCombo) ? CONFIG::VIDEO_BITRATE_ID :
+                                                                  Identifier::null         ;
+  int        option_n = a_combobox->getSelectedItemIndex() ;
+  var        value    = (~option_n) ? var(option_n) : this->configStore[key] ;
 
-  if      (a_combobox == this->cameraDevCombo)
-  {
-    key         = CONFIG::CAMERA_DEVICE_ID ;
-    default_idx = CONFIG::DEFAULT_CAMERA_DEVICE_IDX ;
-  }
-  else if (a_combobox == this->cameraResCombo)
-  {
-    key         = CONFIG::CAMERA_RES_ID ;
-    default_idx = CONFIG::DEFAULT_CAMERA_RES_IDX ;
-  }
-  else if (a_combobox == this->audioApiCombo)
-  {
-    key         = CONFIG::AUDIO_API_ID ;
-    default_idx = CONFIG::DEFAULT_AUDIO_API_IDX ;
-  }
-  else if (a_combobox == this->audioDevCombo)
-  {
-    key         = CONFIG::AUDIO_DEVICE_ID ;
-    default_idx = CONFIG::DEFAULT_AUDIO_DEVICE_IDX ;
-  }
-  else if (a_combobox == this->audioCodecCombo)
-  {
-    key         = CONFIG::AUDIO_CODEC_ID ;
-    default_idx = CONFIG::DEFAULT_AUDIO_CODEC_IDX ;
-  }
-  else if (a_combobox == this->samplerateCombo)
-  {
-    key         = CONFIG::SAMPLERATE_ID ;
-    default_idx = CONFIG::DEFAULT_SAMPLERATE_IDX ;
-  }
-  else if (a_combobox == this->audioBitrateCombo)
-  {
-    key         = CONFIG::AUDIO_BITRATE_ID ;
-    default_idx = CONFIG::DEFAULT_AUDIO_BITRATE_IDX ;
-  }
-  else if (a_combobox == this->textStyleCombo)
-  {
-    key         = CONFIG::TEXT_STYLE_ID ;
-    default_idx = CONFIG::DEFAULT_TEXT_STYLE_IDX ;
-  }
-  else if (a_combobox == this->textPosCombo)
-  {
-    key         = CONFIG::TEXT_POSITION_ID ;
-    default_idx = CONFIG::DEFAULT_TEXT_POSITION_IDX ;
-  }
-  else if (a_combobox == this->outputSinkCombo)
-  {
-    key         = CONFIG::OUTPUT_SINK_ID ;
-    default_idx = CONFIG::DEFAULT_OUTPUT_SINK_IDX ;
-  }
-  else if (a_combobox == this->framerateCombo)
-  {
-    key         = CONFIG::FRAMERATE_ID ;
-    default_idx = CONFIG::DEFAULT_FRAMERATE_IDX ;
-  }
-  else if (a_combobox == this->videoBitrateCombo)
-  {
-    key         = CONFIG::VIDEO_BITRATE_ID ;
-    default_idx = CONFIG::DEFAULT_VIDEO_BITRATE_IDX ;
-  }
-  else return ;
-
-  value = var((~option_n) ? option_n : default_idx) ;
   a_combobox->setSelectedItemIndex(int(value) , juce::dontSendNotification) ;
   AvCaster::SetValue(key , value) ;
 }
 
 void Config::buttonClicked(Button* a_button)
 {
-  Component* front_component = nullptr ; // local buttons
-  String     group_text ;                // local buttons
-  String     hints_text ;                // local buttons
-  Identifier key ;                       // child buttons
-  var        value ;                     // child buttons
+  Identifier key ;
+  var        value ;
 
   // Config buttons
   if      (a_button == this->screenButton)
-  {
-    front_component = static_cast<Component*>(this->configScreen) ;
-    group_text      = GUI::SCREEN_GROUP_TEXT ;
-    hints_text      = GUI::SCREEN_HELP_TEXT ;
-  }
+  { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::SCREEN_GROUP_TEXT) ; updateVisibility(value) ; }
   else if (a_button == this->cameraButton)
-  {
-    front_component = static_cast<Component*>(this->configCamera) ;
-    group_text      = GUI::CAMERA_GROUP_TEXT ;
-    hints_text      = GUI::CAMERA_HELP_TEXT ;
-  }
-  else if (a_button == this->audioButton)
-  {
-    front_component = static_cast<Component*>(this->configAudio) ;
-    group_text      = GUI::AUDIO_GROUP_TEXT ;
-    hints_text      = GUI::AUDIO_HELP_TEXT ;
-  }
-  else if (a_button == this->textButton)
-  {
-    front_component = static_cast<Component*>(this->configText) ;
-    group_text      = GUI::TEXT_GROUP_TEXT ;
-    hints_text      = GUI::TEXT_HELP_TEXT ;
-  }
-  else if (a_button == this->imageButton)
-  {
-    front_component = static_cast<Component*>(this->configImage) ;
-    group_text      = GUI::IMAGE_GROUP_TEXT ;
-    hints_text      = GUI::IMAGE_HELP_TEXT ;
-  }
+  { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::CAMERA_GROUP_TEXT) ; updateVisibility(value) ; }
+  else if (a_button == this->audioButton )
+  { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::AUDIO_GROUP_TEXT ) ; updateVisibility(value) ; }
+  else if (a_button == this->textButton  )
+  { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::TEXT_GROUP_TEXT  ) ; updateVisibility(value) ; }
+  else if (a_button == this->imageButton )
+  { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::IMAGE_GROUP_TEXT ) ; updateVisibility(value) ; }
   else if (a_button == this->outputButton)
-  {
-    front_component = static_cast<Component*>(this->configOutput) ;
-    group_text      = GUI::OUTPUT_GROUP_TEXT ;
-    hints_text      = GUI::OUTPUT_HELP_TEXT ;
-  }
-  else if (a_button == this->chatButton)
-  {
-    front_component = static_cast<Component*>(this->configChat) ;
-    group_text      = GUI::CHAT_GROUP_TEXT ;
-    hints_text      = GUI::CHAT_HELP_TEXT ;
-  }
+  { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::OUTPUT_GROUP_TEXT) ; updateVisibility(value) ; }
+  else if (a_button == this->chatButton  )
+  { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::CHAT_GROUP_TEXT  ) ; updateVisibility(value) ; }
 
   // Image buttons
   else if (a_button == this->browseButton)
   {
-    FileChooser           file_chooser(GUI::IMAGE_CHOOSER_TEXT  , this->picturesDir ,
-                                       GUI::IMG_FILE_EXTENSIONS , false             ) ;
+    FileChooser           file_chooser(GUI::IMAGE_CHOOSER_TEXT , APP::picturesDir() ,
+                                       GUI::IMG_FILE_EXTS      , false              ) ;
     ImagePreviewComponent image_preview ;
 //     image_preview.setSize(GUI::IMG_PREVIEW_W , GUI::IMG_PREVIEW_H) ; // NFG
 
@@ -475,25 +391,16 @@ void Config::buttonClicked(Button* a_button)
 
     String image_loc = file_chooser.getResult().getFullPathName() ;
 
-    key   = CONFIG::IMAGE_LOC_ID ;
-    value = var(image_loc) ;
+    key = CONFIG::IMAGE_LOC_ID ; value = var(image_loc) ;
   }
 
   // Chat buttons
   else if (a_button == this->timestampToggle)
-  {
-    key   = CONFIG::TIMESTAMPS_ID ;
-    value = var(a_button->getToggleState()) ;
-  }
+  { key = CONFIG::TIMESTAMPS_ID ; value = var(a_button->getToggleState()) ; }
   else if (a_button == this->joinPartToggle)
-  {
-    key   = CONFIG::JOINPARTS_ID ;
-    value = var(a_button->getToggleState()) ;
-  }
+  { key = CONFIG::JOINPARTS_ID ;  value = var(a_button->getToggleState()) ; }
 
-  if (front_component != nullptr)        // local buttons
-    updateVisibility(front_component , group_text , hints_text) ;
-  else AvCaster::SetValue(key , value) ; // child buttons
+  AvCaster::SetValue(key , value) ;
 }
 
 void Config::textEditorTextChanged(TextEditor& a_text_editor)
@@ -530,11 +437,10 @@ void Config::textEditorFocusLost(TextEditor& a_text_editor)
   AvCaster::SetValue(key , value) ;
 }
 
-void Config::initialize(ValueTree config_store , ValueTree network_store , File pictures_dir)
+void Config::initialize(ValueTree config_store , ValueTree network_store)
 {
   this->configStore  = config_store ;
   this->networkStore = network_store ;
-  this->picturesDir  = pictures_dir ;
 }
 
 void Config::loadConfig()
@@ -545,6 +451,7 @@ void Config::loadConfig()
 
 DEBUG_TRACE_CONFIG_LOAD_CONFIG
 
+  var    pane_name              =        this->configStore [CONFIG::CONFIG_PANE_ID  ] ;
   double display_n              = double(this->configStore [CONFIG::DISPLAY_N_ID    ]) ;
   double screen_n               = double(this->configStore [CONFIG::SCREEN_N_ID     ]) ;
   String screencap_w            = STRING(this->configStore [CONFIG::SCREENCAP_W_ID  ]) ;
@@ -583,6 +490,11 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
                              (output_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::DEST_FILE_TEXT :
                              (output_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::DEST_RTMP_TEXT :
                                                                        "ERR"               ;
+
+LOG("Config::loadConfig() AvCaster::GetPresetIdx()=" + String(AvCaster::GetPresetIdx()) +
+  " preset_name=" + STRING( this->configStore [CONFIG::PRESET_NAME_ID  ]) +
+  " output_idx=" + String(output_idx) +
+  " output_label_text=" + output_label_text) ;
 
   this->displaySlider    ->setValue            (display_n ) ;
   this->screenSlider     ->setValue            (screen_n  ) ;
@@ -642,7 +554,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->timestampToggle  ->setToggleState      (should_show_timestamps , juce::dontSendNotification) ;
   this->joinPartToggle   ->setToggleState      (should_show_joinparts  , juce::dontSendNotification) ;
 
-  enableComponents() ;
+  enableComponents() ; updateVisibility(pane_name) ;
 }
 
 void Config::enableComponents()
@@ -678,20 +590,43 @@ this->joinPartToggle ->setEnabled(false) ;
 #endif // DISABLE_GUI_CONFIG_NYI
 }
 
-void Config::updateVisibility(Component* front_component , String group_text ,
-                              String     hints_text                          )
+void Config::updateVisibility(var pane_name)
 {
-  this->configScreen->setVisible(false) ;
-  this->configCamera->setVisible(false) ;
-  this->configAudio ->setVisible(false) ;
-  this->configText  ->setVisible(false) ;
-  this->configImage ->setVisible(false) ;
-  this->configOutput->setVisible(false) ;
-  this->configChat  ->setVisible(false) ;
-  front_component   ->setVisible(true ) ;
+  String group_text = STRING(pane_name) ;
+  String hints_text ;
 
-  this->configPaneGroup->setText(group_text) ;
-  this->hintsText      ->setText(hints_text) ;
+  // panels visibility
+  this->configScreen->setVisible(group_text == GUI::SCREEN_GROUP_TEXT) ;
+  this->configCamera->setVisible(group_text == GUI::CAMERA_GROUP_TEXT) ;
+  this->configAudio ->setVisible(group_text == GUI::AUDIO_GROUP_TEXT ) ;
+  this->configText  ->setVisible(group_text == GUI::TEXT_GROUP_TEXT  ) ;
+  this->configImage ->setVisible(group_text == GUI::IMAGE_GROUP_TEXT ) ;
+  this->configOutput->setVisible(group_text == GUI::OUTPUT_GROUP_TEXT) ;
+  this->configChat  ->setVisible(group_text == GUI::CHAT_GROUP_TEXT  ) ;
+
+  // display texts
+  if      (group_text == GUI::SCREEN_GROUP_TEXT) hints_text = GUI::SCREEN_HELP_TEXT ;
+  else if (group_text == GUI::CAMERA_GROUP_TEXT) hints_text = GUI::CAMERA_HELP_TEXT ;
+  else if (group_text == GUI::AUDIO_GROUP_TEXT ) hints_text = GUI::AUDIO_HELP_TEXT ;
+  else if (group_text == GUI::TEXT_GROUP_TEXT  ) hints_text = GUI::TEXT_HELP_TEXT ;
+  else if (group_text == GUI::IMAGE_GROUP_TEXT ) hints_text = GUI::IMAGE_HELP_TEXT ;
+  else if (group_text == GUI::OUTPUT_GROUP_TEXT) hints_text = outputHintsText() ;
+  else if (group_text == GUI::CHAT_GROUP_TEXT  ) hints_text = GUI::CHAT_HELP_TEXT ;
+
+  this->configPaneGroup->setText(group_text) ; setHintsText(hints_text) ;
+}
+
+bool Config::setHintsText(String hints_text) { this->hintsText->setText(hints_text) ; }
+
+String Config::outputHintsText()
+{
+  bool is_lctv_preset = AvCaster::GetPresetIdx() == CONFIG::LCTV_PRESET_IDX ;
+  int  output_idx     = int(this->configStore[CONFIG::OUTPUT_SINK_ID]) ;
+
+  return (is_lctv_preset                       ) ? GUI::LCTV_HELP_TEXT :
+         (output_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_HELP_TEXT :
+         (output_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_HELP_TEXT :
+                                                   "ERR"               ;
 }
 
 bool Config::validateOutputDest()

@@ -28,7 +28,7 @@
 #  define DEBUG_TRACE_CONFIG_LOAD_CONFIG                                   \
   String preset_name = STRING(this->configStore[CONFIG::PRESET_NAME_ID]) ; \
   Trace::TraceConfig("loading preset '" + preset_name + "'") ;             \
-  Trace::DumpConfig(this->configStore , "volatile")                                                  ;
+  DEBUG_TRACE_DUMP_CONFIG(this->configStore , "volatile")                                                  ;
 
 #  define DEBUG_TRACE_SET_CREATE_PRESET_MODE                                               \
   bool has_mode_changed = is_pending_new_preset_name != isCreatePresetMode() ;             \
@@ -53,7 +53,7 @@
       pad + "is_static_preset     = "  + String(is_static_preset        )        + \
       pad + "is_empty_preset_name = "  + String(is_empty_preset_name    )        + \
       pad + "has_name_changed     = "  + String(has_name_changed        )        + \
-      pad + "is_static_preset     = "  + String(should_rename_preset    )        ) ;
+      pad + "is_static_preset     = "  + String(is_static_preset        )        ) ;
 
 #else // DEBUG_TRACE
 

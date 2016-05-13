@@ -18,7 +18,7 @@
 
 
 #include "AvCasterStore.h"
-#include "PresetSeed.h"
+#include "Seeds.h"
 #include "../Controllers/AvCaster.h"
 #include "../Trace/TraceAvCasterStore.h"
 
@@ -66,14 +66,14 @@ AvCasterStore::AvCasterStore()
   this->network = ValueTree(CONFIG::NETWORK_ID        ) ;
   this->config.addChild(this->network , -1 , nullptr) ;
 
+  // remove presets from runtime store (to ignore events)
+  this->root.removeChild(this->presets , nullptr) ;
+
   // validate and sanitize config
   verifyRoot() ;   verifyPresets() ;
   sanitizeRoot() ; sanitizePresets() ;
   verifyRoot() ;   verifyPresets() ;
   restoreTransients() ; loadPreset() ; storeConfig() ;
-
-  // remove presets from runtime store (to ignore events)
-  this->root.removeChild(this->presets , nullptr) ;
 
   // create or assign aliases to transient shared config ValueTrees
   this->chatters = ValueTree(CONFIG::CHATTERS_ID      ) ;
@@ -95,12 +95,12 @@ ValueTree AvCasterStore::verifyStorage(ValueTree stored_config)
   bool was_storage_found   = stored_config.isValid() ;
   bool is_root_valid       = stored_config.hasType(CONFIG::STORAGE_ID) ;
   bool has_canonical_nodes = !hasDuplicatedNodes(stored_config) ;
-  if (!was_storage_found || !is_root_valid) stored_config = PresetSeed::DefaultStore() ;
-  else if (!has_canonical_nodes) removeDuplicatedNodes(stored_config , CONFIG::PRESETS_ID) ;
+  if (!was_storage_found || !is_root_valid) stored_config = Seeds::DefaultStore() ;
+  else if (!has_canonical_nodes) removeConflictedNodes(stored_config , CONFIG::PRESETS_ID) ;
 
   // verify schema version
-  double stored_version    = double(stored_config[CONFIG::CONFIG_VERSION_ID]) ;
-  bool   do_versions_match = stored_version == CONFIG::CONFIG_VERSION ;
+  int  stored_version    = int(stored_config[CONFIG::CONFIG_VERSION_ID]) ;
+  bool do_versions_match = stored_version == CONFIG::CONFIG_VERSION ;
   if (!do_versions_match)
   {
     // TODO: convert (if ever necessary)
@@ -153,13 +153,14 @@ void AvCasterStore::verifyPreset()
 DEBUG_TRACE_VERIFY_PRESET
 
   // ensure missing properties exist
-  verifyPresetProperty (CONFIG::PRESET_NAME_ID   , var(CONFIG::DEFAULT_PRESET_NAME      )) ;
   verifyPresetProperty (CONFIG::SCREEN_ID        , var(CONFIG::DEFAULT_IS_SCREEN_ACTIVE )) ;
   verifyPresetProperty (CONFIG::CAMERA_ID        , var(CONFIG::DEFAULT_IS_CAMERA_ACTIVE )) ;
   verifyPresetProperty (CONFIG::TEXT_ID          , var(CONFIG::DEFAULT_IS_TEXT_ACTIVE   )) ;
   verifyPresetProperty (CONFIG::IMAGE_ID         , var(CONFIG::DEFAULT_IS_IMAGE_ACTIVE  )) ;
   verifyPresetProperty (CONFIG::PREVIEW_ID       , var(CONFIG::DEFAULT_IS_PREVIEW_ACTIVE)) ;
   verifyPresetProperty (CONFIG::AUDIO_ID         , var(CONFIG::DEFAULT_IS_AUDIO_ACTIVE  )) ;
+  verifyPresetProperty (CONFIG::PRESET_NAME_ID   , var(CONFIG::DEFAULT_PRESET_NAME      )) ;
+  verifyPresetProperty (CONFIG::CONFIG_PANE_ID   , var(CONFIG::DEFAULT_CONFIG_PANE      )) ;
   verifyPresetProperty (CONFIG::DISPLAY_N_ID     , var(CONFIG::DEFAULT_DISPLAY_N        )) ;
   verifyPresetProperty (CONFIG::SCREEN_N_ID      , var(CONFIG::DEFAULT_SCREEN_N         )) ;
   verifyPresetProperty (CONFIG::SCREENCAP_W_ID   , var(CONFIG::DEFAULT_SCREENCAP_W      )) ;
@@ -268,6 +269,7 @@ DEBUG_TRACE_STORE_CONFIG
   }
 
 DEBUG_TRACE_DUMP_CONFIG(root_clone , "root_clone")
+DEBUG_TRACE_DUMP_CONFIG_XML(root_clone , "root_clone")
 
   // marshall configuration out to persistent binary storage
   FileOutputStream* config_stream = new FileOutputStream(this->configFile) ;
@@ -281,8 +283,8 @@ void AvCasterStore::storePreset(String preset_name)
   if (preset_name.isEmpty()) return ;
 
   Identifier preset_id     = CONFIG::FilterId(preset_name , APP::VALID_ID_CHARS) ;
-  ValueTree  preset_store  = this->presets.getOrCreateChildWithName(preset_id           , nullptr) ;
-  ValueTree  network_store = preset_store .getOrCreateChildWithName(CONFIG::NETWORK_ID  , nullptr) ;
+  ValueTree  preset_store  = this->presets.getOrCreateChildWithName(preset_id          , nullptr) ;
+  ValueTree  network_store = preset_store .getOrCreateChildWithName(CONFIG::NETWORK_ID , nullptr) ;
   int        preset_idx    = this->presets.indexOf(preset_store) ;
 
 DEBUG_TRACE_STORE_PRESET
@@ -345,8 +347,8 @@ void AvCasterStore::resetPreset()
   int       preset_idx    = int(this->root[CONFIG::PRESET_ID]) ;
   ValueTree preset_store  = this->presets.getChild(preset_idx) ;
   ValueTree network_store = preset_store .getChildWithName(CONFIG::NETWORK_ID) ;
-  ValueTree preset_seed   = PresetSeed::PresetSeeds().getChild(preset_idx) ;
-  ValueTree network_seed  = preset_seed  .getChildWithName(CONFIG::NETWORK_ID) ;
+  ValueTree preset_seed   = Seeds::PresetSeeds().getChild(preset_idx) ;
+  ValueTree network_seed  = preset_seed         .getChildWithName(CONFIG::NETWORK_ID) ;
 
   // transfer default preset values
   preset_store .copyPropertiesFrom(preset_seed  , nullptr) ;
@@ -405,7 +407,7 @@ void AvCasterStore::verifyPresetProperty(Identifier a_key , var a_default_value)
 
 void AvCasterStore::restoreStaticPresets()
 {
-  ValueTree preset_seeds = PresetSeed::PresetSeeds() ;
+  ValueTree preset_seeds = Seeds::PresetSeeds() ;
 
   for (int preset_idx = 0 ; preset_idx < CONFIG::N_STATIC_PRESETS ; ++preset_idx)
   {
@@ -413,11 +415,11 @@ void AvCasterStore::restoreStaticPresets()
     Identifier preset_id       = preset_seed.getType() ;
     ValueTree  existing_preset = this->presets.getChild(preset_idx) ;
 
-    if (existing_preset.isValid() && existing_preset.hasType(preset_id)) continue ;
+    if (existing_preset.hasType(preset_id) && existing_preset.isValid()) continue ;
 
-    removeDuplicatedNodes(this->presets , preset_id) ;
-    preset_seeds.removeChild(preset_seed , nullptr) ;
-    this->presets.addChild(preset_seed , preset_idx , nullptr) ;
+    removeConflictedNodes(this->presets , preset_id) ;
+    preset_seeds .removeChild(preset_seed , nullptr) ;
+    this->presets.addChild   (preset_seed , preset_idx , nullptr) ;
   }
 }
 
@@ -462,7 +464,7 @@ int AvCasterStore::nDuplicatedNodes(ValueTree parent_node , StringArray node_ids
   return n_duplicated_nodes ;
 }
 
-void AvCasterStore::removeDuplicatedNodes(ValueTree parent_node , Identifier node_id)
+void AvCasterStore::removeConflictedNodes(ValueTree parent_node , Identifier node_id)
 {
   ValueTree a_node ;
   while ((a_node = parent_node.getChildWithName(node_id)).isValid())
@@ -646,19 +648,19 @@ DEBUG_TRACE_CONFIG_TREE_CHANGED
 
 /* getters/setters */
 
-bool AvCasterStore::isMediaKey(const Identifier& a_key)
+bool AvCasterStore::isMediaToggleKey(const Identifier& a_key)
 {
-  return CONFIG::MediaKeys().contains(STRING(a_key)) ;
+  return CONFIG::MediaToggleKeys().contains(STRING(a_key)) ;
 }
 
-bool AvCasterStore::isReconfigureKey(const Identifier& a_key)
+bool AvCasterStore::isPresetConfigKey(const Identifier& a_key)
 {
-  return CONFIG::ReconfigureKeys().contains(STRING(a_key)) ;
+  return CONFIG::PresetConfigKeys().contains(STRING(a_key)) ;
 }
 
 void AvCasterStore::deactivateControl(const Identifier& a_key)
 {
-  if (!isMediaKey(a_key)) return ;
+  if (!isMediaToggleKey(a_key)) return ;
 
 DEBUG_TRACE_DEACTIVATE_CONTROL
 

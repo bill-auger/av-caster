@@ -17,13 +17,13 @@
 \*/
 
 
-#ifndef _PRESETSEED_H_
-#define _PRESETSEED_H_
+#ifndef _SEEDS_H_
+#define _SEEDS_H_
 
 #include "../Constants/Constants.h"
 
 
-class PresetSeed
+class Seeds
 {
 public:
 
@@ -33,16 +33,16 @@ public:
 
 protected:
 
-  PresetSeed() ;
+  Seeds() ;
 
   void createPreset() ;
 
   // node ID
   Identifier presetId ;
-  // Controls params
+  // Presets params
   String     presetName ;
   // ConfigOutput params
-  int        sinkIdx ;
+  int        outputSinkIdx ;
   String     outputDest ;
 
 
@@ -63,6 +63,8 @@ private:
   bool   isImageActive ;
   bool   isPreviewActive ;
   bool   isAudioActive ;
+  // Presets params
+  String configPane ;
   // ConfigScreen params
   int    displayN ;
   int    screenN ;
@@ -71,8 +73,8 @@ private:
   int    offsetX ;
   int    offsetY ;
   // ConfigCamera params
-  int    cameraResolutionIdx ;
   int    cameraDeviceIdx ;
+  int    cameraResolutionIdx ;
   // ConfigAudio params
   int    audioApiIdx ;
   int    audioDeviceIdx ;
@@ -104,12 +106,12 @@ private:
 } ;
 
 
-class FilePresetSeed : private PresetSeed { friend class PresetSeed ; private: FilePresetSeed() ; } ;
+class FileSeed : private Seeds { friend class Seeds ; private: FileSeed() ; } ;
 
 
-class RtmpPresetSeed : private PresetSeed { friend class PresetSeed ; private: RtmpPresetSeed() ; } ;
+class RtmpSeed : private Seeds { friend class Seeds ; private: RtmpSeed() ; } ;
 
 
-class LctvPresetSeed : private PresetSeed { friend class PresetSeed ; private: LctvPresetSeed() ; } ;
+class LctvSeed : private Seeds { friend class Seeds ; private: LctvSeed() ; } ;
 
-#endif // _PRESETSEED_H_
+#endif // _SEEDS_H_

@@ -26,7 +26,17 @@
 
 #ifdef DEBUG_TRACE
 
-#define LOG(msg) Logger::outputDebugString(msg)
+#  define LOG(msg) Logger::outputDebugString(msg)
+
+#  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)                                       \
+  Trace::TraceConfigVb("dumping "     + String((!!DUMP_CONFIG_VERBOSITY) ? "verbose" : "terse") + \
+                       " config per " + String(__FUNCTION__) + "()") ;                            \
+  Trace::DumpConfig(config_store , node_desc)                                                    ;
+
+#  define DEBUG_TRACE_DUMP_CONFIG_XML(config_node , node_desc)                                     \
+  Trace::TraceConfig("writing config XML to file 'config-dump.xml' per " + String(__FUNCTION__)) ; \
+  XmlElement* xml = root_clone.createXml() ;                                                       \
+  xml->writeToFile(File("config-dump.xml") , StringRef()) ; delete xml                                    ;
 
 
 class Trace

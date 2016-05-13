@@ -78,12 +78,13 @@ private:
   void textEditorTextChanged(TextEditor& a_text_editor) override ;
   void textEditorFocusLost  (TextEditor& a_text_editor) override ;
 
-  void initialize        (ValueTree config_store , ValueTree network_store , File pictures_dir) ;
-  void loadConfig        () ;
-  void enableComponents  () ;
-  void updateVisibility  (Component* front_component , String group_text ,
-                          String     hints_text                          ) ;
-  bool validateOutputDest() ;
+  void   initialize        (ValueTree config_store , ValueTree network_store) ;
+  void   loadConfig        () ;
+  void   enableComponents  () ;
+  void   updateVisibility  (var pane_name) ;
+  bool   setHintsText      (String hints_text) ;
+  String outputHintsText   () ;
+  bool   validateOutputDest() ;
 
     //[/UserMethods]
 
@@ -98,7 +99,6 @@ private:
   MainContent*  mainContent ;
   ValueTree     configStore ;
   ValueTree     networkStore ;
-  File          picturesDir ;
   Slider*       displaySlider ;
   Slider*       screenSlider ;
   TextEditor*   screenWidthText ;

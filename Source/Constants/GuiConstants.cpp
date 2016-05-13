@@ -68,23 +68,55 @@ const String GUI::DELETE_BTN_CANCEL_TEXT = "Cancel" ;
 const String GUI::DELETE_BTN_DELETE_TEXT = "Delete" ;
 const String GUI::DELETE_BTN_RESET_TEXT  = "Reset" ;
 const String GUI::IMAGE_CHOOSER_TEXT     = "Select an image file ..." ;
+const String GUI::DISPLAY_N_TEXT         = "Display #:" ;
+const String GUI::SCREEN_N_TEXT          = "Screen #:" ;
+const String GUI::SCREEN_W_TEXT          = "Width:" ;
+const String GUI::SCREEN_H_TEXT          = "Height:" ;
+const String GUI::X_OFFSET_TEXT          = "Offset X:" ;
+const String GUI::Y_OFFSET_TEXT          = "Offset Y:" ;
+const String GUI::CAMERA_DEV_TEXT        = "Device:" ;
+const String GUI::CAMERA_RES_TEXT        = "Resolution:" ;
+const String GUI::AUDIO_API_TEXT         = "Interface:" ;
+const String GUI::AUDIO_DEV_TEXT         = "Device:" ;
+const String GUI::AUDIO_CODEC_TEXT       = "Codec:" ;
+const String GUI::N_CHANNELS_TEXT        = "Channels:" ;
+const String GUI::SAMPLERATE_TEXT        = "Samplerate:" ;
+const String GUI::AUDIO_RATE_TEXT        = "Bitrate:" ;
+const String GUI::MOTD_TEXT              = "Message:" ;
+const String GUI::TEXT_STYLE_TEXT        = "Style:" ;
+const String GUI::TEXT_POS_TEXT          = "Position:" ;
+const String GUI::IMAGE_LOC_TEXT         = "Location:" ;
+const String GUI::IMAGE_BTN_TEXT         = "Browse:" ;
+const String GUI::OUTPUT_SINK_TEXT       = "Stream:" ;
+const String GUI::OUTPUT_W_TEXT          = "Width:" ;
+const String GUI::OUTPUT_H_TEXT          = "Height:" ;
+const String GUI::FRAMERATE_TEXT         = "FPS:" ;
+const String GUI::VIDEO_RATE_TEXT        = "Bitrate:" ;
 const String GUI::DEST_FILE_TEXT         = "Location:" ;
 const String GUI::DEST_RTMP_TEXT         = "URI:" ;
 const String GUI::DEST_LCTV_TEXT         = "Stream Key:" ;
-const String GUI::IMG_FILE_EXTENSIONS    = "*" + APP::PNG_FILE_EXT ;
+const String GUI::NETWORK_TEXT           = "Host:" ;
+const String GUI::PORT_TEXT              = "Port:" ;
+const String GUI::NICK_TEXT              = "Nick:" ;
+const String GUI::PASS_TEXT              = "Password:" ;
+const String GUI::CHANNEL_TEXT           = "Channel:" ;
+const String GUI::GREETING_TEXT          = "Greeting:" ;
+const String GUI::TIMESTAMP_TEXT         = "Show Timestamps:" ;
+const String GUI::JOINPART_TEXT          = "Show Joins/Parts:" ;
+const String GUI::IMG_FILE_EXTS          = "*" + APP::PNG_FILE_EXT ;
 // const String GUI::IMG_FILE_EXTS          = "*" + APP::PNG_FILE_EXT  + ",*" +
 //                                                  APP::JPEG_FILE_EXT + ",*" +
 //                                                  APP::GIF_FILE_EXT         ;
-const double GUI::MIN_DISPLAY_N    = 0.0 ;
-const double GUI::MAX_DISPLAY_N    = 4.0 ;
-const double GUI::MIN_SCREEN_N     = 0.0 ;
-const double GUI::MAX_SCREEN_N     = 4.0 ;
-const double GUI::MIN_N_CHANNELS   = 0.0 ;
-const double GUI::MAX_N_CHANNELS   = 2.0 ;
-const int    GUI::MAX_RES_N_CHARS  = 4 ;
-const int    GUI::MAX_MOTD_LEN     = 2048 ;
-const int    GUI::MAX_FILENAME_LEN = 255 ;
-const int    GUI::MAX_PORT_N_CHARS = 5 ;
+const double GUI::MIN_DISPLAY_N          = 0.0 ;
+const double GUI::MAX_DISPLAY_N          = 4.0 ;
+const double GUI::MIN_SCREEN_N           = 0.0 ;
+const double GUI::MAX_SCREEN_N           = 4.0 ;
+const double GUI::MIN_N_CHANNELS         = 0.0 ;
+const double GUI::MAX_N_CHANNELS         = 2.0 ;
+const int    GUI::MAX_RES_N_CHARS        = 4 ;
+const int    GUI::MAX_MOTD_LEN           = 2048 ;
+const int    GUI::MAX_FILENAME_LEN       = 255 ;
+const int    GUI::MAX_PORT_N_CHARS       = 5 ;
 
 // StatusBar
 const String GUI::INIT_STATUS_TEXT  = "Initializing" ;
@@ -93,6 +125,113 @@ const String GUI::READY_STATUS_TEXT = "Ready" ;
 // Alerts
 const String GUI::MODAL_WARNING_TITLE = APP::APP_NAME + " Warning" ;
 const String GUI::MODAL_ERROR_TITLE   = APP::APP_NAME + " Error" ;
+
+// Config help texts
+const String GUI::CONFIG_SCREEN_HELP = "The " + SCREEN_GROUP_TEXT + " pane has controls to configure the screen capture." ;
+const String GUI::CONFIG_CAMERA_HELP = "The " + CAMERA_GROUP_TEXT + " pane has controls to configure the camera capture device." ;
+const String GUI::CONFIG_AUDIO_HELP  = "The " + AUDIO_GROUP_TEXT  + " pane has controls to configure the audio capture device." ;
+const String GUI::CONFIG_TEXT_HELP   = "The " + TEXT_GROUP_TEXT   + " pane has controls to configure the text overlay. This may be left empty if overlay text is not desired." ;
+const String GUI::CONFIG_IMAGE_HELP  = "The " + IMAGE_GROUP_TEXT  + " pane has controls to configure the interstitial image. This is a static image that will be shown to viewers when the stream is paused. If this is left empty then the default " + APP::APP_NAME + " splash image will be shown instead." ;
+const String GUI::CONFIG_OUTPUT_HELP = "The " + OUTPUT_GROUP_TEXT + " pane has controls to configure the output stream, either to produce a local video file or to stream to a server over the network." ;
+const String GUI::CONFIG_CHAT_HELP   = "The " + CHAT_GROUP_TEXT   + " pane has controls to configure the chat. These may be left empty if chat is not desired." ;
+const String GUI::DISPLAY_N_HELP     = DISPLAY_N_TEXT   + " Select the X display to capture (usually 0)." ;
+const String GUI::SCREEN_N_HELP      = SCREEN_N_TEXT    + " Select the X screen to capture (usually 0)." ;
+const String GUI::SCREEN_W__HELP     = SCREEN_W_TEXT    + " Specify the width of the area to capture (in pixels)." ;
+const String GUI::SCREEN_H__HELP     = SCREEN_H_TEXT    + " Specify the height of the area to capture (in pixels)." ;
+const String GUI::X_OFFSET_HELP      = X_OFFSET_TEXT    + " Specify the left edge position of the area to capture (in pixels)." ;
+const String GUI::Y_OFFSET_HELP      = Y_OFFSET_TEXT    + " Specify the top edge position of the area to capture (in pixels)." ;
+const String GUI::CAMERA_DEV_HELP    = CAMERA_DEV_TEXT  + " Select the camera device to capture." ;
+const String GUI::CAMERA_RES_HELP    = CAMERA_RES_TEXT  + " Select the camera capture resolution." ;
+const String GUI::AUDIO_API_HELP     = AUDIO_API_TEXT   + " Select the audio driver interface." ;
+const String GUI::AUDIO_DEV_HELP     = AUDIO_DEV_TEXT   + " Select the audio device to capture." ;
+const String GUI::AUDIO_CODEC_HELP   = AUDIO_CODEC_TEXT + " Select the audio encoder." ;
+const String GUI::N_CHANNELS_HELP    = N_CHANNELS_TEXT  + " Specify the number of audio channels to capture." ;
+const String GUI::SAMPLERATE_HELP    = SAMPLERATE_TEXT  + " Select the audio sample rate (22050 is good for voice, 48000 for music)." ;
+const String GUI::AUDIO_RATE_HELP    = AUDIO_RATE_TEXT  + " Select the audio output bit rate (64k per channel is good)." ;
+const String GUI::MOTD_HELP          = MOTD_TEXT        + " Enter the message of the day text." ;
+const String GUI::TEXT_STYLE_HELP    = TEXT_STYLE_TEXT  + " Select still or scrolling text overlay style." ;
+const String GUI::TEXT_POS_HELP      = TEXT_POS_TEXT    + " Select text overlay screen position." ;
+const String GUI::IMAGE_LOC_HELP     = IMAGE_LOC_TEXT   + " Specify the location of the image file." ;
+const String GUI::IMAGE_BTN_HELP     = IMAGE_BTN_TEXT   + " Brwose filesystem for the image file." ;
+const String GUI::OUTPUT_SINK_HELP   = OUTPUT_SINK_TEXT + " Select stream type." ;
+const String GUI::OUTPUT_W__HELP     = OUTPUT_W_TEXT    + " Specify the width of the output stream (in pixels)." ;
+const String GUI::OUTPUT_H__HELP     = OUTPUT_H_TEXT    + " Specify the width of the output stream (in pixels)." ;
+const String GUI::FRAMERATE_HELP     = FRAMERATE_TEXT   + " Select the stream output frame rate (12 is good for screen capture, 30 for video)." ;
+const String GUI::VIDEO_RATE_HELP    = VIDEO_RATE_TEXT  + " Select the stream output bit rate (800k - 1200k is good)." ;
+const String GUI::DEST_FILE_HELP     = DEST_FILE_TEXT   + " Specify the local file name." ;
+const String GUI::DEST_RTMP_HELP     = DEST_RTMP_TEXT   + " Specify the stream server URL and parmeters." ;
+const String GUI::DEST_LCTV_HELP     = DEST_LCTV_TEXT   + " Specify the livecoding.tv stream key." ;
+const String GUI::NETWORK_HELP       = NETWORK_TEXT     + " Specify the chat network or host URL." ;
+const String GUI::PORT_HELP          = PORT_TEXT        + " Specify the chat server port." ;
+const String GUI::NICK_HELP          = NICK_TEXT        + " Specify your nickname on the chat network." ;
+const String GUI::PASS_HELP          = PASS_TEXT        + " Specify the server password (this is not your NICKSERV pass)." ;
+const String GUI::CHANNEL_HELP       = CHANNEL_TEXT     + " Specify the channel to auto-join." ;
+const String GUI::GREETING_HELP      = GREETING_TEXT    + " Specify a pounce greeting to all entering chatters." ;
+const String GUI::TIMESTAMP_HELP     = TIMESTAMP_TEXT   + " Show or hide timestamps of chat messages." ;
+const String GUI::JOINPART_HELP      = JOINPART_TEXT    + " Show or hide notices of chatters entering and leaving the channel." ;
+const String GUI::SCREEN_HELP_TEXT   = String("Screen Capture Configuration:\n\n") +
+                                       CONFIG_SCREEN_HELP                 + "\n\n" +
+                                       DISPLAY_N_HELP                       + "\n" +
+                                       SCREEN_N_HELP                        + "\n" +
+                                       SCREEN_W__HELP                       + "\n" +
+                                       SCREEN_H__HELP                       + "\n" +
+                                       X_OFFSET_HELP                        + "\n" +
+                                       Y_OFFSET_HELP                               ;
+const String GUI::CAMERA_HELP_TEXT   = String("Camera Device Configuration:\n\n") +
+                                       CONFIG_CAMERA_HELP                + "\n\n" +
+                                       CAMERA_DEV_HELP                     + "\n" +
+                                       CAMERA_RES_HELP                            ;
+const String GUI::AUDIO_HELP_TEXT    = String("Audio Device Configuration:\n\n") +
+                                       CONFIG_AUDIO_HELP                + "\n\n" +
+                                       AUDIO_API_HELP                     + "\n" +
+                                       AUDIO_DEV_HELP                     + "\n" +
+                                       AUDIO_CODEC_HELP                   + "\n" +
+                                       N_CHANNELS_HELP                    + "\n" +
+                                       SAMPLERATE_HELP                    + "\n" +
+                                       AUDIO_RATE_HELP                           ;
+const String GUI::TEXT_HELP_TEXT     = String("Text Overlay Configuration:\n\n") +
+                                       CONFIG_TEXT_HELP                 + "\n\n" +
+                                       MOTD_HELP                          + "\n" +
+                                       TEXT_STYLE_HELP                    + "\n" +
+                                       TEXT_POS_HELP                             ;
+const String GUI::IMAGE_HELP_TEXT    = String("Interstitial Configuration:\n\n") +
+                                       CONFIG_IMAGE_HELP                + "\n\n" +
+                                       IMAGE_LOC_HELP                     + "\n" +
+                                       IMAGE_BTN_HELP                            ;
+const String GUI::FILE_HELP_TEXT     = String("Output Stream Configuration:\n\n") +
+                                       CONFIG_OUTPUT_HELP                + "\n\n" +
+                                       OUTPUT_SINK_HELP                    + "\n" +
+                                       OUTPUT_W__HELP                      + "\n" +
+                                       OUTPUT_H__HELP                      + "\n" +
+                                       FRAMERATE_HELP                      + "\n" +
+                                       VIDEO_RATE_HELP                     + "\n" +
+                                       DEST_FILE_HELP                             ;
+const String GUI::RTMP_HELP_TEXT     = String("Output Stream Configuration:\n\n") +
+                                       CONFIG_OUTPUT_HELP                + "\n\n" +
+                                       OUTPUT_SINK_HELP                    + "\n" +
+                                       OUTPUT_W__HELP                      + "\n" +
+                                       OUTPUT_H__HELP                      + "\n" +
+                                       FRAMERATE_HELP                      + "\n" +
+                                       VIDEO_RATE_HELP                     + "\n" +
+                                       DEST_RTMP_HELP                             ;
+const String GUI::LCTV_HELP_TEXT     = String("Output Stream Configuration:\n\n") +
+                                       CONFIG_OUTPUT_HELP                + "\n\n" +
+                                       OUTPUT_SINK_HELP                    + "\n" +
+                                       OUTPUT_W__HELP                      + "\n" +
+                                       OUTPUT_H__HELP                      + "\n" +
+                                       FRAMERATE_HELP                      + "\n" +
+                                       VIDEO_RATE_HELP                     + "\n" +
+                                       DEST_LCTV_HELP                             ;
+const String GUI::CHAT_HELP_TEXT     = String("Chat Configuration:\n\n") +
+                                       CONFIG_CHAT_HELP         + "\n\n" +
+                                       NETWORK_HELP               + "\n" +
+                                       PORT_HELP                  + "\n" +
+                                       NICK_HELP                  + "\n" +
+                                       PASS_HELP                  + "\n" +
+                                       CHANNEL_HELP               + "\n" +
+                                       GREETING_HELP              + "\n" +
+                                       TIMESTAMP_HELP             + "\n" +
+                                       JOINPART_HELP                     ;
 
 // user error messages
 const String GUI::GST_INSUFFICIENT_ERROR_MSG  = "Insufficient gStreamer version detected.\n\n"       +
@@ -143,127 +282,3 @@ const String GUI::ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture
 const String GUI::PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
 const String GUI::JACK_INIT_ERROR_MSG         = "Error connecting to Jack server.\n\n" ;
 const String GUI::FILE_SINK_ERROR_MSG         = "Error creating local output file.\n\n" ;
-
-// Config label texts
-const String GUI::DISPLAY_N_LABEL   = "Display #:" ;
-const String GUI::SCREEN_N_LABEL    = "Screen #:" ;
-const String GUI::SCREEN_W_LABEL    = "Width:" ;
-const String GUI::SCREEN_H_LABEL    = "Height:" ;
-const String GUI::X_OFFSET_LABEL    = "Offset X:" ;
-const String GUI::Y_OFFSET_LABEL    = "Offset Y:" ;
-const String GUI::CAMERA_DEV_LABEL  = "Device:" ;
-const String GUI::CAMERA_RES_LABEL  = "Resolution:" ;
-const String GUI::AUDIO_API_LABEL   = "Interface:" ;
-const String GUI::AUDIO_DEV_LABEL   = "Device:" ;
-const String GUI::AUDIO_CODEC_LABEL = "Codec:" ;
-const String GUI::N_CHANNELS_LABEL  = "Channels:" ;
-const String GUI::SAMPLERATE_LABEL  = "Samplerate:" ;
-const String GUI::AUDIO_RATE_LABEL  = "Bitrate:" ;
-const String GUI::MOTD_LABEL        = "Message:" ;
-const String GUI::TEXT_STYLE_LABEL  = "Style:" ;
-const String GUI::TEXT_POS_LABEL    = "Position:" ;
-const String GUI::IMAGE_LOC_LABEL   = "Location:" ;
-const String GUI::IMAGE_BTN_LABEL   = "Browse:" ;
-const String GUI::OUTPUT_SINK_LABEL = "Stream:" ;
-const String GUI::OUTPUT_W_LABEL    = "Width:" ;
-const String GUI::OUTPUT_H_LABEL    = "Height:" ;
-const String GUI::FRAMERATE_LABEL   = "FPS:" ;
-const String GUI::VIDEO_RATE_LABEL  = "Bitrate:" ;
-const String GUI::OUTPUT_DEST_LABEL = "Destination:" ;
-const String GUI::NETWORK_LABEL     = "Host:" ;
-const String GUI::PORT_LABEL        = "Port:" ;
-const String GUI::NICK_LABEL        = "Nick:" ;
-const String GUI::PASS_LABEL        = "Password:" ;
-const String GUI::CHANNEL_LABEL     = "Channel:" ;
-const String GUI::GREETING_LABEL    = "Greeting:" ;
-const String GUI::TIMESTAMP_LABEL   = "Show Timestamps:" ;
-const String GUI::JOINPART_LABEL    = "Show Joins/Parts:" ;
-
-// Config help texts
-const String GUI::CONFIG_SCREEN_HELP = "The " + SCREEN_GROUP_TEXT + " pane has controls to configure the screen capture." ;
-const String GUI::CONFIG_CAMERA_HELP = "The " + CAMERA_GROUP_TEXT + " pane has controls to configure the camera capture device." ;
-const String GUI::CONFIG_AUDIO_HELP  = "The " + AUDIO_GROUP_TEXT  + " pane has controls to configure the audio capture device." ;
-const String GUI::CONFIG_TEXT_HELP   = "The " + TEXT_GROUP_TEXT   + " pane has controls to configure the text overlay. This may be left empty if overlay text is not desired." ;
-const String GUI::CONFIG_IMAGE_HELP  = "The " + IMAGE_GROUP_TEXT  + " pane has controls to configure the interstitial image. This is a static image that will be shown to viewers when the stream is paused. If this is left empty then the default " + APP::APP_NAME + " splash image will be shown instead." ;
-const String GUI::CONFIG_OUTPUT_HELP = "The " + OUTPUT_GROUP_TEXT + " pane has controls to configure the output stream, either to produce a local video file or to stream to a server over the network." ;
-const String GUI::CONFIG_CHAT_HELP   = "The " + CHAT_GROUP_TEXT   + " pane has controls to configure the chat. These may be left empty if chat is not desired." ;
-const String GUI::DISPLAY_N_HELP     = DISPLAY_N_LABEL   + " Select the X display to capture (usually 0)." ;
-const String GUI::SCREEN_N_HELP      = SCREEN_N_LABEL    + " Select the X screen to capture (usually 0)." ;
-const String GUI::SCREEN_W__HELP     = SCREEN_W_LABEL    + " Specify the width of the area to capture (in pixels)." ;
-const String GUI::SCREEN_H__HELP     = SCREEN_H_LABEL    + " Specify the height of the area to capture (in pixels)." ;
-const String GUI::X_OFFSET_HELP      = X_OFFSET_LABEL    + " Specify the left edge position of the area to capture (in pixels)." ;
-const String GUI::Y_OFFSET_HELP      = Y_OFFSET_LABEL    + " Specify the top edge position of the area to capture (in pixels)." ;
-const String GUI::CAMERA_DEV_HELP    = CAMERA_DEV_LABEL  + " Select the camera device to capture." ;
-const String GUI::CAMERA_RES_HELP    = CAMERA_RES_LABEL  + " Select the camera capture resolution." ;
-const String GUI::AUDIO_API_HELP     = AUDIO_API_LABEL   + " Select the audio driver interface." ;
-const String GUI::AUDIO_DEV_HELP     = AUDIO_DEV_LABEL   + " Select the audio device to capture." ;
-const String GUI::AUDIO_CODEC_HELP   = AUDIO_CODEC_LABEL + " Select the audio encoder." ;
-const String GUI::N_CHANNELS_HELP    = N_CHANNELS_LABEL  + " Specify the number of audio channels to capture." ;
-const String GUI::SAMPLERATE_HELP    = SAMPLERATE_LABEL  + " Select the audio sample rate (22050 is good for voice, 48000 for music)." ;
-const String GUI::AUDIO_RATE_HELP    = AUDIO_RATE_LABEL  + " Select the audio output bit rate (64k per channel is good)." ;
-const String GUI::MOTD_HELP          = MOTD_LABEL        + " Enter the message of the day text." ;
-const String GUI::TEXT_STYLE_HELP    = TEXT_STYLE_LABEL  + " Select still or scrolling text overlay style." ;
-const String GUI::TEXT_POS_HELP      = TEXT_POS_LABEL    + " Select text overlay screen position." ;
-const String GUI::IMAGE_LOC_HELP     = IMAGE_LOC_LABEL   + " Specify the location of the image file." ;
-const String GUI::IMAGE_BTN_HELP     = IMAGE_BTN_LABEL   + " Brwose filesystem for the image file." ;
-const String GUI::OUTPUT_SINK_HELP   = OUTPUT_SINK_LABEL + " Select stream type." ;
-const String GUI::OUTPUT_W__HELP     = OUTPUT_W_LABEL    + " Specify the width of the output stream (in pixels)." ;
-const String GUI::OUTPUT_H__HELP     = OUTPUT_H_LABEL    + " Specify the width of the output stream (in pixels)." ;
-const String GUI::FRAMERATE_HELP     = FRAMERATE_LABEL   + " Select the stream output frame rate (12 is good for screen capture, 30 for video)." ;
-const String GUI::VIDEO_RATE_HELP    = VIDEO_RATE_LABEL  + " Select the stream output bit rate (800k - 1200k is good)." ;
-const String GUI::OUTPUT_DEST_HELP   = OUTPUT_DEST_LABEL + " Specify the local file or stream server URL." ;
-const String GUI::NETWORK_HELP       = NETWORK_LABEL     + " Specify the chat network or host URL." ;
-const String GUI::PORT_HELP          = PORT_LABEL        + " Specify the chat server port." ;
-const String GUI::NICK_HELP          = NICK_LABEL        + " Specify your nickname on the chat network." ;
-const String GUI::PASS_HELP          = PASS_LABEL        + " Specify the server password (this is not your NICKSERV pass)." ;
-const String GUI::CHANNEL_HELP       = CHANNEL_LABEL     + " Specify the channel to auto-join." ;
-const String GUI::GREETING_HELP      = GREETING_LABEL    + " Specify a pounce greeting to all entering chatters." ;
-const String GUI::TIMESTAMP_HELP     = TIMESTAMP_LABEL   + " Show or hide timestamps of chat messages." ;
-const String GUI::JOINPART_HELP      = JOINPART_LABEL    + " Show or hide notices of chatters entering and leaving the channel." ;
-const String GUI::SCREEN_HELP_TEXT   = String("Screen Capture Configuration:\n\n") +
-                                       CONFIG_SCREEN_HELP                 + "\n\n" +
-                                       DISPLAY_N_HELP                       + "\n" +
-                                       SCREEN_N_HELP                        + "\n" +
-                                       SCREEN_W__HELP                       + "\n" +
-                                       SCREEN_H__HELP                       + "\n" +
-                                       X_OFFSET_HELP                        + "\n" +
-                                       Y_OFFSET_HELP                               ;
-const String GUI::CAMERA_HELP_TEXT   = String("Camera Device Configuration:\n\n") +
-                                       CONFIG_CAMERA_HELP                + "\n\n" +
-                                       CAMERA_DEV_HELP                     + "\n" +
-                                       CAMERA_RES_HELP                            ;
-const String GUI::AUDIO_HELP_TEXT    = String("Audio Device Configuration:\n\n") +
-                                       CONFIG_AUDIO_HELP                + "\n\n" +
-                                       AUDIO_API_HELP                     + "\n" +
-                                       AUDIO_DEV_HELP                     + "\n" +
-                                       AUDIO_CODEC_HELP                   + "\n" +
-                                       N_CHANNELS_HELP                    + "\n" +
-                                       SAMPLERATE_HELP                    + "\n" +
-                                       AUDIO_RATE_HELP                           ;
-const String GUI::TEXT_HELP_TEXT     = String("Text Overlay Configuration:\n\n") +
-                                       CONFIG_TEXT_HELP                 + "\n\n" +
-                                       MOTD_HELP                          + "\n" +
-                                       TEXT_STYLE_HELP                    + "\n" +
-                                       TEXT_POS_HELP                             ;
-const String GUI::IMAGE_HELP_TEXT    = String("Interstitial Configuration:\n\n") +
-                                       CONFIG_IMAGE_HELP                + "\n\n" +
-                                       IMAGE_LOC_HELP                     + "\n" +
-                                       IMAGE_BTN_HELP                            ;
-const String GUI::OUTPUT_HELP_TEXT   = String("Output Stream Configuration:\n\n") +
-                                       CONFIG_OUTPUT_HELP                + "\n\n" +
-                                       OUTPUT_SINK_HELP                    + "\n" +
-                                       OUTPUT_W__HELP                      + "\n" +
-                                       OUTPUT_H__HELP                      + "\n" +
-                                       FRAMERATE_HELP                      + "\n" +
-                                       VIDEO_RATE_HELP                     + "\n" +
-                                       OUTPUT_DEST_HELP                           ;
-const String GUI::CHAT_HELP_TEXT     = String("Chat Configuration:\n\n") +
-                                       CONFIG_CHAT_HELP         + "\n\n" +
-                                       NETWORK_HELP               + "\n" +
-                                       PORT_HELP                  + "\n" +
-                                       NICK_HELP                  + "\n" +
-                                       PASS_HELP                  + "\n" +
-                                       CHANNEL_HELP               + "\n" +
-                                       GREETING_HELP              + "\n" +
-                                       TIMESTAMP_HELP             + "\n" +
-                                       JOINPART_HELP                     ;

@@ -62,17 +62,15 @@ GstElement* Gstreamer::OutputRtmpSink          = nullptr ;            // BuildOu
 GstElement* Gstreamer::OutputFauxSink          = nullptr ;            // BuildOutputBin()
 ValueTree   Gstreamer::ConfigStore             = ValueTree::invalid ; // Initialize()
 guintptr    Gstreamer::PreviewXwin             = 0    ;               // Initialize()
-File        Gstreamer::VideosDir ;                                    // Initialize()
 
 
 /* Gstreamer private class methods */
 
-bool Gstreamer::Initialize(ValueTree      config_store      , void* x_window ,
-                           NamedValueSet& disabled_features , File videos_dir)
+bool Gstreamer::Initialize(ValueTree      config_store , void* x_window ,
+                           NamedValueSet& disabled_features             )
 {
   ConfigStore = config_store ;
   PreviewXwin = (guintptr)x_window ;
-  VideosDir   = videos_dir ;
 
 DEBUG_TRACE_GST_INIT_PHASE_1
 
@@ -211,8 +209,6 @@ void Gstreamer::Shutdown()
   if (!IsInBin(OutputBin    , OutputRtmpSink  )) DestroyElement(OutputRtmpSink  ) ;
   if (!IsInBin(OutputBin    , OutputFauxSink  )) DestroyElement(OutputFauxSink  ) ;
   DestroyElement(Pipeline) ;
-
-  ConfigStore = ValueTree::invalid ;
 }
 
 bool Gstreamer::BuildScreencapBin()
@@ -850,6 +846,10 @@ bool Gstreamer::ConfigureCompositorBin()
   String     caps_str         = MakeVideoCapsString(output_w , output_h , framerate) ;
 
 DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
+// #define NO_DYNAMIC_MEDIA_Z_ORDER
+#ifdef NO_DYNAMIC_MEDIA_Z_ORDER
+image_z = 0 ; screen_z = 1 ; camera_z = 2 ;
+#endif // NO_DYNAMIC_MEDIA_Z_ORDER
 
   ConfigureCaps          (CompositorCapsfilter    , caps_str                      ) ;
   ConfigureCompositorSink(CompositorScreenSinkpad , screen_w , screen_h ,
@@ -857,7 +857,7 @@ DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
   ConfigureCompositorSink(CompositorCameraSinkpad , camera_w , camera_h ,
                                                     camera_x , camera_y , camera_z) ;
   ConfigureCompositorSink(CompositorImageSinkpad  , image_w  , image_h  ,
-                                                    image_x  , image_y  , image_z) ;
+                                                    image_x  , image_y  , image_z ) ;
 
   return true ;
 }
@@ -1473,7 +1473,7 @@ String Gstreamer::MakeFileName(String destination , String file_ext)
 {
   String filename    = (destination.isEmpty()) ? APP::APP_NAME         :
                        destination.upToLastOccurrenceOf(file_ext , false , true) ;
-  File   output_file = VideosDir.getNonexistentChildFile(filename , file_ext , false) ;
+  File   output_file = APP::videosDir().getNonexistentChildFile(filename , file_ext , false) ;
 
   return output_file.getFullPathName() ;
 }
