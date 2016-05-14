@@ -20,7 +20,7 @@
 #include "IrcClient.h"
 #ifndef DISABLE_CHAT
 
-#include <libircclient/libirc_rfcnumeric.h>
+#include <libirc_rfcnumeric.h>
 
 #include "AvCaster.h"
 #include "IrcClient.h"

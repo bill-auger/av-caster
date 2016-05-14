@@ -164,6 +164,7 @@ DEBUG_TRACE_CHAT_VISIBILITY
   this->chatList        ->setVisible(is_visible) ;
 }
 
+#ifndef DISABLE_CHAT
 void Chat::addChatLine(String prefix , String nick , String message)
 {
   String newline = (this->chatHistoryText->getText().isEmpty()) ? String::empty : newLine ;
@@ -177,6 +178,7 @@ void Chat::addChatLine(String prefix , String nick , String message)
   this->chatHistoryText->moveCaretToEnd() ;
   this->chatHistoryText->insertTextAtCaret(newline + prefix + nick + message) ;
 }
+#endif // DISABLE_CHAT
 
 
 /* Chat private instance methods */

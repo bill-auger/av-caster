@@ -61,7 +61,9 @@ public:
   // GUI dispatchers
   static void Warning    (String message_text) ;
   static void Error      (String message_text) ;
+#ifndef DISABLE_CHAT
   static void AddChatLine(String prefix , String nick , String message) ;
+#endif // DISABLE_CHAT
 
   // callbacks and event handlers
   static ModalComponentManager::Callback* GetModalCb() ;

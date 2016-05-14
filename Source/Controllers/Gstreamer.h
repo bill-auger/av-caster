@@ -100,7 +100,7 @@ private:
   static bool        RemoveElement    (GstElement* a_bin , GstElement* an_element) ;
   static void        DestroyElement   (GstElement* an_element) ;
   static bool        AddBin           (GstElement* a_bin) ;
-  static bool        RemoveBin        (GstElement* a_bin) ;
+//   static bool        RemoveBin        (GstElement* a_bin) ;
   static bool        LinkElements     (GstElement* source , GstElement* sink) ;
   static bool        LinkPads         (GstPad* srcpad , GstPad* sinkpad) ;
   static GstPad*     NewGhostSrcPad   (GstElement* a_bin         , GstElement* an_element ,
@@ -135,7 +135,7 @@ private:
   // state helpers
   static bool IsSufficientVersion() ;
   static bool IsInitialized      () ;
-  static bool IsPlaying          () ;
+//   static bool IsPlaying          () ;
   static bool IsInPipeline       (GstElement* an_element) ;
   static bool IsInBin            (GstElement* a_parent_element , GstElement* a_child_element) ;
 
@@ -157,7 +157,9 @@ private:
   static GstPad*     CompositorCameraSinkpad ;
   static GstPad*     CompositorTextSinkpad ;
   static GstPad*     CompositorImageSinkpad ;
+#ifndef GST_COMPOSITOR_BUG
   static GstElement* CompositorCapsfilter ;
+#endif // GST_COMPOSITOR_BUG
   static GstElement* PreviewBin ;
   static GstElement* PreviewQueue ;
   static GstElement* PreviewFauxSink ;

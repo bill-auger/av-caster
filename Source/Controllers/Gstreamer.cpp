@@ -43,7 +43,9 @@ GstPad*     Gstreamer::CompositorScreenSinkpad = nullptr ;            // BuildCo
 GstPad*     Gstreamer::CompositorCameraSinkpad = nullptr ;            // BuildCompositorBin()
 GstPad*     Gstreamer::CompositorTextSinkpad   = nullptr ;            // BuildCompositorBin()
 GstPad*     Gstreamer::CompositorImageSinkpad  = nullptr ;            // BuildCompositorBin()
+#ifndef GST_COMPOSITOR_BUG
 GstElement* Gstreamer::CompositorCapsfilter    = nullptr ;            // BuildCompositorBin()
+#endif // GST_COMPOSITOR_BUG
 GstElement* Gstreamer::PreviewBin              = nullptr ;            // Initialize()
 GstElement* Gstreamer::PreviewQueue            = nullptr ;            // BuildPreviewBin()
 GstElement* Gstreamer::PreviewFauxSink         = nullptr ;            // BuildPreviewBin()
@@ -277,13 +279,17 @@ DEBUG_TRACE_BUILD_CAMERA_BIN
 bool Gstreamer::BuildTextBin()
 {
 DEBUG_TRACE_BUILD_TEXT_BIN
+#ifdef TEXT_BIN_NYI
+  return false ;
+#endif // TEXT_BIN_NYI
 
   GstElement *filesrc , *subparser , *source , *converter , *queue ;
 
-  bool   is_enabled     = bool  (ConfigStore[CONFIG::TEXT_ID         ]) ;
+//   bool   is_enabled     = bool  (ConfigStore[CONFIG::TEXT_ID         ]) ;
   String motd_text      = STRING(ConfigStore[CONFIG::MOTD_TEXT_ID    ]) ;
   int    text_style_idx = int   (ConfigStore[CONFIG::TEXT_STYLE_ID   ]) ;
   int    text_pos_idx   = int   (ConfigStore[CONFIG::TEXT_POSITION_ID]) ;
+//   String display_text   = (is_enabled) ? motd_text : String::empty ;
 
 /* TODO: include custom font
 #include <fontconfig/fontconfig.h>
@@ -293,7 +299,6 @@ FcBool fontAddStatus = FcConfigAppFOntAddFile(FcConfigGetCurrent(),file);
 */
 
   // instantiate elements
-// TODO: text from storage
   if (!(filesrc   = gst_element_factory_make("filesrc"      , "text-filesrc"  )) ||
       !(subparser = gst_element_factory_make("subparse"     , "text-subparser")) ||
       !(source    = gst_element_factory_make("textrender"   , "text-input"    )) ||
@@ -398,7 +403,6 @@ DEBUG_TRACE_CONFIGURE_IMAGE_BIN
 #  else // STATIC_IMAGE
 
   GstElement *source , *capsfilter , *converter , *queue ;
-  GstCaps    *caps ;
 
   // TODO: static image src
   int    interstitial_w = int(ConfigStore[CONFIG::SCREENCAP_W_ID]) ;
@@ -442,17 +446,22 @@ bool Gstreamer::BuildCompositorBin()
 DEBUG_TRACE_BUILD_COMPOSITOR_BIN
 
   GstElement *screen_queue  , *camera_queue         , *image_queue          ,
-             *compositor    , //*converter            ,
+#ifndef GST_COMPOSITOR_BUG
+             *compositor    , *converter            ,
+#else // GST_COMPOSITOR_BUG
+             *compositor    ,
+#endif // GST_COMPOSITOR_BUG
              *composite_tee , *composite_sink_queue , *composite_thru_queue ;
-  GstCaps*    caps ;
 
   // instantiate elements
   if (!(screen_queue         = NewElement("queue"        , "compositor-screen-queue")) ||
       !(camera_queue         = NewElement("queue"        , "compositor-camera-queue")) ||
       !(image_queue          = NewElement("queue"        , "compositor-image-queue" )) ||
       !(compositor           = NewElement("compositor"   , "compositor"             )) ||
+#ifndef GST_COMPOSITOR_BUG
       !(CompositorCapsfilter = NewElement("capsfilter"   , "compositor-capsfilter"  )) ||
-//       !(converter            = NewElement("videoconvert" , "compositor-converter"   )) ||
+      !(converter            = NewElement("videoconvert" , "compositor-converter"   )) ||
+#endif // GST_COMPOSITOR_BUG
       !(composite_tee        = NewElement("tee"          , "compositor-tee"         )) ||
       !(composite_sink_queue = NewElement("queue"        , "compositor-sink-queue"  )) ||
       !(composite_thru_queue = NewElement("queue"        , "compositor-thru-queue"  ))  )
@@ -467,28 +476,22 @@ DEBUG_TRACE_BUILD_COMPOSITOR_BIN
   ConfigureQueue     (composite_thru_queue , 0    , 0 , 0) ;
 
   // link elements
-#define GST_COMPOSITOR_BUG
-#ifndef GST_COMPOSITOR_BUG
   if (!AddElement  (CompositorBin , screen_queue        )        ||
       !AddElement  (CompositorBin , camera_queue        )        ||
       !AddElement  (CompositorBin , image_queue         )        ||
       !AddElement  (CompositorBin , compositor          )        ||
+#ifndef GST_COMPOSITOR_BUG
       !AddElement  (CompositorBin , CompositorCapsfilter)        ||
       !AddElement  (CompositorBin , converter           )        ||
+#endif // GST_COMPOSITOR_BUG
       !AddElement  (CompositorBin , composite_tee       )        ||
       !AddElement  (CompositorBin , composite_sink_queue)        ||
       !AddElement  (CompositorBin , composite_thru_queue)        ||
+#ifndef GST_COMPOSITOR_BUG
       !LinkElements(compositor           , CompositorCapsfilter) ||
       !LinkElements(CompositorCapsfilter , converter           ) ||
       !LinkElements(converter            , composite_tee)      )
 #else // GST_COMPOSITOR_BUG
-  if (!AddElement  (CompositorBin , screen_queue        ) ||
-      !AddElement  (CompositorBin , camera_queue        ) ||
-      !AddElement  (CompositorBin , image_queue         ) ||
-      !AddElement  (CompositorBin , compositor          ) ||
-      !AddElement  (CompositorBin , composite_tee       ) ||
-      !AddElement  (CompositorBin , composite_sink_queue) ||
-      !AddElement  (CompositorBin , composite_thru_queue) ||
       !LinkElements(compositor , composite_tee)            )
 #endif // GST_COMPOSITOR_BUG
   { AvCaster::Error(GUI::VMIXER_LINK_ERROR_MSG) ; return false ; }
@@ -598,7 +601,6 @@ DEBUG_TRACE_BUILD_MUXER_BIN
   GstElement *audio_in_queue , *audio_converter , *audio_encoder , *audio_parser ,
              *audio_enc_caps , *audio_enc_queue ;
   GstElement *muxer ;
-  GstCaps    *video_caps , *audio_caps ;
 
   int   output_w          = int(ConfigStore[CONFIG::OUTPUT_W_ID     ]) ;
   int   output_h          = int(ConfigStore[CONFIG::OUTPUT_H_ID     ]) ;
@@ -821,7 +823,9 @@ bool Gstreamer::ConfigureCompositorBin()
 {
   bool       is_screen_active = bool(ConfigStore[CONFIG::SCREEN_ID     ]) ;
   bool       is_camera_active = bool(ConfigStore[CONFIG::CAMERA_ID     ]) ;
+#ifndef TEXT_BIN_NYI
   bool       is_text_active   = bool(ConfigStore[CONFIG::TEXT_ID       ]) ;
+#endif // TEXT_BIN_NYI
   bool       is_image_active  = bool(ConfigStore[CONFIG::IMAGE_ID      ]) ;
   int        screen_w         = int (ConfigStore[CONFIG::SCREENCAP_W_ID]) ;
   int        screen_h         = int (ConfigStore[CONFIG::SCREENCAP_H_ID]) ;
@@ -846,12 +850,14 @@ bool Gstreamer::ConfigureCompositorBin()
   String     caps_str         = MakeVideoCapsString(output_w , output_h , framerate) ;
 
 DEBUG_TRACE_CONFIGURE_COMPOSITOR_BIN
-// #define NO_DYNAMIC_MEDIA_Z_ORDER
+
 #ifdef NO_DYNAMIC_MEDIA_Z_ORDER
 image_z = 0 ; screen_z = 1 ; camera_z = 2 ;
 #endif // NO_DYNAMIC_MEDIA_Z_ORDER
 
+#ifndef GST_COMPOSITOR_BUG
   ConfigureCaps          (CompositorCapsfilter    , caps_str                      ) ;
+#endif // GST_COMPOSITOR_BUG
   ConfigureCompositorSink(CompositorScreenSinkpad , screen_w , screen_h ,
                                                     screen_x , screen_y , screen_z) ;
   ConfigureCompositorSink(CompositorCameraSinkpad , camera_w , camera_h ,
@@ -950,7 +956,7 @@ GstElement* Gstreamer::ConfigureOutputBin()
   GstElement* next_sink ; String output_url ;
 
 #ifdef DISABLE_OUTPUT
-UNUSED(is_enabled) ; is_enabled = false ;
+UNUSED(is_enabled) ; is_enabled = (false) ? (bool)0 : false ;
 #endif // DISABLE_OUTPUT
 
   if (!is_enabled) sink_idx = -1 ;
@@ -1294,6 +1300,7 @@ DEBUG_TRACE_ADD_BIN_OUT
   return !is_err ;
 }
 
+/*
 bool Gstreamer::RemoveBin(GstElement* a_bin)
 {
 DEBUG_TRACE_REMOVE_BIN_IN
@@ -1304,6 +1311,7 @@ DEBUG_TRACE_REMOVE_BIN_OUT
 
   return !is_err ;
 }
+*/
 
 bool Gstreamer::LinkElements(GstElement* source , GstElement* sink)
 {
@@ -1540,10 +1548,7 @@ String Gstreamer::GetPadId(GstPad* a_pad)
 
 bool Gstreamer::IsInitialized() { return gst_is_initialized() ; }
 
-bool Gstreamer::IsPlaying()
-{
-  return !!Pipeline && GST_STATE(Pipeline) == GST_STATE_PLAYING ;
-}
+// bool Gstreamer::IsPlaying() { return !!Pipeline && GST_STATE(Pipeline) == GST_STATE_PLAYING ; }
 
 bool Gstreamer::IsInPipeline(GstElement* an_element)
 {

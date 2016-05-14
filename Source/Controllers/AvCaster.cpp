@@ -54,10 +54,12 @@ void AvCaster::Error(String message_text)
   Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
 }
 
+#ifndef DISABLE_CHAT
 void AvCaster::AddChatLine(String prefix , String nick , String message)
 {
   Gui->chat->addChatLine(prefix , nick , message) ;
 }
+#endif // DISABLE_CHAT
 
 ModalComponentManager::Callback* AvCaster::GetModalCb()
 {
@@ -436,7 +438,7 @@ bool AvCaster::ValidateEnvironment()
 #ifndef DISABLE_CHAT
   bool is_sufficient_irc_version = IrcClient::IsSufficientVersion() ;
 #else // DISABLE_CHAT
-  bool is_sufficient_irc_version = true ;
+  bool is_sufficient_irc_version = (true) ? true : (bool)1 ;
 #endif // DISABLE_CHAT
   bool is_valid_home_dir         = APP::homeDir()    .isDirectory() ;
   bool is_valid_appdata_dir      = APP::appdataDir() .isDirectory() ;

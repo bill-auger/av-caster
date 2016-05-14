@@ -33,6 +33,8 @@
 #define DISABLE_AUDIO   (! JUCE_LINUX) // replace audio-real-source with fakesrc
 #define DISABLE_PREVIEW (! JUCE_LINUX) // replace preview-sink with fakesink
 //#define DISABLE_OUTPUT               // replace filesink or rtmpsink with fakesink
+#define GST_COMPOSITOR_BUG
+// #define NO_DYNAMIC_MEDIA_Z_ORDER
 #define DISABLE_CHAT
 #define SEED_IRC_NETWORKS ((!defined(DISABLE_CHAT)) && 0)
 #define SUPRESS_GREETING_MESSAGES

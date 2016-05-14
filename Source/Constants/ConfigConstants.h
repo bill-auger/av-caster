@@ -171,15 +171,15 @@ public:
 
   // filter keys
   static StringArray RootPersistentNodes()    ;
-  static StringArray RootNodes()              ;
+//   static StringArray RootNodes()              ;
   static StringArray RootPersistentKeys()     ;
   static StringArray RootKeys()               ;
   static StringArray PresetPersistentNodes()  ;
-  static StringArray PresetNodes()            ;
+//   static StringArray PresetNodes()            ;
   static StringArray PresetPersistentKeys()   ;
   static StringArray PresetKeys()             ;
   static StringArray NetworkPersistentNodes() ;
-  static StringArray NetworkNodes()           ;
+//   static StringArray NetworkNodes()           ;
   static StringArray NetworkPersistentKeys()  ;
   static StringArray NetworkKeys()            ;
   static StringArray ChatterKeys()            ;

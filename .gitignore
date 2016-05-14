@@ -1,43 +1,11 @@
-# links
+# av-caster
 cppcheck-filtered
 dbg
 mk
 mk-clean
 mk-reset
-
-
-# builds
-Builds/*
-!Builds/*/
-Builds/*/*
-!Builds/CodeBlocksLinux/AvCaster.cbp
-!Builds/CodeBlocksWindows/AvCaster.cbp
-!Builds/Makefile/Makefile
-!Builds/MacOSX/AvCaster.xcodeproj
-!Builds/MacOSX/Info.plist
-!Builds/MacOSX/RecentFilesMenuTemplate.nib
-!Builds/Packaging/_service
-!Builds/Packaging/av-caster.dsc
-!Builds/Packaging/av-caster.spec
-!Builds/Packaging/debian.changelog
-!Builds/Packaging/debian.control
-!Builds/Packaging/debian.rules
-!Builds/Packaging/PKGBUILD
-!Builds/Packaging/README.md
-!Builds/Scripts/cppcheck-filtered
-!Builds/Scripts/dbg
-!Builds/Scripts/mk
-!Builds/Scripts/mk-clean
-!Builds/Scripts/mk-reset
-!Builds/Scripts/README.md
-!Builds/Scripts/setup-build-helpers
-!Builds/VisualStudio2008/AvCaster.sln
-!Builds/VisualStudio2008/AvCaster.vcproj
-!Builds/VisualStudio2008/resources.rc
-!Builds/VisualStudio2015/AvCaster.sln
-!Builds/VisualStudio2015/AvCaster.vcxproj
-!Builds/VisualStudio2015/AvCaster.vcxproj.filters
-!Builds/VisualStudio2015/resources.rc
+Builds/Makefile/.gdbinit
+Builds/Makefile/debug.log
 
 
 # nix
@@ -58,3 +26,46 @@ Builds/*/*
 
 # c::b
 *.layout
+
+
+# juce
+._*
+*.mode1v3
+*.pbxuser
+*.perspectivev3
+*.user
+*.ncb
+*.suo
+*.ilk
+*.pch
+*.pdb
+*.dep
+*.idb
+*.manifest
+*.manifest.res
+*.o
+*.d
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+xcuserdata
+*.xccheckout
+contents.xcworkspacedata
+.DS_Store
+.svn
+profile
+**/MacOSX/build
+**/iOS/build
+**/Makefile/build
+**/VisualStudio*/Debug
+**/VisualStudio*/Release
+**/VisualStudio*/x64
+**/Android*/bin
+**/Android*/libs
+**/Android*/gen
+**/Android*/obj
+**/CodeBlocks*/bin
+**/CodeBlocks*/obj
+**/CodeBlocks*/*.depend
+**/CodeBlocks*/*.layout

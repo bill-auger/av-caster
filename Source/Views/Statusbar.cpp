@@ -71,9 +71,7 @@ Statusbar::Statusbar ()
 
     //[UserPreSize]
 
-  this->statusLLabel->setText(String::empty , dontSendNotification) ;
-  this->statusCLabel->setText(String::empty , dontSendNotification) ;
-  this->statusRLabel->setText(String::empty , dontSendNotification) ;
+  setStatusL(String::empty) ; setStatusC(String::empty) ; setStatusR(String::empty) ;
 
     //[/UserPreSize]
 

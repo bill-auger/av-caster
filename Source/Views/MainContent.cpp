@@ -244,12 +244,6 @@ void AvCasterTrayIconComponent::mouseDown(const MouseEvent& mouse_event)
   else if (mouse_event.mods.isRightButtonDown()) ;
 // Juce Note: that for detecting popupmenu clicks, you should be using isPopupMenu()
 }
-
-
-private:
-
-  ResizableWindow* mainWindow ;
-} ;
 #endif // TRAY_ICON
 
 //[/MiscUserCode]

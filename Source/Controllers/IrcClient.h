@@ -24,7 +24,7 @@
 #define _IRCCLIENT_H_
 
 
-#include <libircclient/libircclient.h>
+#include <libircclient.h>
 
 #include "../Constants/Constants.h"
 

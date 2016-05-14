@@ -300,7 +300,6 @@ DEBUG_TRACE_DUMP_CONFIG_XML(this->config , STRING(preset_id))
   int         camera_h        = resolution.getY() ;
   var         fit_output_w    = var(jmax(fullscreen_w , camera_w , output_w)) ;
   var         fit_output_h    = var(jmax(fullscreen_h , camera_h , output_h)) ;
-  bool        has_idx_changed = preset_idx != AvCaster::GetPresetIdx() ;
 
   setValue(this->config , CONFIG::OUTPUT_W_ID , fit_output_w) ;
   setValue(this->config , CONFIG::OUTPUT_H_ID , fit_output_h) ;

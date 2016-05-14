@@ -53,7 +53,9 @@ public:
 
 
   void updateVisiblilty(bool is_visible) ;
+#ifndef DISABLE_CHAT
   void addChatLine     (String prefix , String nick , String message) ;
+#endif // DISABLE_CHAT
 
 
 private:
