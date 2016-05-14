@@ -1,3 +1,17 @@
+av-caster (0.16.003) whatever; urgency=medium
+
+  * store last viewed config pane per-preset
+  * implement video source z-layering per control toggles
+  * update to JUCE v4.2.2
+  * convert constants namespaces to classes
+  * refactor static media switch handling
+  * implement and define config help texts
+  * refactored data store to accomodate single chat network per preset
+  * connect ConfigChat GUI to store
+
+ -- bill-auger <bill-auger@programmer.net>  Sun, 15 May 2016 04:20:42 -0420
+
+
 av-caster (0.15.203) whatever; urgency=medium
 
   * warn insuficient gStreamer version
@@ -9,35 +23,35 @@ av-caster (0.15.203) whatever; urgency=medium
   * enable tracing in release build
   * toggle screencap and camera at runtime via control buttons
 
- -- bill-auger <bill-auger@programmer.net>  Wed, 17 Feb 2016 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Wed, 17 Feb 2016 04:20:42 -0420
 
 
 av-caster (0.15.201) whatever; urgency=medium
 
   * add cli switches to disable runtime features
 
- -- bill-auger <bill-auger@programmer.net>  Sat, 19 Dec 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Sat, 19 Dec 2015 04:20:42 -0420
 
 
 av-caster (0.15.000) whatever; urgency=medium
 
   * toggle preview and output at runtime
 
- -- bill-auger <bill-auger@programmer.net>  Sat, 07 Nov 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Sat, 07 Nov 2015 04:20:42 -0420
 
 
 av-caster (0.14.000) whatever; urgency=medium
 
   * handle command line arguments
 
- -- bill-auger <bill-auger@programmer.net>  Tue, 03 Nov 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Tue, 03 Nov 2015 04:20:42 -0420
 
 
 av-caster (0.13.000) whatever; urgency=medium
 
   * implement saving confgurations as presets
 
- -- bill-auger <bill-auger@programmer.net>  Mon, 02 Nov 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Mon, 02 Nov 2015 04:20:42 -0420
 
 
 av-caster (0.12.000) whatever; urgency=medium
@@ -46,4 +60,4 @@ av-caster (0.12.000) whatever; urgency=medium
   * milestone 'first usable version'
   * package created with FPM
 
- -- bill-auger <bill-auger@programmer.net>  Wed, 21 Oct 2015 04:20:42 -0400
+ -- bill-auger <bill-auger@programmer.net>  Wed, 21 Oct 2015 04:20:42 -0420

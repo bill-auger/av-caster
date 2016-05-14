@@ -1,5 +1,5 @@
 #!/bin/bash
 
 
-rm ~/.av-caster/av-caster.bin > /dev/null
-./mk
+rm ~/.config/av-caster/av-caster.bin > /dev/null
+./mk $*

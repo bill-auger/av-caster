@@ -1,8 +1,5 @@
 #!/bin/bash
 
-APP_ROOT_DIR=`pwd`
-
 
 cd Builds/Makefile && make clean
-cd $APP_ROOT_DIR
-./mk
+cd ../../          && ./mk $*

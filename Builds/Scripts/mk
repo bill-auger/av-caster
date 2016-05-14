@@ -1,6 +1,5 @@
 #!/bin/bash
 
-APP_ROOT_DIR=`pwd`
 
 # enable logging (n=verbosity)
 export GST_DEBUG=4
@@ -10,33 +9,36 @@ export GST_DEBUG_NO_COLOR=1 && export GST_DEBUG_FILE=debug.log # log to file
 export DOT_DIR=/code/dot
 export GST_DEBUG_DUMP_DOT_DIR=$DOT_DIR
 
+# file output
+VIDEOS_DIR=/home/bill/vids
+OUTPUT_NAME="AvCaster"
+OUTPUT_FILE=$OUTPUT_NAME.flv
+
 # validate specified build configuration
-if   [ "$CONFIG" == "Release" ] ; then BINARY=./build/av-caster     ; TARGET="Release" ;
-elif [ "$CONFIG" == "Debug"   ] ; then BINARY=./build/av-caster-dbg ; TARGET="Debug" ;
-elif [ "$CONFIG" == ""        ] ; then BINARY=./build/av-caster-dbg ; TARGET="Debug" ;
-else                              echo "Invlaid target CONFIG '$CONFIG'" ; exit ;
+if   [ "$CONFIG" == "Debug"   ] ; then BINARY=./build/av-caster-dbg ; TARGET="Debug" ;
+else                                   BINARY=./build/av-caster     ; TARGET="Release" ;
 fi
 
 # build project
 echo "Building $TARGET target"
-CONFIG=$CONFIG cd Builds/Makefile && make && $BINARY $*
+CONFIG=$TARGET cd Builds/Makefile && make -j 2 && $BINARY $*
 
 # convert dot graphs to images
-cd $DOT_DIR
-rm $DOT_DIR/*.png 2> /dev/null
-for graph_dot_file in `ls *.dot 2> /dev/null`
-do echo "found dot graph $graph_dot_file"
-  graph_png_file=${graph_dot_file%%.dot}.png
-  dot -Tpng $graph_dot_file > $graph_png_file && rm $DOT_DIR/$graph_dot_file
-  [ -f $graph_png_file ] && echo "created graph image $graph_png_file"
-done
+if [ -d $DOT_DIR ]
+then cd $DOT_DIR
+     rm *.png 2> /dev/null
+     for graph_dot_file in `ls *.dot 2> /dev/null`
+     do echo "found dot graph $graph_dot_file"
+       graph_png_file=${graph_dot_file%%.dot}.png
+       dot -Tpng $graph_dot_file > $graph_png_file && rm $graph_dot_file
+       [ -f $graph_png_file ] && echo "created graph image $graph_png_file"
+     done
+fi
 
 # playback file output
-cd $APP_ROOT_DIR
-OUTPUT_NAME=~/AvCaster
-OUTPUT_FILE=$OUTPUT_NAME.flv
-if [ -f $OUTPUT_FILE ]
-then filesize=`ls -s $OUTPUT_FILE`
+if [ -d $VIDEOS_DIR -a -f $OUTPUT_FILE ]
+then cd $VIDEOS_DIR
+     filesize=`ls -s $OUTPUT_FILE`
      echo "output file exists $filesize"
      ((${filesize:0:1})) && mplayer $OUTPUT_FILE 2&> /dev/null
      rm $OUTPUT_NAME*

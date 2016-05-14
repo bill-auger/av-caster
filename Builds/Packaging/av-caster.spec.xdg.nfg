@@ -34,12 +34,16 @@ Requires:      gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-pl
 %endif
 
 
-%define package_bin_dir   %{buildroot}%{_bindir}
-%define package_apps_dir  %{buildroot}%_datadir/applications/
-%define package_icons_dir %{buildroot}%_datadir/icons/hicolor/48x48/apps/
-%define binary_artefact   Builds/Makefile/build/%{name}
-%define desktop_file      Assets/%{name}.desktop
-%define icon_file         Assets/avcaster-logo-48.png
+%define package_bin_dir %{buildroot}%{_bindir}
+%define binary_artefact Builds/Makefile/build/%{name}
+%define desktop_file    Assets/%{name}.desktop
+%define icon_file       Assets/avcaster-logo-48.png
+# %define package_bin_dir   %{buildroot}%{_bindir}
+# %define package_apps_dir  %{buildroot}%_datadir/applications/
+# %define package_icons_dir %{buildroot}%_datadir/icons/hicolor/48x48/apps/
+# %define binary_artefact   Builds/Makefile/build/%{name}
+# %define desktop_file      Assets/%{name}.desktop
+# %define icon_file         Assets/avcaster-logo-48.png
 
 
 %description
@@ -55,28 +59,52 @@ Requires:      gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-pl
 
 %build
 cd Builds/Makefile/
-make %{?_smp_mflags} CONFIG=Release
+# make %{?_smp_mflags} CONFIG=Release
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-# mkdir -p %package_apps_dir
-# mkdir -p %package_icons_dir
-mv       %binary_artefact %package_bin_dir/
-# mv       %desktop_file    %package_apps_dir/
-# mv       %icon_file       %package_icons_dir/
+mkdir -p %package_bin_dir
+# mv %binary_artefact %package_bin_dir/
+%if 0%{?sles_version} || 0%{?suse_version}
+#   ls -l %{buildroot}/../../
+#   mkdir -p %package_apps_dir
+#   mkdir -p %package_icons_dir
+#   cp %desktop_file %{buildroot}/../../BUILDROOT
+#   cp %icon_file    %{buildroot}/../../BUILDROOT
+#   cp %desktop_file %{buildroot}/../../BUILD
+#   cp %icon_file    %{buildroot}/../../BUILD
+#   cp %desktop_file %{buildroot}/../../SOURCES
+#   cp %icon_file    %{buildroot}/../../SOURCES
+#   cp %desktop_file %{buildroot}/../../
+#   cp %icon_file    %{buildroot}/../../
+#   cp %desktop_file %{buildroot}/../
+#   cp %icon_file    %{buildroot}/../
+#   cp %desktop_file %{buildroot}/
+#   cp %icon_file    %{buildroot}/
+#   %suse_update_desktop_file -i %{name}.desktop
+  %suse_update_desktop_file -i %desktop_file
+#   %suse_update_desktop_file -i WTF
+%endif
 
 %files
 %doc
 %{_bindir}/%{name}
+%desktop_file
+%icon_file
 
 %post
-%if ! 0%{?suse_version}
-  xdg-desktop-menu forceupdate
+%if 0%{?sles_version} || 0%{?suse_version}
+#   %desktop_database_post
+%else
+  xdg-icon-resource install --size 48 %icon_file %{name}
+  xdg-desktop-menu install %desktop_file
 %endif
 
 %postun
-%if ! 0%{?suse_version}
-  xdg-desktop-menu forceupdate
+%if 0%{?sles_version} || 0%{?suse_version}
+#   %desktop_database_postun
+%else
+  xdg-icon-resource uninstall %{name}
+  xdg-desktop-menu uninstall %{name}.desktop
 %endif
 
 %changelog

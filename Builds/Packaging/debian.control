@@ -3,11 +3,11 @@ Section: contrib/net
 Priority: optional
 Maintainer: bill-auger <bill-auger@programmer.net>
 Homepage: https://github.com/bill-auger/av-caster
-Build-Depends: build-essential, debhelper (>= 4.1.16), libfreetype6-dev, libgstreamer-plugins-base1.0-dev, libircclient-dev, libx11-dev, libxcursor-dev, libxinerama-dev
+Build-Depends: build-essential, debhelper (>= 4.1.16), libfreetype6-dev, libgstreamer-plugins-base1.0-dev (>= 1.4.4), libircclient-dev (>= 1.8), libx11-dev, libxcursor-dev, libxinerama-dev, libxrandr-dev
 
 Package: av-caster
 Architecture: any
-Depends: ${shlibs:Depends}, freeglut3, gstreamer1.0-alsa (>= 1.6.0), gstreamer1.0-plugins-bad (>= 1.6.0), gstreamer1.0-plugins-good (>= 1.6.0), gstreamer1.0-plugins-ugly (>= 1.6.0), gstreamer1.0-pulseaudio (>= 1.6.0), libfreetype6, libgl1-mesa-glx, libircclient1, libx11-6, libxcomposite1, libxcursor1, libxext6, libxinerama1, libxrender1
+Depends: ${shlibs:Depends}, freeglut3, gstreamer1.0-alsa (>= 1.6.0), gstreamer1.0-plugins-bad (>= 1.6.0), gstreamer1.0-plugins-good (>= 1.6.0), gstreamer1.0-plugins-ugly (>= 1.6.0), gstreamer1.0-pulseaudio (>= 1.6.0), libfreetype6, libgl1-mesa-glx, libircclient1 (>= 1.8), libx11-6, libxcomposite1, libxcursor1, libxext6, libxinerama1, libxrender1
 Description: Light-weight native gStreamer GUI for screencast, webcam, and audio streaming.
  AvCaster is a native GNU/Linux application built with the JUCE framework
  and using gStreamer as the media backend. The current version capable of

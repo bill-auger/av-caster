@@ -1,7 +1,7 @@
 #!/bin/bash
 
-APP_ROOT_DIR=`pwd`
 export GST_DEBUG=2
 
-cd Builds/Makefile && make && gdb
-cd $APP_ROOT_DIR
+
+cd Builds/Makefile && CONFIG=Debug make -j 2 && gdb
+cd ../../

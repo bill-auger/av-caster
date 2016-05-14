@@ -2,13 +2,17 @@
 # Sample debian/rules that uses debhelper.
 # GNU copyright 1997 to 1999 by Joey Hess.
 
-PROJECT_NAME = av-caster
-BUILD_DIR = Builds/Makefile
-PACKAGE_DIR = /usr/src/packages/BUILD/debian/$(PROJECT_NAME)
-ARTIFACTS_DIR = $(BUILD_DIR)/build
-OBJECTS_DIR = $(BUILD_DIR)/build/intermediate
-PACKAGE_USR_DIR = $(PACKAGE_DIR)/usr
-PACKAGE_BIN_DIR = $(PACKAGE_DIR)/usr/bin
+PROJECT_NAME      = av-caster
+BUILD_DIR         = Builds/Makefile
+ASSETS_DIR        = Assets
+PACKAGING_DIR     = /usr/src/packages/BUILD/debian/$(PROJECT_NAME)
+PACKAGE_BIN_DIR   = $(PACKAGING_DIR)/usr/bin
+PACKAGE_APPS_DIR  = $(PACKAGING_DIR)/usr/share/applications
+PACKAGE_ICONS_DIR = $(PACKAGING_DIR)/usr/share/icons/hicolor/48x48/apps/
+BINARY_ARTEFACT   = $(BUILD_DIR)/build/$(PROJECT_NAME)
+DESKTOP_FILE      = $(ASSETS_DIR)/av-caster.desktop
+ICON_FILE         = $(ASSETS_DIR)/avcaster-logo-48.png
+
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -51,9 +55,12 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package
-	rm -rf $(OBJECTS_DIR)
-	mkdir -p $(PACKAGE_USR_DIR)
-	mv $(ARTIFACTS_DIR) $(PACKAGE_BIN_DIR)
+	mkdir -p $(PACKAGE_BIN_DIR)
+	mkdir -p $(PACKAGE_APPS_DIR)
+	mkdir -p $(PACKAGE_ICONS_DIR)
+	install -m 755 $(BINARY_ARTEFACT) $(PACKAGE_BIN_DIR)/
+	install -m 644 $(DESKTOP_FILE)    $(PACKAGE_APPS_DIR)/
+	install -m 644 $(ICON_FILE)       $(PACKAGE_ICONS_DIR)/
 	# --- end custom part for installing
 
 # Build architecture-independent files here.
