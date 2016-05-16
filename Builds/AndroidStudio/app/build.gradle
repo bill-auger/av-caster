@@ -1,0 +1,98 @@
+apply plugin: 'com.android.model.application'
+model {
+    android {
+        compileSdkVersion = 22
+        buildToolsVersion = "22.0.1"
+        defaultConfig.with {
+            applicationId = "org.bill-auger.avcaster"
+            minSdkVersion.apiLevel = 22
+            targetSdkVersion.apiLevel = 22
+        }
+    }
+    android.ndk {
+        moduleName = "juce_jni"
+        toolchain = "gcc"
+        stl = "gnustl_static"
+        cppFlags.add("-fsigned-char")
+        cppFlags.add("-fexceptions")
+        cppFlags.add("-frtti")
+        cppFlags.add("-std=c++11")
+        cppFlags.add("-DJUCER_ANDROIDSTUDIO_4330F05B=1")
+        cppFlags.add("-DJUCE_APP_VERSION=0.16.003")
+        cppFlags.add("-DJUCE_APP_VERSION_HEX=0x1003")
+        cppFlags.add("-I${project.rootDir}/../../Assets".toString())
+        cppFlags.add("-I${project.rootDir}/../../Source/Constants".toString())
+        cppFlags.add("-I${project.rootDir}/../../Source/Controllers".toString())
+        cppFlags.add("-I${project.rootDir}/../../Source/Models".toString())
+        cppFlags.add("-I${project.rootDir}/../../Source/Trace".toString())
+        cppFlags.add("-I${project.rootDir}/../../Source/Views".toString())
+        cppFlags.add("-I${project.rootDir}/../../Source".toString())
+        ldLibs.add("android")
+        ldLibs.add("EGL")
+        ldLibs.add("GLESv2")
+        ldLibs.add("log")
+        ldLibs.add("ircclient")
+    }
+    android.sources {
+        main {
+            jni {
+                source {
+                    exclude "**/JuceModules/"
+                }
+            }
+        }
+    }
+    android.buildTypes {
+        debug {
+            ndk.with {
+                debuggable = true
+                cppFlags.add("-g")
+                cppFlags.add("-DDEBUG=1")
+                cppFlags.add("-D_DEBUG=1")
+                cppFlags.add("-O0")
+                cppFlags.add("-I${project.rootDir}/../../JuceLibraryCode".toString())
+                cppFlags.add("-I${project.rootDir}/../../JuceLibraryCode/modules".toString())
+                cppFlags.add("-DJUCE_ANDROID=1")
+                cppFlags.add("-DJUCE_ANDROID_API_VERSION=22")
+                cppFlags.add("-DJUCE_ANDROID_ACTIVITY_CLASSNAME=org_bill-auger_AvCaster")
+                cppFlags.add("-DJUCE_ANDROID_ACTIVITY_CLASSPATH=\"org/bill-auger/AvCaster\"")
+            }
+        }
+        release {
+            signingConfig = $("android.signingConfigs.releaseConfig")
+            ndk.with {
+                cppFlags.add("-DNDEBUG=1")
+                cppFlags.add("-O3")
+                cppFlags.add("-I${project.rootDir}/../../JuceLibraryCode".toString())
+                cppFlags.add("-I${project.rootDir}/../../JuceLibraryCode/modules".toString())
+                cppFlags.add("-DJUCE_ANDROID=1")
+                cppFlags.add("-DJUCE_ANDROID_API_VERSION=22")
+                cppFlags.add("-DJUCE_ANDROID_ACTIVITY_CLASSNAME=org_bill-auger_AvCaster")
+                cppFlags.add("-DJUCE_ANDROID_ACTIVITY_CLASSPATH=\"org/bill-auger/AvCaster\"")
+            }
+        }
+    }
+    android.signingConfigs {
+        create("releaseConfig") {
+            storeFile = new File("/home/bill/.android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+            storeType = "jks"
+        }
+    }
+    android.productFlavors {
+        create("armeabi") {
+            ndk.abiFilters.add("armeabi")
+        }
+        create("armeabi-v7a") {
+            ndk.abiFilters.add("armeabi-v7a")
+        }
+        create("x86") {
+            ndk.abiFilters.add("x86")
+        }
+    }
+}
+dependencies {
+    compile "com.android.support:support-v4:+"
+}

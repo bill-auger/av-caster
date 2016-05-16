@@ -24,7 +24,7 @@
             MkTypLibCompatible="true"
             SuppressStartupBanner="true"
             TargetEnvironment="1"
-            TypeLibraryName="$(IntDir)\AvCaster.tlb"
+            TypeLibraryName="$(IntDir)\AvCasterDbg.tlb"
             HeaderFileName=""/>
       <Tool Name="VCCLCompilerTool"
             Optimization="0"
@@ -35,7 +35,7 @@
             RuntimeLibrary="1"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
-            PrecompiledHeaderFile="$(IntDir)\AvCaster.pch"
+            PrecompiledHeaderFile="$(IntDir)\AvCasterDbg.pch"
             AssemblerListingLocation="$(IntDir)\"
             ObjectFile="$(IntDir)\"
             ProgramDataBaseFileName="$(IntDir)\"
@@ -46,11 +46,11 @@
             PreprocessorDefinitions="_DEBUG"/>
       <Tool Name="VCPreLinkEventTool"/>
       <Tool Name="VCLinkerTool"
-            OutputFile="$(OutDir)\AvCaster.exe"
+            OutputFile="$(OutDir)\AvCasterDbg.exe"
             SuppressStartupBanner="true"
             IgnoreDefaultLibraryNames="libcmt.lib, msvcrt.lib"
             GenerateDebugInformation="true"
-            ProgramDatabaseFile="$(IntDir)\AvCaster.pdb"
+            ProgramDatabaseFile="$(IntDir)\AvCasterDbg.pdb"
             SubSystem="2"
             GenerateManifest="true"
             TargetMachine="1"/>
@@ -59,7 +59,7 @@
       <Tool Name="VCXDCMakeTool"/>
       <Tool Name="VCBscMakeTool"
             SuppressStartupBanner="true"
-            OutputFile="$(IntDir)\AvCaster.bsc"/>
+            OutputFile="$(IntDir)\AvCasterDbg.bsc"/>
       <Tool Name="VCFxCopTool"/>
       <Tool Name="VCAppVerifierTool"/>
       <Tool Name="VCPostBuildEventTool"/>

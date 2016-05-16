@@ -123,7 +123,7 @@
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="1" optimisation="1" targetName="AvCaster"/>
+                       isDebug="1" optimisation="1" targetName="AvCasterDbg"/>
         <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
                        isDebug="0" optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>
@@ -138,7 +138,7 @@
     <VS2015 targetFolder="Builds/VisualStudio2015">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="1" optimisation="1" targetName="AvCaster"/>
+                       isDebug="1" optimisation="1" targetName="AvCasterDbg"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>
@@ -153,7 +153,7 @@
     <VS2008 targetFolder="Builds/VisualStudio2008">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" isDebug="1"
-                       optimisation="1" targetName="AvCaster"/>
+                       optimisation="1" targetName="AvCasterDbg"/>
         <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" isDebug="0"
                        optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>
@@ -182,7 +182,7 @@
     </LINUX_MAKE>
     <CODEBLOCKS_WINDOWS targetFolder="Builds/CodeBlocksWindows">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="AvCaster"/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="AvCasterDbg"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -208,10 +208,14 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </CODEBLOCKS_LINUX>
-    <ANDROIDSTUDIO targetFolder="Builds/AndroidStudio">
+    <ANDROIDSTUDIO targetFolder="Builds/AndroidStudio" androidSDKPath="" androidNDKPath=""
+                   androidInternetNeeded="1" androidMicNeeded="1" androidBluetoothNeeded="0"
+                   androidActivityClass="org.bill-auger.AvCaster" extraCompilerFlags=""
+                   extraLinkerFlags="" externalLibraries="ircclient" androidMinimumSDK="22"
+                   buildToolsVersion="22.0.1" gradleToolchain="gcc">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" androidArchitectures="armeabi armeabi-v7a x86" isDebug="1"
-                       optimisation="1" targetName="AvCaster"/>
+                       optimisation="1" targetName="AvCasterDbg"/>
         <CONFIGURATION name="Release" androidArchitectures="armeabi armeabi-v7a x86"
                        isDebug="0" optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>

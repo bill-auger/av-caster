@@ -526,7 +526,7 @@
 		9F129A7973FE7B4A9766FEAF = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ChatList.h; path = ../../Source/Views/ChatList.h; sourceTree = "SOURCE_ROOT"; };
 		9F22C2FF85B9F6D577CF75CD = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_PropertiesFile.h"; path = "../../JuceLibraryCode/modules/juce_data_structures/app_properties/juce_PropertiesFile.h"; sourceTree = "SOURCE_ROOT"; };
 		A0024DF5B609213CAA768566 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_ApplicationProperties.h"; path = "../../JuceLibraryCode/modules/juce_data_structures/app_properties/juce_ApplicationProperties.h"; sourceTree = "SOURCE_ROOT"; };
-		A0104874CAF3C0EFB0B8B694 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AvCaster.app; sourceTree = "BUILT_PRODUCTS_DIR"; };
+		A0104874CAF3C0EFB0B8B694 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AvCasterDbg.app; sourceTree = "BUILT_PRODUCTS_DIR"; };
 		A0628F822F1AD195E7DD1AE7 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_ImagePreviewComponent.h"; path = "../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_ImagePreviewComponent.h"; sourceTree = "SOURCE_ROOT"; };
 		A0F4D0725478B1E77744FDD5 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_TextEditor.h"; path = "../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TextEditor.h"; sourceTree = "SOURCE_ROOT"; };
 		A1660595B8BD68F86C427A0B = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_PixelFormats.h"; path = "../../JuceLibraryCode/modules/juce_graphics/colour/juce_PixelFormats.h"; sourceTree = "SOURCE_ROOT"; };
@@ -1843,7 +1843,7 @@
 				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "AvCaster";
+				PRODUCT_NAME = "AvCasterDbg";
 				WARNING_CFLAGS = -Wreorder;
 				ZERO_LINK = NO; }; name = Debug; };
 		6197C3EB8D5FC3C6A0C295B1 = {isa = XCBuildConfiguration; buildSettings = {

@@ -1,4 +1,4 @@
-# Automatically generated makefile, created by the Projucer
+# Automatically generated makefile, created by the Projucer (GNU Edition)
 # Don't edit this file! Your changes will be overwritten when you re-save the Projucer project!
 
 # (this disables dependency generation if multiple architectures are set)
