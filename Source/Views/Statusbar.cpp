@@ -4,17 +4,18 @@
 |*|  This file is part of the AvCaster program.
 |*|
 |*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  it under the terms of the GNU General Public License version 3
 |*|  as published by the Free Software Foundation.
 |*|
 |*|  AvCaster is distributed in the hope that it will be useful,
 |*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
 |*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
+|*|  GNU General Public License for more details.
 |*|
-|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  You should have received a copy of the GNU General Public License
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
+
 
 //[Headers] You can add your own extra header files here...
 //[/Headers]
@@ -33,7 +34,7 @@ Statusbar::Statusbar ()
 
     setName ("Statusbar");
     addAndMakeVisible (statusLLabel = new Label ("statusLLabel",
-                                                 String::empty));
+                                                 String()));
     statusLLabel->setExplicitFocusOrder (1);
     statusLLabel->setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain));
     statusLLabel->setJustificationType (Justification::centredLeft);
@@ -45,7 +46,7 @@ Statusbar::Statusbar ()
     statusLLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (statusCLabel = new Label ("statusCLabel",
-                                                 String::empty));
+                                                 String()));
     statusCLabel->setExplicitFocusOrder (2);
     statusCLabel->setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain));
     statusCLabel->setJustificationType (Justification::centred);
@@ -57,7 +58,7 @@ Statusbar::Statusbar ()
     statusCLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (statusRLabel = new Label ("statusRLabel",
-                                                 String::empty));
+                                                 String()));
     statusRLabel->setExplicitFocusOrder (3);
     statusRLabel->setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain));
     statusRLabel->setJustificationType (Justification::centredRight);
@@ -160,9 +161,9 @@ void Statusbar::setStatusR(String statusText)
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA

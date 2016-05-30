@@ -4,20 +4,21 @@
 |*|  This file is part of the AvCaster program.
 |*|
 |*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  it under the terms of the GNU General Public License version 3
 |*|  as published by the Free Software Foundation.
 |*|
 |*|  AvCaster is distributed in the hope that it will be useful,
 |*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
 |*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
+|*|  GNU General Public License for more details.
 |*|
-|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  You should have received a copy of the GNU General Public License
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
-#ifndef _CONFIG_CAMERA_H_
-#define _CONFIG_CAMERA_H_
+
+#ifndef _CONFIGCAMERA_H_
+#define _CONFIGCAMERA_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -49,9 +50,9 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void paint (Graphics& g) override;
+    void resized() override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
 
 
@@ -79,4 +80,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIG_CAMERA_H_
+#endif   // _CONFIGCAMERA_H_

@@ -4,15 +4,15 @@
 |*|  This file is part of the AvCaster program.
 |*|
 |*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  it under the terms of the GNU General Public License version 3
 |*|  as published by the Free Software Foundation.
 |*|
 |*|  AvCaster is distributed in the hope that it will be useful,
 |*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
 |*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
+|*|  GNU General Public License for more details.
 |*|
-|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  You should have received a copy of the GNU General Public License
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
@@ -29,6 +29,9 @@
 //==============================================================================
 ConfigText::ConfigText ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (motdLabel = new Label ("motdLabel",
                                               TRANS("Message:")));
     motdLabel->setFont (Font (15.00f, Font::plain));
@@ -46,7 +49,7 @@ ConfigText::ConfigText ()
     motdText->setScrollbarsShown (true);
     motdText->setCaretVisible (true);
     motdText->setPopupMenuEnabled (true);
-    motdText->setText (String::empty);
+    motdText->setText (String());
 
     addAndMakeVisible (textStyleLabel = new Label ("textStyleLabel",
                                                    TRANS("Style:")));
@@ -61,7 +64,7 @@ ConfigText::ConfigText ()
     textStyleCombo->setExplicitFocusOrder (2);
     textStyleCombo->setEditableText (false);
     textStyleCombo->setJustificationType (Justification::centredLeft);
-    textStyleCombo->setTextWhenNothingSelected (String::empty);
+    textStyleCombo->setTextWhenNothingSelected (String());
     textStyleCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     textStyleCombo->addListener (this);
 
@@ -78,7 +81,7 @@ ConfigText::ConfigText ()
     textPosCombo->setExplicitFocusOrder (3);
     textPosCombo->setEditableText (false);
     textPosCombo->setJustificationType (Justification::centredLeft);
-    textPosCombo->setTextWhenNothingSelected (String::empty);
+    textPosCombo->setTextWhenNothingSelected (String());
     textPosCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     textPosCombo->addListener (this);
 
@@ -169,9 +172,9 @@ void ConfigText::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA

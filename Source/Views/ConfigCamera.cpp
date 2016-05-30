@@ -4,15 +4,15 @@
 |*|  This file is part of the AvCaster program.
 |*|
 |*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  it under the terms of the GNU General Public License version 3
 |*|  as published by the Free Software Foundation.
 |*|
 |*|  AvCaster is distributed in the hope that it will be useful,
 |*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
 |*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
+|*|  GNU General Public License for more details.
 |*|
-|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  You should have received a copy of the GNU General Public License
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
@@ -29,6 +29,9 @@
 //==============================================================================
 ConfigCamera::ConfigCamera ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (cameraDevLabel = new Label ("cameraDevLabel",
                                                    TRANS("Device:")));
     cameraDevLabel->setFont (Font (15.00f, Font::plain));
@@ -59,7 +62,7 @@ ConfigCamera::ConfigCamera ()
     cameraResCombo->setExplicitFocusOrder (2);
     cameraResCombo->setEditableText (false);
     cameraResCombo->setJustificationType (Justification::centredLeft);
-    cameraResCombo->setTextWhenNothingSelected (String::empty);
+    cameraResCombo->setTextWhenNothingSelected (String());
     cameraResCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     cameraResCombo->addListener (this);
 
@@ -146,9 +149,9 @@ void ConfigCamera::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA

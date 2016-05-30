@@ -43,12 +43,12 @@ const String APP::CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionSt
 const String APP::CLI_USAGE_MSG   = "AvCaster Usage:\n\n\t" + APP::APP_CMD + " [ "  + CLI_HELP_TOKEN            + " | "                                                               +
                                                                                       CLI_PRESETS_TOKEN         + " | "                                                               +
                                                                                       CLI_VERSION_TOKEN         + " ]"                                                                +
-                                                   "\n\n\t" + APP::APP_CMD + " [ "  + CLI_PRESET_TOKEN          + " n    ] "                                                          +
-                                                                "\n\t          [ "  + CLI_DISABLE_MEDIA_TOKEN   + "    ] "                                                            +
+                                                     "\n\t" + APP::APP_CMD + " [ "  + CLI_PRESET_TOKEN          + " N    ] "                                                          +
+                                                     "\n\t" + APP::APP_CMD + " [ "  + CLI_DISABLE_MEDIA_TOKEN   + "    ] "                                                            +
                                                                               "[ "  + CLI_DISABLE_PREVIEW_TOKEN + "  ] "                                                              +
                                                                               "[ "  + CLI_DISABLE_AUDIO_TOKEN   + "  ] "                                                              +
                                                                               "[ "  + CLI_DISABLE_CHAT_TOKEN    + " ]"                                                                +
-                                                                "\n\t          [ "  + CLI_SCREEN_ONLY_TOKEN     + " | "                                                               +
+                                                     "\n\t" + APP::APP_CMD + " [ "  + CLI_SCREEN_ONLY_TOKEN     + " | "                                                               +
                                                                               "  "  + CLI_CAMERA_ONLY_TOKEN     + " | "                                                               +
       //                                                                             "  "  + CLI_TEXT_ONLY_TOKEN       + " | "                                                          +
       //                                                                             "  "  + CLI_IMAGE_ONLY_TOKEN      + " ] "                                                          +
@@ -57,7 +57,7 @@ const String APP::CLI_USAGE_MSG   = "AvCaster Usage:\n\n\t" + APP::APP_CMD + " [
                                                    "\n\n\t\t"                       + CLI_PRESETS_TOKEN         + "\n\t\t\tlist stored presets and exits"                             +
                                                    "\n\n\t\t"                       + CLI_VERSION_TOKEN         + "\n\t\t\tprints the application version string and exits"           +
                                                    "\n\n\n\tCONFIGURATION:"                                                                                                           +
-                                                   "\n\n\t\t"                       + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstarts " + APP::APP_NAME + " with initial preset number n" +
+                                                   "\n\n\t\t"                       + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstarts " + APP::APP_NAME + " with initial preset number N" +
                                                    "\n\n\n\tFEATURE SWITCHES:"                                                                                                        +
                                                    "\n\n\t\t"                       + CLI_DISABLE_MEDIA_TOKEN   + "\n\t\t\tdisables all media and stream output"                      +
                                                    "\n\n\t\t"                       + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders screen only"              +

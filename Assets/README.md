@@ -1,13 +1,23 @@
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-  <img alt="Creative Commons License" style="border-width:0"
-       src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />
+### AvCaster Assets Licenses
 
-The images and audio in this directory are licensed under a
-  <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-    Creative Commons Attribution-ShareAlike 4.0 International License</a>
+The original audio, video, and image files in the AvCaster Assets/ directory are licensed under [version 3 of the GNU General Public License](COPYING_ASSETS)
+with the "sources" or "preferred form" explicitly defined to be any and all
+binary data, meta-data, editor project files, scripts, and source code of custom executables
+that are necessary to accomplish all of the following using only widely-available free software:
+* regenerate the associated target artifacts completely and accurately
+* modify these "preferred form" decomposed sources directly and individually
+* compose the original and modified sources
+* generate equivalent modified versions of the associated target artifacts
 
-<br />except for:
-  <ul>
-    <li>config.xcf, config-btn.png, config-hover.png, config-pushed.png (wrench image)
-        <br />these are derrived from the [tango desktop project's](http://tango-project.org/) preferences-system.png</li>
-  <ul>
+For example:
+* "target artifact" such as a composed (mixed-down) .png, .svg, .wav, etc (these are typically all that is covered by a Crerative Commons licencse)
+* "binary data" such as the individual elements that compose the "target artifact" (images, sound tracks, etc.)
+* "editor project files" such as .xcf, .psd, .aup, .ardour, etc.
+* "meta-data", "scripts", and "source code of custom executables" such as 3D models, openGL shaders, etc.
+* "widely-available free software" such as GIMP, Inkscape, Audacity, Ardour, etc.
+
+
+Exceptions:
+* config.xcf, config-btn.png, config-hover.png, config-pushed.png (wrench images)
+    these are derrived from the [tango desktop project's](http://tango-project.org/) preferences-system.png
+

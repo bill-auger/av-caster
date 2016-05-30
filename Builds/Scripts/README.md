@@ -1,3 +1,8 @@
+
+The script files in the AvCaster Builds/Scripts/ directory are licensed under [version 3 of the GNU General Public License](COPYING_SCRIPTS).
+
+---
+
 the build helper scripts contained in this directory are intentionally non-executable and are intended to be run from the project root directory (the directory containing the Builds and Source directories)
 
 firstly, run the setup-build-helpers script in this directory to copy these scripts to the project root - they will set to be executable from there

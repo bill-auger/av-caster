@@ -4,15 +4,15 @@
 |*|  This file is part of the AvCaster program.
 |*|
 |*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  it under the terms of the GNU General Public License version 3
 |*|  as published by the Free Software Foundation.
 |*|
 |*|  AvCaster is distributed in the hope that it will be useful,
 |*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
 |*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
+|*|  GNU General Public License for more details.
 |*|
-|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  You should have received a copy of the GNU General Public License
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
@@ -33,13 +33,16 @@
 //==============================================================================
 Chat::Chat (MainContent* main_content)
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (chatGroup = new GroupComponent ("chatGroup",
                                                        TRANS("Chat")));
     chatGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     chatGroup->setColour (GroupComponent::textColourId, Colours::white);
 
     addAndMakeVisible (chatHistoryGroup = new GroupComponent ("chatHistoryGroup",
-                                                              String::empty));
+                                                              String()));
     chatHistoryGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     chatHistoryGroup->setColour (GroupComponent::textColourId, Colours::white);
 
@@ -52,10 +55,10 @@ Chat::Chat (MainContent* main_content)
     chatHistoryText->setPopupMenuEnabled (true);
     chatHistoryText->setColour (TextEditor::textColourId, Colours::white);
     chatHistoryText->setColour (TextEditor::backgroundColourId, Colours::black);
-    chatHistoryText->setText (String::empty);
+    chatHistoryText->setText (String());
 
     addAndMakeVisible (chatEntryGroup = new GroupComponent ("chatEntryGroup",
-                                                            String::empty));
+                                                            String()));
     chatEntryGroup->setExplicitFocusOrder (1);
     chatEntryGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     chatEntryGroup->setColour (GroupComponent::textColourId, Colours::white);
@@ -70,7 +73,7 @@ Chat::Chat (MainContent* main_content)
     chatEntryText->setPopupMenuEnabled (true);
     chatEntryText->setColour (TextEditor::textColourId, Colours::white);
     chatEntryText->setColour (TextEditor::backgroundColourId, Colour (0xff202020));
-    chatEntryText->setText (String::empty);
+    chatEntryText->setText (String());
 
     addAndMakeVisible (chatList = new ChatList());
     chatList->setExplicitFocusOrder (2);
@@ -226,9 +229,9 @@ int Chat::getFontSize()
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA

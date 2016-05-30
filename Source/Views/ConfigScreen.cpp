@@ -4,15 +4,15 @@
 |*|  This file is part of the AvCaster program.
 |*|
 |*|  AvCaster is free software: you can redistribute it and/or modify
-|*|  it under the terms of the GNU Lesser General Public License version 3
+|*|  it under the terms of the GNU General Public License version 3
 |*|  as published by the Free Software Foundation.
 |*|
 |*|  AvCaster is distributed in the hope that it will be useful,
 |*|  but WITHOUT ANY WARRANTY; without even the implied warranty of
 |*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-|*|  GNU Lesser General Public License for more details.
+|*|  GNU General Public License for more details.
 |*|
-|*|  You should have received a copy of the GNU Lesser General Public License
+|*|  You should have received a copy of the GNU General Public License
 |*|  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 \*/
 
@@ -29,6 +29,9 @@
 //==============================================================================
 ConfigScreen::ConfigScreen ()
 {
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
     addAndMakeVisible (displayLabel = new Label ("displayLabel",
                                                  TRANS("Display #:")));
     displayLabel->setFont (Font (15.00f, Font::plain));
@@ -78,7 +81,7 @@ ConfigScreen::ConfigScreen ()
     screenWidthText->setScrollbarsShown (false);
     screenWidthText->setCaretVisible (true);
     screenWidthText->setPopupMenuEnabled (true);
-    screenWidthText->setText (String::empty);
+    screenWidthText->setText (String());
 
     addAndMakeVisible (screenHeightLabel = new Label ("screenHeightLabel",
                                                       TRANS("Height:")));
@@ -97,7 +100,7 @@ ConfigScreen::ConfigScreen ()
     screenHeightText->setScrollbarsShown (false);
     screenHeightText->setCaretVisible (true);
     screenHeightText->setPopupMenuEnabled (true);
-    screenHeightText->setText (String::empty);
+    screenHeightText->setText (String());
 
     addAndMakeVisible (xOffsetLabel = new Label ("xOffsetLabel",
                                                  TRANS("Offset X:")));
@@ -116,7 +119,7 @@ ConfigScreen::ConfigScreen ()
     xOffsetText->setScrollbarsShown (true);
     xOffsetText->setCaretVisible (true);
     xOffsetText->setPopupMenuEnabled (true);
-    xOffsetText->setText (String::empty);
+    xOffsetText->setText (String());
 
     addAndMakeVisible (yOffsetLabel = new Label ("yOffsetLabel",
                                                  TRANS("Offset Y:")));
@@ -135,7 +138,7 @@ ConfigScreen::ConfigScreen ()
     yOffsetText->setScrollbarsShown (true);
     yOffsetText->setCaretVisible (true);
     yOffsetText->setPopupMenuEnabled (true);
-    yOffsetText->setText (String::empty);
+    yOffsetText->setText (String());
 
 
     //[UserPreSize]
@@ -236,9 +239,9 @@ void ConfigScreen::sliderValueChanged (Slider* sliderThatWasMoved)
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -256,7 +259,8 @@ BEGIN_JUCER_METADATA
   <SLIDER name="displaySlider" id="2250b6248ed28fc6" memberName="displaySlider"
           virtualName="" explicitFocusOrder="1" pos="88 8 64 24" min="0"
           max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
+          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"
+          needsCallback="1"/>
   <LABEL name="screenLabel" id="68a950dbc12277f7" memberName="screenLabel"
          virtualName="" explicitFocusOrder="0" pos="0 48 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Screen #:" editableSingleClick="0"
@@ -265,7 +269,8 @@ BEGIN_JUCER_METADATA
   <SLIDER name="screenSlider" id="74df429060e256ad" memberName="screenSlider"
           virtualName="" explicitFocusOrder="2" pos="88 48 64 24" min="0"
           max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"/>
+          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"
+          needsCallback="1"/>
   <LABEL name="screenWidthLabel" id="1a8ebe15d549d3a2" memberName="screenWidthLabel"
          virtualName="" explicitFocusOrder="0" pos="0 88 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Width:" editableSingleClick="0"
