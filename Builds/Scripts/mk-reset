@@ -17,5 +17,5 @@
 #  along with AvCaster.  If not, see <http://www.gnu.org/licenses/>.
 
 
-rm ~/.config/av-caster/av-caster.bin > /dev/null
+rm ~/.config/av-caster/av-caster.bin 2> /dev/null
 ./mk $*

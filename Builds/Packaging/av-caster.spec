@@ -16,21 +16,20 @@
 #
 
 Name:          av-caster
-Version:       0.16.003
+Version:       0.16.004
 Release:       1%{?dist}
-Summary:       A simple native gStreamer GUI for screencast, webcam, and audio streaming
+Summary:       A light-weight native gStreamer GUI for screencast, webcam, and audio streaming
 License:       GPL-3.0
 URL:           https://github.com/bill-auger/%{name}/
 Source0:       https://github.com/bill-auger/%{name}/archive/v%{version}.tar.gz
-BuildRequires: freetype2-devel gcc-c++ libircclient-devel libX11-devel libXcursor-devel libXinerama-devel libXrandr-devel
-Requires:      libircclient1
+BuildRequires: gcc-c++ libircclient-devel libX11-devel libXcursor-devel libXinerama-devel libXrandr-devel
 %if 0%{?sles_version} || 0%{?suse_version}
-BuildRequires: gstreamer-plugins-base-devel update-desktop-files
-Requires:      gstreamer-plugins-good gstreamer-plugins-bad gstreamer-plugins-ugly
+BuildRequires: freetype2-devel gstreamer-plugins-base-devel update-desktop-files
+Requires:      gstreamer-plugins-good gstreamer-plugins-bad gstreamer-plugins-ugly libircclient1
 %endif
 %if 0%{?centos_version} || 0%{?fedora_version} || 0%{?rhel_version}
-BuildRequires: gstreamer1-plugins-base-devel
-Requires:      gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-plugins-ugly
+BuildRequires: freetype-devel gstreamer1-plugins-base-devel
+Requires:      gstreamer1-plugins-good gstreamer1-plugins-bad-free gstreamer1-plugins-ugly libircclient
 %endif
 
 
@@ -80,5 +79,5 @@ mv       %binary_artefact %package_bin_dir/
 %endif
 
 %changelog
-* Sun May 15 2016 bill-auger
-- v0.16.003
+* Wed Sep 14 2016 bill-auger
+- v0.16.004

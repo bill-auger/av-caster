@@ -14,7 +14,7 @@
             <img src="https://img.shields.io/github/issues/bill-auger/av-caster.svg"
                  alt="Issues" width="100" height="18" /></a></td></tr></table></td>
     <td rowspan="2"><h2><i>A light-weight native gStreamer GUI for screencast, webcam, and audio streaming</i></h2>
-    AvCaster is built upon the <a href="https://www.juce.com/">JUCE</a> framework, utilizing <a href="https://gstreamer.freedesktop.org/">gStreamer</a> as the media backend and <a href="http://www.ulduzsoft.com/libircclient/">libircclient</a> as the chat backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture (full-screen), webcam (full-screen or overlay), and audio (mono or stereo).  It is moderately configurable, with preset configurations for streaming via popular servers such as <a href="https://www.livecoding.tv/">livecoding.tv</a>, and allows custom user-defined configurations to be stored as additional presets.  This initial implementation is only compatible with GNU/Linux, but it has been designed for portability.  Let us know if it would interest you to see AvCaster ported to another platform (e.g. Windows, Mac, mobile) by leaving a note on the relevant <a href="https://github.com/bill-auger/av-caster/issues?q=is%3Aopen+milestone%3A%22cross-platform+version%22+label%3Aepic">Cross-platform Milestone</a> issue.  Feel free to open issues for other platforms if they are not yet listed.</td></tr>
+    AvCaster is built upon the <a href="https://www.juce.com/">JUCE</a> framework, utilizing <a href="https://gstreamer.freedesktop.org/">gStreamer</a> as the media backend and <a href="http://www.ulduzsoft.com/libircclient/">libircclient</a> as the chat backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture (full-screen), webcam (full-screen or overlay), and audio (mono or stereo).  It is moderately configurable, with preset configurations for streaming via popular servers such as <a href="https://www.livecoding.tv/">livecoding.tv</a>, and allows custom user-defined configurations to be stored as additional presets.  This initial target is GNU/Linux, but it has been designed for portability and includes starter projects for AndroidStudio, CodeBlocks, VisualStudio, and xCode IDEs.  Let us know if it would interest you to see AvCaster ported to another platform (e.g. Windows, Mac, mobile) by leaving a note on the relevant <a href="https://github.com/bill-auger/av-caster/issues?q=is%3Aopen+milestone%3A%22cross-platform+version%22+label%3Aepic">Cross-platform Milestone</a> issue.  Feel free to open issues for other platforms if they are not yet listed.</td></tr>
   <tr><td>
     <table>
       <tr><th colspan="2">Build Status</th></tr>
@@ -48,7 +48,7 @@ _NOTE: AvCaster requires gStreamer >= v1.6.0 and the 'ugly' plugins set which ma
 #### AvCaster Package Repositories
 The [OpenSuse Build Service][obs] hosts AvCaster x86 and x86-64 binary package repositories for the following distributions:
   * Debian 8
-  * Fedora 23
+  * Fedora 23, Fedora 24
   * OpenSuse Tumbleweed
   * Ubuntu 16.04
 

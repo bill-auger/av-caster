@@ -1,3 +1,11 @@
+av-caster (0.16.004) whatever; urgency=medium
+
+  * handle preset load event atomically (tag: v0.16.004, ubuntu) [bill-auger]
+  * update docs and licenses
+
+ -- bill-auger <bill-auger@programmer.net>  Wed, 14 Sep 2016 04:20:42 -0420
+
+
 av-caster (0.16.003) whatever; urgency=medium
 
   * store last viewed config pane per-preset
