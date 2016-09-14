@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 
 #include "../Controllers/AvCaster.h"
+#include "../Trace/TraceControls.h"
 
 //[/Headers]
 
@@ -313,6 +314,8 @@ void Controls::loadConfig()
   String xmit_btn_text      = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
                               (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
                                                                       String::empty       ;
+
+DEBUG_TRACE_CONTROLS_LOAD_CONFIG
 
   this->screenToggle ->setToggleState  (is_screen_active  , juce::dontSendNotification) ;
   this->cameraToggle ->setToggleState  (is_camera_active  , juce::dontSendNotification) ;

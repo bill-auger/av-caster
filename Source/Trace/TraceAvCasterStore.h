@@ -34,7 +34,7 @@
   String upgraded_msg  = "upgrading config version from v" + String(stored_version) +         \
                          " to v"                           + String(CONFIG::CONFIG_VERSION) ; \
   String success_msg   = "stored config parsed successfully v" + String(stored_version) ;     \
-  Trace::TraceConfig("looking for stored config at " + this->configFile.getFullPathName()) ;  \
+  Trace::TraceConfig("looking for stored config at " + this->storageFile.getFullPathName()) ; \
   Trace::TraceConfig((!was_storage_found  ) ? not_found_msg :                                 \
                      (!is_root_valid      ) ? invalid_msg   :                                 \
                      (!has_canonical_nodes) ? corrupt_msg   :                                 \
@@ -96,7 +96,7 @@
   DEBUG_TRACE_DUMP_CONFIG_AUDIOS
 
 #  define DEBUG_TRACE_STORE_CONFIG                                                      \
-  String file_path = this->configFile.getFullPathName() ;                               \
+  String file_path = this->storageFile.getFullPathName() ;                              \
   if (!this->root.isValid()) Trace::TraceError("stored config invalid - not storing") ; \
   else                       Trace::TraceConfig("storing config to " + file_path)       ;
 
@@ -115,11 +115,11 @@
                                              cameras.getNumChildren()) ;         \
   Trace::TraceState("detected (" + n_devices + ") capture devices")              ;
 
-#  define DEBUG_TRACE_STORE_PRESET                                  \
-  bool is_new = this->config.hasProperty(CONFIG::PRESET_NAME_ID) ;  \
-  String state = (is_new) ? "storing" : "updating" ;                \
-  Trace::TraceConfig(state + " preset[" + String(preset_idx) +      \
-                     "] '"              + preset_name        + "'") ;
+#  define DEBUG_TRACE_STORE_PRESET                                              \
+  bool   is_new = ! preset_store.hasProperty(CONFIG::PRESET_NAME_ID) ;          \
+  String state  = String((is_new) ? "creating" : "updating") + " storage for" ; \
+  Trace::TraceConfig(state + " preset[" + String(preset_idx) +                  \
+                     "] '"              + preset_name        + "'")             ;
 
 #  define DEBUG_TRACE_RENAME_PRESET                                        \
   Trace::TraceConfig("renaming preset[" + String(preset_idx)        +      \
@@ -208,7 +208,6 @@
 #  define DEBUG_TRACE_SANITIZE_INT_PROPERTY                 ;
 #  define DEBUG_TRACE_FILTER_ROGUE_KEY                      ;
 #  define DEBUG_TRACE_FILTER_ROGUE_NODE                     ;
-#  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc) ;
 #  define DEBUG_TRACE_DUMP_CONFIG_ROOT                      ;
 #  define DEBUG_TRACE_DUMP_CONFIG_PRESETS                   ;
 #  define DEBUG_TRACE_DUMP_CONFIG_VOLATILE                  ;

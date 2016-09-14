@@ -43,26 +43,19 @@ public:
 
 private:
 
+  // initialize
   AvCasterStore() ;
 
-  // persistence
-  ValueTree verifyStorage  (ValueTree stored_config) ;
-  void      verifyRoot     () ;
-  void      verifyPresets  () ;
-  void      verifyPreset   () ;
-  void      verifyNetworks () ;
-  void      verifyNetwork  (ValueTree a_network_node) ;
-  void      sanitizeRoot   () ;
-  void      sanitizePresets() ;
-  void      sanitizePreset () ;
-  void      storeConfig    () ;
-  void      storePreset    (String preset_name) ;
-  void      renamePreset   (String preset_name) ;
-  void      deletePreset   () ;
-  void      resetPreset    () ;
-  void      loadPreset     () ;
-
   // validations
+  void verifyConfig               () ;
+  void verifyRoot                 () ;
+  void verifyPresets              () ;
+  void verifyPreset               () ;
+  void verifyNetworks             () ;
+  void verifyNetwork              (ValueTree a_network_node) ;
+  void sanitizeRoot               () ;
+  void sanitizePresets            () ;
+  void sanitizePreset             () ;
   void verifyChildNode            (ValueTree config_store , Identifier a_node_id) ;
   void verifyPresetChildNode      (Identifier a_node_id) ;
   void verifyProperty             (ValueTree config_store    , Identifier a_key ,
@@ -83,6 +76,15 @@ private:
   void restoreTransients          () ;
   void restorePresetTransients    (ValueTree a_preset_store) ;
 
+  // persistence
+  ValueTree loadConfig() ;
+  void      storeConfig () ;
+  void      loadPreset  () ;
+  void      storePreset (String preset_name) ;
+  void      renamePreset(String preset_name) ;
+  void      deletePreset() ;
+  void      resetPreset () ;
+
   // runtime params
 //   void detectDisplayDimensions    () ;
   void detectCaptureDevices       () ;
@@ -92,12 +94,6 @@ private:
   void valueTreePropertyChanged(ValueTree& a_node , const Identifier& key) override ;
 
   // unused ValueTree::Listener interface implementations
-//   void valueTreeChildAdded       (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
-//   void valueTreeChildRemoved     (ValueTree& a_parent_node , ValueTree& a_node) override { UNUSED(a_parent_node) , UNUSED(a_node) ; }
-//   void valueTreeChildOrderChanged(ValueTree& a_parent_node)                     override { UNUSED(a_parent_node) ;                  }
-//   void valueTreeParentChanged    (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
-//   void valueTreeRedirected       (ValueTree& a_node)                            override { UNUSED(a_node) ;                         }
-//   TODO: API change after upgrade to v >= 3.2.0
   void valueTreeChildAdded       (ValueTree& /*a_parent_node*/ , ValueTree& /*a_node*/                   ) override {}
   void valueTreeChildRemoved     (ValueTree& /*a_parent_node*/ , ValueTree& /*a_node*/ , int /*idx*/     ) override {}
   void valueTreeChildOrderChanged(ValueTree& /*a_parent_node*/ , int /*prev_idx*/      , int /*curr_idx*/) override {}
@@ -125,15 +121,15 @@ private:
 
 
   // configuration/persistence
-  ValueTree root ;       // persistent static config  (STORAGE_ID node        )
-  ValueTree presets ;    // persistent dynamic config (PRESETS_ID node        )
-  ValueTree config ;     // volatile media config     (VOLATILE_CONFIG_ID node)
-  ValueTree network ;    // volatile network config   (NETWORK_ID node        )
-  ValueTree chatters ;   // volatile nicks list       (CHATTERS_ID node       )
-  ValueTree cameras ;    // video devices info        (CAMERA_DEVICES_ID node )
-  ValueTree audios ;     // audio devices info        (AUDIO_DEVICES_ID node  )
-  File      configDir ;
-  File      configFile ;
+  ValueTree root ;        // persistent static config  (STORAGE_ID node        )
+  ValueTree presets ;     // persistent dynamic config (PRESETS_ID node        )
+  ValueTree config ;      // volatile media config     (VOLATILE_CONFIG_ID node)
+  ValueTree network ;     // volatile network config   (NETWORK_ID node        )
+  ValueTree chatters ;    // volatile nicks list       (CHATTERS_ID node       )
+  ValueTree cameras ;     // video devices info        (CAMERA_DEVICES_ID node )
+  ValueTree audios ;      // audio devices info        (AUDIO_DEVICES_ID node  )
+  File      storageDir ;
+  File      storageFile ;
 } ;
 
 #endif // _AVCASTERSTORE_H_

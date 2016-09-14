@@ -52,6 +52,7 @@ public:
   static const String ALSA_INIT_ERROR ;
   static const String PULSE_INIT_ERROR ;
   static const String JACK_INIT_ERROR ;
+  static const String XV_INIT_ERROR ;
   static const String FILE_SINK_ERROR ;
 } ;
 

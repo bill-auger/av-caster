@@ -162,24 +162,34 @@ void SeedIrcNetworks()
 
 /* config */
 
-#  define DEBUG_TRACE_HANDLE_CONFIG_CHANGE                                              \
-  bool   was_preset_combo_changed  = a_key == CONFIG::PRESET_ID ;                       \
-  bool   was_config_button_pressed = a_key == CONFIG::IS_PENDING_ID ;                   \
-  bool   is_swapping_presets       = was_preset_combo_changed  && !is_config_pending ;  \
-  bool   is_enter_config_mode      = was_config_button_pressed &&  is_config_pending ;  \
-  bool   is_exiting_config_mode    = was_config_button_pressed && !is_config_pending ;  \
-  bool   should_logout_chat        = is_swapping_presets || is_enter_config_mode ;      \
-  String pad                       = "\n              " ;                               \
-  Trace::TraceConfigVb("handling config value change '" + STRING(a_key) + "'"   +       \
-      pad + "is_media_toggle      = " + String(is_media_toggle       )          +       \
-      pad + "is_preset_control    = " + String(is_preset_control     )          +       \
-      pad + "is_stream_active     = " + String(is_stream_active      )          +       \
-      pad + "is_config_pending    = " + String(is_config_pending     )          +       \
-      pad + "is_swapping_presets  = " + String(is_swapping_presets   )          +       \
-      pad + "is_enter_config_mode = " + String(is_enter_config_mode  )          +       \
-      pad + "is_exit_config_mode  = " + String(is_exiting_config_mode)          +       \
-      pad + "should_logout_chat   = " + String(should_logout_chat    )          +       \
-      pad + "should_login_chat    = " + String(should_login_chat     )          )       ;
+#  define DEBUG_TRACE_HANDLE_CONFIG_CHANGE                                                  \
+  String handled                   = ((!should_reconfigure_media) ? "not " : "") ;          \
+  bool   was_preset_combo_changed  = a_key == CONFIG::PRESET_ID ;                           \
+  bool   was_config_button_pressed = a_key == CONFIG::IS_PENDING_ID ;                       \
+  bool   is_swapping_presets       = was_preset_combo_changed  && !is_config_pending ;      \
+  bool   is_entering_config_mode   = was_config_button_pressed &&  is_config_pending ;      \
+  bool   is_exiting_config_mode    = was_config_button_pressed && !is_config_pending ;      \
+  bool   should_logout_chat        = is_preset_control         &&  is_config_pending ;      \
+  String chat_state                = (should_login_chat) ? "into" : "out of" ;              \
+  String pad                       = "\n              " ;                                   \
+  Trace::TraceConfigVb(handled + "handling config value change '" + STRING(a_key) + "'" +   \
+      pad + "is_media_toggle          = " + String(is_media_toggle         )            +   \
+      pad + "is_preset_control        = " + String(is_preset_control       )            +   \
+      pad + "is_stream_active         = " + String(is_stream_active        )            +   \
+      pad + "is_config_pending        = " + String(is_config_pending       )            +   \
+      pad + "should_stop_stream       = " + String(should_stop_stream      )            +   \
+      pad + "should_reconfigure_media = " + String(should_reconfigure_media)            +   \
+      pad + "should_reconfigure_chat  = " + String(should_reconfigure_chat )            +   \
+      pad + "is_swapping_presets      = " + String(is_swapping_presets     )            +   \
+      pad + "is_entering_config_mode  = " + String(is_entering_config_mode )            +   \
+      pad + "is_exiting_config_mode   = " + String(is_exiting_config_mode  )            +   \
+      pad + "should_logout_chat       = " + String(should_logout_chat      )            +   \
+      pad + "should_login_chat        = " + String(should_login_chat       )            ) ; \
+  if (is_swapping_presets    ) Trace::TraceConfig("swapping presets"    ) ;                 \
+  if (is_entering_config_mode) Trace::TraceConfig("entering config mode") ;                 \
+  if (is_exiting_config_mode ) Trace::TraceConfig("exitng config mode"  ) ;                 \
+  if (should_reconfigure_chat) Trace::TraceConfig("logging " + chat_state + " chat" +       \
+                                                  ((!IsChatEnabled) ? " (disabled)" : ""))  ;
 
 
 /* helpers */

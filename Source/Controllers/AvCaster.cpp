@@ -289,26 +289,27 @@ void AvCaster::HandleConfigChanged(const Identifier& a_key)
 {
   if (GetPresetIdx() == CONFIG::INVALID_IDX) return ; // renaming
 
-  bool is_preset_control  = Store->isPresetConfigKey(a_key) ;
-  bool is_media_toggle    = Store->isMediaToggleKey(a_key) ;
-  bool is_stream_active   = bool(Store->config[CONFIG::OUTPUT_ID]) ;
-  bool is_config_pending  = AvCaster::GetIsConfigPending() ;
-  bool should_stop_stream =  is_preset_control &&  is_stream_active ;
-  bool should_reconfigure = (is_preset_control && !is_stream_active) || is_media_toggle ;
-  bool should_login_chat  =  is_preset_control && !is_config_pending ;
+  bool is_media_toggle          = Store->isMediaToggleKey (a_key) ;
+  bool is_preset_control        = Store->isPresetConfigKey(a_key) ;
+  bool is_stream_active         = bool(Store->config[CONFIG::OUTPUT_ID]) ;
+  bool is_config_pending        = AvCaster::GetIsConfigPending() ;
+  bool should_stop_stream       = is_preset_control && is_stream_active ;
+  bool should_reconfigure_media = is_preset_control || is_media_toggle ;
+  bool should_reconfigure_chat  = is_preset_control ;
+  bool should_login_chat        = is_preset_control && !is_config_pending ;
 
 DEBUG_TRACE_HANDLE_CONFIG_CHANGE
 
-  if (should_stop_stream ) SetValue(CONFIG::OUTPUT_ID , false) ; // defer handling and recurse
-  if (should_stop_stream || !should_reconfigure) return ;
+  if (should_stop_stream       ) Store->deactivateControl(CONFIG::OUTPUT_ID) ;
+  if (!should_reconfigure_media) return ;
+
+#ifndef DISABLE_CHAT
+  // reconfigure Irc networks
+  if (should_reconfigure_chat) Irc->configure(should_login_chat) ;
+#endif // DISABLE_CHAT
 
   // reconfigure Gstreamer elements
   Gstreamer::Reconfigure(a_key) ;
-
-  // reconfigure Irc networks
-#ifndef DISABLE_CHAT
-  if (is_preset_control) Irc->configure(should_login_chat) ;
-#endif // DISABLE_CHAT
 
   // store back changes and refresh GUI
   StorePreset(GetPresetName()) ; RefreshGui() ;
@@ -320,16 +321,16 @@ void AvCaster::RefreshGui()
   bool       is_preview_on     = bool(Store->config[CONFIG::PREVIEW_ID   ]) ;
   Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets ) :
                                                        static_cast<Component*>(Gui->controls) ;
-  Component* view_component    = (is_config_pending) ? static_cast<Component*>(Gui->config  ) :
+  Component* front_component   = (is_config_pending) ? static_cast<Component*>(Gui->config  ) :
                                  (is_preview_on    ) ? static_cast<Component*>(Gui->preview ) :
                                                        static_cast<Component*>(Gui->chat    ) ;
 
 DEBUG_TRACE_REFRESH_GUI
 
-  // propogate configuration change to all interested panes
+  // propogate configuration change to all interested views
   Gui->background  ->toFront(true) ;
   control_component->toFront(true) ;
-  view_component   ->toFront(true) ;
+  front_component  ->toFront(true) ;
 
   UpdateStatus() ;
 }

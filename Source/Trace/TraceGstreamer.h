@@ -31,13 +31,13 @@
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_2 Trace::TraceState("instantiating pipeline") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_3 Trace::TraceState("instantiating pipeline bins") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_3 Trace::TraceState("configuring pipeline") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_4 Trace::TraceState("instantiating bin elements") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_4 Trace::TraceState("instantiating media elements") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_5 Trace::TraceState("starting pipeline") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_5 Trace::TraceState("linking bins") ;
 
-#  define DEBUG_TRACE_GST_INIT_PHASE_6 Trace::TraceState("linking bins") ;
+#  define DEBUG_TRACE_GST_INIT_PHASE_6 Trace::TraceState("starting pipeline") ;
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_7 Trace::TraceState("Gstreamer ready") ;
 
@@ -112,7 +112,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 {
   gchar* gvalue_str = g_strdup_value_contents(gvalue) ;
 
-  LOG("DumpMessage() gvalue='" + String(gvalue_str) + "'") ;
+  DBG("DumpMessage() gvalue='" + String(gvalue_str) + "'") ;
 
   g_free(gvalue_str) ;
 }
@@ -122,11 +122,15 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_MESSAGE_UNHANDLED                                                         \
   Trace::TraceMediaVb("got unhandled message '" + String(GST_MESSAGE_TYPE_NAME(message)) + "'") ;
 
-#  define DEBUG_TRACE_GST_ERROR_MESSAGE                                                     \
-  bool   is_audio_error = is_alsa_init_error || is_pulse_init_error || is_jack_init_error ; \
-  String is_handled_msg = (is_audio_error) ? "" : " (unhandled)" ;                          \
-  Trace::TraceError("GSTError:" + is_handled_msg + " '" + error_message + "'") ;            \
-  if (is_audio_error) Trace::TraceMedia("deactivating audio")                               ;
+#  define DEBUG_TRACE_GST_ERROR_MESSAGE                                           \
+  String err = (is_alsa_init_error  ||                                            \
+                is_pulse_init_error ||                                            \
+                is_jack_init_error   ) ? "deactivating audio"   :                 \
+               (is_xv_init_error     ) ? "deactivating preview" :                 \
+               (is_file_sink_error   ) ? "deactivating output"  : String::empty ; \
+  String is_handled_msg = (err.isNotEmpty()) ? "" : " (unhandled)" ;              \
+  Trace::TraceError("GSTError:" + is_handled_msg + " '" + error_message + "'") ;  \
+  if (err.isNotEmpty()) Trace::TraceMedia(err)                                    ;
 
 
 /* configuration */
@@ -244,7 +248,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 
 #  define DEBUG_TRACE_CONFIGURE_PREVIEW                                   \
   Trace::TraceMedia("configuring '" + GetElementId(a_video_sink) + "' " + \
-                    ((is_active) ? "(active)" : "(inactive)")           + \
+                    ((is_active) ? "(active) " : "(inactive) ")         + \
                     String(preview_x) + "@" + String(preview_y) + " "   + \
                     String(preview_w) + "x" + String(preview_h)         ) ;
 

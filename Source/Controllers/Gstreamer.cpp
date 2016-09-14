@@ -76,7 +76,7 @@ bool Gstreamer::Initialize(ValueTree      config_store , void* x_window ,
 
 DEBUG_TRACE_GST_INIT_PHASE_1
 
-  // initialize gStreamer (NOTE: this will terminate the app on failure)
+  // initialize gStreamer (NOTE: this will terminate the application on failure)
   InitializeGst(nullptr , nullptr) ;
 
 DEBUG_TRACE_GST_INIT_PHASE_2
@@ -172,9 +172,7 @@ DEBUG_TRACE_GST_INIT_PHASE_5
   }
   if ((is_audio_enabled && !LinkElements(AudioBin , MuxerBin )) ||
       (is_media_enabled && !LinkElements(MuxerBin , OutputBin))  )
-  { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ;
-DEBUG_MAKE_GRAPHVIZ
-                                                     return false ; }
+  { AvCaster::Error(GUI::MUXER_BIN_LINK_ERROR_MSG) ; return false ; }
 
 DEBUG_TRACE_GST_INIT_PHASE_6
 
@@ -736,7 +734,7 @@ DEBUG_TRACE_RECONFIGURE_IN
 DEBUG_TRACE_RECONFIGURE_OUT
 
   // NOTE: an error here should cause Gstreamer::HandleErrorMessage() to fire
-  //         which should attempt revovery to a same configuration
+  //         which should attempt recovery to a same configuration
   is_error = !SetState(Pipeline , GST_STATE_PLAYING) || is_error ;
 
 // DEBUG_MAKE_GRAPHVIZ
@@ -880,8 +878,8 @@ GstElement* Gstreamer::ConfigurePreviewBin()
 DEBUG_TRACE_CONFIGURE_PREVIEW_BIN
 
   // configure elements
-  if (!ConfigureVideoSink(PreviewRealSink))
-  { AvCaster::Error(GUI::GST_XWIN_ERROR_MSG) ; return nullptr ; }
+  if (!ConfigureVideoSink(PreviewRealSink) && is_active)
+    AvCaster::Error(GUI::GST_XWIN_ERROR_MSG) ;
 
   // swap sink elements
   if (IsInBin(PreviewBin , current_sink) && next_sink != current_sink)
@@ -1190,22 +1188,28 @@ void Gstreamer::HandleErrorMessage(GstMessage* message)
   bool   is_alsa_init_error  = error_message == GST::ALSA_INIT_ERROR ;
   bool   is_pulse_init_error = error_message == GST::PULSE_INIT_ERROR ;
   bool   is_jack_init_error  = error_message == GST::JACK_INIT_ERROR ;
+  bool   is_xv_init_error    = error_message == GST::XV_INIT_ERROR ;
   bool   is_file_sink_error  = error_message == GST::FILE_SINK_ERROR ;
 
 DEBUG_TRACE_GST_ERROR_MESSAGE
 
+  // disable control toggle and re-configure with null source or sink
   if (is_alsa_init_error || is_pulse_init_error || is_jack_init_error)
   {
-    // disable control toggle and re-configure with null source
     AvCaster::DeactivateControl(CONFIG::AUDIO_ID) ; ConfigureAudioBin() ;
 
     warning_msg = (is_alsa_init_error ) ? GUI::ALSA_INIT_ERROR_MSG  :
                   (is_pulse_init_error) ? GUI::PULSE_INIT_ERROR_MSG :
                   (is_jack_init_error ) ? GUI::JACK_INIT_ERROR_MSG  : String::empty ;
   }
+  else if (is_xv_init_error)
+  {
+    AvCaster::DeactivateControl(CONFIG::PREVIEW_ID) ; ConfigurePreviewBin() ;
+
+    warning_msg = GUI::XV_INIT_ERROR_MSG ;
+  }
   else if (is_file_sink_error)
   {
-    // disable control toggle and re-configure with null sink
     AvCaster::DeactivateControl(CONFIG::OUTPUT_ID) ; ConfigureOutputBin() ;
 
     warning_msg = GUI::FILE_SINK_ERROR_MSG ;

@@ -281,4 +281,5 @@ const String GUI::CONFIG_INVALID_ERROR_MSG    = "Invalid paramenter(s) - correct
 const String GUI::ALSA_INIT_ERROR_MSG         = "Error initializing ALSA capture device.\n\n" ;
 const String GUI::PULSE_INIT_ERROR_MSG        = "Error connecting to PulseAudio server.\n\n" ;
 const String GUI::JACK_INIT_ERROR_MSG         = "Error connecting to Jack server.\n\n" ;
+const String GUI::XV_INIT_ERROR_MSG           = "Error initializing XV output.\n\n" ;
 const String GUI::FILE_SINK_ERROR_MSG         = "Error creating local output file.\n\n" ;

@@ -42,6 +42,7 @@ void Trace::TraceError   (String msg) { if (DEBUG_TRACE_STATE    ) LOG(         
 void Trace::TraceState   (String msg) { if (DEBUG_TRACE_STATE    ) LOG("\033[1;32m[STATE]:   " + msg + "\033[0m") ;   }
 void Trace::TraceWarning (String msg) { if (DEBUG_TRACE_STATE    ) LOG("\033[1;33m[WARNING]: " + msg + "\033[0m") ;   }
 void Trace::TraceError   (String msg) { if (DEBUG_TRACE_STATE    ) LOG("\033[0;31m[ERROR]:   " + msg + "\033[0m") ;   }
+void Trace::TraceDebug   (String msg) {                            LOG("\033[1;33m[DEBUG]:   " + msg + "\033[0m") ;   }
 #  endif // DEBUG_ANSI_COLORS
 
 void Trace::TraceMissingNode(ValueTree config_store , Identifier a_node_id)

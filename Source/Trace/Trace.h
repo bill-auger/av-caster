@@ -26,6 +26,9 @@
 
 #ifdef DEBUG_TRACE
 
+#  undef DBG
+#  define DBG(msg) Trace::TraceDebug(msg)
+
 #  define LOG(msg) Logger::outputDebugString(msg)
 
 #  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)                                       \
@@ -53,6 +56,7 @@ public:
   static void TraceState   (String msg) ;
   static void TraceWarning (String msg) ;
   static void TraceError   (String msg) ;
+  static void TraceDebug   (String msg) ;
 
   static void TraceMissingNode    (ValueTree config_store , Identifier a_node_id) ;
   static void TraceMissingProperty(ValueTree config_store    , Identifier a_property_id ,
@@ -65,6 +69,11 @@ public:
   static void   TraceValueChanged(Value& a_value , String name) ;
   static String TraceSetValue    (ValueTree a_node , const Identifier& a_key , var a_value) ;
 } ;
+
+#else // DEBUG_TRACE
+
+#  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)    ;
+#  define DEBUG_TRACE_DUMP_CONFIG_XML(config_node , node_desc) ;
 
 #endif // DEBUG_TRACE
 

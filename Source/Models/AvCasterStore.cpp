@@ -51,23 +51,13 @@ AvCasterStore::~AvCasterStore() { }
 
 AvCasterStore::AvCasterStore()
 {
-  // load persistent storage
-  this->configDir                = APP::appdataDir().getChildFile(CONFIG::STORAGE_DIRNAME ) ;
-  this->configFile               = this->configDir .getChildFile(CONFIG::STORAGE_FILENAME) ;
-  FileInputStream* config_stream = new FileInputStream(this->configFile) ;
-  ValueTree        stored_config = ValueTree::invalid ;
-  if (config_stream->openedOk()) stored_config = ValueTree::readFromStream(*config_stream) ;
-  delete config_stream ;
-
   // create shared config ValueTrees from persistent storage or defaults
-  this->root    = verifyStorage(stored_config) ;
+  this->root    = loadConfig() ; verifyConfig() ;
   this->presets = this->root.getOrCreateChildWithName(CONFIG::PRESETS_ID , nullptr) ;
   this->config  = ValueTree(CONFIG::VOLATILE_CONFIG_ID) ;
   this->network = ValueTree(CONFIG::NETWORK_ID        ) ;
-  this->config.addChild(this->network , -1 , nullptr) ;
-
-  // remove presets from runtime store (to ignore events)
-  this->root.removeChild(this->presets , nullptr) ;
+  this->config.addChild   (this->network , -1 , nullptr) ;
+  this->root  .removeChild(this->presets ,      nullptr) ; // ignore store events
 
   // validate and sanitize config
   verifyRoot() ;   verifyPresets() ;
@@ -87,33 +77,31 @@ DEBUG_TRACE_DUMP_CONFIG_ALL
 }
 
 
-// persistence and validations
+/* validations */
 
-ValueTree AvCasterStore::verifyStorage(ValueTree stored_config)
+void AvCasterStore::verifyConfig()
 {
-  // verify stored configuration
-  bool was_storage_found   = stored_config.isValid() ;
-  bool is_root_valid       = stored_config.hasType(CONFIG::STORAGE_ID) ;
-  bool has_canonical_nodes = !hasDuplicatedNodes(stored_config) ;
-  if (!was_storage_found || !is_root_valid) stored_config = Seeds::DefaultStore() ;
-  else if (!has_canonical_nodes) removeConflictedNodes(stored_config , CONFIG::PRESETS_ID) ;
+  // verify or reset stored configuration
+  bool was_storage_found   = this->root.isValid() ;
+  bool is_root_valid       = this->root.hasType(CONFIG::STORAGE_ID) ;
+  bool has_canonical_nodes = !hasDuplicatedNodes(this->root) ;
+  if (!was_storage_found || !is_root_valid) this->root = Seeds::DefaultStore() ;
+  else if (!has_canonical_nodes) removeConflictedNodes(this->root , CONFIG::PRESETS_ID) ;
 
   // verify schema version
-  int  stored_version    = int(stored_config[CONFIG::CONFIG_VERSION_ID]) ;
+  int  stored_version    = int(this->root[CONFIG::CONFIG_VERSION_ID]) ;
   bool do_versions_match = stored_version == CONFIG::CONFIG_VERSION ;
   if (!do_versions_match)
   {
     // TODO: convert (if ever necessary)
-    File parent_dir  = this->configFile.getParentDirectory() ;
+    File parent_dir  = this->storageFile.getParentDirectory() ;
     File backup_file = parent_dir.getNonexistentChildFile(CONFIG::STORAGE_FILENAME , ".bak" , false) ;
-    this->configFile.copyFileTo(backup_file) ;
+    this->storageFile.copyFileTo(backup_file) ;
 
-    stored_config.removeProperty(CONFIG::CONFIG_VERSION_ID , nullptr) ;
+    this->root.removeProperty(CONFIG::CONFIG_VERSION_ID , nullptr) ;
   }
 
 DEBUG_TRACE_VERIFY_STORED_CONFIG
-
-  return stored_config ;
 }
 
 void AvCasterStore::verifyRoot()
@@ -241,139 +229,6 @@ void AvCasterStore::sanitizePreset()
   sanitizePresetComboProperty(CONFIG::FRAMERATE_ID     , CONFIG::FrameRates()      ) ;
   sanitizePresetComboProperty(CONFIG::VIDEO_BITRATE_ID , CONFIG::VideoBitRates()   ) ;
 }
-
-void AvCasterStore::storeConfig()
-{
-DEBUG_TRACE_STORE_CONFIG
-
-  if (!this->root.isValid()) return ;
-
-  // prepare storage directory
-  this->configDir .createDirectory() ;
-  this->configFile.deleteFile() ;
-
-  ValueTree root_clone    = this->root   .createCopy() ;
-  ValueTree presets_clone = this->presets.createCopy() ;
-
-  // filter transient data and append presets and networks to persistent storage
-  root_clone.removeProperty(CONFIG::IS_PENDING_ID , nullptr) ;
-  root_clone.addChild      (presets_clone , -1    , nullptr) ;
-  for (int preset_n = 0 ; preset_n < presets_clone.getNumChildren() ; ++preset_n)
-  {
-    ValueTree preset_clone  = presets_clone.getChild(preset_n) ;
-    ValueTree network_clone = preset_clone .getChildWithName(CONFIG::NETWORK_ID ) ;
-
-    preset_clone .removeProperty(CONFIG::OUTPUT_ID  , nullptr) ;
-    network_clone.removeProperty(CONFIG::HOST_ID    , nullptr) ;
-    network_clone.removeProperty(CONFIG::RETRIES_ID , nullptr) ;
-  }
-
-DEBUG_TRACE_DUMP_CONFIG    (root_clone , "root_clone")
-DEBUG_TRACE_DUMP_CONFIG_XML(root_clone , "root_clone")
-
-  // marshall configuration out to persistent binary storage
-  FileOutputStream* config_stream = new FileOutputStream(this->configFile) ;
-  if (!config_stream->failedToOpen()) root_clone.writeToStream(*config_stream) ;
-  else AvCaster::Error(GUI::STORAGE_WRITE_ERROR_MSG) ;
-  delete config_stream ;
-}
-
-void AvCasterStore::storePreset(String preset_name)
-{
-  if (preset_name.isEmpty()) return ;
-
-  Identifier preset_id     = CONFIG::FilterId(preset_name , APP::VALID_ID_CHARS) ;
-  ValueTree  preset_store  = this->presets.getOrCreateChildWithName(preset_id          , nullptr) ;
-  ValueTree  network_store = preset_store .getOrCreateChildWithName(CONFIG::NETWORK_ID , nullptr) ;
-  int        preset_idx    = this->presets.indexOf(preset_store) ;
-
-DEBUG_TRACE_STORE_PRESET
-DEBUG_TRACE_DUMP_CONFIG_XML(this->config , STRING(preset_id))
-
-#ifdef FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
-  int         fullscreen_w    = int(this->config[CONFIG::SCREENCAP_W_ID]) ;
-  int         fullscreen_h    = int(this->config[CONFIG::SCREENCAP_H_ID]) ;
-  int         output_w        = int(this->config[CONFIG::OUTPUT_W_ID   ]) ;
-  int         output_h        = int(this->config[CONFIG::OUTPUT_H_ID   ]) ;
-  Point<int>  resolution      = AvCaster::GetCameraResolution() ;
-  int         camera_w        = resolution.getX() ;
-  int         camera_h        = resolution.getY() ;
-  var         fit_output_w    = var(jmax(fullscreen_w , camera_w , output_w)) ;
-  var         fit_output_h    = var(jmax(fullscreen_h , camera_h , output_h)) ;
-
-  setValue(this->config , CONFIG::OUTPUT_W_ID , fit_output_w) ;
-  setValue(this->config , CONFIG::OUTPUT_H_ID , fit_output_h) ;
-#endif // FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
-
-  setValue(this->config , CONFIG::PRESET_NAME_ID , preset_name) ;
-  preset_store .copyPropertiesFrom(this->config  , nullptr) ;
-  network_store.copyPropertiesFrom(this->network , nullptr) ;
-  setValue(this->root   , CONFIG::PRESET_ID      , preset_idx ) ;
-}
-
-void AvCasterStore::renamePreset(String preset_name)
-{
-  Identifier preset_id      = CONFIG::FilterId(preset_name , APP::VALID_ID_CHARS) ;
-  int        preset_idx     = int(this->root[CONFIG::PRESET_ID]) ;
-  ValueTree  conflict_store = this->presets.getChildWithName(preset_id) ;
-
-  if (conflict_store.isValid()) return ;
-
-DEBUG_TRACE_RENAME_PRESET
-
-  // destroy and re-create
-  this->presets.removeChild(preset_idx , nullptr) ;
-  setValue(this->root , CONFIG::PRESET_ID , CONFIG::INVALID_IDX) ; // force reload
-  storePreset(preset_name) ;
-}
-
-void AvCasterStore::deletePreset()
-{
-  int preset_idx = int(this->root[CONFIG::PRESET_ID]) ;
-
-  if (this->presets.getNumChildren() <= 1) return ;
-
-DEBUG_TRACE_DELETE_PRESET
-
-  this->presets.removeChild(preset_idx , nullptr) ;
-  setValue(this->root , CONFIG::PRESET_ID , CONFIG::DEFAULT_PRESET_IDX) ;
-  AvCaster::RefreshGui() ;
-}
-
-void AvCasterStore::resetPreset()
-{
-  if (!AvCaster::IsStaticPreset()) return ;
-
-  int       preset_idx    = int(this->root[CONFIG::PRESET_ID]) ;
-  ValueTree preset_store  = this->presets.getChild(preset_idx) ;
-  ValueTree network_store = preset_store .getChildWithName(CONFIG::NETWORK_ID) ;
-  ValueTree preset_seed   = Seeds::PresetSeeds().getChild(preset_idx) ;
-  ValueTree network_seed  = preset_seed         .getChildWithName(CONFIG::NETWORK_ID) ;
-
-  // transfer default preset values
-  preset_store .copyPropertiesFrom(preset_seed  , nullptr) ;
-  network_store.copyPropertiesFrom(network_seed , nullptr) ;
-  restorePresetTransients(preset_store) ;
-
-  loadPreset() ; AvCaster::RefreshGui() ;
-}
-
-void AvCasterStore::loadPreset()
-{
-  int       preset_idx    = int(this->root[CONFIG::PRESET_ID]) ;
-  ValueTree preset_store  = this->presets.getChild(preset_idx) ;
-  ValueTree network_store = preset_store.getChildWithName(CONFIG::NETWORK_ID) ;
-  if (preset_idx == CONFIG::INVALID_IDX) return ; // renaming
-
-DEBUG_TRACE_LOAD_PRESET
-
-  this->config  .copyPropertiesFrom(preset_store  , nullptr) ;
-  this->network .copyPropertiesFrom(network_store , nullptr) ;
-  this->chatters.removeAllChildren(nullptr) ;
-}
-
-
-/* validations */
 
 void AvCasterStore::verifyChildNode(ValueTree config_store , Identifier a_node_id)
 {
@@ -551,6 +406,154 @@ void AvCasterStore::restorePresetTransients(ValueTree a_preset_store)
 }
 
 
+/* persistence */
+
+ValueTree AvCasterStore::loadConfig()
+{
+  // load persistent storage
+  this->storageDir           = APP::appdataDir().getChildFile(CONFIG::STORAGE_DIRNAME ) ;
+  this->storageFile          = this->storageDir .getChildFile(CONFIG::STORAGE_FILENAME) ;
+  FileInputStream* storage   = new FileInputStream(this->storageFile) ;
+  ValueTree        root_node = (storage->openedOk()) ? ValueTree::readFromStream(*storage) :
+                                                       ValueTree::invalid ;
+  delete storage ;
+
+  return root_node ;
+}
+
+void AvCasterStore::storeConfig()
+{
+DEBUG_TRACE_STORE_CONFIG
+
+  if (!this->root.isValid()) return ;
+
+  // prepare storage directory
+  this->storageDir .createDirectory() ;
+  this->storageFile.deleteFile() ;
+
+  ValueTree root_clone    = this->root   .createCopy() ;
+  ValueTree presets_clone = this->presets.createCopy() ;
+
+  // filter transient data and append presets and networks to persistent storage
+  root_clone.removeProperty(CONFIG::IS_PENDING_ID , nullptr) ;
+  root_clone.addChild      (presets_clone , -1    , nullptr) ;
+  for (int preset_n = 0 ; preset_n < presets_clone.getNumChildren() ; ++preset_n)
+  {
+    ValueTree preset_clone  = presets_clone.getChild(preset_n) ;
+    ValueTree network_clone = preset_clone .getChildWithName(CONFIG::NETWORK_ID ) ;
+
+    preset_clone .removeProperty(CONFIG::OUTPUT_ID  , nullptr) ;
+    network_clone.removeProperty(CONFIG::HOST_ID    , nullptr) ;
+    network_clone.removeProperty(CONFIG::RETRIES_ID , nullptr) ;
+  }
+
+DEBUG_TRACE_DUMP_CONFIG    (root_clone , "root_clone")
+DEBUG_TRACE_DUMP_CONFIG_XML(root_clone , "root_clone")
+
+  // marshall configuration out to persistent binary storage
+  FileOutputStream* config_stream = new FileOutputStream(this->storageFile) ;
+  if (!config_stream->failedToOpen()) root_clone.writeToStream(*config_stream) ;
+  else AvCaster::Error(GUI::STORAGE_WRITE_ERROR_MSG) ;
+  delete config_stream ;
+}
+
+void AvCasterStore::loadPreset()
+{
+  int       preset_idx    = int(this->root[CONFIG::PRESET_ID]) ;
+  ValueTree preset_store  = this->presets.getChild(preset_idx) ;
+  ValueTree network_store = preset_store.getChildWithName(CONFIG::NETWORK_ID) ;
+  if (preset_idx == CONFIG::INVALID_IDX) return ; // renaming
+
+DEBUG_TRACE_LOAD_PRESET
+
+  listen(false) ;
+  this->config  .copyPropertiesFrom(preset_store  , nullptr) ;
+  this->network .copyPropertiesFrom(network_store , nullptr) ;
+  this->chatters.removeAllChildren(nullptr) ;
+  listen(true) ;
+}
+
+void AvCasterStore::storePreset(String preset_name)
+{
+  if (preset_name.isEmpty()) return ;
+
+  Identifier preset_id     = CONFIG::FilterId(preset_name , APP::VALID_ID_CHARS) ;
+  ValueTree  preset_store  = this->presets.getOrCreateChildWithName(preset_id          , nullptr) ;
+  ValueTree  network_store = preset_store .getOrCreateChildWithName(CONFIG::NETWORK_ID , nullptr) ;
+  int        preset_idx    = this->presets.indexOf(preset_store) ;
+
+DEBUG_TRACE_STORE_PRESET
+DEBUG_TRACE_DUMP_CONFIG_XML(this->config , STRING(preset_id))
+
+#ifdef FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
+  int        fullscreen_w = int(this->config[CONFIG::SCREENCAP_W_ID]) ;
+  int        fullscreen_h = int(this->config[CONFIG::SCREENCAP_H_ID]) ;
+  int        output_w     = int(this->config[CONFIG::OUTPUT_W_ID   ]) ;
+  int        output_h     = int(this->config[CONFIG::OUTPUT_H_ID   ]) ;
+  Point<int> resolution   = AvCaster::GetCameraResolution() ;
+  int        camera_w     = resolution.getX() ;
+  int        camera_h     = resolution.getY() ;
+  var        fit_output_w = var(jmax(fullscreen_w , camera_w , output_w)) ;
+  var        fit_output_h = var(jmax(fullscreen_h , camera_h , output_h)) ;
+
+  setValue(this->config , CONFIG::OUTPUT_W_ID , fit_output_w) ;
+  setValue(this->config , CONFIG::OUTPUT_H_ID , fit_output_h) ;
+#endif // FIX_OUTPUT_RESOLUTION_TO_LARGEST_INPUT
+
+  setValue(this->config , CONFIG::PRESET_NAME_ID , preset_name) ;
+  preset_store .copyPropertiesFrom(this->config  , nullptr) ;
+  network_store.copyPropertiesFrom(this->network , nullptr) ;
+  setValue(this->root   , CONFIG::PRESET_ID      , preset_idx ) ;
+}
+
+void AvCasterStore::renamePreset(String preset_name)
+{
+  Identifier preset_id      = CONFIG::FilterId(preset_name , APP::VALID_ID_CHARS) ;
+  int        preset_idx     = int(this->root[CONFIG::PRESET_ID]) ;
+  ValueTree  conflict_store = this->presets.getChildWithName(preset_id) ;
+
+  if (conflict_store.isValid()) return ;
+
+DEBUG_TRACE_RENAME_PRESET
+
+  // destroy and re-create
+  this->presets.removeChild(preset_idx , nullptr) ;
+  setValue(this->root , CONFIG::PRESET_ID , CONFIG::INVALID_IDX) ; // force reload
+  storePreset(preset_name) ;
+}
+
+void AvCasterStore::deletePreset()
+{
+  int preset_idx = int(this->root[CONFIG::PRESET_ID]) ;
+
+  if (this->presets.getNumChildren() <= 1) return ;
+
+DEBUG_TRACE_DELETE_PRESET
+
+  this->presets.removeChild(preset_idx , nullptr) ;
+  setValue(this->root , CONFIG::PRESET_ID , CONFIG::DEFAULT_PRESET_IDX) ;
+  AvCaster::RefreshGui() ;
+}
+
+void AvCasterStore::resetPreset()
+{
+  if (!AvCaster::IsStaticPreset()) return ;
+
+  int       preset_idx    = int(this->root[CONFIG::PRESET_ID]) ;
+  ValueTree preset_store  = this->presets.getChild(preset_idx) ;
+  ValueTree network_store = preset_store .getChildWithName(CONFIG::NETWORK_ID) ;
+  ValueTree preset_seed   = Seeds::PresetSeeds().getChild(preset_idx) ;
+  ValueTree network_seed  = preset_seed         .getChildWithName(CONFIG::NETWORK_ID) ;
+
+  // transfer default preset values
+  preset_store .copyPropertiesFrom(preset_seed  , nullptr) ;
+  network_store.copyPropertiesFrom(network_seed , nullptr) ;
+  restorePresetTransients(preset_store) ;
+
+  loadPreset() ; AvCaster::RefreshGui() ;
+}
+
+
 /* runtime params */
 
 /*
@@ -629,7 +632,6 @@ DEBUG_TRACE_DETECT_CAPTURE_DEVICES
 
 void AvCasterStore::listen(bool should_listen)
 {
-  // NOTE: currently this method is needed only for AvCasterStore->deactivateControl()
   if (!AvCaster::IsInitialized) return ;
 
 DEBUG_TRACE_LISTEN
@@ -664,9 +666,13 @@ void AvCasterStore::deactivateControl(const Identifier& a_key)
 {
   if (!isMediaToggleKey(a_key)) return ;
 
+  listen(false) ;
+
 DEBUG_TRACE_DEACTIVATE_CONTROL
 
-  listen(false) ; setValue(this->config , a_key , var(false)) ; listen(true) ;
+  setValue(this->config , a_key , var(false)) ;
+
+  listen(true) ;
 }
 
 bool AvCasterStore::isKnownProperty(ValueTree a_node  , const Identifier& a_key)

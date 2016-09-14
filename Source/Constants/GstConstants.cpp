@@ -46,4 +46,5 @@ const String GST::LCTV_RTMP_URL = "rtmp://usmedia3.livecoding.tv:1935/livecoding
 const String GST::ALSA_INIT_ERROR  = "Could not open audio device for recording. Device is being used by another application." ;
 const String GST::PULSE_INIT_ERROR = "Failed to connect: Connection refused" ;
 const String GST::JACK_INIT_ERROR  = "Jack server not found" ;
+const String GST::XV_INIT_ERROR    = "Could not initialise Xv output" ;
 const String GST::FILE_SINK_ERROR  = "No file name specified for writing." ;
