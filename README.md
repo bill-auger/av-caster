@@ -110,8 +110,8 @@ $ av-caster
 #### Fedora:
 ```
 ### build dependencies ###
-$ su -c "dnf install freetype-devel gcc-c++ gstreamer1-plugins-base-devel                \
-                     libircclient-devel libX11-devel libXinerama-devel libXcursor-devel"
+$ su -c "dnf install freetype-devel gcc-c++ gstreamer1-plugins-base-devel libircclient-devel \
+                     libX11-devel libXcursor-devel libXinerama-devel libXrandr-devel"
 ### runtime dependencies (rpmfusion repositories) ###
 $ RPMFUSION_URL=http://download1.rpmfusion.org
 $ FEDORA_VERSION=$(rpm -E %fedora)
@@ -162,8 +162,8 @@ There were several similar projects considered for expansion before this project
 Also, the ffmpeg bash script that AvCaster was originally conceived to wrap is in [this gist](https://gist.github.com/bill-auger/9480205a38d9d00d2fa3) if an ultra-lightweight command-line webcasting tool is more suitable.  It is capable of recording to file or streaming to an RTMP server with screen capture, webcam, text overlay, and stereo audio.  It requires some manual configuration o/c, but is approximately twice as nice.
 
 
-[upstream]:   https://github.com/bill-auger/av-caster
-[wiki]:       https://github.com/bill-auger/av-caster/wiki/
-[tracker]:    https://github.com/bill-auger/av-caster/issues
-[gitter]:     https://gitter.im/bill-auger/av-caster
-[obs]:        http://software.opensuse.org/download/package?project=home:bill-auger&package=av-caster
+[upstream]: https://github.com/bill-auger/av-caster
+[wiki]:     https://github.com/bill-auger/av-caster/wiki/
+[tracker]:  https://github.com/bill-auger/av-caster/issues
+[gitter]:   https://gitter.im/bill-auger/av-caster
+[obs]:      http://software.opensuse.org/download/package?project=home:bill-auger&package=av-caster

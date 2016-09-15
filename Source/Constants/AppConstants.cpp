@@ -24,8 +24,8 @@ const Array<int> APP::TIMER_IVLS = Array<int>(timer_ivls , APP::N_TIMERS) ;
 
 // cli args
 const String APP::CLI_HELP_TOKEN            = "--help" ;
-const String APP::CLI_PRESETS_TOKEN         = "--presets" ;
 const String APP::CLI_VERSION_TOKEN         = "--version" ;
+const String APP::CLI_PRESETS_TOKEN         = "--presets" ;
 const String APP::CLI_PRESET_TOKEN          = "--preset" ;
 const String APP::CLI_DISABLE_MEDIA_TOKEN   = "--no-media" ;
 const String APP::CLI_SCREEN_ONLY_TOKEN     = "--screen-only" ;
@@ -41,8 +41,8 @@ const String APP::CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionSt
 const String APP::CLI_VERSION_MSG = "AvCaster v" + String(ProjectInfo::versionString) ;
 #endif // DEBUG
 const String APP::CLI_USAGE_MSG   = "AvCaster Usage:\n\n\t" + APP::APP_CMD + " [ "  + CLI_HELP_TOKEN            + " | "                                                               +
-                                                                                      CLI_PRESETS_TOKEN         + " | "                                                               +
-                                                                                      CLI_VERSION_TOKEN         + " ]"                                                                +
+                                                                                      CLI_VERSION_TOKEN         + " | "                                                               +
+                                                                                      CLI_PRESETS_TOKEN         + " ]"                                                                +
                                                      "\n\t" + APP::APP_CMD + " [ "  + CLI_PRESET_TOKEN          + " N    ] "                                                          +
                                                      "\n\t" + APP::APP_CMD + " [ "  + CLI_DISABLE_MEDIA_TOKEN   + "    ] "                                                            +
                                                                               "[ "  + CLI_DISABLE_PREVIEW_TOKEN + "  ] "                                                              +
@@ -50,20 +50,20 @@ const String APP::CLI_USAGE_MSG   = "AvCaster Usage:\n\n\t" + APP::APP_CMD + " [
                                                                               "[ "  + CLI_DISABLE_CHAT_TOKEN    + " ]"                                                                +
                                                      "\n\t" + APP::APP_CMD + " [ "  + CLI_SCREEN_ONLY_TOKEN     + " | "                                                               +
                                                                               "  "  + CLI_CAMERA_ONLY_TOKEN     + " | "                                                               +
-      //                                                                             "  "  + CLI_TEXT_ONLY_TOKEN       + " | "                                                          +
-      //                                                                             "  "  + CLI_IMAGE_ONLY_TOKEN      + " ] "                                                          +
+//                                                                               "  "  + CLI_TEXT_ONLY_TOKEN       + " | "                                                               +
+//                                                                               "  "  + CLI_IMAGE_ONLY_TOKEN      + " ] "                                                               +
                                                    "\n\n\n\tINFORMATION:"                                                                                                             +
                                                    "\n\n\t\t"                       + CLI_HELP_TOKEN            + "\n\t\t\tprints this message and exits"                             +
-                                                   "\n\n\t\t"                       + CLI_PRESETS_TOKEN         + "\n\t\t\tlist stored presets and exits"                             +
                                                    "\n\n\t\t"                       + CLI_VERSION_TOKEN         + "\n\t\t\tprints the application version string and exits"           +
+                                                   "\n\n\t\t"                       + CLI_PRESETS_TOKEN         + "\n\t\t\tlist stored presets and exits"                             +
                                                    "\n\n\n\tCONFIGURATION:"                                                                                                           +
                                                    "\n\n\t\t"                       + CLI_PRESET_TOKEN + " n"   + "\n\t\t\tstarts " + APP::APP_NAME + " with initial preset number N" +
                                                    "\n\n\n\tFEATURE SWITCHES:"                                                                                                        +
                                                    "\n\n\t\t"                       + CLI_DISABLE_MEDIA_TOKEN   + "\n\t\t\tdisables all media and stream output"                      +
                                                    "\n\n\t\t"                       + CLI_SCREEN_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders screen only"              +
                                                    "\n\n\t\t"                       + CLI_CAMERA_ONLY_TOKEN     + "\n\t\t\tdisables compositing and renders webcam only"              +
-//                                                       "\n\n\t\t"                       + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and renders text overlay only"   +
-//                                                       "\n\n\t\t"                       + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and renders static image only"   +
+//                                                    "\n\n\t\t"                       + CLI_TEXT_ONLY_TOKEN       + "\n\t\t\tdisables compositing and renders text overlay only"        +
+//                                                    "\n\n\t\t"                       + CLI_IMAGE_ONLY_TOKEN      + "\n\t\t\tdisables compositing and renders static image only"        +
                                                    "\n\n\t\t"                       + CLI_DISABLE_PREVIEW_TOKEN + "\n\t\t\tdisables realtime preview"                                 +
                                                    "\n\n\t\t"                       + CLI_DISABLE_AUDIO_TOKEN   + "\n\t\t\tdisables audio capture"                                    +
                                                    "\n\n\t\t"                       + CLI_DISABLE_CHAT_TOKEN    + "\n\t\t\tdisables chat"                                             ;

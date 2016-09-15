@@ -1443,6 +1443,9 @@
     <ClInclude Include="..\..\Source\Trace\TraceConfig.h">
       <Filter>AvCaster\Headers\Trace</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Trace\TraceControls.h">
+      <Filter>AvCaster\Headers\Trace</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Trace\TraceGstreamer.h">
       <Filter>AvCaster\Headers\Trace</Filter>
     </ClInclude>

@@ -63,7 +63,7 @@ GstElement* Gstreamer::OutputFileSink          = nullptr ;            // BuildOu
 GstElement* Gstreamer::OutputRtmpSink          = nullptr ;            // BuildOutputBin()
 GstElement* Gstreamer::OutputFauxSink          = nullptr ;            // BuildOutputBin()
 ValueTree   Gstreamer::ConfigStore             = ValueTree::invalid ; // Initialize()
-guintptr    Gstreamer::PreviewXwin             = 0    ;               // Initialize()
+guintptr    Gstreamer::PreviewXwin             = 0 ;                  // Initialize()
 
 
 /* Gstreamer private class methods */
@@ -549,7 +549,7 @@ DEBUG_TRACE_BUILD_PREVIEW_BIN
   if (!AddElement     (PreviewBin , PreviewQueue                          ) ||
       !AddElement     (PreviewBin , initial_sink                          ) ||
       !NewGhostSinkPad(PreviewBin , PreviewQueue , GST::PREVIEW_SINKPAD_ID) ||
-      !LinkElements   (PreviewQueue  , initial_sink)                         )
+      !LinkElements   (PreviewQueue , initial_sink)                          )
   { AvCaster::Error(GUI::PREVIEW_LINK_ERROR_MSG) ; return false ; }
 
   return true ;
@@ -1282,10 +1282,14 @@ DEBUG_TRACE_REMOVE_ELEMENT_OUT
 void Gstreamer::DestroyElement(GstElement* an_element)
 {
 DEBUG_TRACE_DESTROY_ELEMENT
+
+#ifdef JUCE_DEBUG
 // FIXME: on shutdown --> GStreamer-CRITICAL **: gst_object_unref: assertion '((GObject *) object)->ref_count > 0' failed
-gchar* element_name = gst_element_get_name(an_element) ;
-DBG("Gstreamer::DestroyElement(" + String(element_name) + ") refcount=" + String(GST_OBJECT_REFCOUNT_VALUE(an_element))) ;
-g_free(element_name) ;
+if (an_element != NULL) { gchar* element_name = gst_element_get_name(an_element) ;
+                          DBG("Gstreamer::DestroyElement(" + String(element_name) +
+                              ") refcount=" + String(GST_OBJECT_REFCOUNT_VALUE(an_element))) ;
+                          g_free(element_name) ; }
+#endif // JUCE_DEBUG
 
   if (an_element != nullptr && SetState(an_element , GST_STATE_NULL))
     gst_object_unref(an_element) ;
@@ -1388,8 +1392,8 @@ GstPad* Gstreamer::NewStaticSrcPad(GstElement* an_element)
 
 GstPad* Gstreamer::NewStaticPad(GstElement* an_element , String template_id)
 {
-  const gchar*  private_id = UTF8(template_id) ;
-  GstPad*       private_pad ;
+  const gchar* private_id = UTF8(template_id) ;
+  GstPad*      private_pad ;
 
   bool is_err = !(private_pad = gst_element_get_static_pad(an_element , private_id)) ;
 
@@ -1410,8 +1414,8 @@ GstPad* Gstreamer::NewRequestSrcPad(GstElement* an_element)
 
 GstPad* Gstreamer::NewRequestPad(GstElement* an_element , String template_id)
 {
-  const gchar*  private_id = UTF8(template_id) ;
-  GstPad*       private_pad ;
+  const gchar* private_id = UTF8(template_id) ;
+  GstPad*      private_pad ;
 
   bool is_err = !(private_pad = gst_element_get_request_pad(an_element , private_id)) ;
 

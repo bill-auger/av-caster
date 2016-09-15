@@ -365,6 +365,8 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
   // handle terminating CLI params
   if      (cli_params.contains(APP::CLI_HELP_TOKEN   ))
   { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG  )) ; return true ; }
+  else if (cli_params.contains(APP::CLI_VERSION_TOKEN))
+  { printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ; return true ; }
   else if (cli_params.contains(APP::CLI_PRESETS_TOKEN))
   {
     // load persistent configuration as normal
@@ -382,8 +384,6 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
 
     return true ;
   }
-  else if (cli_params.contains(APP::CLI_VERSION_TOKEN))
-  { printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ; return true ; }
 
   return false ;
 }

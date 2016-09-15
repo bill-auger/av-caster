@@ -137,7 +137,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 
 #  define DEBUG_TRACE_CONFIGURE_SCREENCAP_BIN                                         \
   String plugin_id = (is_active) ? GST::SCREEN_PLUGIN_ID : GST::TESTVIDEO_PLUGIN_ID ; \
-  Trace::TraceState("configuring ScreencapBin @ "                         +           \
+  Trace::TraceState("configuring ScreencapBin -> "                        +           \
                     String(screencap_w) + "x" + String(screencap_h)       +           \
                     " @ "                     + String(framerate) + "fps" +           \
                     " using "                 + plugin_id                 )           ;
@@ -188,7 +188,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_CONFIGURE_MUXER_BIN                                                 \
   Trace::TraceState(String("configuring MuxerBin video - ")                           +   \
       "h264 video -> "     + String(output_w)      + "x"      + String(output_h)      +   \
-                 " @ "     + String(video_bitrate) + "kbps - "                        ) ; \
+                 " @ "     + String(video_bitrate) + "kbps"                           ) ; \
   Trace::TraceState(String("configuring MuxerBin audio - ")                           +   \
       "mp3 audio 16bit @ " + String(samplerate)    + "hz -> " + String(audio_bitrate) +   \
                  "kbps x " + String(n_channels)    + " channels"                      )   ;

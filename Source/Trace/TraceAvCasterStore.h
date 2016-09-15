@@ -143,22 +143,24 @@
     Trace::TraceError("attempting to set disabled media key - ignoring") ;
 
 #  define DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , postfix)                      \
-  ValueTree a_parent_node = a_node.getParent() ;                                         \
-  String    node_id       = STRING(a_node.getType()) ;                                   \
-  String    key           = STRING(a_key           ) ;                                   \
-  String err = (isKnownProperty(a_node , a_key))    ? ""                               : \
-               (a_node        != this->root     &&                                       \
-                a_node        != this->config   &&                                       \
-                a_node        != this->network  &&                                       \
-                a_parent_node != this->presets  &&                                       \
-                a_parent_node != this->chatters &&                                       \
-                a_parent_node != this->cameras  &&                                       \
-                a_parent_node != this->audios    ) ? "unknown node '" + node_id + "' " : \
-                                                     "unknown key '"  + key     + "' " ; \
-  String change_msg = Trace::TraceSetValue(a_node , a_key , a_value) ;                   \
+  ValueTree a_parent_node   = a_node.getParent() ;                                       \
+  String    node_id         = STRING(a_node.getType()) ;                                 \
+  String    key             = STRING(a_key           ) ;                                 \
+  bool      is_unknown      = !isKnownProperty(a_node , a_key) ;                         \
+  bool      is_unknown_node = a_node        != this->root     &&                         \
+                              a_node        != this->config   &&                         \
+                              a_node        != this->network  &&                         \
+                              a_parent_node != this->presets  &&                         \
+                              a_parent_node != this->chatters &&                         \
+                              a_parent_node != this->cameras  &&                         \
+                              a_parent_node != this->audios    ;                         \
+  String    change_msg      = ((!is_unknown    ) ? ""                                :   \
+                               (is_unknown_node) ? "unknown node '" + node_id + "' " :   \
+                                                   "unknown key '"  + key     + "' " ) + \
+                              Trace::TraceSetValue(a_node , a_key , a_value) ;           \
   if (AvCaster::IsInitialized && change_msg.isNotEmpty())                                \
-    if (!err.isEmpty()) Trace::TraceError   (err + change_msg + postfix) ;               \
-    else                Trace::TraceConfigVb(      change_msg + postfix)                 ;
+    if (!is_unknown) Trace::TraceConfigVb(change_msg + postfix) ;                        \
+    else             Trace::TraceError   (change_msg + postfix)                          ;
 
 #  define DEBUG_TRACE_STORE_SET_VALUE                \
   DEBUG_TRACE_SET_VALUE(a_node , a_key , a_value , "")

@@ -24,8 +24,8 @@
           <Add option="-DDEBUG=1"/>
           <Add option="-D_DEBUG=1"/>
           <Add option="-DJUCER_CODEBLOCKS_WINDOWS_8F9AFD66=1"/>
-          <Add option="-DJUCE_APP_VERSION=0.16.003"/>
-          <Add option="-DJUCE_APP_VERSION_HEX=0x1003"/>
+          <Add option="-DJUCE_APP_VERSION=0.16.004"/>
+          <Add option="-DJUCE_APP_VERSION_HEX=0x1004"/>
           <Add directory="."/>
           <Add directory="..\..\JuceLibraryCode"/>
         </Compiler>
@@ -59,8 +59,8 @@
           <Add option="-D__MINGW_EXTENSION="/>
           <Add option="-DNDEBUG=1"/>
           <Add option="-DJUCER_CODEBLOCKS_WINDOWS_8F9AFD66=1"/>
-          <Add option="-DJUCE_APP_VERSION=0.16.003"/>
-          <Add option="-DJUCE_APP_VERSION_HEX=0x1003"/>
+          <Add option="-DJUCE_APP_VERSION=0.16.004"/>
+          <Add option="-DJUCE_APP_VERSION_HEX=0x1004"/>
           <Add directory="."/>
           <Add directory="..\..\JuceLibraryCode"/>
         </Compiler>
@@ -173,6 +173,10 @@
       <Option link="0"/>
     </Unit>
     <Unit filename="../../Source/Trace/TraceConfig.h">
+      <Option compile="0"/>
+      <Option link="0"/>
+    </Unit>
+    <Unit filename="../../Source/Trace/TraceControls.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>

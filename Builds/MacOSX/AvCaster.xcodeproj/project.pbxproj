@@ -731,6 +731,7 @@
 		E03A7CF8297FAA7085EB5374 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_ImageCache.h"; path = "../../JuceLibraryCode/modules/juce_graphics/images/juce_ImageCache.h"; sourceTree = "SOURCE_ROOT"; };
 		E059F9A440F72B927979575E = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_ComponentPeer.h"; path = "../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_ComponentPeer.h"; sourceTree = "SOURCE_ROOT"; };
 		E0A05401F20C9319D61CE889 = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = "juce_StretchableLayoutManager.cpp"; path = "../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_StretchableLayoutManager.cpp"; sourceTree = "SOURCE_ROOT"; };
+		E0BEA67387368D2976CE7EBF = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TraceControls.h; path = ../../Source/Trace/TraceControls.h; sourceTree = "SOURCE_ROOT"; };
 		E1974507FB28433A583A4A53 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = png.c; path = "../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/png.c"; sourceTree = "SOURCE_ROOT"; };
 		E1BC16700E86457836F612AB = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_PropertyPanel.h"; path = "../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_PropertyPanel.h"; sourceTree = "SOURCE_ROOT"; };
 		E305F57596D1B482511B7A71 = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "juce_RectanglePlacement.h"; path = "../../JuceLibraryCode/modules/juce_graphics/placement/juce_RectanglePlacement.h"; sourceTree = "SOURCE_ROOT"; };
@@ -864,6 +865,7 @@
 					98A3872C5B54FBA732E33F87,
 					41C38F44A2FDBD8EE705E451,
 					FCB3A2ABE0133C8735964D91,
+					E0BEA67387368D2976CE7EBF,
 					F64E293166D68BA7635F97B9,
 					2D9B6A0F65363B2BEB230F8D,
 					3A909C06929DE37D9B1A427F, ); name = Trace; sourceTree = "<group>"; };
@@ -1798,8 +1800,8 @@
 					"_DEBUG=1",
 					"DEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=0.16.003",
-					"JUCE_APP_VERSION_HEX=0x1003", );
+					"JUCE_APP_VERSION=0.16.004",
+					"JUCE_APP_VERSION_HEX=0x1004", );
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = ("../../JuceLibraryCode", "../../JuceLibraryCode/modules", "$(inherited)");
 				INFOPLIST_FILE = Info-App.plist;
@@ -1819,8 +1821,8 @@
 					"_NDEBUG=1",
 					"NDEBUG=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=0.16.003",
-					"JUCE_APP_VERSION_HEX=0x1003", );
+					"JUCE_APP_VERSION=0.16.004",
+					"JUCE_APP_VERSION_HEX=0x1004", );
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = ("../../JuceLibraryCode", "../../JuceLibraryCode/modules", "$(inherited)");

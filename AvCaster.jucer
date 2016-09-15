@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.003"
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.004"
               bundleIdentifier="org.bill-auger.AvCaster" includeBinaryInAppConfig="1"
               jucerVersion="4.2.1" userNotes="" companyWebsite="" License="/*\&#10;|*|  Copyright 2015-2016 bill-auger &lt;https://github.com/bill-auger/av-caster/issues&gt;&#10;|*|&#10;|*|  This file is part of the AvCaster program.&#10;|*|&#10;|*|  AvCaster is free software: you can redistribute it and/or modify&#10;|*|  it under the terms of the GNU General Public License version 3&#10;|*|  as published by the Free Software Foundation.&#10;|*|&#10;|*|  AvCaster is distributed in the hope that it will be useful,&#10;|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of&#10;|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#10;|*|  GNU General Public License for more details.&#10;|*|&#10;|*|  You should have received a copy of the GNU General Public License&#10;|*|  along with AvCaster.  If not, see &lt;http://www.gnu.org/licenses/&gt;.&#10;\*/">
   <MAINGROUP id="EzgwIT" name="AvCaster">
@@ -41,6 +41,7 @@
               file="Source/Trace/TraceAvCasterStore.h"/>
         <FILE id="h9pAwt" name="TraceChat.h" compile="0" resource="0" file="Source/Trace/TraceChat.h"/>
         <FILE id="NyIKTu" name="TraceConfig.h" compile="0" resource="0" file="Source/Trace/TraceConfig.h"/>
+        <FILE id="A1ReAf" name="TraceControls.h" compile="0" resource="0" file="Source/Trace/TraceControls.h"/>
         <FILE id="dToFg4" name="TraceGstreamer.h" compile="0" resource="0"
               file="Source/Trace/TraceGstreamer.h"/>
         <FILE id="hB9rdH" name="TraceIrcClient.h" compile="0" resource="0"
@@ -208,21 +209,6 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </CODEBLOCKS_LINUX>
-    <ANDROIDSTUDIO targetFolder="Builds/AndroidStudio">
-      <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" androidArchitectures="armeabi armeabi-v7a x86" isDebug="1"
-                       optimisation="1" targetName="AvCaster"/>
-        <CONFIGURATION name="Release" androidArchitectures="armeabi armeabi-v7a x86"
-                       isDebug="0" optimisation="3" targetName="AvCaster"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
-        <MODULEPATH id="juce_graphics" path="../../juce"/>
-        <MODULEPATH id="juce_events" path="../../juce"/>
-        <MODULEPATH id="juce_data_structures" path="../../juce"/>
-        <MODULEPATH id="juce_core" path="../../juce"/>
-      </MODULEPATHS>
-    </ANDROIDSTUDIO>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="1"/>

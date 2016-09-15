@@ -1506,6 +1506,8 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             setMethod ("remove",   remove);
             setMethod ("join",     join);
             setMethod ("push",     push);
+            setMethod ("splice",   splice);
+            setMethod ("indexOf",  indexOf);
         }
 
         static Identifier getClassName()   { static const Identifier i ("Array"); return i; }
@@ -1548,6 +1550,52 @@ struct JavascriptEngine::RootObject   : public DynamicObject
             }
 
             return var::undefined();
+        }
+
+        static var splice (Args a)
+        {
+            if (Array<var>* array = a.thisObject.getArray())
+            {
+                const int arraySize = array->size();
+                int start = get (a, 0);
+
+                if (start < 0)
+                    start = jmax (0, arraySize + start);
+                else if (start > arraySize)
+                    start = arraySize;
+
+                const int num = a.numArguments > 1 ? jlimit (0, arraySize - start, getInt (a, 1))
+                                                   : arraySize - start;
+
+                Array<var> itemsRemoved;
+                itemsRemoved.ensureStorageAllocated (num);
+
+                for (int i = 0; i < num; ++i)
+                    itemsRemoved.add (array->getReference (start + i));
+
+                array->removeRange (start, num);
+
+                for (int i = 2; i < a.numArguments; ++i)
+                    array->insert (start++, get (a, i));
+
+                return itemsRemoved;
+            }
+
+            return var::undefined();
+        }
+
+        static var indexOf (Args a)
+        {
+            if (const Array<var>* array = a.thisObject.getArray())
+            {
+                const var target (get (a, 0));
+
+                for (int i = (a.numArguments > 1 ? getInt (a, 1) : 0); i < array->size(); ++i)
+                    if (array->getReference(i) == target)
+                        return i;
+            }
+
+            return -1;
         }
     };
 

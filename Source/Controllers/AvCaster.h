@@ -34,11 +34,8 @@ class Alert
 {
 public:
 
-  Alert(GUI::AlertType message_type , String message_text)
-  {
-    this->messageType = message_type ;
-    this->messageText = message_text ;
-  }
+  Alert(GUI::AlertType message_type , String message_text) : messageType(message_type) ,
+                                                             messageText(message_text) {}
 
   GUI::AlertType messageType ;
   String         messageText ;
