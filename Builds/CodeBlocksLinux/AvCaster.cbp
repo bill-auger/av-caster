@@ -37,8 +37,8 @@
           <Add option="-DDEBUG=1"/>
           <Add option="-D_DEBUG=1"/>
           <Add option="-DJUCER_CODEBLOCKS_LINUX_191E0897=1"/>
-          <Add option="-DJUCE_APP_VERSION=0.16.004"/>
-          <Add option="-DJUCE_APP_VERSION_HEX=0x1004"/>
+          <Add option="-DJUCE_APP_VERSION=0.16.005"/>
+          <Add option="-DJUCE_APP_VERSION_HEX=0x1005"/>
           <Add directory="."/>
           <Add directory="..\..\JuceLibraryCode"/>
           <Add directory="/usr/include/freetype2"/>
@@ -48,11 +48,7 @@
           <Add option="--libs"/>
           <Add option="gstreamer-1.0&#96;"/>
           <Add option="gstreamer-video-1.0&#96;"/>
-          <Add library="X11"/>
-          <Add library="Xext"/>
-          <Add library="Xinerama"/>
           <Add library="dl"/>
-          <Add library="freetype"/>
           <Add library="pthread"/>
           <Add library="rt"/>
         </Linker>
@@ -85,8 +81,8 @@
           <Add option="-DLINUX=1"/>
           <Add option="-DNDEBUG=1"/>
           <Add option="-DJUCER_CODEBLOCKS_LINUX_191E0897=1"/>
-          <Add option="-DJUCE_APP_VERSION=0.16.004"/>
-          <Add option="-DJUCE_APP_VERSION_HEX=0x1004"/>
+          <Add option="-DJUCE_APP_VERSION=0.16.005"/>
+          <Add option="-DJUCE_APP_VERSION_HEX=0x1005"/>
           <Add directory="."/>
           <Add directory="..\..\JuceLibraryCode"/>
           <Add directory="/usr/include/freetype2"/>
@@ -97,11 +93,7 @@
           <Add option="--libs"/>
           <Add option="gstreamer-1.0&#96;"/>
           <Add option="gstreamer-video-1.0&#96;"/>
-          <Add library="X11"/>
-          <Add library="Xext"/>
-          <Add library="Xinerama"/>
           <Add library="dl"/>
-          <Add library="freetype"/>
           <Add library="pthread"/>
           <Add library="rt"/>
         </Linker>
@@ -2505,6 +2497,18 @@
       <Option link="0"/>
     </Unit>
     <Unit filename="../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ConcertinaPanel.h">
+      <Option compile="0"/>
+      <Option link="0"/>
+    </Unit>
+    <Unit filename="../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_FlexBox.cpp">
+      <Option compile="0"/>
+      <Option link="0"/>
+    </Unit>
+    <Unit filename="../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_FlexBox.h">
+      <Option compile="0"/>
+      <Option link="0"/>
+    </Unit>
+    <Unit filename="../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_FlexItem.h">
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>

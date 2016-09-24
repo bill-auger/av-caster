@@ -31,7 +31,7 @@
             BufferSecurityCheck=""
             DebugInformationFormat="4"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.004;JUCE_APP_VERSION_HEX=0x1004"
+            PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.005;JUCE_APP_VERSION_HEX=0x1005"
             RuntimeLibrary="1"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -50,6 +50,7 @@
             SuppressStartupBanner="true"
             IgnoreDefaultLibraryNames="libcmt.lib, msvcrt.lib"
             GenerateDebugInformation="true"
+            LinkIncremental="1"
             ProgramDatabaseFile="$(IntDir)\AvCaster.pdb"
             SubSystem="2"
             GenerateManifest="true"
@@ -86,7 +87,7 @@
             InlineFunctionExpansion="1"
             StringPooling="true"
             AdditionalIncludeDirectories="..\..\JuceLibraryCode;..\..\JuceLibraryCode\modules"
-            PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.004;JUCE_APP_VERSION_HEX=0x1004"
+            PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCER_VS2008_78A5006=1;JUCE_APP_VERSION=0.16.005;JUCE_APP_VERSION_HEX=0x1005"
             RuntimeLibrary="0"
             RuntimeTypeInfo="true"
             UsePrecompiledHeader="0"
@@ -105,6 +106,7 @@
             SuppressStartupBanner="true"
             IgnoreDefaultLibraryNames=""
             GenerateDebugInformation="false"
+            LinkIncremental="1"
             ProgramDatabaseFile="$(IntDir)\AvCaster.pdb"
             SubSystem="2"
             GenerateManifest="true"
@@ -3265,6 +3267,18 @@
             </FileConfiguration>
           </File>
           <File RelativePath="..\..\JuceLibraryCode\modules\juce_gui_basics\layout\juce_ConcertinaPanel.h"/>
+          <File RelativePath="..\..\JuceLibraryCode\modules\juce_gui_basics\layout\juce_FlexBox.cpp">
+            <FileConfiguration Name="Debug|Win32"
+                               ExcludedFromBuild="true">
+              <Tool Name="VCCLCompilerTool"/>
+            </FileConfiguration>
+            <FileConfiguration Name="Release|Win32"
+                               ExcludedFromBuild="true">
+              <Tool Name="VCCLCompilerTool"/>
+            </FileConfiguration>
+          </File>
+          <File RelativePath="..\..\JuceLibraryCode\modules\juce_gui_basics\layout\juce_FlexBox.h"/>
+          <File RelativePath="..\..\JuceLibraryCode\modules\juce_gui_basics\layout\juce_FlexItem.h"/>
           <File RelativePath="..\..\JuceLibraryCode\modules\juce_gui_basics\layout\juce_GroupComponent.cpp">
             <FileConfiguration Name="Debug|Win32"
                                ExcludedFromBuild="true">
