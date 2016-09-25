@@ -382,7 +382,7 @@ void Config::buttonClicked(Button* a_button)
   // Image buttons
   else if (a_button == this->browseButton)
   {
-    FileChooser           file_chooser(GUI::IMAGE_CHOOSER_TEXT , APP::picturesDir() ,
+    FileChooser           file_chooser(GUI::IMAGE_CHOOSER_TEXT , APP::PicturesDir() ,
                                        GUI::IMG_FILE_EXTS      , false              ) ;
     ImagePreviewComponent image_preview ;
 //     image_preview.setSize(GUI::IMG_PREVIEW_W , GUI::IMG_PREVIEW_H) ; // NFG

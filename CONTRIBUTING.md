@@ -1,26 +1,25 @@
 ### AvCaster Contribution Guidelines
 
-AvCaster source code and assets are distributed as [free software](https://www.gnu.org/philosophy/free-sw.html) and [free culture](http://freedomdefined.org/Definition).  This agreement is not a copyright assignment.  It's function is merely to ensure that AvCaster remains free.
+AvCaster source code, binary assets, and documentation are distributed as [free software](https://www.gnu.org/philosophy/free-sw.html) and [free culture](http://freedomdefined.org/Definition).  To this end, it is necessary for all contributors to be in agreement about this.  This agreement is not a copyright assignment.  It's function is merely to ensure that AvCaster remains free (as in freedom).
 
-In short, this means that as a contributor, you allow others to copy, distribute, and modify their copies or your work; provided that they extend this priviledge to others and credit you as the original author.  This implies that all source materials are made available in their preferred form for modification; so for multimedia, this is all individual source files and/or editor project files in addition to the "mixed-down" binary artifacts.  Refer to the Terms below for details.
+In short, this means that as a contributor, you allow others to copy, distribute, and modify their copies or your work; provided that they extend this priviledge to others and credit you as the original author.  This implies that all source materials are made available in their respective preferred forms for modification; so for multimedia, this is all individual source files and/or editor project files in addition to the "mixed-down" binary artifacts.  Refer to the Terms below for details.
 
 
 ### Contributor License Agreement Terms
 As a contributor, you agree that all contributions to the source tree, wiki, and issue tracker that are unlicensed and not in the public domain will automatically fall under the same appropriate licence as AvCaster: [GPLv3](COPYING.md) for source code, [GNU-FDLv1.3](Documentation/README.md) for documentation, and [GPLv3](Assets/README.md) for multimedia and other binaries (such as audio, video, and images).
 
-For multimedia and other binaries, the "sources" or "preferred form" as relating to the GPL
-is explicitly defined to be any and all binary data, meta-data, editor project files, scripts, and source code of custom executables that are necessary to accomplish all of the following using only widely-available free software:
+For multimedia and other binaries, the "sources" or "preferred forms" for modification in the context of the GPL as it applies to the AvCaster project are explicitly defined here to be any and all binary data, meta-data, editor project files, scripts, and source code of custom executables that are necessary to accomplish all of the following using only widely-available free software:
 * regenerate the associated target artifacts completely and accurately
 * modify these "preferred form" decomposed sources directly and individually
 * compose the original and modified sources
 * generate equivalent modified versions of the associated target artifacts
 
 For example:
-* "target artifact" such as a composed (mixed-down) .png, .svg, .wav, etc (these are typically all that is covered by a Crerative Commons licencse)
-* "binary data" such as the individual elements that compose the "target artifact" (images, sound tracks, etc.)
-* "editor project files" such as .xcf, .psd, .aup, .ardour, etc.
-* "meta-data", "scripts", and "source code of custom executables" such as 3D models, openGL shaders, etc.
-* "widely-available free software" such as GIMP, Inkscape, Audacity, Ardour, etc.
+* "target artifact" such as final composed (mixed-down) .png, .wav, .webm, etc (these are typically all that is covered by Crerative Commons licencses)
+* "binary data" such as the individual elements that compose the "target artifact" (uncompressed images, sound tracks, etc.)
+* "meta-data" and "editor project files" such as .xcf, .psd, .aup, .ardour, etc.
+* "declarative recipes", "scripts", and "source code of custom executables" such as 3D models, SVG images, MIDI data, openGL shaders, etc.
+* "widely-available free software" such as GIMP, Inkscape, Audacity, Ardour, Blender, etc.
 
 If you are not the sole author of your contribution (i.e. it is a combined or derivative work incorporating or based on someone else's work), then all source works must be freely copyable (either public domain or distributable under the terms of some [GPL-compatible license](https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses) such as Creative Commonns) and you must clearly give attribution to the copyright holders with hyperlinks to the original sources and licenses.
 
@@ -31,40 +30,38 @@ Contributions that do not meet the above criteria will not be accepted and will 
 
 You will find in the Builds/Scripts directory some helper scripts to aid in building and debugging this application with gcc and gdb.
 
-Simply run ```./Builds/Scripts/setup-build-helpers``` to install them to the av-caster root directory. See Builds/Scripts/README.md for usage.
+Simply run ```Builds/Scripts/setup-build-helpers``` to install them to the av-caster root directory. See Builds/Scripts/README.md for usage.
 
-Generally speaking, the files under the Builds/ directory are not to be modified manually nor should any reconfiguration be done from within an IDE.
+Generally speaking, the files under the Builds/ directory are not to be modified manually nor should any reconfiguration be done from within an IDE.  This is sometimes useful for experimentation but note that changes made with external tools will not persist.  Inevitably, all project configuration must be done using the Projucer project manager because important files in the Builds/ directories are clobbered by the Projucer upon each save; and the only files under the platform-specific Builds/ directories that should be committed to version control are those generated by Projucer and otherwise unmodified.
 
-This is sometimes necessary for experimentation but note that these changes will not persist.
-
-Inevitably, all project configuration must be done using the Projucer project manager because the important files in all of the Builds/ directories are clobbered by the Projucer on each save.
-
-In short, it is almost always the case that files under the Builds/ directory that are committed to version control are only those generated by Projucer and otherwise unmodified.
-
-This is not relevant to most development tasks, but if you must use the Projucer for design or project maintenance, please compile it from the 'gnu-jucer' branch as described in the 'Designers' section below.
+Projucer is not relevant to most development tasks, but if you must use it for design or project maintenance, please compile it from the 'gnu-jucer' branch as described in the 'Designers' section below.
 
 
 ### Designers
 
-```bash
-### If you want to work with the AvCaster sources directly -
-        first install the build dependencies above for your system
-            as noted in the README.md
-        then fork the AvCaster repo, clone the design branch,
-            and compile as noted in the README.md
-        then clone and compile the Projucer GUI builder and project manager ###
-### Clone the design branch locally ###
-$ cd YOUR_DEV_DIR
-$ git clone -b design https://github.com/YOUR_GITHUB_NICK/av-caster
-### then compile AvCaster as noted in the README.md ###
+* Fork the AvCaster repo then clone AvCaster and JUCE locally
 
-### Compile the Projucer GUI builder and project manager ###
-$ cd YOUR_DEV_DIR
-$ git clone -b gnu-jucer --depth 1 https://github.com/bill-auger/JUCE.git juce
-$ cd juce/extras/Projucer/Builds/LinuxMakefile/
-$ make
-$ ./build/Projucer ../../../../../av-caster/AvCaster.jucer
+```bash
+### Clone the design branch locally ###
+cd YOUR_DEV_DIR
+git clone -b design https://github.com/YOUR_GITHUB_NICK/av-caster
+
+### Clone the Projucer gnu-jucer branch locally ###
+cd YOUR_DEV_DIR
+git clone -b gnu-jucer --depth 1 https://github.com/bill-auger/JUCE.git juce
 ```
+
+* Compile via the Makefile or one of the IDE project files under the Builds/ directory
+  * juce/extras/Projucer/Builds/LinuxMakefile/
+  * juce/extras/Projucer/Builds/MacOSX/
+  * juce/extras/Projucer/Builds/VisualStudio2013/
+  * juce/extras/Projucer/Builds/VisualStudio2015/
+* Copy the Projucer binary from your chosen Builds/ directory to a convenient location
+* Run the Projucer
+* Browse into the av-caster/ directory where you cloned AvCaster
+* Choose the AvCaster.jucer file
+
+Note that the Projucer is not a pixel-perfect WYSIWYG editor.  The premium and trial versions of Project include a live preview on some platforms otherwise you may need to compile AvCaster to see the true representation.  Refer to the "Building from Source" section of the README.md to compile AvCaster.
 
 
 ### Pull Requests
@@ -72,7 +69,7 @@ $ ./build/Projucer ../../../../../av-caster/AvCaster.jucer
 * Developers: please issue pull requests against the [upstream 'development' branch: https://github.com/bill-auger/av-caster](https://github.com/bill-auger/av-caster/tree/development).
 * Designers: please issue pull requests against the [upstream 'design' branch: https://github.com/bill-auger/av-caster](https://github.com/bill-auger/av-caster/tree/design).
 
-Note that branches other than 'master' tend to be rebased often so you may need to force pull those.  Please rebase all pull requests on/into the latest development or design HEAD and squash trivial commits but try to retain significant notable commits (see example below).  Ideally in this way, all upstream branches should be a fast-foreward from master and so re-sync should be simple.
+Note that branches other than 'master' tend to be rebased often so you may need to force pull those.  Please rebase all pull requests onto the latest development or design HEAD and squash trivial commits but try to retain significant notable commits (see example below).  Ideally in this way, all upstream branches should be a fast-foreward from master and so re-sync should be simple.
 
 
 ### Commit Messages
@@ -99,4 +96,4 @@ add bar powers to the mighty foo (issue #42)
 
 ### Issue Tracker
 
-Please do not hesitate to use the issue tracker for bug reports or constructive notes related to that specific issue and significant progress updates that are not yet in a pull request; but use the gitter chat or other channels for other issues and lengthy discussions.
+Please do not hesitate to use the issue tracker for bug reports, feature requests, constructive notes on existing issues, and significant progress updates that are not yet in a pull request; but use the gitter chat or other channels for lengthy discussions and other issues such as help.

@@ -27,17 +27,31 @@
 
 /* state */
 
-#  define DEBUG_TRACE_INIT_VERSION LOG(AvCaster::GstVersionMsg()) ; LOG(APP::CLI_VERSION_MSG) ;
+#  define DEBUG_TRACE_INIT_VERSION                        \
+  if (!cli_params.contains(APP::CLI_VERSION_TOKEN))       \
+    LOG(AvCaster::VersionMsg().joinIntoString("\n") + "\n") ;
 
 #  define DEBUG_TRACE_SHUTDOWN_IN  Trace::TraceState("shutting down") ;
 
 #  define DEBUG_TRACE_SHUTDOWN_OUT Trace::TraceState("clean shutdown - bye") ;
 
+
+/* alerts */
+
+#  define DEBUG_TRACE_ALERT                                                             \
+  if      (message_type == GUI::ALERT_TYPE_WARNING) Trace::TraceWarning(message_text) ; \
+  else if (message_type == GUI::ALERT_TYPE_ERROR  ) Trace::TraceError  (message_text)   ;
+
+#  define DEBUG_TRACE_DISPLAY_ALERT                                                \
+  Trace::TraceGuiVb("displaying alert - (" + String(Alerts.size()) + " remaining") ;
+
 #else // DEBUG_TRACE
 
-#  define DEBUG_TRACE_INIT_VERSION ;
-#  define DEBUG_TRACE_SHUTDOWN_IN  ;
-#  define DEBUG_TRACE_SHUTDOWN_OUT ;
+#  define DEBUG_TRACE_INIT_VERSION  ;
+#  define DEBUG_TRACE_SHUTDOWN_IN   ;
+#  define DEBUG_TRACE_SHUTDOWN_OUT  ;
+#  define DEBUG_TRACE_ALERT         ;
+#  define DEBUG_TRACE_DISPLAY_ALERT ;
 
 #endif // DEBUG_TRACE
 #endif // _TRACEMAIN_H_

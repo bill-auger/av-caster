@@ -42,7 +42,7 @@
 #  define DEBUG_TRACE_GST_INIT_PHASE_7 Trace::TraceState("Gstreamer ready") ;
 
 #  define DEBUG_DUMP_MEDIA_SWITCHES                                            \
-  if (!is_config_sane || DEBUG_TRACE_MEDIA_VB)                                 \
+  if (!is_config_sane || Trace::MediaVbEnabled)                                \
     Trace::TraceMedia(String("pipeline configuration params =>")             + \
                       "\n\tn_video_inputs="     + String(n_video_inputs    ) + \
                       "\n\tis_media_enabled="   + String(is_media_enabled  ) + \
@@ -97,6 +97,11 @@
     if (is_err) Trace::TraceError("error setting" + dbg) ;       \
     else        Trace::TraceState("set"           + dbg)         ;
 
+// GstElement* GetElementById(GstBin* a_bin , String element_id)
+// {
+//   return gst_bin_get_by_name(a_bin , CHARSTAR(element_id)) ;
+// }
+
 
 /* bus messages */
 
@@ -116,8 +121,8 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 
   g_free(gvalue_str) ;
 }
-#  define DEBUG_TRACE_DUMP_MESSAGE_STRUCT                            \
-  if (DEBUG_TRACE_MEDIA_VB) MessageStructEach(message , DumpMessage) ;
+#  define DEBUG_TRACE_DUMP_MESSAGE_STRUCT                             \
+  if (Trace::MediaVbEnabled) MessageStructEach(message , DumpMessage) ;
 
 #  define DEBUG_TRACE_MESSAGE_UNHANDLED                                                         \
   Trace::TraceMediaVb("got unhandled message '" + String(GST_MESSAGE_TYPE_NAME(message)) + "'") ;
@@ -273,11 +278,14 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_MAKE_CAPS                                     \
   if (new_caps == nullptr) Trace::TraceError("error creating caps") ;
 
-#  define DEBUG_TRACE_ADD_ELEMENT                          \
-  String dbg = " element '" + GetElementId(an_element)   + \
-               "' to '"     + GetElementId(a_bin) + "'"  ; \
-  if (is_err) Trace::TraceError("error adding" + dbg) ;    \
-  else        Trace::TraceMedia("added"        + dbg)      ;
+#  define DEBUG_TRACE_ADD_ELEMENT_IN                      \
+  String dbg = " element '" + GetElementId(an_element)  + \
+               "' to '"     + GetElementId(a_bin) + "'" ; \
+  Trace::TraceMedia("adding" + dbg)                       ;
+
+#  define DEBUG_TRACE_ADD_ELEMENT_OUT                   \
+  if (is_err) Trace::TraceError("error adding" + dbg) ; \
+  else        Trace::TraceMedia("added"        + dbg)   ;
 
 #  define DEBUG_TRACE_REMOVE_ELEMENT_IN                                         \
   String dbg = " element '"   + GetElementId(an_element) +                      \
@@ -345,10 +353,8 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_GET_REQUEST_PAD String pad_avail = "request" ; DEBUG_TRACE_GET_PAD
 
 #  define DEBUG_MAKE_GRAPHVIZ                                                                  \
-  String color = (DEBUG_ANSI_COLORS) ? "\033[1;34m" : "" ;                                     \
-  String cend  = (DEBUG_ANSI_COLORS) ? "\033[0m"    : "" ;                                     \
   char* graph_name = std::getenv("AVCASTER_GRAPH_NAME") ;                                      \
-  Trace::TraceConfig(color +  "creating graph " + String(graph_name) + cend) ;                 \
+  Trace::TraceConfig(CBLUE + "creating graph " + String(graph_name) + CEND) ;                  \
   GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(Pipeline) , GST_DEBUG_GRAPH_SHOW_ALL , graph_name) ;
 
 #else // DEBUG_TRACE
@@ -402,7 +408,8 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 #  define DEBUG_TRACE_CONFIGURE_FLVMUX          ;
 #  define DEBUG_TRACE_MAKE_ELEMENT              ;
 #  define DEBUG_TRACE_MAKE_CAPS                 ;
-#  define DEBUG_TRACE_ADD_ELEMENT               ;
+#  define DEBUG_TRACE_ADD_ELEMENT_IN            ;
+#  define DEBUG_TRACE_ADD_ELEMENT_OUT           ;
 #  define DEBUG_TRACE_REMOVE_ELEMENT_IN         ;
 #  define DEBUG_TRACE_REMOVE_ELEMENT_OUT        ;
 #  define DEBUG_TRACE_DESTROY_ELEMENT           ;

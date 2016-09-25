@@ -106,7 +106,7 @@ static void PopulateEventCodes()
   String      newnicks_csv = newnicks.joinIntoString(",") ;                     \
   Trace::TraceChat("got ("          + nnewnicks + "/"           + ntotalnicks + \
                    ") NAMES from '" + network   + "' channel: " + channel     + \
-                   ((DEBUG_TRACE_CHAT_VB) ? " [" + newnicks_csv + "]" : "")   ) ;
+                   ((Trace::ChatVbEnabled) ? " [" + newnicks_csv + "]" : "")  ) ;
 
 #  define DEBUG_TRACE_CHAT_MSG_VB                                                        \
   if (count == 2) Trace::TraceChatVb("'" + String((!!origin) ? origin : "someone") +     \

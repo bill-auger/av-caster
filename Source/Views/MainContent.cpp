@@ -20,7 +20,7 @@
 //[Headers] You can add your own extra header files here...
 
 #include "../Controllers/AvCaster.h"
-#include "../Trace/Trace.h"
+#include "../Trace/TraceMain.h"
 
 //[/Headers]
 
@@ -28,6 +28,12 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+
+/* Alert class variables */
+
+Array<Alert*> Alert::Alerts ;               // AvCaster::Warning() , AvCaster::Error()
+bool          Alert::IsAlertModal = false ; // Display() , OnModalDismissed()
+
 //[/MiscUserDefs]
 
 //==============================================================================
@@ -204,24 +210,6 @@ void MainContent::initialize(ValueTree config_store   , ValueTree network_store 
   this->chat->chatList->initialize(network_store , chatters_store   ) ;
 }
 
-void MainContent::warning(String message_text)
-{
-  if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
-
-  AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon , GUI::MODAL_WARNING_TITLE ,
-                                   message_text          , String::empty            ,
-                                   nullptr               , AvCaster::GetModalCb()   ) ;
-}
-
-void MainContent::error(String message_text)
-{
-  if (JUCEApplicationBase::getInstance()->isInitialising()) return ;
-
-  AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon , GUI::MODAL_ERROR_TITLE ,
-                                   message_text             , String::empty          ,
-                                   nullptr                  , AvCaster::GetModalCb() ) ;
-}
-
 Rectangle<int> MainContent::getPreviewBounds()
 {
   Rectangle<int> preview_bounds = this->preview->getBounds() ;
@@ -245,6 +233,63 @@ void AvCasterTrayIconComponent::mouseDown(const MouseEvent& mouse_event)
 // Juce Note: that for detecting popupmenu clicks, you should be using isPopupMenu()
 }
 #endif // TRAY_ICON
+
+
+/* Alert public class methods */
+
+void Alert::Push(GUI::AlertType message_type , String message_text)
+{
+DEBUG_TRACE_ALERT
+
+#ifndef SUPRESS_ALERTS
+  Alerts.add(new Alert(message_type , message_text)) ;
+#endif // SUPRESS_ALERTS
+}
+
+bool Alert::AreAnyPending() { return IsAlertModal || Alerts.size() > 0 ; }
+
+
+/* Alert private class methods */
+
+void Alert::Display()
+{
+  if (IsAlertModal || Alerts.size() == 0) return ;
+
+  GUI::AlertType message_type = Alerts[0]->messageType ;
+  String         message_text = Alerts[0]->messageText ;
+  IsAlertModal                = true ;
+
+  Alerts.remove(0) ;
+
+DEBUG_TRACE_DISPLAY_ALERT
+
+  switch (message_type)
+  {
+    case GUI::ALERT_TYPE_WARNING: Warning(message_text) ; break ;
+    case GUI::ALERT_TYPE_ERROR:   Error  (message_text) ; break ;
+    default:                                              break ;
+  }
+}
+
+void Alert::Warning(String message_text)
+{
+  ModalComponentManager::Callback* callback = ModalCallbackFunction::create(OnModalDismissed , 0) ;
+
+  AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon , GUI::MODAL_WARNING_TITLE ,
+                                   message_text          , String::empty            ,
+                                   nullptr               , callback                 ) ;
+}
+
+void Alert::Error(String message_text)
+{
+  ModalComponentManager::Callback* callback = ModalCallbackFunction::create(OnModalDismissed , 0) ;
+
+  AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon , GUI::MODAL_ERROR_TITLE ,
+                                   message_text             , String::empty          ,
+                                   nullptr                  , callback               ) ;
+}
+
+void Alert::OnModalDismissed(int /*result*/ , int /*unused*/) { IsAlertModal = false ; }
 
 //[/MiscUserCode]
 

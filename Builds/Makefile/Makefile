@@ -36,10 +36,10 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := -march=native
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DJUCER_LINUX_MAKE_9CCEB774=1 -DJUCE_APP_VERSION=0.16.005 -DJUCE_APP_VERSION_HEX=0x1005 $(shell pkg-config --cflags freetype2 libcurl x11 xext xinerama) -pthread -I../../JuceLibraryCode -I../../JuceLibraryCode/modules
+  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DJUCER_LINUX_MAKE_9CCEB774=1 -DJUCE_APP_VERSION=0.16.005 -DJUCE_APP_VERSION_HEX=0x1005 $(shell pkg-config --cflags freetype2 x11 xext xinerama) -pthread -I../../JuceLibraryCode -I../../JuceLibraryCode/modules
   JUCE_CFLAGS += $(CFLAGS) $(JUCE_CPPFLAGS) $(TARGET_ARCH) -O3 $(if $(filter-out x86_64 , $(shell uname -m)) , -malign-double , -fPIC) `pkg-config --cflags gstreamer-1.0` -I /usr/include/libircclient
   JUCE_CXXFLAGS += $(CXXFLAGS) $(JUCE_CFLAGS) -std=c++11
-  JUCE_LDFLAGS += $(LDFLAGS) $(TARGET_ARCH) -L$(JUCE_BINDIR) -L$(JUCE_LIBDIR) -fvisibility=hidden $(shell pkg-config --libs freetype2 libcurl x11 xext xinerama) -ldl -lpthread -lrt -lircclient `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
+  JUCE_LDFLAGS += $(LDFLAGS) $(TARGET_ARCH) -L$(JUCE_BINDIR) -L$(JUCE_LIBDIR) -fvisibility=hidden $(shell pkg-config --libs freetype2 x11 xext xinerama) -ldl -lpthread -lrt -lircclient `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
 
   TARGET := av-caster
   BLDCMD = $(CXX) -o $(JUCE_OUTDIR)/$(TARGET) $(OBJECTS) $(JUCE_LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
@@ -56,10 +56,10 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := -march=native
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DDEBUG=1 -D_DEBUG=1 -DJUCER_LINUX_MAKE_9CCEB774=1 -DJUCE_APP_VERSION=0.16.005 -DJUCE_APP_VERSION_HEX=0x1005 $(shell pkg-config --cflags freetype2 libcurl x11 xext xinerama) -pthread -I../../JuceLibraryCode -I../../JuceLibraryCode/modules
+  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DDEBUG=1 -D_DEBUG=1 -DJUCER_LINUX_MAKE_9CCEB774=1 -DJUCE_APP_VERSION=0.16.005 -DJUCE_APP_VERSION_HEX=0x1005 $(shell pkg-config --cflags freetype2 x11 xext xinerama) -pthread -I../../JuceLibraryCode -I../../JuceLibraryCode/modules
   JUCE_CFLAGS += $(CFLAGS) $(JUCE_CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0 $(if $(filter-out x86_64 , $(shell uname -m)) , -malign-double , -fPIC) `pkg-config --cflags gstreamer-1.0` -I /usr/include/libircclient
   JUCE_CXXFLAGS += $(CXXFLAGS) $(JUCE_CFLAGS) -std=c++11
-  JUCE_LDFLAGS += $(LDFLAGS) $(TARGET_ARCH) -L$(JUCE_BINDIR) -L$(JUCE_LIBDIR) $(shell pkg-config --libs freetype2 libcurl x11 xext xinerama) -ldl -lpthread -lrt -lircclient `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
+  JUCE_LDFLAGS += $(LDFLAGS) $(TARGET_ARCH) -L$(JUCE_BINDIR) -L$(JUCE_LIBDIR) $(shell pkg-config --libs freetype2 x11 xext xinerama) -ldl -lpthread -lrt -lircclient `pkg-config --libs gstreamer-1.0` `pkg-config --libs gstreamer-video-1.0`
 
   TARGET := av-caster-dbg
   BLDCMD = $(CXX) -o $(JUCE_OUTDIR)/$(TARGET) $(OBJECTS) $(JUCE_LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
@@ -114,7 +114,7 @@ $(JUCE_OUTDIR)/$(TARGET): check-pkg-config $(OBJECTS) $(RESOURCES)
 
 check-pkg-config:
 	@command -v pkg-config >/dev/null 2>&1 || { echo >&2 "pkg-config not installed. Please, install it."; exit 1; }
-	@pkg-config --print-errors freetype2 libcurl x11 xext xinerama
+	@pkg-config --print-errors freetype2 x11 xext xinerama
 
 install:
 	@echo Installing AvCaster

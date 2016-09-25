@@ -13,7 +13,7 @@
           <td><a href="https://github.com/bill-auger/av-caster/issues">
             <img src="https://img.shields.io/github/issues/bill-auger/av-caster.svg"
                  alt="Issues" width="100" height="18" /></a></td></tr></table></td>
-    <td rowspan="2"><h2><i>A light-weight native gStreamer GUI for screencast, webcam, and audio streaming</i></h2>
+    <td rowspan="2"><h2><i>A light-weight native gStreamer GUI for screencast, webcam, and audio recording and streaming</i></h2>
     AvCaster is built upon the <a href="https://www.juce.com/">JUCE</a> framework, utilizing <a href="https://gstreamer.freedesktop.org/">gStreamer</a> as the media backend and <a href="http://www.ulduzsoft.com/libircclient/">libircclient</a> as the chat backend.  It is currently capable of recording to file or streaming to an RTMP server with screen capture (full-screen), webcam (full-screen or overlay), and audio (mono or stereo).  It is moderately configurable, with preset configurations for streaming via popular servers such as <a href="https://www.livecoding.tv/">livecoding.tv</a>, and allows custom user-defined configurations to be stored as additional presets.  This initial target is GNU/Linux, but it has been designed for portability and includes starter projects for AndroidStudio, CodeBlocks, VisualStudio, and xCode IDEs.  Let us know if it would interest you to see AvCaster ported to another platform (e.g. Windows, Mac, mobile) by leaving a note on the relevant <a href="https://github.com/bill-auger/av-caster/issues?q=is%3Aopen+milestone%3A%22cross-platform+version%22+label%3Aepic">Cross-platform Milestone</a> issue.  Feel free to open issues for other platforms if they are not yet listed.</td></tr>
   <tr><td>
     <table>
@@ -44,21 +44,111 @@ A command-line solution is the obvious choice for such scenarios but is obviousl
 
 
 ### Get AvCaster
-_NOTE: AvCaster requires gStreamer >= v1.6.0 and the 'ugly' plugins set which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below).  These packages may be available in third-party repositories for some distros._
+_NOTE: AvCaster requires gStreamer >= v1.6.0 and the 'ugly' plugins set which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below)._
 #### AvCaster Package Repositories
 The [OpenSuse Build Service][obs] hosts AvCaster x86 and x86-64 binary package repositories for the following distributions:
-  * Debian 8
+  * Arch
+  * Debian 9
   * Fedora 23, Fedora 24
-  * OpenSuse Tumbleweed
+  * OpenSuse Leap 42.2, OpenSuse Tumbleweed
   * Ubuntu 16.04
 
-Follow the [instructions][obs] there to subscribe your package manager or download the latest package for your distribution directly.  Let us know if you would like packaging for another distribution or architecture.
-#### ArchLinux:
-An [AUR repo for AvCaster](https://aur.archlinux.org/packages/av-caster/) is maintained by GitHub user [fa7ad](https://github.com/fa7ad/av-caster-aur/).  Feel free to [vote for AvCaster on AUR](https://aur.archlinux.org/packages/av-caster/) if you are an AUR user and would like to see AvCaster promoted to the 'community' binary repo.  An Arch binary package could also be built and hosted on OBS if that is desirable.
+Follow the [instructions][obs] there to download the latest package for your distribution or subscribe your package manager for future updates.  Let us know if you would like packaging for another distribution or architecture.
+#### Arch:
+There is also an [AUR repo for AvCaster][aur] maintained by [GitHub user fa7ad][fa7ad].  Feel free to [vote for AvCaster on AUR][aur] if you are an AUR user and would like to see AvCaster promoted to the 'community' binary repo.
 
 The Arch PKGBUILD file is also included in the Builds/Packaging/ directory of this repo. Refer to the "Building from Source" section below.
 #### Other GNU/Linux:
 Refer to the "Building from Source" section below.
+
+
+### Getting Help / Bug Reporting
+If AvCaster refuses to launch after changing some parameters in the GUI you can (as a last resort) try deleting the persistent configuration file in your user AppData dir (e.g. ~/.config/av-caster/av-caster.bin).  Note that this will reset/clear all settings back to the initial state.
+
+Please report any problems on the [AvCaster Issue Tracker][tracker].
+
+Feel free join the [Gitter Chat][gitter] to post any questions or comments, or ... erm ... just chat.
+
+
+### Building from Source
+
+#### Arch:
+```
+### build and install via makepkg ###
+$ wget https://raw.githubusercontent.com/bill-auger/av-caster/master/Builds/Packaging/PKGBUILD
+# makepkg -sri ./PKGBUILD
+```
+
+#### Debian >= 9, Ubuntu >= 15.10:
+```
+### build dependencies ###
+$ sudo apt-get install build-essential libfreetype6-dev libgstreamer-plugins-base1.0-dev \
+                       libircclient-dev libx11-dev libxcursor-dev libxinerama-dev        \
+                       libxrandr-dev
+
+### runtime dependencies ###
+$ sudo apt-get install freeglut3 gstreamer1.0-alsa gstreamer1.0-plugins-bad       \
+                       gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly        \
+                       gstreamer1.0-pulseaudio libfreetype6 libgl1-mesa-glx       \
+                       libircclient1 libx11-6 libxcomposite1 libxcursor1 libxext6 \
+                       libxinerama1 libxrender1
+
+### compile ###
+$ cd Builds/Makefile
+$ make
+$ sudo make install
+
+### run ###
+$ av-caster
+```
+
+#### Fedora >= 23 (plus rpmfusion repositories):
+```
+### build dependencies ###
+$ su -c "dnf install freetype-devel gcc-c++ gstreamer1-plugins-base-devel               \
+                     libircclient-devel libX11-devel libXcursor-devel libXinerama-devel \
+                     libXrandr-devel"
+
+### runtime dependencies ###
+$ RPMFUSION_URL=http://download1.rpmfusion.org/free/fedora
+$ FEDORA_VERSION=$(rpm -E %fedora)
+$ REPO_PKG=$RPMFUSION_URL/rpmfusion-free-release-$FEDORA_VERSION.noarch.rpm
+$ su -c "dnf install $REPO_PKG"
+$ su -c "dnf install gstreamer1-plugins-bad-free gstreamer1-plugins-bad-freeworld \
+                     gstreamer1-plugins-good     gstreamer1-plugins-good-extras   \
+                     gstreamer1-plugins-ugly     libircclient"
+
+### compile ###
+$ cd Builds/Makefile
+$ make
+$ su -c "make install"
+
+### run ###
+$ av-caster
+```
+
+#### OpenSuse Leap >= 42, OpenSuse Tumbleweed, Suse SLE >= 12:
+```
+### build dependencies ###
+$ sudo zypper install freetype2-devel gcc-c++ gstreamer-plugins-base-devel               \
+                      libircclient-devel libX11-devel libXinerama-devel libXcursor-devel \
+                      libXrandr-devel
+
+### runtime dependencies ###
+$ sudo zypper install gstreamer-plugins-bad gstreamer-plugins-good \
+                      gstreamer-plugins-ugly libircclient1
+
+### compile ###
+$ cd Builds/Makefile
+$ make
+$ sudo make install
+
+### run ###
+$ av-caster
+```
+
+#### Other GNU/Linux:
+Install the corresponding libraries as above for your system and compile similarly.
 
 
 ### Community
@@ -71,79 +161,6 @@ AvCaster is a free and open-source community project; so testers, comments, and 
 In any case, you can ["Star" the upstream repo][upstream] to show your support for this project and you can "Watch" the repo or visit the home page of the [AvCaster Wiki][wiki] for updates.
 
 Feel free join the [Gitter Chat][gitter] to post any questions or comments, or ... erm ... just chat.
-
-
-### Getting Help / Bug Reporting
-If AvCaster refuses to launch after changing some parameters in the GUI you can (as a last resort) try deleting the persistent configuration file in your user AppData dir (e.g. ~/.config/av-caster/av-caster.bin).  Note that this will reset/clear all settings back to the initial state.
-
-Please report any problems on the [AvCaster Issue Tracker][tracker].
-
-Feel free join the [Gitter Chat][gitter] to post any questions or comments, or ... erm ... just chat.
-
-
-### Building from Source
-_NOTE: AvCaster requires gStreamer >= v1.6.0 and the 'ugly' plugins set which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below).  These packages may be available in third-party repositories for some distros._
-#### ArchLinux:
-```
-### build and install via makepkg ###
-$ wget https://raw.githubusercontent.com/bill-auger/av-caster/master/Builds/Packaging/PKGBUILD
-# makepkg -sri ./PKGBUILD
-```
-#### Debian/Ubuntu:
-```
-### build dependencies ###
-$ sudo apt-get install build-essential libfreetype6-dev libgstreamer-plugins-base1.0-dev        \
-                       libircclient-dev libx11-dev libxcursor-dev libxinerama-dev libxrandr-dev
-### runtime dependencies (Debian 8 'testing/unstable', Ubuntu >= 15.10) ###
-$ sudo apt-get install freeglut3 gstreamer1.0-alsa gstreamer1.0-plugins-bad       \
-                       gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly        \
-                       gstreamer1.0-pulseaudio libfreetype6 libgl1-mesa-glx       \
-                       libircclient1 libx11-6 libxcomposite1 libxcursor1 libxext6 \
-                       libxinerama1 libxrender1
-### compile ###
-$ cd Builds/Makefile
-$ make
-$ sudo make install
-### run ###
-$ av-caster
-```
-#### Fedora:
-```
-### build dependencies ###
-$ su -c "dnf install freetype-devel gcc-c++ gstreamer1-plugins-base-devel libircclient-devel \
-                     libX11-devel libXcursor-devel libXinerama-devel libXrandr-devel"
-### runtime dependencies (rpmfusion repositories) ###
-$ RPMFUSION_URL=http://download1.rpmfusion.org
-$ FEDORA_VERSION=$(rpm -E %fedora)
-$ REPO1_PKG=$RPMFUSION_URL/free/fedora/rpmfusion-free-release-$FEDORA_VERSION.noarch.rpm
-$ REPO2_PKG=$RPMFUSION_URL/nonfree/fedora/rpmfusion-nonfree-release-$FEDORA_VERSION.noarch.rpm
-$ su -c "dnf install $REPO1_PKG $REPO2_PKG"
-$ su -c "dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
-                     gstreamer1-plugins-ugly"
-### compile ###
-$ cd Builds/Makefile
-$ make
-$ su -c "make install"
-### run ###
-$ av-caster
-```
-#### OpenSuse/Suse:
-```
-### build dependencies ###
-$ sudo zypper install freetype2-devel gcc-c++ gstreamer-plugins-base-devel               \
-                      libircclient-devel libX11-devel libXinerama-devel libXcursor-devel
-### runtime dependencies ###
-$ sudo zypper install gstreamer-plugins-good gstreamer-plugins-bad-free \
-                      gstreamer-plugins-ugly libircclient1
-### compile ###
-$ cd Builds/Makefile
-$ make
-$ sudo make install
-### run ###
-$ av-caster
-```
-#### Other GNU/Linux:
-Install the corresponding libraries as above for your system and compile similarly.
 
 
 ### Developers and Designers
@@ -167,3 +184,5 @@ Also, the ffmpeg bash script that AvCaster was originally conceived to wrap is i
 [tracker]:  https://github.com/bill-auger/av-caster/issues
 [gitter]:   https://gitter.im/bill-auger/av-caster
 [obs]:      http://software.opensuse.org/download/package?project=home:bill-auger&package=av-caster
+[aur]:      https://aur.archlinux.org/packages/av-caster/
+[fa7ad]:    https://github.com/fa7ad/av-caster-aur/

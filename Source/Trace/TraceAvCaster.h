@@ -29,49 +29,48 @@
 
 StringArray DisableFeatures()
 {
-  StringArray disabled_features = StringArray() ;
+  StringArray feature_switches = StringArray() ;
 #  ifdef DISABLE_MEDIA
-  disabled_features.add(APP::CLI_DISABLE_MEDIA_TOKEN) ;
+  feature_switches.add(APP::CLI_DISABLE_MEDIA_TOKEN) ;
 #  endif // DISABLE_MEDIA
 #  ifdef SCREEN_ONLY
-  disabled_features.add(APP::CLI_SCREEN_ONLY_TOKEN) ;
+  feature_switches.add(APP::CLI_SCREEN_ONLY_TOKEN) ;
 #  endif // SCREEN_ONLY
 #  ifdef CAMERA_ONLY
-  disabled_features.add(APP::CLI_CAMERA_ONLY_TOKEN) ;
+  feature_switches.add(APP::CLI_CAMERA_ONLY_TOKEN) ;
 #  endif // CAMERA_ONLY
 #  ifdef TEXT_ONLY
 #    if ! TEXT_BIN_NYI
-  disabled_features.add(APP::CLI_TEXT_ONLY_TOKEN) ;
+  feature_switches.add(APP::CLI_TEXT_ONLY_TOKEN) ;
 #    endif // TEXT_BIN_NYI
 #  endif // TEXT_ONLY
 #  ifdef IMAGE_ONLY
 #    if ! IMAGE_BIN_NYI
-  disabled_features.add(APP::CLI_IMAGE_ONLY_TOKEN) ;
+  feature_switches.add(APP::CLI_IMAGE_ONLY_TOKEN) ;
 #    endif // IMAGE_BIN_NYI
 #  endif // IMAGE_ONLY
 #  if DISABLE_PREVIEW
-  disabled_features.add(APP::CLI_DISABLE_PREVIEW_TOKEN) ;
+  feature_switches.add(APP::CLI_DISABLE_PREVIEW_TOKEN) ;
 #  endif // DISABLE_PREVIEW
 #  if DISABLE_AUDIO
-  disabled_features.add(APP::CLI_DISABLE_AUDIO_TOKEN) ;
+  feature_switches.add(APP::CLI_DISABLE_AUDIO_TOKEN) ;
 #  endif // DISABLE_AUDIO
 #  ifdef DISABLE_CHAT
-  disabled_features.add(APP::CLI_DISABLE_CHAT_TOKEN) ;
+  feature_switches.add(APP::CLI_DISABLE_CHAT_TOKEN) ;
 #  endif // DISABLE_CHAT
 
-  return disabled_features ;
+  return feature_switches ;
 }
 
-#  define DEBUG_DISABLE_FEATURES                                                \
-  String dbg = "disabling feature per #define constant '" ;                     \
-  cli_params.removeEmptyStrings() ;                                             \
-  cli_params.addArray(DisableFeatures()) ; cli_params.removeDuplicates(false) ; \
-/*cli_params.mergeArray(DisabledFeatures()) ; // TODO: JUCE 4 feature */        \
-  for (int switch_n = 0 ; switch_n < cli_params.size() ; ++switch_n)            \
-    Trace::TraceState(dbg + cli_params[switch_n] + "'") ;                       \
-  if (TEXT_BIN_NYI ) { Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ;              \
-                       DisabledFeatures.set(CONFIG::TEXT_ID  , var::null) ; }   \
-  if (IMAGE_BIN_NYI) { Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ;              \
+#  define DEBUG_DISABLE_FEATURES                                              \
+  StringArray featureswitches = DisableFeatures() ;                           \
+  cli_params.removeEmptyStrings() ; cli_params.mergeArray(featureswitches) ;  \
+  String dbg = "disabling feature per #define '" ;                            \
+  for (int switch_n = 0 ; switch_n < featureswitches.size() ; ++switch_n)     \
+    Trace::TraceState(dbg + featureswitches[switch_n] + "'") ;                \
+  if (TEXT_BIN_NYI ) { Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ;            \
+                       DisabledFeatures.set(CONFIG::TEXT_ID  , var::null) ; } \
+  if (IMAGE_BIN_NYI) { Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ;            \
                        DisabledFeatures.set(CONFIG::IMAGE_ID , var::null) ; }
 
 
@@ -112,30 +111,29 @@ void SeedIrcNetworks()
 
 #  define DEBUG_TRACE_INIT_PHASE_8 Trace::TraceState("AvCaster ready") ;
 
-#  define DEBUG_TRACE_HANDLE_CLI_PARAMS String token ;                                   \
-  if      (cli_params.contains(APP::CLI_HELP_TOKEN   )) token = APP::CLI_HELP_TOKEN ;    \
-  else if (cli_params.contains(APP::CLI_PRESETS_TOKEN)) token = APP::CLI_PRESETS_TOKEN ; \
-  else if (cli_params.contains(APP::CLI_VERSION_TOKEN)) token = APP::CLI_VERSION_TOKEN ; \
-  if (token.isNotEmpty()) Trace::TraceConfig("found terminating cli token " + token)    ;
+#  define DEBUG_TRACE_HANDLE_CLI_PARAMS                                                \
+  bool should_terminate = !token.isEmpty() ;                                           \
+  if (should_terminate) Trace::TraceConfigVb("found terminating cli token " + token) ; \
+  Trace::EnableTracing(!should_terminate) ;
 
-#  define DEBUG_TRACE_PROCESS_CLI_PARAMS StringArray handled_tokens , unhandled_tokens ;        \
-  for (String* token = cli_params.begin() ; token != cli_params.end() ; ++token)                \
-    if (*token == APP::CLI_PRESET_TOKEN          ||                                             \
-        *token == APP::CLI_DISABLE_MEDIA_TOKEN   ||                                             \
-        *token == APP::CLI_SCREEN_ONLY_TOKEN     ||                                             \
-        *token == APP::CLI_CAMERA_ONLY_TOKEN     ||                                             \
-        *token == APP::CLI_TEXT_ONLY_TOKEN       ||                                             \
-        *token == APP::CLI_IMAGE_ONLY_TOKEN      ||                                             \
-        *token == APP::CLI_DISABLE_PREVIEW_TOKEN ||                                             \
-        *token == APP::CLI_DISABLE_AUDIO_TOKEN   ||                                             \
-        *token == APP::CLI_DISABLE_CHAT_TOKEN     )                                             \
-         handled_tokens.add(*token) ;                                                           \
-    else unhandled_tokens.add(*token) ;                                                         \
-  if (handled_tokens  .size()) Trace::TraceConfig("found pre-init cli tokens [ "            +   \
-                                                  handled_tokens  .joinIntoString(",") + "]") ; \
-  if (unhandled_tokens.size()) Trace::TraceConfig("found unknown cli tokens  [ "            +   \
-                                                  unhandled_tokens.joinIntoString(",") + "]") ; \
-  Trace::TraceConfigVb("dumping cli_params => [" + cli_params     .joinIntoString(",") + "]")   ;
+#  define DEBUG_TRACE_PROCESS_CLI_PARAMS StringArray handled_tokens , unhandled_tokens ;         \
+  for (String* token = cli_params.begin() ; token != cli_params.end() ; ++token)                 \
+    if (*token == APP::CLI_PRESET_TOKEN          ||                                              \
+        *token == APP::CLI_DISABLE_MEDIA_TOKEN   ||                                              \
+        *token == APP::CLI_SCREEN_ONLY_TOKEN     ||                                              \
+        *token == APP::CLI_CAMERA_ONLY_TOKEN     ||                                              \
+        *token == APP::CLI_TEXT_ONLY_TOKEN       ||                                              \
+        *token == APP::CLI_IMAGE_ONLY_TOKEN      ||                                              \
+        *token == APP::CLI_DISABLE_PREVIEW_TOKEN ||                                              \
+        *token == APP::CLI_DISABLE_AUDIO_TOKEN   ||                                              \
+        *token == APP::CLI_DISABLE_CHAT_TOKEN     )                                              \
+         handled_tokens.add(*token) ;                                                            \
+    else unhandled_tokens.add(*token) ;                                                          \
+  if (handled_tokens  .size()) Trace::TraceConfig("found pre-init cli tokens [ "             +   \
+                                                  handled_tokens  .joinIntoString(",") + " ]") ; \
+  if (unhandled_tokens.size()) Trace::TraceConfig("found unknown cli tokens  [ "             +   \
+                                                  unhandled_tokens.joinIntoString(",") + " ]") ; \
+  Trace::TraceConfigVb("dumping cli_params => [ " + cli_params    .joinIntoString(",") + " ]")   ;
 
 #  define DEBUG_TRACE_VALIDATE_ENVIRONMENT                                                          \
   bool is_err = false ; String dbg = "" ;                                                           \
@@ -191,13 +189,6 @@ void SeedIrcNetworks()
   if (should_reconfigure_chat) Trace::TraceConfig("logging " + chat_state + " chat" +       \
                                                   ((!IsChatEnabled) ? " (disabled)" : ""))  ;
 
-
-/* helpers */
-
-#  define DEBUG_TRACE_DISPLAY_ALERT                                                     \
-  if      (message_type == GUI::ALERT_TYPE_WARNING) Trace::TraceWarning(message_text) ; \
-  else if (message_type == GUI::ALERT_TYPE_ERROR  ) Trace::TraceError  (message_text)   ;
-
 #else // DEBUG_TRACE
 
 #  define DEBUG_DISABLE_FEATURES           ;
@@ -218,7 +209,6 @@ void SeedIrcNetworks()
 #  define DEBUG_TRACE_SHUTDOWN_PHASE_2     ;
 #  define DEBUG_TRACE_SHUTDOWN_PHASE_3     ;
 #  define DEBUG_TRACE_HANDLE_CONFIG_CHANGE ;
-#  define DEBUG_TRACE_DISPLAY_ALERT        ;
 
 #endif // DEBUG_TRACE
 #endif // _TRACEAVCASTER_H_

@@ -45,6 +45,7 @@ private:
 
   // initialize
   AvCasterStore() ;
+  void shutdown() ;
 
   // validations
   void verifyConfig               () ;

@@ -38,7 +38,9 @@
 #define DISABLE_CHAT
 #define SEED_IRC_NETWORKS ((!defined(DISABLE_CHAT)) && 0)
 #define SUPRESS_GREETING_MESSAGES
-#define SUPRESS_ALERTS
+#ifdef DEBUG
+#  define SUPRESS_ALERTS
+#endif // DEBUG
 // #define CHATLIST_KICK_BTN_NYI
 
 // debugging tweaks and kludges
@@ -48,33 +50,18 @@
 // #define FAKE_MUX_ENCODER_SRC_AND_SINK // isolate compositor from encoder and muxer from output
 // #define MOCK_CHAT_NICKS
 
-// enable tracing
+// enable debug/tracing features
 #ifdef DEBUG
 #  define DEBUG_TRACE 1
 #else // DEBUG
 #  define DEBUG_TRACE 1
 #endif // DEBUG
-#define DEBUG_TRACE_EVENTS    (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_GUI       (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_GUI_VB    (DEBUG_TRACE && 0)
-#define DEBUG_TRACE_MEDIA     (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_MEDIA_VB  (DEBUG_TRACE && 0)
-#define DEBUG_TRACE_CONFIG    (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_CONFIG_VB (DEBUG_TRACE && 0)
-#define DEBUG_TRACE_CHAT      (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_CHAT_VB   (DEBUG_TRACE && 0)
-#define DEBUG_TRACE_STATE     (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_ERRORS    (DEBUG_TRACE && 1)
-#define DEBUG_TRACE_VB        (DEBUG_TRACE && 0)
+#define DEBUG_ANSI_COLORS           (DEBUG_TRACE && 1)
+#define DEBUG_DUMP_CONFIG_VERBOSITY (DEBUG_TRACE &  0) /* 0 => none , 1 => nodes only , 2 => all */
+#define DEBUG_DUMP_CONFIG_XML       (DEBUG_TRACE && 1)
+#define DEBUG_QUIT_BEFORE_MAIN_LOOP 0
+#define DEBUG_QUIT_AFTER_MAIN_LOOP  0
 
-// enable debug features
-#ifdef DEBUG_TRACE
-#  define DEBUG_ANSI_COLORS 1
-// #  define DEBUG_QUIT_BEFORE_MAIN_LOOP
-// #  define DEBUG_QUIT_AFTER_MAIN_LOOP
-#define DUMP_CONFIG_VERBOSITY 0          /* 0 => none , 1 => nodes only , 2 => all */
-#define DUMP_CONFIG_XML
-#endif // DEBUG_TRACE
 
 // configuration and runtime constants
 #include "JuceHeader.h"

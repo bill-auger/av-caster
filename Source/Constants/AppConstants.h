@@ -12,6 +12,7 @@ public:
 
   // names and IDs
   static const String APP_NAME ;
+  static const String APP_VERSION ;
   static const String APP_CMD ;
   static const String JACK_CLIENT_NAME ;
   static const String IRC_THREAD_NAME ;
@@ -33,37 +34,19 @@ public:
   static const Array<int> TIMER_IVLS ;
 
   // cli args
-  static const String CLI_HELP_TOKEN ;
-  static const String CLI_PRESETS_TOKEN ;
-  static const String CLI_VERSION_TOKEN ;
-  static const String CLI_PRESET_TOKEN ;
-  static const String CLI_DISABLE_MEDIA_TOKEN ;
-  static const String CLI_SCREEN_ONLY_TOKEN ;
-  static const String CLI_CAMERA_ONLY_TOKEN ;
-  static const String CLI_TEXT_ONLY_TOKEN ;
-  static const String CLI_IMAGE_ONLY_TOKEN ;
-  static const String CLI_DISABLE_PREVIEW_TOKEN ;
-  static const String CLI_DISABLE_AUDIO_TOKEN ;
-  static const String CLI_DISABLE_CHAT_TOKEN ;
-  static const String CLI_VERSION_MSG ;
-  static const String CLI_USAGE_MSG ;
-
-  // filesystem
-  static String iconsPath()       ;
-  static String appsPath()        ;
-  static String iconFilename()    ;
-  static String desktopFilename() ;
-  static File   camerasDevDir()   ;
-  static File   homeDir()         ;
-  static File   appdataDir()      ;
-  static File   picturesDir()     ;
-  static File   videosDir()       ;
-  static File   binFile()         ;
-  static File   logoFile()        ;
-  static File   iconFile()        ;
-  static File   desktopFile()     ;
-  static String desktopText()     ;
-
+  static const String      CLI_HELP_TOKEN ;
+  static const String      CLI_VERSION_TOKEN ;
+  static const String      CLI_PRESETS_TOKEN ;
+  static const String      CLI_PRESET_TOKEN ;
+  static const String      CLI_DISABLE_MEDIA_TOKEN ;
+  static const String      CLI_SCREEN_ONLY_TOKEN ;
+  static const String      CLI_CAMERA_ONLY_TOKEN ;
+  static const String      CLI_TEXT_ONLY_TOKEN ;
+  static const String      CLI_IMAGE_ONLY_TOKEN ;
+  static const String      CLI_DISABLE_PREVIEW_TOKEN ;
+  static const String      CLI_DISABLE_AUDIO_TOKEN ;
+  static const String      CLI_DISABLE_CHAT_TOKEN ;
+  static const StringArray CLI_USAGE_MSG ;
 
   // filesystem
   static const String FLV_FILE_EXT ;
@@ -71,6 +54,23 @@ public:
   // static const String JPG_FILE_EXT :
   // static const String JPEG_FILE_EXT ;
   // static const String GIF_FILE_EXT ;
+
+
+  // filesystem
+  static String IconFilename()    ;
+  static String DesktopFilename() ;
+  static String IconsPath()       ;
+  static String AppsPath()        ;
+  static File   CamerasDevDir()   ;
+  static File   HomeDir()         ;
+  static File   AppdataDir()      ;
+  static File   PicturesDir()     ;
+  static File   VideosDir()       ;
+  static File   BinFile()         ;
+  static File   LogoFile()        ;
+  static File   IconFile()        ;
+  static File   DesktopFile()     ;
+  static String DesktopText()     ;
 } ;
 
 #endif // _APPCONSTANTS_H_

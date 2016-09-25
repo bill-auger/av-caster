@@ -70,8 +70,6 @@ private:
 
   void           initialize      (ValueTree config_store   , ValueTree network_store         ,
                                   ValueTree chatters_store , NamedValueSet& disabled_features) ;
-  void           warning         (String message_text) ;
-  void           error           (String message_text) ;
   Rectangle<int> getPreviewBounds() ;
 
     //[/UserMethods]
@@ -126,6 +124,40 @@ private:
   ResizableWindow* mainWindow ;
 } ;
 #endif // TRAY_ICON
+
+
+/**
+  Alert is a public helper class for the AvCaster application.
+  It queues and presents GUI message boxes to the user.
+*/
+class Alert
+{
+  friend class AvCaster ;
+
+
+public:
+
+  static void Push         (GUI::AlertType message_type , String message_text) ;
+  static bool AreAnyPending() ;
+
+
+private:
+
+  Alert(GUI::AlertType message_type , String message_text) : messageType(message_type) ,
+                                                             messageText(message_text) {}
+
+  GUI::AlertType messageType ;
+  String         messageText ;
+
+  static void Display         () ;
+  static void Warning         (String message_text) ;
+  static void Error           (String message_text) ;
+  static void OnModalDismissed(int /*result*/ , int /*unused*/) ;
+
+  // runtime state
+  static Array<Alert*> Alerts ;
+  static bool          IsAlertModal ;
+} ;
 
 //[/EndFile]
 

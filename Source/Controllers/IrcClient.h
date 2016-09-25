@@ -45,6 +45,8 @@ public:
 
   ~IrcClient() ;
 
+  static String VersionMsg() ;
+
   // session management
   void configure(bool should_create_session) ;
 
@@ -81,6 +83,7 @@ private:
   // session management
   void createSession () ;
   void destroySession() ;
+  void pump          () ;
   void run           () override ;
   bool login         () ;
   void sendChat      (String chat_message) ;

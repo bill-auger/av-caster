@@ -34,6 +34,18 @@ irc_callbacks_t IrcClient::ServerCallbacks ; // IrcClient()
 StringArray     IrcClient::Nicks ;           // HandleNicks()
 
 
+/* IrcClient public class methods */
+
+String IrcClient::VersionMsg()
+{
+  unsigned int major_version , minor_version ;
+
+  irc_get_version(&major_version , &minor_version) ;
+
+  return "libircclient v" + String(major_version) + "." + String(minor_version) ;
+}
+
+
 /* IrcClient public instance methods */
 
 void IrcClient::configure(bool should_create_session)
@@ -72,8 +84,6 @@ IrcClient::IrcClient(ValueTree network_store) : Thread(APP::IRC_THREAD_NAME)
 
   this->session = nullptr ; configure(true) ;
 }
-
-IrcClient::~IrcClient() { destroySession() ; NetworkStore = ValueTree::invalid ; }
 
 void IrcClient::OnConnect(irc_session_t* session , const char*  event , const char* origin ,
                           const char**   params  , unsigned int count                      )
@@ -331,6 +341,8 @@ void IrcClient::AddUserChat(String prefix , String nick , String message)
 
 /* IrcClient private instance methods */
 
+IrcClient::~IrcClient() { destroySession() ; NetworkStore = ValueTree::invalid ; }
+
 void IrcClient::createSession()
 {
   if (!NetworkStore.isValid()) return ;
@@ -384,6 +396,8 @@ DEBUG_TRACE_LOGOUT
 
   this->session = nullptr ;
 }
+
+void IrcClient::pump() { if (!this->isThreadRunning()) this->startThread() ; }
 
 void IrcClient::run()
 {

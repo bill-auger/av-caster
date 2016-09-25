@@ -17,10 +17,10 @@
 //==============================================================================
 // [BEGIN_USER_CODE_SECTION]
 
-#define UNUSED(x)           (void)(x)
 #define STRING(a_var_or_id) a_var_or_id.toString()
 #define CHARSTAR(a_string)  a_string.toStdString().c_str()
 #define UTF8(a_string)      a_string.toUTF8()
+#define UNUSED(x)           (void)(x)
 
 // [END_USER_CODE_SECTION]
 

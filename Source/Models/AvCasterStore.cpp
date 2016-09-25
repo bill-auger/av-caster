@@ -76,6 +76,8 @@ AvCasterStore::AvCasterStore()
 DEBUG_TRACE_DUMP_CONFIG_ALL
 }
 
+void AvCasterStore::shutdown() { listen(false) ; storeConfig() ; }
+
 
 /* validations */
 
@@ -411,11 +413,11 @@ void AvCasterStore::restorePresetTransients(ValueTree a_preset_store)
 ValueTree AvCasterStore::loadConfig()
 {
   // load persistent storage
-  this->storageDir           = APP::appdataDir().getChildFile(CONFIG::STORAGE_DIRNAME ) ;
+  this->storageDir           = APP::AppdataDir().getChildFile(CONFIG::STORAGE_DIRNAME ) ;
   this->storageFile          = this->storageDir .getChildFile(CONFIG::STORAGE_FILENAME) ;
   FileInputStream* storage   = new FileInputStream(this->storageFile) ;
   ValueTree        root_node = (storage->openedOk()) ? ValueTree::readFromStream(*storage) :
-                                                       ValueTree::invalid ;
+                                                       ValueTree::invalid                  ;
   delete storage ;
 
   return root_node ;
@@ -580,8 +582,8 @@ void AvCasterStore::detectCaptureDevices()
   Array<File> device_info_dirs ;
 
   this->cameras.removeAllChildren(nullptr) ;
-  if (APP::camerasDevDir().containsSubDirectories())
-    APP::camerasDevDir().findChildFiles(device_info_dirs , File::findDirectories , false) ;
+  if (APP::CamerasDevDir().containsSubDirectories())
+    APP::CamerasDevDir().findChildFiles(device_info_dirs , File::findDirectories , false) ;
 
   File* device_info_dir = device_info_dirs.begin() ;
   while (device_info_dir != device_info_dirs.end())

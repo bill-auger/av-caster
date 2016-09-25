@@ -27,22 +27,6 @@
 
 
 /**
-  Alert is a helper class for the AvCaster application.
-  It queues and presents GUI message boxes to the user.
-*/
-class Alert
-{
-public:
-
-  Alert(GUI::AlertType message_type , String message_text) : messageType(message_type) ,
-                                                             messageText(message_text) {}
-
-  GUI::AlertType messageType ;
-  String         messageText ;
-} ;
-
-
-/**
   AvCaster is the controller class for the AvCaster application.
   It instantiates, initializes, and configures the runtime components
       and mediates communication amongst other parts of the application.
@@ -60,15 +44,12 @@ public:
   static void Error      (String message_text) ;
 #ifndef DISABLE_CHAT
   static void AddChatLine(String prefix , String nick , String message) ;
+  static void SendChat   (String chat_message) ;
 #endif // DISABLE_CHAT
 
-  // callbacks and event handlers
-  static ModalComponentManager::Callback* GetModalCb() ;
-  static void                             OnModalDismissed(int result , int unused) ;
-  static void                   SendChat  (String chat_message) ;
-
   // getters/setters
-  static String         GstVersionMsg       () ;
+  static StringArray    VersionMsg          () ;
+  static String         GetVersionString    () ;
   static Rectangle<int> GetPreviewBounds    () ;
   static void           DeactivateControl   (const Identifier& a_key) ;
   static void           SetValue            (const Identifier& a_key , const var a_value) ;
@@ -90,7 +71,6 @@ public:
   static String         GetCameraPath       () ;
   static int            GetCameraRate       () ;
   static StringArray    GetChatNicks        () ;
-  static String         GetVersionString    () ;
   static void           DeleteServer        (ValueTree network_store) ;
   static void           UpdateChatters      (StringArray nicks) ;
 
@@ -98,7 +78,8 @@ public:
 private:
 
   // setup
-  static bool Initialize(JUCEApplicationBase* main_app , MainContent* main_content) ;
+  static bool Initialize(JUCEApplicationBase* main_app   , MainContent* main_content ,
+                         StringArray          cli_params                             ) ;
   static void Shutdown  () ;
 
   // callbacks and event handlers
@@ -114,12 +95,7 @@ private:
   static bool ValidateEnvironment() ;
 
   // helpers
-  static void DisplayAlert () ;
-  static bool InitFail     () ;
-#ifndef DISABLE_CHAT
-  static void PumpIrcClient() ;
-#endif // DISABLE_CHAT
-
+  static bool PumpThreads() ;
 
   // collaborator handles
   static JUCEApplicationBase*     App ;
@@ -136,10 +112,6 @@ private:
   static NamedValueSet DisabledFeatures ;
   static bool          IsMediaEnabled ;
   static bool          IsChatEnabled ;
-
-  // runtime data
-  static Array<Alert*> Alerts ;
-  static bool          IsAlertModal ;
 } ;
 
 #endif // _AVCASTER_H_

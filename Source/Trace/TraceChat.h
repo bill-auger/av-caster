@@ -24,7 +24,7 @@
 #  include "Trace.h"
 
 
-#  define DEBUG_TRACE_CHAT_VISIBILITY                                          \
+#  define DEBUG_TRACE_CHAT_VISIBILITY if (!!getParentComponent())              \
   if (chatHistoryGroup->isVisible() != is_visible)                             \
     Trace::TraceGui((is_visible) ? "showing chat panel" : "hiding chat panel") ;
 
@@ -48,8 +48,8 @@
                            userid                    + "' (" + nick + ")" + " in (" + \
                            String(nicks.size())      + ") nicks => ["               + \
                            nicks.joinIntoString(",") + "]"                          ; \
-  if      (~nick_idx         ) Trace::TraceGuiVb(String("sorted")        + dbg) ;     \
-  else if (DEBUG_TRACE_GUI_VB) Trace::TraceError(String("error sorting") + dbg)       ;
+  if      (~nick_idx          ) Trace::TraceGuiVb(String("sorted")        + dbg) ;    \
+  else if (Trace::GuiVbEnabled) Trace::TraceError(String("error sorting") + dbg)      ;
 
 #  define DEBUG_TRACE_RESIZE_CHATLIST                                                             \
   if (!is_visible) Trace::TraceGuiVb("hiding ChatList '"   + getComponentID()        + "'") ;     \
@@ -63,10 +63,11 @@
                     String(list_item->getPosition().toString()) + " to " + \
                     Point<int>(list_item_x , list_item_y).toString()     ) ;
 
-#  define DEBUG_TRACE_SET_FONTSIZE                                                 \
-  String prev_size = String(this->chatHistoryText->getFont().getHeight()) ;        \
-  String next_size = String(getFontSize()                               ) ;        \
-  Trace::TraceGui("chat font size changed from " + prev_size + " to " + next_size) ;
+#  define DEBUG_TRACE_SET_FONTSIZE                                                   \
+  String prev_size = String(this->chatHistoryText->getFont().getHeight()) ;          \
+  String next_size = String(getFontSize()                               ) ;          \
+  if (!!getParentComponent())                                                        \
+    Trace::TraceGui("chat font size changed from " + prev_size + " to " + next_size) ;
 
 #else // DEBUG_TRACE
 

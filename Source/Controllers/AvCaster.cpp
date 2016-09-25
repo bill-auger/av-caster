@@ -35,24 +35,16 @@ MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
 ScopedPointer<IrcClient> AvCaster::Irc ;                      // Initialize()
 #endif // DISABLE_CHAT
 bool                     AvCaster::IsInitialized  = false ;   // Initialize()
-NamedValueSet            AvCaster::DisabledFeatures ;         // Initialize()
 bool                     AvCaster::IsMediaEnabled = true ;    // Initialize()
 bool                     AvCaster::IsChatEnabled  = true ;    // Initialize()
-Array<Alert*>            AvCaster::Alerts ;                   // Warning() , Error()
-bool                     AvCaster::IsAlertModal   = false ;   // GetModalCb() , OnModalDismissed()
+NamedValueSet            AvCaster::DisabledFeatures ;         // ProcessCliParams()
 
 
 /* AvCaster public class methods */
 
-void AvCaster::Warning(String message_text)
-{
-  Alerts.add(new Alert(GUI::ALERT_TYPE_WARNING , message_text)) ;
-}
+void AvCaster::Warning(String message_text) { Alert::Push(GUI::ALERT_TYPE_WARNING , message_text) ; }
 
-void AvCaster::Error(String message_text)
-{
-  Alerts.add(new Alert(GUI::ALERT_TYPE_ERROR , message_text)) ;
-}
+void AvCaster::Error(String message_text) { Alert::Push(GUI::ALERT_TYPE_ERROR , message_text) ; }
 
 #ifndef DISABLE_CHAT
 void AvCaster::AddChatLine(String prefix , String nick , String message)
@@ -60,15 +52,6 @@ void AvCaster::AddChatLine(String prefix , String nick , String message)
   Gui->chat->addChatLine(prefix , nick , message) ;
 }
 #endif // DISABLE_CHAT
-
-ModalComponentManager::Callback* AvCaster::GetModalCb()
-{
-  IsAlertModal = true ;
-
-  return ModalCallbackFunction::create(OnModalDismissed , 0) ;
-}
-
-void AvCaster::OnModalDismissed(int result , int unused) { IsAlertModal = false ; }
 
 #ifndef DISABLE_CHAT
 void AvCaster::SendChat(String chat_message)
@@ -78,7 +61,27 @@ void AvCaster::SendChat(String chat_message)
 }
 #endif // DISABLE_CHAT
 
-String AvCaster::GstVersionMsg() { return Gstreamer::VersionMsg() ; }
+StringArray AvCaster::VersionMsg()
+{
+  StringArray version_msg = StringArray(GetVersionString()) ;
+
+  version_msg.add(SystemStats::getJUCEVersion()) ;
+  version_msg.add(Gstreamer::VersionMsg()) ;
+#ifndef DISABLE_CHAT
+  version_msg.add(IrcClient::VersionMsg()) ;
+#endif // DISABLE_CHAT
+
+  return version_msg ;
+}
+
+String AvCaster::GetVersionString()
+{
+#ifdef DEBUG
+  return APP::APP_NAME + " v" + APP::APP_VERSION + " (DEBUG)" ;
+#else // DEBUG
+  return APP::APP_NAME + " v" + APP::APP_VERSION ;
+#endif // DEBUG
+}
 
 Rectangle<int> AvCaster::GetPreviewBounds() { return Gui->getPreviewBounds() ; }
 
@@ -161,21 +164,16 @@ int AvCaster::GetCameraRate()
 
 StringArray AvCaster::GetChatNicks() { return Store->getChatNicks() ; }
 
-String AvCaster::GetVersionString()
-{
-  return APP::APP_NAME + " v" + ProjectInfo::versionString ;
-}
-
 void AvCaster::UpdateChatters(StringArray nicks) { Store->updateChatters(nicks) ; }
 
 
 /* AvCaster private class methods */
 
-bool AvCaster::Initialize(JUCEApplicationBase* main_app , MainContent* main_content)
+bool AvCaster::Initialize(JUCEApplicationBase* main_app   , MainContent* main_content ,
+                          StringArray          cli_params                             )
 {
-  App                    = main_app ;
-  Gui                    = main_content ;
-  StringArray cli_params = JUCEApplicationBase::getCommandLineParameterArray() ;
+  App = main_app ;
+  Gui = main_content ;
 
   if (HandleCliParams(cli_params)) return false ;
 
@@ -192,24 +190,23 @@ DEBUG_TRACE_INIT_PHASE_3
 DEBUG_DISABLE_FEATURES
 
   // disable features and controls per cli args
-  ProcessCliParams(cli_params) ;
-  IsMediaEnabled   = !DisabledFeatures.contains(CONFIG::OUTPUT_ID ) ;
-  IsChatEnabled    = !DisabledFeatures.contains(CONFIG::NETWORK_ID) ;
+  ProcessCliParams(cli_params) ; // populates DisabledFeatures
+  IsMediaEnabled = !DisabledFeatures.contains(CONFIG::OUTPUT_ID ) ;
+  IsChatEnabled  = !DisabledFeatures.contains(CONFIG::NETWORK_ID) ;
   for (int feature_n = 0 ; feature_n < DisabledFeatures.size() ; ++feature_n)
     DeactivateControl(DisabledFeatures.getName(feature_n)) ;
 
 DEBUG_TRACE_INIT_PHASE_4
 
   // initialze GUI
-  NamedValueSet disabled_features = NamedValueSet(DisabledFeatures) ;
-  Gui->initialize(Store->config , Store->network , Store->chatters , disabled_features) ;
+  Gui->initialize(Store->config , Store->network , Store->chatters , DisabledFeatures) ;
 
 DEBUG_TRACE_INIT_PHASE_5
 
   // initialize libgtreamer
   void* x_window = Gui->getWindowHandle() ;
   if (IsMediaEnabled &&
-     !Gstreamer::Initialize(Store->config , x_window , disabled_features))
+     !Gstreamer::Initialize(Store->config , x_window , DisabledFeatures))
     return false ;
 
 DEBUG_TRACE_INIT_PHASE_6
@@ -217,7 +214,7 @@ DEBUG_SEED_IRC_NETWORKS
 
   // initialize libircclient
 #ifndef DISABLE_CHAT
-  if (IsChatEnabled) Irc = new IrcClient(Store->network) ;
+  if (IsChatEnabled && (Irc = new IrcClient(Store->network) == nullptr) return false ;
 #endif // DISABLE_CHAT
 
 DEBUG_TRACE_INIT_PHASE_7
@@ -235,15 +232,13 @@ DEBUG_TRACE_INIT_PHASE_8
 
 void AvCaster::Shutdown()
 {
-  if (!IsInitialized) return ;
-
-  DisplayAlert() ;
+  Alert::Display() ;
 
 DEBUG_TRACE_SHUTDOWN_PHASE_1
 
 #ifndef DISABLE_CHAT
   // shutdown network
-  if (IsChatEnabled) { Irc->waitForThreadToExit(5000) ; Irc = nullptr ; }
+  if (Irc != nullptr) Irc->waitForThreadToExit(5000) ; Irc = nullptr ;
 #endif // DISABLE_CHAT
 
 DEBUG_TRACE_SHUTDOWN_PHASE_2
@@ -254,22 +249,19 @@ DEBUG_TRACE_SHUTDOWN_PHASE_2
 DEBUG_TRACE_SHUTDOWN_PHASE_3
 
   // shutdown storage
-  if (Store != nullptr) Store->listen(false) ; IsInitialized = false ;
-  if (Store != nullptr) Store->storeConfig() ; Store         = nullptr ;
+  if (Store != nullptr) Store->shutdown() ; Store = nullptr ;
+
+  IsInitialized = false ;
 }
 
 void AvCaster::HandleTimer(int timer_id)
 {
   switch (timer_id)
   {
-    case APP::TIMER_HI_ID:                                                      break ;
-    case APP::TIMER_MED_ID: UpdateStatusGUI() ; DisplayAlert() ;                break ;
-#ifndef DISABLE_CHAT
-    case APP::TIMER_LO_ID:  if (!InitFail() && IsChatEnabled) PumpIrcClient() ; break ;
-#else // DISABLE_CHAT
-    case APP::TIMER_LO_ID:  InitFail() ;                                        break ;
-#endif // DISABLE_CHAT
-    default:                                                                    break ;
+    case APP::TIMER_HI_ID:                                         break ;
+    case APP::TIMER_MED_ID: UpdateStatusGUI() ; Alert::Display() ; break ;
+    case APP::TIMER_LO_ID:  PumpThreads() ;                        break ;
+    default:                                                       break ;
   }
 }
 
@@ -360,32 +352,42 @@ void AvCaster::UpdateStatus()
 
 bool AvCaster::HandleCliParams(StringArray cli_params)
 {
+  // detect terminating CLI params
+  String token = (cli_params.contains(APP::CLI_HELP_TOKEN   )) ? APP::CLI_HELP_TOKEN    :
+                 (cli_params.contains(APP::CLI_VERSION_TOKEN)) ? APP::CLI_VERSION_TOKEN :
+                 (cli_params.contains(APP::CLI_PRESETS_TOKEN)) ? APP::CLI_PRESETS_TOKEN :
+                                                                 String::empty          ;
+
 DEBUG_TRACE_HANDLE_CLI_PARAMS
 
+  if (token.isEmpty()) return false ;
+
+  StringArray cli_output ;
+
   // handle terminating CLI params
-  if      (cli_params.contains(APP::CLI_HELP_TOKEN   ))
-  { printf("%s\n" , CHARSTAR(APP::CLI_USAGE_MSG  )) ; return true ; }
-  else if (cli_params.contains(APP::CLI_VERSION_TOKEN))
-  { printf("%s\n" , CHARSTAR(APP::CLI_VERSION_MSG)) ; return true ; }
-  else if (cli_params.contains(APP::CLI_PRESETS_TOKEN))
+  if      (token == APP::CLI_HELP_TOKEN   ) cli_output = APP::CLI_USAGE_MSG ;
+  else if (token == APP::CLI_VERSION_TOKEN) cli_output = VersionMsg() ;
+  else if (token == APP::CLI_PRESETS_TOKEN)
   {
     // load persistent configuration as normal
     Store = new AvCasterStore() ; int n_presets = Store->presets.getNumChildren() ;
-    if (Store  == nullptr || n_presets == 0) return true ;
-
-    // dump preset indices and names then quit
-    printf("Presets:\n") ;
-    for (int preset_n = 0 ; preset_n < n_presets ; ++preset_n)
+    if (Store != nullptr && n_presets > 0)
     {
-      ValueTree preset      = Store->presets.getChild(preset_n) ;
-      String    preset_name = STRING(preset[CONFIG::PRESET_NAME_ID]) ;
-      printf("\t%d: \"%s\"\n" , preset_n , CHARSTAR(preset_name)) ;
-    }
+      // dump preset indices and names
+      cli_output.add("Presets:") ;
+      for (int preset_n = 0 ; preset_n < n_presets ; ++preset_n)
+      {
+        ValueTree preset      = Store->presets.getChild(preset_n) ;
+        String    preset_name = STRING(preset[CONFIG::PRESET_NAME_ID]) ;
 
-    return true ;
+        cli_output.add("\t" + String(preset_n) + ") \"" + preset_name + "\"") ;
+      }
+    }
   }
 
-  return false ;
+  if (!cli_output.isEmpty()) printf("%s\n\n" , CHARSTAR(cli_output.joinIntoString("\n"))) ;
+
+  return true ;
 }
 
 void AvCaster::ProcessCliParams(StringArray cli_params)
@@ -441,10 +443,10 @@ bool AvCaster::ValidateEnvironment()
 #else // DISABLE_CHAT
   bool is_sufficient_irc_version = (true) ? true : (bool)1 ;
 #endif // DISABLE_CHAT
-  bool is_valid_home_dir         = APP::homeDir()    .isDirectory() ;
-  bool is_valid_appdata_dir      = APP::appdataDir() .isDirectory() ;
-  bool is_valid_pictures_dir     = APP::picturesDir().isDirectory() ;
-  bool is_valid_videos_dir       = APP::videosDir()  .isDirectory() ;
+  bool is_valid_home_dir         = APP::HomeDir    ().isDirectory() ;
+  bool is_valid_appdata_dir      = APP::AppdataDir ().isDirectory() ;
+  bool is_valid_pictures_dir     = APP::PicturesDir().isDirectory() ;
+  bool is_valid_videos_dir       = APP::VideosDir  ().isDirectory() ;
 
 DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
@@ -455,39 +457,14 @@ DEBUG_TRACE_VALIDATE_ENVIRONMENT
          is_valid_home_dir         && is_valid_appdata_dir      && is_valid_videos_dir ;
 }
 
-void AvCaster::DisplayAlert()
+bool AvCaster::PumpThreads()
 {
-  if (IsAlertModal || Alerts.size() == 0) return ;
-
-  GUI::AlertType message_type = Alerts[0]->messageType ;
-  String         message_text = Alerts[0]->messageText ;
-
-DEBUG_TRACE_DISPLAY_ALERT
-
-#ifdef SUPRESS_ALERTS
-Alerts.remove(0) ; return ;
-#endif // SUPRESS_ALERTS
-
-  switch (message_type)
-  {
-    case GUI::ALERT_TYPE_WARNING: Gui->warning(message_text) ; break ;
-    case GUI::ALERT_TYPE_ERROR:   Gui->error  (message_text) ; break ;
-    default:                                                   break ;
-  }
-
-  Alerts.remove(0) ;
-}
-
-bool AvCaster::InitFail()
-{
-  bool init_fail_pending = App->getApplicationReturnValue() != 0 ;
-  bool should_quit       = init_fail_pending && !IsAlertModal && Alerts.size() == 0 ;
-
-  if (should_quit) { App->shutdown() ; App->quit() ; }
-
-  return init_fail_pending ;
-}
+  bool is_quit_pending = App->getApplicationReturnValue() != 0 ;
+  bool should_quit     = is_quit_pending && !Alert::AreAnyPending() ;
 
 #ifndef DISABLE_CHAT
-void AvCaster::PumpIrcClient() { if (!Irc->isThreadRunning()) Irc->startThread() ; }
+  if (IsChatEnabled) Irc->pump() ;
 #endif // DISABLE_CHAT
+
+  if (should_quit) App->quit() ;
+}

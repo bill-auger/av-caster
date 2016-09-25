@@ -104,7 +104,7 @@
 /* maintenance */
 
 #  define DEBUG_TRACE_LISTEN                                 \
-  String state = (should_listen) ? "started" : "stopped" ;   \
+  String state = (should_listen) ? "resumed" : "suspended" ; \
   Trace::TraceConfig(state + " listening for model changes") ;
 
 #  define DEBUG_TRACE_CONFIG_TREE_CHANGED Trace::TraceTreeChanged(a_node , a_key) ;

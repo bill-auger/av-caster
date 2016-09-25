@@ -29,24 +29,26 @@ public:
 
   void initialise(const String& command_line) override
   {
+    StringArray cli_params = JUCEApplicationBase::getCommandLineParameterArray() ;
+
 DEBUG_TRACE_INIT_VERSION
 
     this->mainWindow = new MainWindow() ;
 
-    if (AvCaster::Initialize(this , this->mainWindow->mainContent))
+    if (AvCaster::Initialize(this , this->mainWindow->mainContent , cli_params))
     {
 #ifdef JUCE_LINUX
       // create desktop launch file
-      if (APP::desktopFile().loadFileAsString() != APP::desktopText())
-        APP::desktopFile().replaceWithText(APP::desktopText()) ;
+      if (APP::DesktopFile().loadFileAsString() != APP::DesktopText())
+        APP::DesktopFile().replaceWithText(APP::DesktopText()) ;
 
       // create desktop icon
-      if (APP::iconFile().getSize() != APP::logoFile().getSize())
+      if (APP::IconFile().getSize() != APP::LogoFile().getSize())
       {
         PNGImageFormat    image_format = PNGImageFormat() ;
         Image             icon_image   = ImageCache::getFromMemory(BinaryData::avcasterlogo48_png    ,
                                                                    BinaryData::avcasterlogo48_pngSize) ;
-        FileOutputStream* icon_stream  = new FileOutputStream(APP::iconFile()) ;
+        FileOutputStream* icon_stream  = new FileOutputStream(APP::IconFile()) ;
         if (!icon_stream->failedToOpen())
           image_format.writeImageToStream(icon_image , *icon_stream) ;
         delete icon_stream ;
@@ -56,18 +58,17 @@ DEBUG_TRACE_INIT_VERSION
       // start runtime timers
       startTimers() ;
     }
-    else if (AvCaster::Alerts.size() > 0)
-         { setApplicationReturnValue(255) ; startTimers() ;       } // defer shutdown
-    else { setApplicationReturnValue(255) ; shutdown() ; quit() ; }
+    else if (Alert::AreAnyPending()) { setApplicationReturnValue(255) ; startTimers() ; } // defer shutdown
+    else                             { setApplicationReturnValue(255) ; quit() ; }
   }
 
   void startTimers()
   {
-#ifndef DEBUG_QUIT_BEFORE_MAIN_LOOP
+#if ! DEBUG_QUIT_BEFORE_MAIN_LOOP
     for (int timer_n = 0 ; timer_n < APP::N_TIMERS ; ++timer_n)
       startTimer(APP::TIMER_IDS[timer_n] , APP::TIMER_IVLS[timer_n]) ;
 #else // DEBUG_QUIT_BEFORE_MAIN_LOOP
-    Trace::TraceEvent("forced quit") ; shutdown() ; quit() ;
+    Trace::TraceEvent("forced quit") ; quit() ;
 #endif // DEBUG_QUIT_BEFORE_MAIN_LOOP
   }
 
@@ -157,7 +158,7 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
 private:
 
-#ifndef DEBUG_QUIT_AFTER_MAIN_LOOP
+#if ! DEBUG_QUIT_AFTER_MAIN_LOOP
   void timerCallback(int timer_id) override { AvCaster::HandleTimer(timer_id) ; }
 #else // DEBUG_QUIT_AFTER_MAIN_LOOP
   void timerCallback(int timer_id) override

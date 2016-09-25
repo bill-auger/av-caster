@@ -24,17 +24,45 @@
 #include "../Constants/Constants.h"
 
 
+#define DEBUG_TRACE_EVENTS    (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_GUI       (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_GUI_VB    (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_MEDIA     (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_MEDIA_VB  (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_CONFIG    (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_CONFIG_VB (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_CHAT      (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_CHAT_VB   (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_STATE     (DEBUG_TRACE && 1)
+#define DEBUG_TRACE_WARNINGS  (DEBUG_TRACE && 0)
+#define DEBUG_TRACE_ERRORS    (DEBUG_TRACE && 1)
+
+#if DEBUG_ANSI_COLORS
+#  define CGREEN  String("\033[1;32m")
+#  define CYELLOW String("\033[1;33m")
+#  define CRED    String("\033[0;31m")
+#  define CBLUE   String("\033[1;34m")
+#  define CEND    String("\033[0m"   )
+#else // DEBUG_ANSI_COLORS
+#  define CGREEN  String::empty
+#  define CYELLOW String::empty
+#  define CRED    String::empty
+#  define CBLUE   String::empty
+#  define CEND    String::empty
+#endif // DEBUG_ANSI_COLORS
+
+#define LOG(msg) Logger::outputDebugString(msg)
+
 #ifdef DEBUG_TRACE
 
 #  undef DBG
 #  define DBG(msg) Trace::TraceDebug(msg)
 
-#  define LOG(msg) Logger::outputDebugString(msg)
-
-#  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)                                       \
-  Trace::TraceConfigVb("dumping "     + String((!!DUMP_CONFIG_VERBOSITY) ? "verbose" : "terse") + \
-                       " config per " + String(__FUNCTION__) + "()") ;                            \
-  Trace::DumpConfig(config_store , node_desc)                                                     ;
+#  define DEBUG_TRACE_DUMP_CONFIG(config_store , node_desc)                                      \
+  Trace::TraceConfigVb("dumping "     + String((DEBUG_DUMP_CONFIG_VERBOSITY > 0) ? "verbose" :   \
+                                                                                   "terse"   ) + \
+                       " config per " + String(__FUNCTION__) + "()") ;                           \
+  Trace::DumpConfig(config_store , node_desc)                                                    ;
 
 #  define DEBUG_TRACE_DUMP_CONFIG_XML(config_node , node_desc) \
   Trace::WriteConfigXml(config_node , node_desc)               ;
@@ -43,6 +71,8 @@
 class Trace
 {
 public:
+
+  static void EnableTracing(bool should_enable) ;
 
   static void TraceEvent   (String msg) ;
   static void TraceGui     (String msg) ;
@@ -68,6 +98,20 @@ public:
   static void   TraceTreeChanged (ValueTree& a_node , const Identifier& a_key) ;
   static void   TraceValueChanged(Value& a_value , String name) ;
   static String TraceSetValue    (ValueTree a_node , const Identifier& a_key , var a_value) ;
+
+
+  static bool EventEnabled ;
+  static bool GuiEnabled ;
+  static bool GuiVbEnabled ;
+  static bool MediaEnabled ;
+  static bool MediaVbEnabled  ;
+  static bool ConfigEnabled ;
+  static bool ConfigVbEnabled ;
+  static bool ChatEnabled ;
+  static bool ChatVbEnabled ;
+  static bool StateEnabled ;
+  static bool WarningsEnabled ;
+  static bool ErrorsEnabled ;
 } ;
 
 #else // DEBUG_TRACE

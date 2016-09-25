@@ -209,6 +209,8 @@ void Gstreamer::Shutdown()
   if (!IsInBin(OutputBin    , OutputRtmpSink  )) DestroyElement(OutputRtmpSink  ) ;
   if (!IsInBin(OutputBin    , OutputFauxSink  )) DestroyElement(OutputFauxSink  ) ;
   DestroyElement(Pipeline) ;
+
+  ConfigStore = ValueTree::invalid ;
 }
 
 bool Gstreamer::BuildScreencapBin()
@@ -878,7 +880,7 @@ GstElement* Gstreamer::ConfigurePreviewBin()
 DEBUG_TRACE_CONFIGURE_PREVIEW_BIN
 
   // configure elements
-  if (!ConfigureVideoSink(PreviewRealSink) && is_active)
+  if (is_active && !ConfigureVideoSink(PreviewRealSink))
     AvCaster::Error(GUI::GST_XWIN_ERROR_MSG) ;
 
   // swap sink elements
@@ -1184,7 +1186,6 @@ void Gstreamer::HandleErrorMessage(GstMessage* message)
   gst_message_parse_error(message , &error , &debug) ;
 
   String error_message       = String(error->message) ;
-  String warning_msg         = String::empty ;
   bool   is_alsa_init_error  = error_message == GST::ALSA_INIT_ERROR ;
   bool   is_pulse_init_error = error_message == GST::PULSE_INIT_ERROR ;
   bool   is_jack_init_error  = error_message == GST::JACK_INIT_ERROR ;
@@ -1196,29 +1197,27 @@ DEBUG_TRACE_GST_ERROR_MESSAGE
   // disable control toggle and re-configure with null source or sink
   if (is_alsa_init_error || is_pulse_init_error || is_jack_init_error)
   {
-    AvCaster::DeactivateControl(CONFIG::AUDIO_ID) ; ConfigureAudioBin() ;
+    String warning_msg = (is_alsa_init_error ) ? GUI::ALSA_INIT_ERROR_MSG  :
+                         (is_pulse_init_error) ? GUI::PULSE_INIT_ERROR_MSG :
+                         (is_jack_init_error ) ? GUI::JACK_INIT_ERROR_MSG  : String::empty ;
+    AvCaster::Warning(warning_msg + error_message) ;
 
-    warning_msg = (is_alsa_init_error ) ? GUI::ALSA_INIT_ERROR_MSG  :
-                  (is_pulse_init_error) ? GUI::PULSE_INIT_ERROR_MSG :
-                  (is_jack_init_error ) ? GUI::JACK_INIT_ERROR_MSG  : String::empty ;
+    AvCaster::DeactivateControl(CONFIG::AUDIO_ID) ; ConfigureAudioBin() ;
   }
   else if (is_xv_init_error)
   {
-    AvCaster::DeactivateControl(CONFIG::PREVIEW_ID) ; ConfigurePreviewBin() ;
+    AvCaster::Warning(GUI::XV_INIT_ERROR_MSG + error_message) ;
 
-    warning_msg = GUI::XV_INIT_ERROR_MSG ;
+    AvCaster::DeactivateControl(CONFIG::PREVIEW_ID) ; ConfigurePreviewBin() ;
   }
   else if (is_file_sink_error)
   {
-    AvCaster::DeactivateControl(CONFIG::OUTPUT_ID) ; ConfigureOutputBin() ;
+    AvCaster::Warning(GUI::FILE_SINK_ERROR_MSG + error_message) ;
 
-    warning_msg = GUI::FILE_SINK_ERROR_MSG ;
+    AvCaster::DeactivateControl(CONFIG::OUTPUT_ID) ; ConfigureOutputBin() ;
   }
 
 else { DEBUG_MAKE_GRAPHVIZ }
-
-  // alert user
-  if (warning_msg.isNotEmpty()) AvCaster::Warning(warning_msg + error_message) ;
 
   g_error_free(error) ; g_free(debug) ;
 }
@@ -1259,10 +1258,12 @@ void Gstreamer::SetMessageHandler(GstPipeline* pipeline , GstBusSyncHandler on_m
 
 bool Gstreamer::AddElement(GstElement* a_bin , GstElement* an_element)
 {
+DEBUG_TRACE_ADD_ELEMENT_IN
+
   bool is_err = !gst_bin_add(GST_BIN(a_bin) , an_element)    ||
                 !gst_element_sync_state_with_parent(an_element) ;
 
-DEBUG_TRACE_ADD_ELEMENT
+DEBUG_TRACE_ADD_ELEMENT_OUT
 
   return !is_err ;
 }
@@ -1489,7 +1490,7 @@ String Gstreamer::MakeFileName(String destination , String file_ext)
 {
   String filename    = (destination.isEmpty()) ? APP::APP_NAME         :
                        destination.upToLastOccurrenceOf(file_ext , false , true) ;
-  File   output_file = APP::videosDir().getNonexistentChildFile(filename , file_ext , false) ;
+  File   output_file = APP::VideosDir().getNonexistentChildFile(filename , file_ext , false) ;
 
   return output_file.getFullPathName() ;
 }
