@@ -1,5 +1,6 @@
 /*\
-|*|  Copyright 2015-2016 bill-auger <https://github.com/bill-auger/av-caster/issues>
+|*|  AvCaster - light-weight native gStreamer GUI for screencast, webcam, and audio streaming
+|*|  Copyright 2015-2018 bill-auger <https://github.com/bill-auger/av-caster/issues>
 |*|
 |*|  This file is part of the AvCaster program.
 |*|
