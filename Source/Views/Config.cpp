@@ -612,7 +612,7 @@ void Config::updateVisibility(var pane_name)
   this->configPaneGroup->setText(group_text) ; setHintsText(hints_text) ;
 }
 
-bool Config::setHintsText(String hints_text) { this->hintsText->setText(hints_text) ; }
+void Config::setHintsText(String hints_text) { this->hintsText->setText(hints_text) ; }
 
 String Config::outputHintsText()
 {

@@ -120,7 +120,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
 
   DBG("DumpMessage() gvalue='" + String(gvalue_str) + "'") ;
 
-  g_free(gvalue_str) ;
+  g_free(gvalue_str) ; return true ;
 }
 #  define DEBUG_TRACE_DUMP_MESSAGE_STRUCT                             \
   if (Trace::MediaVbEnabled) MessageStructEach(message , DumpMessage) ;

@@ -96,7 +96,7 @@ private:
   static bool ValidateEnvironment() ;
 
   // helpers
-  static bool PumpThreads() ;
+  static void PumpThreads() ;
 
   // collaborator handles
   static JUCEApplicationBase*     App ;

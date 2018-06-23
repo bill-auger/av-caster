@@ -83,7 +83,7 @@ private:
   void   loadConfig        () ;
   void   enableComponents  () ;
   void   updateVisibility  (var pane_name) ;
-  bool   setHintsText      (String hints_text) ;
+  void   setHintsText      (String hints_text) ;
   String outputHintsText   () ;
   bool   validateOutputDest() ;
 

@@ -458,7 +458,7 @@ DEBUG_TRACE_VALIDATE_ENVIRONMENT
          is_valid_home_dir         && is_valid_appdata_dir      && is_valid_videos_dir ;
 }
 
-bool AvCaster::PumpThreads()
+void AvCaster::PumpThreads()
 {
   bool is_quit_pending = App->getApplicationReturnValue() != 0 ;
   bool should_quit     = is_quit_pending && !Alert::AreAnyPending() ;

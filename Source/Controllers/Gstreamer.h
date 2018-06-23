@@ -84,7 +84,7 @@ private:
   static void ConfigureFlvmux        (GstElement* a_flvmuxer) ;
 
   // state
-  static bool            InitializeGst     (int *argc , char **argv[]) ;
+  static void            InitializeGst     (int *argc , char **argv[]) ;
   static bool            SetState          (GstElement* an_element , GstState next_state) ;
   static void            SetMessageHandler (GstPipeline*      pipeline     ,
                                             GstBusSyncHandler on_message_cb) ;

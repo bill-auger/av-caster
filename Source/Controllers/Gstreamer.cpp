@@ -1132,7 +1132,7 @@ DEBUG_TRACE_SET_GST_STATE
   return !is_err ;
 }
 
-bool Gstreamer::InitializeGst(int *argc , char **argv[]) { gst_init(nullptr , nullptr) ; }
+void Gstreamer::InitializeGst(int *argc , char **argv[]) { gst_init(nullptr , nullptr) ; }
 
 GstBusSyncReply Gstreamer::HandleMessage(GstBus*      message_bus , GstMessage* message ,
                                          GstPipeline* pipeline                          )
