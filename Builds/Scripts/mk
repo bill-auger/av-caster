@@ -25,6 +25,9 @@ export GST_DEBUG_NO_COLOR=1 && export GST_DEBUG_FILE=debug.log # log to file
 export DOT_DIR=/code/dot
 export GST_DEBUG_DUMP_DOT_DIR=$DOT_DIR
 
+# compiler flags
+export CFLAGS='-Werror=return-type'
+
 # file output
 VIDEOS_DIR=/home/bill/vids
 OUTPUT_NAME="AvCaster"
@@ -37,7 +40,8 @@ fi
 
 # build project
 echo "Building $TARGET target"
-CONFIG=$TARGET cd Builds/Makefile && make -j 2 && $BINARY $*
+CONFIG=$TARGET cd Builds/Makefile && make -j 2
+(($?)) && echo "Build succeeded - Launching '$BINARY $*'" && "$BINARY $*"
 
 # convert dot graphs to images
 if [ -d $DOT_DIR ]

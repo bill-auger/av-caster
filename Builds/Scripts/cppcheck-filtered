@@ -21,7 +21,7 @@ echo "running cppcheck --enable=all on ./Source/ with filters"
 
 # supress warnings for 'unused' event handlers
 #     so that we can exclude the JUCE library from cppcheck
-cppcheck --enable=all --template=gcc --quiet -i Source/Trace Source/ 2>                >(
+cppcheck --enable=all --template=gcc --force --quiet -i Source/Trace Source/ 2>        >(
   grep -v "Cppcheck cannot find all the include files"                                  |
   grep -v "The function 'initialise' is never used."                                    |
   grep -v "The function 'anotherInstanceStarted' is never used."                        |

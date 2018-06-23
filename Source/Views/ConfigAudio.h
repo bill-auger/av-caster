@@ -18,8 +18,8 @@
 \*/
 
 
-#ifndef _CONFIG_AUDIO_H_
-#define _CONFIG_AUDIO_H_
+#ifndef _CONFIGAUDIO_H_
+#define _CONFIGAUDIO_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -91,4 +91,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIG_AUDIO_H_
+#endif // _CONFIGAUDIO_H_

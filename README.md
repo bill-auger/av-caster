@@ -45,19 +45,22 @@ A command-line solution is the obvious choice for such scenarios but is obviousl
 
 ### Get AvCaster
 _NOTE: AvCaster requires gStreamer >= v1.6.0 and the 'ugly' plugins set which may not be available in your standard main/free repository (see "runtime dependencies" for your distro below)._
+
 #### AvCaster Package Repositories
 The [OpenSuse Build Service][obs] hosts AvCaster x86 and x86-64 binary package repositories for the following distributions:
   * Arch
-  * Debian 9
-  * Fedora 23, Fedora 24
+  * Debian 8, Debian 9
+  * Fedora 24, Fedora 25
   * OpenSuse Leap 42.2, OpenSuse Tumbleweed
-  * Ubuntu 16.04
+  * Ubuntu 16.04, Ubuntu 16.04
 
 Follow the [instructions][obs] there to download the latest package for your distribution or subscribe your package manager for future updates.  Let us know if you would like packaging for another distribution or architecture.
+
 #### Arch:
 There is also an [AUR repo for AvCaster][aur] maintained by [GitHub user fa7ad][fa7ad].  Feel free to [vote for AvCaster on AUR][aur] if you are an AUR user and would like to see AvCaster promoted to the 'community' binary repo.
 
 The Arch PKGBUILD file is also included in the Builds/Packaging/ directory of this repo. Refer to the "Building from Source" section below.
+
 #### Other GNU/Linux:
 Refer to the "Building from Source" section below.
 
@@ -176,7 +179,7 @@ There were several similar projects considered for expansion before this project
   * [ffmpeg-gui](http://sourceforge.net/projects/ffmpegfrontend/) - cross-platform QT basic ffmpeg launcher
   * [ffmpeggui](http://sourceforge.net/projects/ffmpeg-gui/) - Win32 basic ffmpeg launcher
 
-Also, the ffmpeg bash script that AvCaster was originally conceived to wrap is in [this gist](https://gist.github.com/bill-auger/9480205a38d9d00d2fa3) if an ultra-lightweight command-line webcasting tool is more suitable.  It is capable of recording to file or streaming to an RTMP server with screen capture, webcam, text overlay, and stereo audio.  It requires some manual configuration o/c, but is approximately twice as nice.
+Also, the [ffmpeg shell script](https://github.com/bill-auger/ffmpeg-broadcaster/) that AvCaster was originally conceived to wrap is in a separate repo if an ultra-lightweight command-line webcasting tool is more suitable.  It is capable of recording to file or streaming to an RTMP server with screen capture, webcam, text overlay, and stereo audio.  It requires some manual configuration o/c, but is approximately twice as nice.
 
 
 [upstream]: https://github.com/bill-auger/av-caster

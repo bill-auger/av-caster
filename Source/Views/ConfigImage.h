@@ -18,8 +18,8 @@
 \*/
 
 
-#ifndef _CONFIG_IMAGE_H_
-#define _CONFIG_IMAGE_H_
+#ifndef _CONFIGIMAGE_H_
+#define _CONFIGIMAGE_H_
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -78,4 +78,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIG_IMAGE_H_
+#endif // _CONFIGIMAGE_H_

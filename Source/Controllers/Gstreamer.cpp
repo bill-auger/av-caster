@@ -957,10 +957,10 @@ GstElement* Gstreamer::ConfigureOutputBin()
   GstElement* next_sink ; String output_url ;
 
 #ifdef DISABLE_OUTPUT
-UNUSED(is_enabled) ; is_enabled = (false) ? (bool)0 : false ;
-#endif // DISABLE_OUTPUT
-
+  is_enabled = false ; sink_idx = -1 ;
+#else // DISABLE_OUTPUT
   if (!is_enabled) sink_idx = -1 ;
+#endif // DISABLE_OUTPUT
   switch ((CONFIG::OutputStream)sink_idx)
   {
     case CONFIG::FILE_OUTPUT_IDX: next_sink = OutputFileSink ; output_url = file_url ; break ;
@@ -1132,7 +1132,7 @@ DEBUG_TRACE_SET_GST_STATE
   return !is_err ;
 }
 
-void Gstreamer::InitializeGst(int *argc , char **argv[]) { gst_init(nullptr , nullptr) ; }
+void Gstreamer::InitializeGst(int* argc , char** argv[]) { gst_init(nullptr , nullptr) ; }
 
 GstBusSyncReply Gstreamer::HandleMessage(GstBus*      message_bus , GstMessage* message ,
                                          GstPipeline* pipeline                          )

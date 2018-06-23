@@ -442,7 +442,7 @@ bool AvCaster::ValidateEnvironment()
 #ifndef DISABLE_CHAT
   bool is_sufficient_irc_version = IrcClient::IsSufficientVersion() ;
 #else // DISABLE_CHAT
-  bool is_sufficient_irc_version = (true) ? true : (bool)1 ;
+  bool is_sufficient_irc_version = true ;
 #endif // DISABLE_CHAT
   bool is_valid_home_dir         = APP::HomeDir    ().isDirectory() ;
   bool is_valid_appdata_dir      = APP::AppdataDir ().isDirectory() ;
@@ -452,7 +452,9 @@ bool AvCaster::ValidateEnvironment()
 DEBUG_TRACE_VALIDATE_ENVIRONMENT
 
   if (!is_sufficient_gst_version) AvCaster::Error(GUI::GST_INSUFFICIENT_ERROR_MSG) ;
+#ifndef DISABLE_CHAT
   if (!is_sufficient_irc_version) AvCaster::Error(GUI::IRC_INSUFFICIENT_ERROR_MSG) ;
+#endif // DISABLE_CHAT
 
   return is_sufficient_gst_version && is_sufficient_irc_version &&
          is_valid_home_dir         && is_valid_appdata_dir      && is_valid_videos_dir ;

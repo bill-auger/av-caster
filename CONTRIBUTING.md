@@ -2,26 +2,31 @@
 
 AvCaster source code, binary assets, and documentation are distributed as [free software](https://www.gnu.org/philosophy/free-sw.html) and [free culture](http://freedomdefined.org/Definition).  To this end, it is necessary for all contributors to be in agreement about this.  This agreement is not a copyright assignment.  It's function is merely to ensure that AvCaster remains free (as in freedom).
 
-In short, this means that as a contributor, you allow others to copy, distribute, and modify their copies or your work; provided that they extend this priviledge to others and credit you as the original author.  This implies that all source materials are made available in their respective preferred forms for modification; so for multimedia, this is all individual source files and/or editor project files in addition to the "mixed-down" binary artifacts.  Refer to the Terms below for details.
+In short, this means that as a contributor, you allow others to copy, distribute, and modify their copies or your work; provided that they extend this priviledge to others and credit you as the original author.  This implies that all source materials are made available in their respective preferred forms for modification; so for multimedia, this is all individual source files and/or editor project files in addition to the "mixed-down" binary artifacts.  Refer to the 'Multimedia' section below for details.
 
 
-### Contributor License Agreement Terms
-As a contributor, you agree that all contributions to the source tree, wiki, and issue tracker that are unlicensed and not in the public domain will automatically fall under the same appropriate licence as AvCaster: [GPLv3](COPYING.md) for source code, [GNU-FDLv1.3](Documentation/README.md) for documentation, and [GPLv3](Assets/README.md) for multimedia and other binaries (such as audio, video, and images).
+### Contribution Licensing Terms
 
-For multimedia and other binaries, the "sources" or "preferred forms" for modification in the context of the GPL as it applies to the AvCaster project are explicitly defined here to be any and all binary data, meta-data, editor project files, scripts, and source code of custom executables that are necessary to accomplish all of the following using only widely-available free software:
+As a contributor, you agree that all contributions to the source tree, wiki, and issue tracker that are unlicensed and not in the public domain will automatically fall under the same appropriate licence as AvCaster: [GPLv3](COPYING.md) for source code, [GNU-FDLv1.3](Documentation/README.md) for documentation, and [GPLv3](Assets/README.md) for multimedia and other binaries (such as audio, video, and images - see below).
+
+If you are not the sole author of your contribution (i.e. it is a combined or derivative work incorporating or based on someone else's work), then all source works must be freely distributable under the terms of some [GPL-compatible license](https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses) such as the Creative Commonns CC-BY or in the public domain; and you must clearly give attribution to the copyright holders with hyperlinks to the original sources and licenses.
+
+This is the common "inbound<->outbound" tacet norm and is even made explicit by some public services such as [item 'D6' of the Github Terms of Service](https://help.github.com/articles/github-terms-of-service/#6-contributions-under-repository-license).
+
+#### Multimedia and other Binary Contributions
+
+For multimedia and other binaries, the "sources" or "preferred forms" for modification as required by the GPLv3 are explicitly defined here, in the context of the AvCaster project, to be any and all binary data, meta-data, mappings, composition files, declarative recipes, scripts, and source code of executable media routines that are necessary to accomplish all of the following using only widely-available free software:
 * regenerate the associated target artifacts completely and accurately
 * modify these "preferred form" decomposed sources directly and individually
 * compose the original and modified sources
 * generate equivalent modified versions of the associated target artifacts
 
 For example:
-* "target artifact" such as final composed (mixed-down) .png, .wav, .webm, etc (these are typically all that is covered by Crerative Commons licencses)
-* "binary data" such as the individual elements that compose the "target artifact" (uncompressed images, sound tracks, etc.)
-* "meta-data" and "editor project files" such as .xcf, .psd, .aup, .ardour, etc.
-* "declarative recipes", "scripts", and "source code of custom executables" such as 3D models, SVG images, MIDI data, openGL shaders, etc.
-* "widely-available free software" such as GIMP, Inkscape, Audacity, Ardour, Blender, etc.
-
-If you are not the sole author of your contribution (i.e. it is a combined or derivative work incorporating or based on someone else's work), then all source works must be freely copyable (either public domain or distributable under the terms of some [GPL-compatible license](https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses) such as Creative Commonns) and you must clearly give attribution to the copyright holders with hyperlinks to the original sources and licenses.
+* "target artifacts" such as final composite (mixed-down) .png, .wav, .webm, etc (these are typically the only works that are distributed under Crerative Commons and other "Free Culture" licencses)
+* "binary data" such as the individual elements that compose the "target artifacts" (uncompressed image layers, isolated sound tracks, etc.)
+* "meta-data", "mappings", and "composition files" such as EDL/cue-sheets, .xcf, .psd, .aup, .ardour, etc.
+* "declarative recipes", "scripts", and "executable media routines" such as 3D models, animations, SVG images, MIDI data, openGL shaders, etc.
+* "widely-available free software" such as GIMP, Inkscape, Audacity, Ardour, Blender, etc. ([free, as in freedom](https://www.gnu.org/philosophy/free-sw.html))
 
 Contributions that do not meet the above criteria will not be accepted and will probably be deleted.
 
