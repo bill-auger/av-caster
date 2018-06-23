@@ -18,7 +18,7 @@ ICON_FILE         = $(ASSETS_DIR)/avcaster-logo-48.png
 #export DH_VERBOSE=1
 
 # This is the debhelper compatibility version to use.
-export DH_COMPAT=4
+export DH_COMPAT=9
 
 CFLAGS = -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
