@@ -42,10 +42,10 @@
 
 #  define DEBUG_TRACE_GST_INIT_PHASE_7 Trace::TraceState("Gstreamer ready") ;
 
-#  define DEBUG_DUMP_MEDIA_SWITCHES                                            \
-  if (!is_config_sane || Trace::MediaVbEnabled)                                \
-    Trace::TraceMedia(String("pipeline configuration params =>")             + \
-                      "\n\tn_video_inputs="     + String(n_video_inputs    ) + \
+#  define DEBUG_DUMP_MEDIA_SWITCHES                                              \
+  if (!is_config_sane || Trace::MediaVbEnabled)                                  \
+    Trace::TraceMedia(String("pipeline configuration params =>")               + \
+                      "\n\tn_video_inputs="     + String  (n_video_inputs    ) + \
                       "\n\tis_media_enabled="   + BOOL2STR(is_media_enabled  ) + \
                       "\n\tis_screen_enabled="  + BOOL2STR(is_screen_enabled ) + \
                       "\n\tis_camera_enabled="  + BOOL2STR(is_camera_enabled ) + \

@@ -63,15 +63,15 @@ StringArray DisableFeatures()
   return feature_switches ;
 }
 
-#  define DEBUG_DISABLE_FEATURES                                              \
-  StringArray featureswitches = DisableFeatures() ;                           \
-  cli_params.removeEmptyStrings() ; cli_params.mergeArray(featureswitches) ;  \
-  String dbg = "disabling feature per #define '" ;                            \
-  for (int switch_n = 0 ; switch_n < featureswitches.size() ; ++switch_n)     \
-    Trace::TraceState(dbg + featureswitches[switch_n] + "'") ;                \
-  if (TEXT_BIN_NYI ) { Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ;            \
+#  define DEBUG_DISABLE_FEATURES                                             \
+  StringArray featureswitches = DisableFeatures() ;                          \
+  cli_params.removeEmptyStrings() ; cli_params.mergeArray(featureswitches) ; \
+  String dbg = "disabling feature per #define '" ;                           \
+  for (int switch_n = 0 ; switch_n < featureswitches.size() ; ++switch_n)    \
+    Trace::TraceState(dbg + featureswitches[switch_n] + "'") ;               \
+  if (TEXT_BIN_NYI ) { Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ;           \
                        DisabledFeatures.set(CONFIG::TEXT_ID  , var()) ; }    \
-  if (IMAGE_BIN_NYI) { Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ;            \
+  if (IMAGE_BIN_NYI) { Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ;           \
                        DisabledFeatures.set(CONFIG::IMAGE_ID , var()) ; }
 
 

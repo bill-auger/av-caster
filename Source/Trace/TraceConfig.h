@@ -37,19 +37,19 @@
     Trace::TraceGui(String((is_pending_new_preset_name) ? "entering create preset mode" :  \
                                                           "exiting create preset mode"  )) ;
 
-#  define DEBUG_TRACE_CREATE_PRESET                                                      \
-  bool   should_update = !is_create_preset_mode && !should_rename_preset ;               \
-  bool   is_rejecting  = is_empty_preset_name || (is_name_collision && !should_update) ; \
-  String preset        = String((should_update) ? stored_name : preset_name) ;           \
-  if      (is_rejecting         ) Trace::TraceGui("rejecting preset '" + preset + "'") ; \
-  else if (is_create_preset_mode) Trace::TraceGui("creating preset '"  + preset + "'") ; \
-  else if (should_rename_preset ) Trace::TraceGui("renaming preset '"  + preset + "'") ; \
-  else                            Trace::TraceGui("updating preset '"  + preset + "'") ; \
-  String pad = "\n                                       " ;                             \
-  Trace::TraceGuiVb(String("handling preset change '") + preset_name    + "'" +          \
-      pad + "stored_preset_name    = '" + String(stored_name          ) + "'" +          \
-      pad + "option_n              = "  + String(option_n             )       +          \
-      pad + "stored_option_n       = "  + String(stored_idx           )       +          \
+#  define DEBUG_TRACE_CREATE_PRESET                                                        \
+  bool   should_update = !is_create_preset_mode && !should_rename_preset ;                 \
+  bool   is_rejecting  = is_empty_preset_name || (is_name_collision && !should_update) ;   \
+  String preset        = String((should_update) ? stored_name : preset_name) ;             \
+  if      (is_rejecting         ) Trace::TraceGui("rejecting preset '" + preset + "'") ;   \
+  else if (is_create_preset_mode) Trace::TraceGui("creating preset '"  + preset + "'") ;   \
+  else if (should_rename_preset ) Trace::TraceGui("renaming preset '"  + preset + "'") ;   \
+  else                            Trace::TraceGui("updating preset '"  + preset + "'") ;   \
+  String pad = "\n                                       " ;                               \
+  Trace::TraceGuiVb(String("handling preset change '") + preset_name      + "'" +          \
+      pad + "stored_preset_name    = '" + String  (stored_name          ) + "'" +          \
+      pad + "option_n              = "  + String  (option_n             )       +          \
+      pad + "stored_option_n       = "  + String  (stored_idx           )       +          \
       pad + "is_valid_option       = "  + BOOL2STR(is_valid_option      )       +          \
       pad + "is_static_preset      = "  + BOOL2STR(is_static_preset     )       +          \
       pad + "is_empty_preset_name  = "  + BOOL2STR(is_empty_preset_name )       +          \

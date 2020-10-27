@@ -99,8 +99,8 @@ private:
   static void PumpThreads() ;
 
   // collaborator handles
-  static JUCEApplicationBase*     App ;
-  static MainContent*             Gui ;
+  static JUCEApplicationBase*       App ;
+  static MainContent*               Gui ;
 #ifndef DISABLE_CHAT
   static std::unique_ptr<IrcClient> Irc ;
 #endif // DISABLE_CHAT

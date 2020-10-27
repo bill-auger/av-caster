@@ -25,16 +25,16 @@
 
 /* AvCaster private class variables */
 
-JUCEApplicationBase*     AvCaster::App            = nullptr ; // Initialize()
-MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
+JUCEApplicationBase*           AvCaster::App            = nullptr ; // Initialize()
+MainContent*                   AvCaster::Gui            = nullptr ; // Initialize()
 #ifndef DISABLE_CHAT
 std::unique_ptr<IrcClient>     AvCaster::Irc ;                      // Initialize()
 #endif // DISABLE_CHAT
 std::unique_ptr<AvCasterStore> AvCaster::Store ;                    // Initialize()
-bool                     AvCaster::IsInitialized  = false ;   // Initialize()
-bool                     AvCaster::IsMediaEnabled = true ;    // Initialize()
-bool                     AvCaster::IsChatEnabled  = true ;    // Initialize()
-NamedValueSet            AvCaster::DisabledFeatures ;         // ProcessCliParams()
+bool                           AvCaster::IsInitialized  = false ;   // Initialize()
+bool                           AvCaster::IsMediaEnabled = true ;    // Initialize()
+bool                           AvCaster::IsChatEnabled  = true ;    // Initialize()
+NamedValueSet                  AvCaster::DisabledFeatures ;         // ProcessCliParams()
 
 
 /* AvCaster public class methods */
@@ -86,10 +86,10 @@ void AvCaster::DeactivateControl(const Identifier& a_key) { Store->deactivateCon
 
 void AvCaster::SetValue(const Identifier& a_key , const var a_value)
 {
-  ValueTree storage_node = (CONFIG::RootKeys()   .contains(a_key)) ? Store->root        :
-                           (CONFIG::PresetKeys() .contains(a_key)) ? Store->config      :
-                           (CONFIG::NetworkKeys().contains(a_key)) ? Store->network     :
-                                                                     ValueTree()        ;
+  ValueTree storage_node = (CONFIG::RootKeys()   .contains(a_key)) ? Store->root    :
+                           (CONFIG::PresetKeys() .contains(a_key)) ? Store->config  :
+                           (CONFIG::NetworkKeys().contains(a_key)) ? Store->network :
+                                                                     ValueTree()    ;
 
   Store->setValueViaGui(storage_node , a_key , a_value) ;
 }
