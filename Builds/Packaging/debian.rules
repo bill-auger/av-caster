@@ -4,14 +4,14 @@
 
 PROJECT_NAME      = av-caster
 BUILD_DIR         = Builds/Makefile
-ASSETS_DIR        = Assets
+BLOBS_DIR         = Blobs
 PACKAGING_DIR     = /usr/src/packages/BUILD/debian/$(PROJECT_NAME)
 PACKAGE_BIN_DIR   = $(PACKAGING_DIR)/usr/bin
 PACKAGE_APPS_DIR  = $(PACKAGING_DIR)/usr/share/applications
 PACKAGE_ICONS_DIR = $(PACKAGING_DIR)/usr/share/icons/hicolor/48x48/apps/
 BINARY_ARTEFACT   = $(BUILD_DIR)/build/$(PROJECT_NAME)
-DESKTOP_FILE      = $(ASSETS_DIR)/av-caster.desktop
-ICON_FILE         = $(ASSETS_DIR)/avcaster-logo-48.png
+DESKTOP_FILE      = $(BLOBS_DIR)/av-caster.desktop
+ICON_FILE         = $(BLOBS_DIR)/avcaster-logo-48.png
 
 
 # Uncomment this to turn on verbose mode.

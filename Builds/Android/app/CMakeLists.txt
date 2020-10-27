@@ -38,11 +38,11 @@ add_library( ${BINARY_NAME}
 
     SHARED
 
-    "../../../Assets/avcaster-logo-48.png"
-    "../../../Assets/avcaster-logo-128.png"
-    "../../../Assets/config-hover.png"
-    "../../../Assets/config-pushed.png"
-    "../../../Assets/config.png"
+    "../../../Blobs/avcaster-logo-48.png"
+    "../../../Blobs/avcaster-logo-128.png"
+    "../../../Blobs/config-hover.png"
+    "../../../Blobs/config-pushed.png"
+    "../../../Blobs/config.png"
     "../../../Source/Constants/AppConstants.h"
     "../../../Source/Constants/ConfigConstants.h"
     "../../../Source/Constants/Constants.h"
@@ -774,11 +774,11 @@ add_library( ${BINARY_NAME}
     "../../../JuceLibraryCode/JuceHeader.h"
 )
 
-set_source_files_properties("../../../Assets/avcaster-logo-48.png" PROPERTIES HEADER_FILE_ONLY TRUE)
-set_source_files_properties("../../../Assets/avcaster-logo-128.png" PROPERTIES HEADER_FILE_ONLY TRUE)
-set_source_files_properties("../../../Assets/config-hover.png" PROPERTIES HEADER_FILE_ONLY TRUE)
-set_source_files_properties("../../../Assets/config-pushed.png" PROPERTIES HEADER_FILE_ONLY TRUE)
-set_source_files_properties("../../../Assets/config.png" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties("../../../Blobs/avcaster-logo-48.png" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties("../../../Blobs/avcaster-logo-128.png" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties("../../../Blobs/config-hover.png" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties("../../../Blobs/config-pushed.png" PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties("../../../Blobs/config.png" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties("../../../Source/Constants/AppConstants.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties("../../../Source/Constants/ConfigConstants.h" PROPERTIES HEADER_FILE_ONLY TRUE)
 set_source_files_properties("../../../Source/Constants/Constants.h" PROPERTIES HEADER_FILE_ONLY TRUE)

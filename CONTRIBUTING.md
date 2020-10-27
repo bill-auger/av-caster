@@ -7,7 +7,7 @@ In short, this means that as a contributor, you allow others to copy, distribute
 
 ### Contribution Licensing Terms
 
-As a contributor, you agree that all contributions to the source tree, wiki, and issue tracker that are unlicensed and not in the public domain will automatically fall under the same appropriate licence as AvCaster: [GPLv3](COPYING.md) for source code, [GNU-FDLv1.3](Documentation/README.md) for documentation, and [GPLv3](Assets/README.md) for multimedia and other binaries (such as audio, video, and images - see below).
+As a contributor, you agree that all contributions to the source tree, wiki, and issue tracker that are unlicensed and not in the public domain will automatically fall under the same appropriate licence as AvCaster: [GPLv3](COPYING.md) for source code, [GNU-FDLv1.3](Documentation/README.md) for documentation, and [GPLv3](Blobs/README.md) for multimedia and other binaries (such as audio, video, and images - see below).
 
 If you are not the sole author of your contribution (i.e. it is a combined or derivative work incorporating or based on someone else's work), then all source works must be freely distributable under the terms of some [GPL-compatible license](https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses) such as the Creative Commonns CC-BY or in the public domain; and you must clearly give attribution to the copyright holders with hyperlinks to the original sources and licenses.
 

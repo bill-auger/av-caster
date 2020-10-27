@@ -5,16 +5,16 @@
               jucerVersion="5.4.7" userNotes="" companyWebsite="" License="/*\&#10;|*|  Copyright 2015-2016 bill-auger &lt;https://github.com/bill-auger/av-caster/issues&gt;&#10;|*|&#10;|*|  This file is part of the AvCaster program.&#10;|*|&#10;|*|  AvCaster is free software: you can redistribute it and/or modify&#10;|*|  it under the terms of the GNU General Public License version 3&#10;|*|  as published by the Free Software Foundation.&#10;|*|&#10;|*|  AvCaster is distributed in the hope that it will be useful,&#10;|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of&#10;|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#10;|*|  GNU General Public License for more details.&#10;|*|&#10;|*|  You should have received a copy of the GNU General Public License&#10;|*|  along with AvCaster.  If not, see &lt;http://www.gnu.org/licenses/&gt;.&#10;\*/"
               projectLineFeed="&#10;" headerPath="/usr/include/libircclient">
   <MAINGROUP id="EzgwIT" name="AvCaster">
-    <GROUP id="{B968229C-6218-718C-8F23-4791DDD13A93}" name="Assets">
+    <GROUP id="{B968229C-6218-718C-8F23-4791DDD13A93}" name="Blobs">
       <FILE id="ehff61" name="avcaster-logo-48.png" compile="0" resource="1"
-            file="Assets/avcaster-logo-48.png"/>
+            file="Blobs/avcaster-logo-48.png"/>
       <FILE id="Hb9d9U" name="avcaster-logo-128.png" compile="0" resource="1"
-            file="Assets/avcaster-logo-128.png"/>
+            file="Blobs/avcaster-logo-128.png"/>
       <FILE id="klnYyc" name="config-hover.png" compile="0" resource="1"
-            file="Assets/config-hover.png"/>
+            file="Blobs/config-hover.png"/>
       <FILE id="YmSqkp" name="config-pushed.png" compile="0" resource="1"
-            file="Assets/config-pushed.png"/>
-      <FILE id="wYhzGX" name="config.png" compile="0" resource="1" file="Assets/config.png"/>
+            file="Blobs/config-pushed.png"/>
+      <FILE id="wYhzGX" name="config.png" compile="0" resource="1" file="Blobs/config.png"/>
     </GROUP>
     <GROUP id="{12F99024-8A51-4F04-3891-07F59C6B6881}" name="Headers">
       <GROUP id="{3B152D14-E544-D7E4-5FA0-64C563FEA7B6}" name="Constants">

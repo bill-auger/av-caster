@@ -117,31 +117,31 @@
       <Add library="kernel32"/>
       <Add library="comctl32"/>
     </Linker>
-    <Unit filename="../../Assets/avcaster-logo-48.png">
+    <Unit filename="../../Blobs/avcaster-logo-48.png">
       <Option target="App | Debug"/>
       <Option target="App | Release"/>
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../Assets/avcaster-logo-128.png">
+    <Unit filename="../../Blobs/avcaster-logo-128.png">
       <Option target="App | Debug"/>
       <Option target="App | Release"/>
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../Assets/config-hover.png">
+    <Unit filename="../../Blobs/config-hover.png">
       <Option target="App | Debug"/>
       <Option target="App | Release"/>
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../Assets/config-pushed.png">
+    <Unit filename="../../Blobs/config-pushed.png">
       <Option target="App | Debug"/>
       <Option target="App | Release"/>
       <Option compile="0"/>
       <Option link="0"/>
     </Unit>
-    <Unit filename="../../Assets/config.png">
+    <Unit filename="../../Blobs/config.png">
       <Option target="App | Debug"/>
       <Option target="App | Release"/>
       <Option compile="0"/>

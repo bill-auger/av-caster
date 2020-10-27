@@ -225,13 +225,6 @@
 			path = ../../Source/Models/AvCasterStore.h;
 			sourceTree = "SOURCE_ROOT";
 		};
-		23A0995A6D63449BACBC28D3 = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.png;
-			name = "avcaster-logo-128.png";
-			path = "../../Assets/avcaster-logo-128.png";
-			sourceTree = "SOURCE_ROOT";
-		};
 		23B88DD813BC2CDE3A85A567 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -309,11 +302,11 @@
 			path = "../../JuceLibraryCode/include_juce_events.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
-		3F7FA16460D9ABD0E885E047 = {
+		3EE019210C14F2B22B6496A5 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
-			name = "config-pushed.png";
-			path = "../../Assets/config-pushed.png";
+			name = config.png;
+			path = ../../Blobs/config.png;
 			sourceTree = "SOURCE_ROOT";
 		};
 		41C38F44A2FDBD8EE705E451 = {
@@ -328,6 +321,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = Statusbar.h;
 			path = ../../Source/Views/Statusbar.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		477F4808E794E4EE1BAC45E8 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "avcaster-logo-48.png";
+			path = "../../Blobs/avcaster-logo-48.png";
 			sourceTree = "SOURCE_ROOT";
 		};
 		4854610CE4C5873B93E3B111 = {
@@ -447,6 +447,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = ConfigAudio.cpp;
 			path = ../../Source/Views/ConfigAudio.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		8A26A6B53FA08082BB37CF1A = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "avcaster-logo-128.png";
+			path = "../../Blobs/avcaster-logo-128.png";
 			sourceTree = "SOURCE_ROOT";
 		};
 		8B1FCF9B5CBD965AC2AF7E87 = {
@@ -575,13 +582,6 @@
 			path = ../../Source/Constants/Constants.h;
 			sourceTree = "SOURCE_ROOT";
 		};
-		A7CC0C5E96279A9E704F3879 = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.png;
-			name = "config-hover.png";
-			path = "../../Assets/config-hover.png";
-			sourceTree = "SOURCE_ROOT";
-		};
 		A8E371D7D9CD76C5083AF851 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -594,6 +594,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = AvCasterStore.cpp;
 			path = ../../Source/Models/AvCasterStore.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		AB6BA2DCF1728C37C6C0E211 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "config-pushed.png";
+			path = "../../Blobs/config-pushed.png";
 			sourceTree = "SOURCE_ROOT";
 		};
 		ABDD933D9F62B5AC15EA2AE7 = {
@@ -652,6 +659,13 @@
 			path = ../../Source/Views/Presets.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		BE2E1908FDF640BC8FDCCFEB = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "config-hover.png";
+			path = "../../Blobs/config-hover.png";
+			sourceTree = "SOURCE_ROOT";
+		};
 		C6C411EF7E61B1F1FDB58DCD = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -701,13 +715,6 @@
 			path = ../../Source/Views/ConfigCamera.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
-		D5153E0D7ECE7D6B1E4B8562 = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.png;
-			name = config.png;
-			path = ../../Assets/config.png;
-			sourceTree = "SOURCE_ROOT";
-		};
 		DC3C02563A5E686664261B21 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -748,13 +755,6 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = AppConstants.h;
 			path = ../../Source/Constants/AppConstants.h;
-			sourceTree = "SOURCE_ROOT";
-		};
-		E6DE4EECDE923BC7E61684D5 = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.png;
-			name = "avcaster-logo-48.png";
-			path = "../../Assets/avcaster-logo-48.png";
 			sourceTree = "SOURCE_ROOT";
 		};
 		EC07E431D45D5C8664EC0B5E = {
@@ -816,13 +816,13 @@
 		FB4AF43AFBB8DA105A62D5CA = {
 			isa = PBXGroup;
 			children = (
-				E6DE4EECDE923BC7E61684D5,
-				23A0995A6D63449BACBC28D3,
-				A7CC0C5E96279A9E704F3879,
-				3F7FA16460D9ABD0E885E047,
-				D5153E0D7ECE7D6B1E4B8562,
+				477F4808E794E4EE1BAC45E8,
+				8A26A6B53FA08082BB37CF1A,
+				BE2E1908FDF640BC8FDCCFEB,
+				AB6BA2DCF1728C37C6C0E211,
+				3EE019210C14F2B22B6496A5,
 			);
-			name = Assets;
+			name = Blobs;
 			sourceTree = "<group>";
 		};
 		41C0C3D92A6080DD7FE2C958 = {

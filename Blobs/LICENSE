@@ -1,0 +1,48 @@
+GPLv3 Free Culture Addendum
+
+The original multimedia files in the AvCaster Blobs/ directory
+are licensed under version 3 of the GNU General Public License (GPLv3).
+The terminology in section 1 of the GPLv3 (namely: "object code", "source code",
+and "preferred form"), as it relates to the binary data of this project,
+is explicitly defined below.
+
+The "object code" is explicitly defined here to be the binary files
+(audio, video, images, 3D models, fonts, etc.), which are loaded by
+or embedded into the AvCaster program.
+
+The "source code" or "preferred form of the work" is explicitly defined here,
+to be any and all resources (such as binary data, editor project files,
+meta-data, declarative texts, scripts, and source code of helper programs),
+which are necessary to accomplish all of the following tasks,
+using only widely-available free software:
+
+  * regenerate the associated "object code" artifacts, completely and accurately
+  * modify the fully decomposed "preferred form" sources, directly and independently
+  * compose the original, modified, and replacement sources, interchangeably
+  * generate equivalent modified versions of the associated artifacts
+
+Examples of "object code" artifacts, and "source code"
+(or the "preferred form of the work") include:
+
+  * "artifacts":
+    such as a composed (mixed-down) .webm, .png, .ogg, .wav, etc
+  * "binary data":
+    such are the individual elements which compose the "artifacts"
+    (image layers, sound tracks, audio samples, etc.)
+  * "meta-data" and "declarative texts":
+    such as 3D models, animations, edit-decision-lists/cue-sheets, CSS, etc.
+  * "scripts" and "source code of helpers":
+    such as ImageMagick scripts, GIMP plugins, openGL shaders, etc.
+  * "editor project files":
+    such as .blend, .xcf, .psd, .aup, .ardour, etc.
+  * "widely-available free software":
+    such as Blender, GIMP, Inkscape, Audacity, Ardour, etc.
+
+The definitions above should not be construed as exhaustive. However, the
+intention is analogous to the GPL distinction of complete corresponding source
+code vs. compiled binary executables. Likewise, with any digital art-form, it is
+assumed to be self-evident to any competent digital artist, which properties
+generally qualify the prepared end-results, ready for end-user consumption,
+as distinct from everything else, which would not be particularly interesting
+to a consumer, but would be significantly helpful or essential to a producer.
+This addendum explicitly requires that: "everything else".

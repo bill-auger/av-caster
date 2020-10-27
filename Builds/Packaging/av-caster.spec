@@ -37,8 +37,8 @@ Requires:      gstreamer1-plugins-bad-free gstreamer1-plugins-good gstreamer1-pl
 %define package_apps_dir  %{buildroot}%_datadir/applications/
 %define package_icons_dir %{buildroot}%_datadir/icons/hicolor/48x48/apps/
 %define binary_artefact   Builds/Makefile/build/%{name}
-%define desktop_file      Assets/%{name}.desktop
-%define icon_file         Assets/avcaster-logo-48.png
+%define desktop_file      Blobs/%{name}.desktop
+%define icon_file         Blobs/avcaster-logo-48.png
 
 
 %description

@@ -2,8 +2,8 @@
 
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="AvCaster\Assets">
-      <UniqueIdentifier>{6699A38E-48C7-AC95-72D5-BA764DCA1717}</UniqueIdentifier>
+    <Filter Include="AvCaster\Blobs">
+      <UniqueIdentifier>{7644EBC6-8A47-1A3A-2507-5DF8056B6855}</UniqueIdentifier>
     </Filter>
     <Filter Include="AvCaster\Headers\Constants">
       <UniqueIdentifier>{98EA8235-5B6C-CE87-AA05-0878243EAD1B}</UniqueIdentifier>
@@ -2414,20 +2414,20 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Assets\avcaster-logo-48.png">
-      <Filter>AvCaster\Assets</Filter>
+    <None Include="..\..\Blobs\avcaster-logo-48.png">
+      <Filter>AvCaster\Blobs</Filter>
     </None>
-    <None Include="..\..\Assets\avcaster-logo-128.png">
-      <Filter>AvCaster\Assets</Filter>
+    <None Include="..\..\Blobs\avcaster-logo-128.png">
+      <Filter>AvCaster\Blobs</Filter>
     </None>
-    <None Include="..\..\Assets\config-hover.png">
-      <Filter>AvCaster\Assets</Filter>
+    <None Include="..\..\Blobs\config-hover.png">
+      <Filter>AvCaster\Blobs</Filter>
     </None>
-    <None Include="..\..\Assets\config-pushed.png">
-      <Filter>AvCaster\Assets</Filter>
+    <None Include="..\..\Blobs\config-pushed.png">
+      <Filter>AvCaster\Blobs</Filter>
     </None>
-    <None Include="..\..\Assets\config.png">
-      <Filter>AvCaster\Assets</Filter>
+    <None Include="..\..\Blobs\config.png">
+      <Filter>AvCaster\Blobs</Filter>
     </None>
     <None Include="..\..\JuceLibraryCode\modules\juce_core\native\java\README.txt">
       <Filter>JUCE Modules\juce_core\native\java</Filter>

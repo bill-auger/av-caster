@@ -1430,11 +1430,11 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Assets\avcaster-logo-48.png"/>
-    <None Include="..\..\Assets\avcaster-logo-128.png"/>
-    <None Include="..\..\Assets\config-hover.png"/>
-    <None Include="..\..\Assets\config-pushed.png"/>
-    <None Include="..\..\Assets\config.png"/>
+    <None Include="..\..\Blobs\avcaster-logo-48.png"/>
+    <None Include="..\..\Blobs\avcaster-logo-128.png"/>
+    <None Include="..\..\Blobs\config-hover.png"/>
+    <None Include="..\..\Blobs\config-pushed.png"/>
+    <None Include="..\..\Blobs\config.png"/>
     <None Include="..\..\JuceLibraryCode\modules\juce_core\native\java\README.txt"/>
   </ItemGroup>
   <ItemGroup>
