@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.005"
-              bundleIdentifier="org.bill-auger.AvCaster" includeBinaryInAppConfig="1"
-              jucerVersion="4.2.4" userNotes="" companyWebsite="" License="/*\&#10;|*|  Copyright 2015-2016 bill-auger &lt;https://github.com/bill-auger/av-caster/issues&gt;&#10;|*|&#10;|*|  This file is part of the AvCaster program.&#10;|*|&#10;|*|  AvCaster is free software: you can redistribute it and/or modify&#10;|*|  it under the terms of the GNU General Public License version 3&#10;|*|  as published by the Free Software Foundation.&#10;|*|&#10;|*|  AvCaster is distributed in the hope that it will be useful,&#10;|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of&#10;|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#10;|*|  GNU General Public License for more details.&#10;|*|&#10;|*|  You should have received a copy of the GNU General Public License&#10;|*|  along with AvCaster.  If not, see &lt;http://www.gnu.org/licenses/&gt;.&#10;\*/">
+<JUCERPROJECT id="N9TdTc" name="AvCaster" projectType="guiapp" version="0.16.005-pre6"
+              bundleIdentifier="org.bill-auger.av-caster" includeBinaryInAppConfig="1"
+              jucerVersion="5.4.7" userNotes="" companyWebsite="" License="/*\&#10;|*|  Copyright 2015-2016 bill-auger &lt;https://github.com/bill-auger/av-caster/issues&gt;&#10;|*|&#10;|*|  This file is part of the AvCaster program.&#10;|*|&#10;|*|  AvCaster is free software: you can redistribute it and/or modify&#10;|*|  it under the terms of the GNU General Public License version 3&#10;|*|  as published by the Free Software Foundation.&#10;|*|&#10;|*|  AvCaster is distributed in the hope that it will be useful,&#10;|*|  but WITHOUT ANY WARRANTY; without even the implied warranty of&#10;|*|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#10;|*|  GNU General Public License for more details.&#10;|*|&#10;|*|  You should have received a copy of the GNU General Public License&#10;|*|  along with AvCaster.  If not, see &lt;http://www.gnu.org/licenses/&gt;.&#10;\*/"
+              projectLineFeed="&#10;" headerPath="/usr/include/libircclient">
   <MAINGROUP id="EzgwIT" name="AvCaster">
     <GROUP id="{B968229C-6218-718C-8F23-4791DDD13A93}" name="Assets">
       <FILE id="ehff61" name="avcaster-logo-48.png" compile="0" resource="1"
@@ -123,10 +124,8 @@
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="1" optimisation="1" targetName="AvCaster"/>
-        <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="0" optimisation="3" targetName="AvCaster"/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="AvCaster"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="AvCaster"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../juce/modules"/>
@@ -136,21 +135,6 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2015 targetFolder="Builds/VisualStudio2015">
-      <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="1" optimisation="1" targetName="AvCaster"/>
-        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="AvCaster"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../juce/modules"/>
-        <MODULEPATH id="juce_events" path="../juce/modules"/>
-        <MODULEPATH id="juce_graphics" path="../juce/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../juce/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
-      </MODULEPATHS>
-    </VS2015>
     <VS2008 targetFolder="Builds/VisualStudio2008">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" isDebug="1"
@@ -166,9 +150,8 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </VS2008>
-    <LINUX_MAKE targetFolder="Builds/Makefile" extraCompilerFlags="$(if $(filter-out x86_64 , $(shell uname -m)) , -malign-double , -fPIC)&#10;&#96;pkg-config --cflags gstreamer-1.0&#96;&#10;-I /usr/include/libircclient"
-                extraLinkerFlags="&#96;pkg-config --libs gstreamer-1.0&#96;&#10;&#96;pkg-config --libs gstreamer-video-1.0&#96;"
-                externalLibraries="ircclient" smallIcon="" bigIcon="">
+    <LINUX_MAKE targetFolder="Builds/Makefile" extraCompilerFlags="$(if $(filter-out x86_64 , $(shell uname -m)) , -malign-double , -fPIC)&#10;"
+                externalLibraries="ircclient&#10;" smallIcon="" bigIcon="" linuxExtraPkgConfig="gstreamer-1.0 gstreamer-video-1.0">
       <CONFIGURATIONS>
         <CONFIGURATION name="Release" libraryPath="" isDebug="0" optimisation="3" targetName="av-caster"/>
         <CONFIGURATION name="Debug" libraryPath="" isDebug="1" optimisation="1" targetName="av-caster-dbg"/>
@@ -209,13 +192,42 @@
         <MODULEPATH id="juce_gui_basics" path="../juce/modules"/>
       </MODULEPATHS>
     </CODEBLOCKS_LINUX>
+    <VS2019 targetFolder="Builds/VisualStudio2019">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_basics"/>
+        <MODULEPATH id="juce_graphics"/>
+        <MODULEPATH id="juce_events"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_core"/>
+      </MODULEPATHS>
+    </VS2019>
+    <ANDROIDSTUDIO targetFolder="Builds/Android">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_basics" path="../../juce"/>
+        <MODULEPATH id="juce_graphics" path="../../juce"/>
+        <MODULEPATH id="juce_events" path="../../juce"/>
+        <MODULEPATH id="juce_data_structures" path="../../juce"/>
+        <MODULEPATH id="juce_core" path="../../juce"/>
+      </MODULEPATHS>
+    </ANDROIDSTUDIO>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="juce_core" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_events" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="1"/>
-    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="1" useGlobalPath="1"/>
   </MODULES>
   <JUCEOPTIONS/>
+  <LIVE_SETTINGS>
+    <LINUX/>
+  </LIVE_SETTINGS>
 </JUCERPROJECT>
