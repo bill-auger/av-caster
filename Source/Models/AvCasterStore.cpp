@@ -418,7 +418,7 @@ ValueTree AvCasterStore::loadConfig()
   this->storageFile          = this->storageDir .getChildFile(CONFIG::STORAGE_FILENAME) ;
   FileInputStream* storage   = new FileInputStream(this->storageFile) ;
   ValueTree        root_node = (storage->openedOk()) ? ValueTree::readFromStream(*storage) :
-                                                       ValueTree::invalid                  ;
+                                                       ValueTree()                         ;
   delete storage ;
 
   return root_node ;

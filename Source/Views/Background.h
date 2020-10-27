@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _BACKGROUND_H_
-#define _BACKGROUND_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -41,7 +40,7 @@ class Background  : public Component
 public:
     //==============================================================================
     Background ();
-    ~Background();
+    ~Background() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -66,4 +65,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _BACKGROUND_H_

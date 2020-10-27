@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _PREVIEW_H_
-#define _PREVIEW_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
@@ -39,7 +38,7 @@ class Preview  : public Component
 public:
     //==============================================================================
     Preview ();
-    ~Preview();
+    ~Preview() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -55,8 +54,8 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> previewGroup;
-    ScopedPointer<Drawable> drawable1;
+    std::unique_ptr<GroupComponent> previewGroup;
+    std::unique_ptr<Drawable> drawable1;
 
 
     //==============================================================================
@@ -66,4 +65,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _PREVIEW_H_

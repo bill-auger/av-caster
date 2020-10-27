@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -57,7 +56,7 @@ class Config  : public Component,
 public:
     //==============================================================================
     Config (MainContent* main_content);
-    ~Config();
+    ~Config() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -89,8 +88,8 @@ private:
 
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
+    void paint (Graphics& g) override;
+    void resized() override;
 
 
 
@@ -138,25 +137,25 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> configGroup;
-    ScopedPointer<TextButton> screenButton;
-    ScopedPointer<TextButton> cameraButton;
-    ScopedPointer<TextButton> audioButton;
-    ScopedPointer<TextButton> textButton;
-    ScopedPointer<TextButton> imageButton;
-    ScopedPointer<TextButton> outputButton;
-    ScopedPointer<TextButton> chatButton;
-    ScopedPointer<GroupComponent> configPaneGroup;
-    ScopedPointer<ConfigScreen> configScreen;
-    ScopedPointer<ConfigCamera> configCamera;
-    ScopedPointer<ConfigAudio> configAudio;
-    ScopedPointer<ConfigText> configText;
-    ScopedPointer<ConfigImage> configImage;
-    ScopedPointer<ConfigOutput> configOutput;
-    ScopedPointer<ConfigChat> configChat;
-    ScopedPointer<Component> dummyConfigPane;
-    ScopedPointer<GroupComponent> hintsGroup;
-    ScopedPointer<TextEditor> hintsText;
+    std::unique_ptr<GroupComponent> configGroup;
+    std::unique_ptr<TextButton> screenButton;
+    std::unique_ptr<TextButton> cameraButton;
+    std::unique_ptr<TextButton> audioButton;
+    std::unique_ptr<TextButton> textButton;
+    std::unique_ptr<TextButton> imageButton;
+    std::unique_ptr<TextButton> outputButton;
+    std::unique_ptr<TextButton> chatButton;
+    std::unique_ptr<GroupComponent> configPaneGroup;
+    std::unique_ptr<ConfigScreen> configScreen;
+    std::unique_ptr<ConfigCamera> configCamera;
+    std::unique_ptr<ConfigAudio> configAudio;
+    std::unique_ptr<ConfigText> configText;
+    std::unique_ptr<ConfigImage> configImage;
+    std::unique_ptr<ConfigOutput> configOutput;
+    std::unique_ptr<ConfigChat> configChat;
+    std::unique_ptr<Component> dummyConfigPane;
+    std::unique_ptr<GroupComponent> hintsGroup;
+    std::unique_ptr<TextEditor> hintsText;
 
 
     //==============================================================================
@@ -166,4 +165,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIG_H_

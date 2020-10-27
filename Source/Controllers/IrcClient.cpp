@@ -326,12 +326,12 @@ StringArray IrcClient::ProcessTimestamp(String message)
 
 void IrcClient::AddServerChat(String message)
 {
-  AvCaster::AddChatLine(String::empty , GUI::SERVER_NICK , message) ;
+  AvCaster::AddChatLine(String() , GUI::SERVER_NICK , message) ;
 }
 
 void IrcClient::AddClientChat(String message)
 {
-  AvCaster::AddChatLine(String::empty , GUI::CLIENT_NICK , message) ;
+  AvCaster::AddChatLine(String() , GUI::CLIENT_NICK , message) ;
 }
 
 void IrcClient::AddUserChat(String prefix , String nick , String message)
@@ -342,7 +342,7 @@ void IrcClient::AddUserChat(String prefix , String nick , String message)
 
 /* IrcClient private instance methods */
 
-IrcClient::~IrcClient() { destroySession() ; NetworkStore = ValueTree::invalid ; }
+IrcClient::~IrcClient() { destroySession() ; NetworkStore = ValueTree() ; }
 
 void IrcClient::createSession()
 {

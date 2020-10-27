@@ -19,6 +19,7 @@
 #define STRING(a_var_or_id) a_var_or_id.toString()
 #define CHARSTAR(a_string)  a_string.toStdString().c_str()
 #define UTF8(a_string)      a_string.toUTF8()
+#define BOOL2STR(a_bool)    String((a_bool) ? "true" : "false")
 #define UNUSED(x)           (void)(x)
 
 // [END_USER_CODE_SECTION]

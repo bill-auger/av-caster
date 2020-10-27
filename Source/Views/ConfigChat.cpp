@@ -30,36 +30,52 @@
 //==============================================================================
 ConfigChat::ConfigChat ()
 {
-    addAndMakeVisible (timestampToggle = new ToggleButton ("timestampToggle"));
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
+    timestampToggle.reset (new ToggleButton ("timestampToggle"));
+    addAndMakeVisible (timestampToggle.get());
     timestampToggle->setExplicitFocusOrder (6);
     timestampToggle->setButtonText (TRANS("Show Timestamps"));
     timestampToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (joinPartToggle = new ToggleButton ("joinPartToggle"));
+    timestampToggle->setBounds (234, 8, 128, 24);
+
+    joinPartToggle.reset (new ToggleButton ("joinPartToggle"));
+    addAndMakeVisible (joinPartToggle.get());
     joinPartToggle->setExplicitFocusOrder (7);
     joinPartToggle->setButtonText (TRANS("Show Joins/Parts"));
     joinPartToggle->setToggleState (true, dontSendNotification);
     joinPartToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (networkLabel = new Label ("networkLabel",
-                                                 TRANS("Host:")));
-    networkLabel->setFont (Font (15.00f, Font::plain));
+    joinPartToggle->setBounds (376, 8, 128, 24);
+
+    networkLabel.reset (new Label ("networkLabel",
+                                   TRANS("Host:")));
+    addAndMakeVisible (networkLabel.get());
+    networkLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     networkLabel->setJustificationType (Justification::centredLeft);
     networkLabel->setEditable (false, false, false);
     networkLabel->setColour (Label::textColourId, Colours::white);
     networkLabel->setColour (TextEditor::textColourId, Colours::black);
     networkLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (portLabel = new Label ("portLabel",
-                                              TRANS("Port:")));
-    portLabel->setFont (Font (15.00f, Font::plain));
+    networkLabel->setBounds (0, 8, 80, 24);
+
+    portLabel.reset (new Label ("portLabel",
+                                TRANS("Port:")));
+    addAndMakeVisible (portLabel.get());
+    portLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     portLabel->setJustificationType (Justification::centredLeft);
     portLabel->setEditable (false, false, false);
     portLabel->setColour (Label::textColourId, Colours::white);
     portLabel->setColour (TextEditor::textColourId, Colours::black);
     portLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (portText = new TextEditor ("portText"));
+    portLabel->setBounds (0, 48, 40, 24);
+
+    portText.reset (new TextEditor ("portText"));
+    addAndMakeVisible (portText.get());
     portText->setExplicitFocusOrder (2);
     portText->setMultiLine (false);
     portText->setReturnKeyStartsNewLine (false);
@@ -67,18 +83,24 @@ ConfigChat::ConfigChat ()
     portText->setScrollbarsShown (true);
     portText->setCaretVisible (true);
     portText->setPopupMenuEnabled (true);
-    portText->setText (String::empty);
+    portText->setText (String());
 
-    addAndMakeVisible (nickLabel = new Label ("nickLabel",
-                                              TRANS("Nick:")));
-    nickLabel->setFont (Font (15.00f, Font::plain));
+    portText->setBounds (80, 48, 56, 24);
+
+    nickLabel.reset (new Label ("nickLabel",
+                                TRANS("Nick:")));
+    addAndMakeVisible (nickLabel.get());
+    nickLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     nickLabel->setJustificationType (Justification::centredLeft);
     nickLabel->setEditable (false, false, false);
     nickLabel->setColour (Label::textColourId, Colours::white);
     nickLabel->setColour (TextEditor::textColourId, Colours::black);
     nickLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (nickText = new TextEditor ("nickText"));
+    nickLabel->setBounds (0, 88, 40, 24);
+
+    nickText.reset (new TextEditor ("nickText"));
+    addAndMakeVisible (nickText.get());
     nickText->setExplicitFocusOrder (3);
     nickText->setMultiLine (false);
     nickText->setReturnKeyStartsNewLine (false);
@@ -86,18 +108,24 @@ ConfigChat::ConfigChat ()
     nickText->setScrollbarsShown (true);
     nickText->setCaretVisible (true);
     nickText->setPopupMenuEnabled (true);
-    nickText->setText (String::empty);
+    nickText->setText (String());
 
-    addAndMakeVisible (passLabel = new Label ("passLabel",
-                                              TRANS("Password:")));
-    passLabel->setFont (Font (15.00f, Font::plain));
+    nickText->setBounds (80, 88, 136, 24);
+
+    passLabel.reset (new Label ("passLabel",
+                                TRANS("Password:")));
+    addAndMakeVisible (passLabel.get());
+    passLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     passLabel->setJustificationType (Justification::centredLeft);
     passLabel->setEditable (false, false, false);
     passLabel->setColour (Label::textColourId, Colours::white);
     passLabel->setColour (TextEditor::textColourId, Colours::black);
     passLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (passText = new TextEditor ("passText"));
+    passLabel->setBounds (0, 128, 72, 24);
+
+    passText.reset (new TextEditor ("passText"));
+    addAndMakeVisible (passText.get());
     passText->setExplicitFocusOrder (4);
     passText->setMultiLine (false);
     passText->setReturnKeyStartsNewLine (false);
@@ -105,18 +133,24 @@ ConfigChat::ConfigChat ()
     passText->setScrollbarsShown (true);
     passText->setCaretVisible (true);
     passText->setPopupMenuEnabled (true);
-    passText->setText (String::empty);
+    passText->setText (String());
 
-    addAndMakeVisible (channelLabel = new Label ("channelLabel",
-                                                 TRANS("Channel:")));
-    channelLabel->setFont (Font (15.00f, Font::plain));
+    passText->setBounds (80, 128, 136, 24);
+
+    channelLabel.reset (new Label ("channelLabel",
+                                   TRANS("Channel:")));
+    addAndMakeVisible (channelLabel.get());
+    channelLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     channelLabel->setJustificationType (Justification::centredLeft);
     channelLabel->setEditable (false, false, false);
     channelLabel->setColour (Label::textColourId, Colours::white);
     channelLabel->setColour (TextEditor::textColourId, Colours::black);
     channelLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (channelText = new TextEditor ("channelText"));
+    channelLabel->setBounds (0, 168, 80, 24);
+
+    channelText.reset (new TextEditor ("channelText"));
+    addAndMakeVisible (channelText.get());
     channelText->setExplicitFocusOrder (5);
     channelText->setMultiLine (false);
     channelText->setReturnKeyStartsNewLine (false);
@@ -124,18 +158,24 @@ ConfigChat::ConfigChat ()
     channelText->setScrollbarsShown (true);
     channelText->setCaretVisible (true);
     channelText->setPopupMenuEnabled (true);
-    channelText->setText (String::empty);
+    channelText->setText (String());
 
-    addAndMakeVisible (greetingLabel = new Label ("greetingLabel",
-                                                  TRANS("Greeting:")));
-    greetingLabel->setFont (Font (15.00f, Font::plain));
+    channelText->setBounds (80, 168, 136, 24);
+
+    greetingLabel.reset (new Label ("greetingLabel",
+                                    TRANS("Greeting:")));
+    addAndMakeVisible (greetingLabel.get());
+    greetingLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     greetingLabel->setJustificationType (Justification::centredLeft);
     greetingLabel->setEditable (false, false, false);
     greetingLabel->setColour (Label::textColourId, Colours::white);
     greetingLabel->setColour (TextEditor::textColourId, Colours::black);
     greetingLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (greetingText = new TextEditor ("greetingText"));
+    greetingLabel->setBounds (234, 48, 72, 24);
+
+    greetingText.reset (new TextEditor ("greetingText"));
+    addAndMakeVisible (greetingText.get());
     greetingText->setExplicitFocusOrder (8);
     greetingText->setMultiLine (true);
     greetingText->setReturnKeyStartsNewLine (true);
@@ -143,9 +183,12 @@ ConfigChat::ConfigChat ()
     greetingText->setScrollbarsShown (true);
     greetingText->setCaretVisible (true);
     greetingText->setPopupMenuEnabled (true);
-    greetingText->setText (String::empty);
+    greetingText->setText (String());
 
-    addAndMakeVisible (networkText = new TextEditor ("networkText"));
+    greetingText->setBounds (234, 72, 270, 120);
+
+    networkText.reset (new TextEditor ("networkText"));
+    addAndMakeVisible (networkText.get());
     networkText->setExplicitFocusOrder (1);
     networkText->setMultiLine (false);
     networkText->setReturnKeyStartsNewLine (false);
@@ -153,7 +196,9 @@ ConfigChat::ConfigChat ()
     networkText->setScrollbarsShown (true);
     networkText->setCaretVisible (true);
     networkText->setPopupMenuEnabled (true);
-    networkText->setText (String::empty);
+    networkText->setText (String());
+
+    networkText->setBounds (80, 8, 136, 24);
 
 
     //[UserPreSize]
@@ -206,20 +251,6 @@ void ConfigChat::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    timestampToggle->setBounds (234, 8, 128, 24);
-    joinPartToggle->setBounds (376, 8, 128, 24);
-    networkLabel->setBounds (0, 8, 80, 24);
-    portLabel->setBounds (0, 48, 40, 24);
-    portText->setBounds (80, 48, 56, 24);
-    nickLabel->setBounds (0, 88, 40, 24);
-    nickText->setBounds (80, 88, 136, 24);
-    passLabel->setBounds (0, 128, 72, 24);
-    passText->setBounds (80, 128, 136, 24);
-    channelLabel->setBounds (0, 168, 80, 24);
-    channelText->setBounds (80, 168, 136, 24);
-    greetingLabel->setBounds (234, 48, 72, 24);
-    greetingText->setBounds (234, 72, 270, 120);
-    networkText->setBounds (80, 8, 136, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -232,9 +263,9 @@ void ConfigChat::resized()
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -256,12 +287,12 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 8 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Host:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="portLabel" id="c9766d1550ca03d" memberName="portLabel"
          virtualName="" explicitFocusOrder="0" pos="0 48 40 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Port:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="portText" id="884822c04a8baf5b" memberName="portText" virtualName=""
               explicitFocusOrder="2" pos="80 48 56 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
@@ -269,7 +300,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 88 40 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Nick:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="nickText" id="33c730fea5d389aa" memberName="nickText" virtualName=""
               explicitFocusOrder="3" pos="80 88 136 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
@@ -277,7 +308,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 128 72 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Password:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="passText" id="af6a1e14762cfebf" memberName="passText" virtualName=""
               explicitFocusOrder="4" pos="80 128 136 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
@@ -285,7 +316,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 168 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Channel:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="channelText" id="ca5aa4f4a77b4469" memberName="channelText"
               virtualName="" explicitFocusOrder="5" pos="80 168 136 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
@@ -294,7 +325,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="234 48 72 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Greeting:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="greetingText" id="7d47de6dcee921f5" memberName="greetingText"
               virtualName="" explicitFocusOrder="8" pos="234 72 270 120" initialText=""
               multiline="1" retKeyStartsLine="1" readonly="0" scrollbars="1"
@@ -312,3 +343,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

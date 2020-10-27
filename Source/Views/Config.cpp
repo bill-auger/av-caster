@@ -35,81 +35,103 @@
 Config::Config (MainContent* main_content)
     : mainContent(main_content)
 {
-    addAndMakeVisible (configGroup = new GroupComponent ("configGroup",
-                                                         TRANS("Configuration")));
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
+    configGroup.reset (new GroupComponent ("configGroup",
+                                           TRANS("Configuration")));
+    addAndMakeVisible (configGroup.get());
     configGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     configGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (screenButton = new TextButton ("screenButton"));
+    screenButton.reset (new TextButton ("screenButton"));
+    addAndMakeVisible (screenButton.get());
     screenButton->setExplicitFocusOrder (1);
     screenButton->setButtonText (TRANS("Screen"));
     screenButton->setConnectedEdges (Button::ConnectedOnBottom);
 
-    addAndMakeVisible (cameraButton = new TextButton ("cameraButton"));
+    cameraButton.reset (new TextButton ("cameraButton"));
+    addAndMakeVisible (cameraButton.get());
     cameraButton->setExplicitFocusOrder (2);
     cameraButton->setButtonText (TRANS("Camera"));
     cameraButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
 
-    addAndMakeVisible (audioButton = new TextButton ("audioButton"));
+    audioButton.reset (new TextButton ("audioButton"));
+    addAndMakeVisible (audioButton.get());
     audioButton->setExplicitFocusOrder (3);
     audioButton->setButtonText (TRANS("Audio"));
     audioButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
 
-    addAndMakeVisible (textButton = new TextButton ("textButton"));
+    textButton.reset (new TextButton ("textButton"));
+    addAndMakeVisible (textButton.get());
     textButton->setExplicitFocusOrder (4);
     textButton->setButtonText (TRANS("Text"));
     textButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
 
-    addAndMakeVisible (imageButton = new TextButton ("imageButton"));
+    imageButton.reset (new TextButton ("imageButton"));
+    addAndMakeVisible (imageButton.get());
     imageButton->setExplicitFocusOrder (5);
     imageButton->setButtonText (TRANS("Image"));
     imageButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
 
-    addAndMakeVisible (outputButton = new TextButton ("outputButton"));
+    outputButton.reset (new TextButton ("outputButton"));
+    addAndMakeVisible (outputButton.get());
     outputButton->setExplicitFocusOrder (6);
     outputButton->setButtonText (TRANS("Output"));
     outputButton->setConnectedEdges (Button::ConnectedOnTop | Button::ConnectedOnBottom);
 
-    addAndMakeVisible (chatButton = new TextButton ("chatButton"));
+    chatButton.reset (new TextButton ("chatButton"));
+    addAndMakeVisible (chatButton.get());
     chatButton->setExplicitFocusOrder (7);
     chatButton->setButtonText (TRANS("Chat"));
     chatButton->setConnectedEdges (Button::ConnectedOnTop);
 
-    addAndMakeVisible (configPaneGroup = new GroupComponent ("configPaneGroup",
-                                                             TRANS("Screen")));
+    configPaneGroup.reset (new GroupComponent ("configPaneGroup",
+                                               TRANS("Screen")));
+    addAndMakeVisible (configPaneGroup.get());
     configPaneGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     configPaneGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (configScreen = new ConfigScreen());
+    configScreen.reset (new ConfigScreen());
+    addAndMakeVisible (configScreen.get());
     configScreen->setName ("configScreen");
 
-    addAndMakeVisible (configCamera = new ConfigCamera());
+    configCamera.reset (new ConfigCamera());
+    addAndMakeVisible (configCamera.get());
     configCamera->setName ("configCamera");
 
-    addAndMakeVisible (configAudio = new ConfigAudio());
+    configAudio.reset (new ConfigAudio());
+    addAndMakeVisible (configAudio.get());
     configAudio->setName ("configAudio");
 
-    addAndMakeVisible (configText = new ConfigText());
+    configText.reset (new ConfigText());
+    addAndMakeVisible (configText.get());
     configText->setName ("configText");
 
-    addAndMakeVisible (configImage = new ConfigImage());
+    configImage.reset (new ConfigImage());
+    addAndMakeVisible (configImage.get());
     configImage->setName ("configImage");
 
-    addAndMakeVisible (configOutput = new ConfigOutput());
+    configOutput.reset (new ConfigOutput());
+    addAndMakeVisible (configOutput.get());
     configOutput->setName ("configOutput");
 
-    addAndMakeVisible (configChat = new ConfigChat());
+    configChat.reset (new ConfigChat());
+    addAndMakeVisible (configChat.get());
     configChat->setName ("configChat");
 
-    addAndMakeVisible (dummyConfigPane = new Component());
+    dummyConfigPane.reset (new Component());
+    addAndMakeVisible (dummyConfigPane.get());
     dummyConfigPane->setName ("dummyConfigPane");
 
-    addAndMakeVisible (hintsGroup = new GroupComponent ("hintsGroup",
-                                                        TRANS("Hints")));
+    hintsGroup.reset (new GroupComponent ("hintsGroup",
+                                          TRANS("Hints")));
+    addAndMakeVisible (hintsGroup.get());
     hintsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     hintsGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (hintsText = new TextEditor ("hintsText"));
+    hintsText.reset (new TextEditor ("hintsText"));
+    addAndMakeVisible (hintsText.get());
     hintsText->setMultiLine (true);
     hintsText->setReturnKeyStartsNewLine (false);
     hintsText->setReadOnly (true);
@@ -121,7 +143,7 @@ Config::Config (MainContent* main_content)
     hintsText->setColour (TextEditor::highlightColourId, Colour (0x00000000));
     hintsText->setColour (TextEditor::outlineColourId, Colour (0x00000000));
     hintsText->setColour (TextEditor::shadowColourId, Colour (0x00000000));
-    hintsText->setText (String::empty);
+    hintsText->setText (String());
 
 
     //[UserPreSize]
@@ -133,56 +155,56 @@ Config::Config (MainContent* main_content)
     //[Constructor] You can add your own custom stuff here..
 
   // establish local handles to child Component widgets
-  this->displaySlider     = this->configScreen->displaySlider ;
-  this->screenSlider      = this->configScreen->screenSlider ;
-  this->screenWidthText   = this->configScreen->screenWidthText ;
-  this->screenHeightText  = this->configScreen->screenHeightText ;
-  this->xOffsetText       = this->configScreen->xOffsetText ;
-  this->yOffsetText       = this->configScreen->yOffsetText ;
-  this->cameraDevCombo    = this->configCamera->cameraDevCombo ;
-  this->cameraResCombo    = this->configCamera->cameraResCombo ;
-  this->audioApiCombo     = this->configAudio ->audioApiCombo ;
-  this->audioDevCombo     = this->configAudio ->audioDevCombo ;
-  this->audioCodecCombo   = this->configAudio ->audioCodecCombo ;
-  this->nChannelsSlider   = this->configAudio ->nChannelsSlider ;
-  this->samplerateCombo   = this->configAudio ->samplerateCombo ;
-  this->audioBitrateCombo = this->configAudio ->audioBitrateCombo ;
-  this->motdText          = this->configText  ->motdText ;
-  this->textStyleCombo    = this->configText  ->textStyleCombo ;
-  this->textPosCombo      = this->configText  ->textPosCombo ;
-  this->interstitialText  = this->configImage ->interstitialText ;
-  this->browseButton      = this->configImage ->browseButton ;
-  this->outputSinkCombo   = this->configOutput->outputSinkCombo ;
-  this->outputWidthText   = this->configOutput->outputWidthText ;
-  this->outputHeightText  = this->configOutput->outputHeightText ;
-  this->framerateCombo    = this->configOutput->framerateCombo ;
-  this->videoBitrateCombo = this->configOutput->videoBitrateCombo ;
-  this->outputDestLabel   = this->configOutput->outputDestLabel ;
-  this->outputDestText    = this->configOutput->outputDestText ;
-  this->networkText       = this->configChat  ->networkText ;
-  this->portText          = this->configChat  ->portText ;
-  this->nickText          = this->configChat  ->nickText ;
-  this->passText          = this->configChat  ->passText ;
-  this->channelText       = this->configChat  ->channelText ;
-  this->greetingText      = this->configChat  ->greetingText ;
-  this->timestampToggle   = this->configChat  ->timestampToggle ;
-  this->joinPartToggle    = this->configChat  ->joinPartToggle ;
+  this->displaySlider     = this->configScreen->displaySlider    .get() ;
+  this->screenSlider      = this->configScreen->screenSlider     .get() ;
+  this->screenWidthText   = this->configScreen->screenWidthText  .get() ;
+  this->screenHeightText  = this->configScreen->screenHeightText .get() ;
+  this->xOffsetText       = this->configScreen->xOffsetText      .get() ;
+  this->yOffsetText       = this->configScreen->yOffsetText      .get() ;
+  this->cameraDevCombo    = this->configCamera->cameraDevCombo   .get() ;
+  this->cameraResCombo    = this->configCamera->cameraResCombo   .get() ;
+  this->audioApiCombo     = this->configAudio ->audioApiCombo    .get() ;
+  this->audioDevCombo     = this->configAudio ->audioDevCombo    .get() ;
+  this->audioCodecCombo   = this->configAudio ->audioCodecCombo  .get() ;
+  this->nChannelsSlider   = this->configAudio ->nChannelsSlider  .get() ;
+  this->samplerateCombo   = this->configAudio ->samplerateCombo  .get() ;
+  this->audioBitrateCombo = this->configAudio ->audioBitrateCombo.get() ;
+  this->motdText          = this->configText  ->motdText         .get() ;
+  this->textStyleCombo    = this->configText  ->textStyleCombo   .get() ;
+  this->textPosCombo      = this->configText  ->textPosCombo     .get() ;
+  this->interstitialText  = this->configImage ->interstitialText .get() ;
+  this->browseButton      = this->configImage ->browseButton     .get() ;
+  this->outputSinkCombo   = this->configOutput->outputSinkCombo  .get() ;
+  this->outputWidthText   = this->configOutput->outputWidthText  .get() ;
+  this->outputHeightText  = this->configOutput->outputHeightText .get() ;
+  this->framerateCombo    = this->configOutput->framerateCombo   .get() ;
+  this->videoBitrateCombo = this->configOutput->videoBitrateCombo.get() ;
+  this->outputDestLabel   = this->configOutput->outputDestLabel  .get() ;
+  this->outputDestText    = this->configOutput->outputDestText   .get() ;
+  this->networkText       = this->configChat  ->networkText      .get() ;
+  this->portText          = this->configChat  ->portText         .get() ;
+  this->nickText          = this->configChat  ->nickText         .get() ;
+  this->passText          = this->configChat  ->passText         .get() ;
+  this->channelText       = this->configChat  ->channelText      .get() ;
+  this->greetingText      = this->configChat  ->greetingText     .get() ;
+  this->timestampToggle   = this->configChat  ->timestampToggle  .get() ;
+  this->joinPartToggle    = this->configChat  ->joinPartToggle   .get() ;
 
   // configure look and feel , validations, and listeners
   Button    ::Listener* this_button_listener   = static_cast<Button    ::Listener*>(this) ;
   Slider    ::Listener* this_slider_listener   = static_cast<Slider    ::Listener*>(this) ;
   TextEditor::Listener* this_text_listener     = static_cast<TextEditor::Listener*>(this) ;
   ComboBox  ::Listener* this_combobox_listener = static_cast<ComboBox  ::Listener*>(this) ;
-  this->mainContent->configureButton(this->screenButton    , this_button_listener) ;
-  this->mainContent->configureButton(this->cameraButton    , this_button_listener) ;
-  this->mainContent->configureButton(this->audioButton     , this_button_listener) ;
-  this->mainContent->configureButton(this->textButton      , this_button_listener) ;
-  this->mainContent->configureButton(this->imageButton     , this_button_listener) ;
-  this->mainContent->configureButton(this->outputButton    , this_button_listener) ;
-  this->mainContent->configureButton(this->chatButton      , this_button_listener) ;
-  this->mainContent->configureButton(this->browseButton    , this_button_listener) ;
-  this->mainContent->configureButton(this->timestampToggle , this_button_listener) ;
-  this->mainContent->configureButton(this->joinPartToggle  , this_button_listener) ;
+  this->mainContent->configureButton(this->screenButton   .get() , this_button_listener) ;
+  this->mainContent->configureButton(this->cameraButton   .get() , this_button_listener) ;
+  this->mainContent->configureButton(this->audioButton    .get() , this_button_listener) ;
+  this->mainContent->configureButton(this->textButton     .get() , this_button_listener) ;
+  this->mainContent->configureButton(this->imageButton    .get() , this_button_listener) ;
+  this->mainContent->configureButton(this->outputButton   .get() , this_button_listener) ;
+  this->mainContent->configureButton(this->chatButton     .get() , this_button_listener) ;
+  this->mainContent->configureButton(this->browseButton          , this_button_listener) ;
+  this->mainContent->configureButton(this->timestampToggle       , this_button_listener) ;
+  this->mainContent->configureButton(this->joinPartToggle        , this_button_listener) ;
   this->mainContent->configureSlider(this->displaySlider   , this_slider_listener ,
                                      GUI::MIN_DISPLAY_N    , GUI::MAX_DISPLAY_N   , 1.0) ;
   this->mainContent->configureSlider(this->screenSlider    , this_slider_listener ,
@@ -198,11 +220,11 @@ Config::Config (MainContent* main_content)
   this->mainContent->configureTextEditor(this->yOffsetText      , this_text_listener   ,
                                          GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
   this->mainContent->configureTextEditor(this->motdText         , this_text_listener   ,
-                                         GUI::MAX_MOTD_LEN      , String::empty        ) ;
+                                         GUI::MAX_MOTD_LEN      , String()             ) ;
   this->mainContent->configureTextEditor(this->interstitialText , this_text_listener   ,
                                          GUI::MAX_FILENAME_LEN  , APP::VALID_ID_CHARS  ) ;
-  this->mainContent->configureTextEditor(this->hintsText        , this_text_listener   ,
-                                         0                      , String::empty        ) ;
+  this->mainContent->configureTextEditor(this->hintsText.get()  , this_text_listener   ,
+                                         0                      , String()             ) ;
   this->mainContent->configureTextEditor(this->outputWidthText  , this_text_listener   ,
                                          GUI::MAX_RES_N_CHARS   , APP::DIGITS          ) ;
   this->mainContent->configureTextEditor(this->outputHeightText , this_text_listener   ,
@@ -216,11 +238,11 @@ Config::Config (MainContent* main_content)
   this->mainContent->configureTextEditor(this->nickText         , this_text_listener   ,
                                          GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
   this->mainContent->configureTextEditor(this->passText         , this_text_listener   ,
-                                         GUI::MAX_MOTD_LEN      , String::empty        ) ;
+                                         GUI::MAX_MOTD_LEN      , String()             ) ;
   this->mainContent->configureTextEditor(this->channelText      , this_text_listener   ,
                                          GUI::MAX_FILENAME_LEN  , APP::VALID_NICK_CHARS) ;
   this->mainContent->configureTextEditor(this->greetingText     , this_text_listener   ,
-                                         GUI::MAX_MOTD_LEN      , String::empty        ) ;
+                                         GUI::MAX_MOTD_LEN      , String()             ) ;
   this->mainContent->configureCombobox(this->cameraDevCombo    , this_combobox_listener) ;
   this->mainContent->configureCombobox(this->cameraResCombo    , this_combobox_listener) ;
   this->mainContent->configureCombobox(this->audioApiCombo     , this_combobox_listener) ;
@@ -278,14 +300,32 @@ void Config::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff282828));
-    g.fillRoundedRectangle (18.0f, 14.0f, static_cast<float> (getWidth() - 36), static_cast<float> (getHeight() - 32), 5.000f);
+    {
+        float x = 18.0f, y = 14.0f, width = static_cast<float> (getWidth() - 36), height = static_cast<float> (getHeight() - 32);
+        Colour fillColour = Colour (0xff282828);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 5.000f);
+    }
 
-    g.setColour (Colour (0xff404040));
-    g.fillRoundedRectangle (194.0f, 30.0f, static_cast<float> (getWidth() - 226), static_cast<float> (getHeight() - 66), 4.000f);
+    {
+        float x = 194.0f, y = 30.0f, width = static_cast<float> (getWidth() - 226), height = static_cast<float> (getHeight() - 66);
+        Colour fillColour = Colour (0xff404040);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 4.000f);
+    }
 
-    g.setColour (Colour (0xff585858));
-    g.fillRoundedRectangle (204.0f, 298.0f, static_cast<float> (getWidth() - 246), static_cast<float> (getHeight() - 342), 4.000f);
+    {
+        float x = 204.0f, y = 298.0f, width = static_cast<float> (getWidth() - 246), height = static_cast<float> (getHeight() - 342);
+        Colour fillColour = Colour (0xff585858);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 4.000f);
+    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -297,14 +337,14 @@ void Config::resized()
     //[/UserPreResize]
 
     configGroup->setBounds (16, 4, getWidth() - 32, getHeight() - 20);
-    screenButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.0000f), 150, roundFloatToInt (252 * 0.1429f));
-    cameraButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.1429f), 150, roundFloatToInt (252 * 0.1429f));
-    audioButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.2857f), 150, roundFloatToInt (252 * 0.1429f));
-    textButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.4286f), 150, roundFloatToInt (252 * 0.1429f));
-    imageButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.5714f), 150, roundFloatToInt (252 * 0.1429f));
-    outputButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.7143f), 150, roundFloatToInt (252 * 0.1429f));
-    chatButton->setBounds (16 + 16, ((4 + 16) + 16) + roundFloatToInt (252 * 0.8571f), 150, roundFloatToInt (252 * 0.1429f));
-    configPaneGroup->setBounds (16 + 174, 4 + 16, (getWidth() - 32) - 186, roundFloatToInt ((getHeight() - 20) * 0.9534f));
+    screenButton->setBounds (16 + 16, ((4 + 16) + 16) + roundToInt (252 * 0.0000f), 150, roundToInt (252 * 0.1429f));
+    cameraButton->setBounds (16 + 16, ((4 + 16) + 16) + roundToInt (252 * 0.1429f), 150, roundToInt (252 * 0.1429f));
+    audioButton->setBounds (16 + 16, ((4 + 16) + 16) + roundToInt (252 * 0.2857f), 150, roundToInt (252 * 0.1429f));
+    textButton->setBounds (16 + 16, ((4 + 16) + 16) + roundToInt (252 * 0.4286f), 150, roundToInt (252 * 0.1429f));
+    imageButton->setBounds (16 + 16, ((4 + 16) + 16) + roundToInt (252 * 0.5714f), 150, roundToInt (252 * 0.1429f));
+    outputButton->setBounds (16 + 16, ((4 + 16) + 16) + roundToInt (252 * 0.7143f), 150, roundToInt (252 * 0.1429f));
+    chatButton->setBounds (16 + 16, ((4 + 16) + 16) + roundToInt (252 * 0.8571f), 150, roundToInt (252 * 0.1429f));
+    configPaneGroup->setBounds (16 + 174, 4 + 16, (getWidth() - 32) - 186, roundToInt ((getHeight() - 20) * 0.9533f));
     configScreen->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
     configCamera->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
     configAudio->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
@@ -313,8 +353,8 @@ void Config::resized()
     configOutput->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
     configChat->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 0, (((getWidth() - 32) - 186) - 24) - 0, 252 - 0);
     dummyConfigPane->setBounds ((16 + 174) + 12, (4 + 16) + 16, ((getWidth() - 32) - 186) - 24, 252);
-    hintsGroup->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 252, (((getWidth() - 32) - 186) - 24) - 0, (roundFloatToInt ((getHeight() - 20) * 0.9534f)) - 278);
-    hintsText->setBounds ((((16 + 174) + 12) + 0) + 14, (((4 + 16) + 16) + 252) + 20, ((((getWidth() - 32) - 186) - 24) - 0) - 28, ((roundFloatToInt ((getHeight() - 20) * 0.9534f)) - 278) - 32);
+    hintsGroup->setBounds (((16 + 174) + 12) + 0, ((4 + 16) + 16) + 252, (((getWidth() - 32) - 186) - 24) - 0, (roundToInt ((getHeight() - 20) * 0.9533f)) - 278);
+    hintsText->setBounds ((((16 + 174) + 12) + 0) + 14, (((4 + 16) + 16) + 252) + 20, ((((getWidth() - 32) - 186) - 24) - 0) - 28, ((roundToInt ((getHeight() - 20) * 0.9533f)) - 278) - 32);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -365,19 +405,19 @@ void Config::buttonClicked(Button* a_button)
   var        value ;
 
   // Config buttons
-  if      (a_button == this->screenButton)
+  if      (a_button == this->screenButton.get())
   { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::SCREEN_GROUP_TEXT) ; updateVisibility(value) ; }
-  else if (a_button == this->cameraButton)
+  else if (a_button == this->cameraButton.get())
   { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::CAMERA_GROUP_TEXT) ; updateVisibility(value) ; }
-  else if (a_button == this->audioButton )
+  else if (a_button == this->audioButton .get())
   { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::AUDIO_GROUP_TEXT ) ; updateVisibility(value) ; }
-  else if (a_button == this->textButton  )
+  else if (a_button == this->textButton  .get())
   { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::TEXT_GROUP_TEXT  ) ; updateVisibility(value) ; }
-  else if (a_button == this->imageButton )
+  else if (a_button == this->imageButton .get())
   { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::IMAGE_GROUP_TEXT ) ; updateVisibility(value) ; }
-  else if (a_button == this->outputButton)
+  else if (a_button == this->outputButton.get())
   { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::OUTPUT_GROUP_TEXT) ; updateVisibility(value) ; }
-  else if (a_button == this->chatButton  )
+  else if (a_button == this->chatButton  .get())
   { key = CONFIG::CONFIG_PANE_ID ; value = var(GUI::CHAT_GROUP_TEXT  ) ; updateVisibility(value) ; }
 
   // Image buttons
@@ -506,7 +546,7 @@ DEBUG_TRACE_CONFIG_LOAD_CONFIG
   this->outputDestText   ->setText             (output_dest_text ) ;
   this->outputDestLabel  ->setText             (output_label_text , juce::dontSendNotification) ;
   this->networkText      ->setText             (network_text     ) ;
-  this->portText         ->setText             ((port > 0) ? String(port) : String::empty) ;
+  this->portText         ->setText             ((port > 0) ? String(port) : String()) ;
   this->nickText         ->setText             (nick_text        ) ;
   this->passText         ->setText             (pass_text        ) ;
   this->channelText      ->setText             (channel_text     ) ;
@@ -646,9 +686,9 @@ bool Config::validateOutputDest()
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -659,9 +699,10 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="18 14 36M 32M" cornerSize="5" fill="solid: ff282828" hasStroke="0"/>
-    <ROUNDRECT pos="194 30 226M 66M" cornerSize="4" fill="solid: ff404040" hasStroke="0"/>
-    <ROUNDRECT pos="204 298 246M 342M" cornerSize="4" fill="solid: ff585858"
+    <ROUNDRECT pos="18 14 36M 32M" cornerSize="5.0" fill="solid: ff282828" hasStroke="0"/>
+    <ROUNDRECT pos="194 30 226M 66M" cornerSize="4.0" fill="solid: ff404040"
+               hasStroke="0"/>
+    <ROUNDRECT pos="204 298 246M 342M" cornerSize="4.0" fill="solid: ff585858"
                hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="configGroup" id="6607ba656d5c8919" memberName="configGroup"
@@ -703,7 +744,7 @@ BEGIN_JUCER_METADATA
               posRelativeW="6607ba656d5c8919" posRelativeH="7ab6ee7eab27ae3e"
               buttonText="Chat" connectedEdges="4" needsCallback="0" radioGroupId="0"/>
   <GROUPCOMPONENT name="configPaneGroup" id="3d078232c622c691" memberName="configPaneGroup"
-                  virtualName="" explicitFocusOrder="0" pos="174 16 186M 95.335%"
+                  virtualName="" explicitFocusOrder="0" pos="174 16 186M 95.414%"
                   posRelativeX="6607ba656d5c8919" posRelativeY="6607ba656d5c8919"
                   posRelativeW="6607ba656d5c8919" posRelativeH="6607ba656d5c8919"
                   outlinecol="ffffffff" textcol="ffffffff" title="Screen"/>
@@ -759,3 +800,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

@@ -37,17 +37,20 @@ Chat::Chat (MainContent* main_content)
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (chatGroup = new GroupComponent ("chatGroup",
-                                                       TRANS("Chat")));
+    chatGroup.reset (new GroupComponent ("chatGroup",
+                                         TRANS("Chat")));
+    addAndMakeVisible (chatGroup.get());
     chatGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     chatGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (chatHistoryGroup = new GroupComponent ("chatHistoryGroup",
-                                                              String()));
+    chatHistoryGroup.reset (new GroupComponent ("chatHistoryGroup",
+                                                String()));
+    addAndMakeVisible (chatHistoryGroup.get());
     chatHistoryGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     chatHistoryGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (chatHistoryText = new TextEditor ("chatHistoryText"));
+    chatHistoryText.reset (new TextEditor ("chatHistoryText"));
+    addAndMakeVisible (chatHistoryText.get());
     chatHistoryText->setMultiLine (true);
     chatHistoryText->setReturnKeyStartsNewLine (false);
     chatHistoryText->setReadOnly (true);
@@ -58,13 +61,15 @@ Chat::Chat (MainContent* main_content)
     chatHistoryText->setColour (TextEditor::backgroundColourId, Colours::black);
     chatHistoryText->setText (String());
 
-    addAndMakeVisible (chatEntryGroup = new GroupComponent ("chatEntryGroup",
-                                                            String()));
+    chatEntryGroup.reset (new GroupComponent ("chatEntryGroup",
+                                              String()));
+    addAndMakeVisible (chatEntryGroup.get());
     chatEntryGroup->setExplicitFocusOrder (1);
     chatEntryGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     chatEntryGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (chatEntryText = new TextEditor ("chatEntryText"));
+    chatEntryText.reset (new TextEditor ("chatEntryText"));
+    addAndMakeVisible (chatEntryText.get());
     chatEntryText->setExplicitFocusOrder (2);
     chatEntryText->setMultiLine (false);
     chatEntryText->setReturnKeyStartsNewLine (false);
@@ -76,7 +81,8 @@ Chat::Chat (MainContent* main_content)
     chatEntryText->setColour (TextEditor::backgroundColourId, Colour (0xff202020));
     chatEntryText->setText (String());
 
-    addAndMakeVisible (chatList = new ChatList());
+    chatList.reset (new ChatList());
+    addAndMakeVisible (chatList.get());
     chatList->setExplicitFocusOrder (2);
     chatList->setName ("chatList");
 
@@ -91,8 +97,8 @@ Chat::Chat (MainContent* main_content)
 
   // configure look and feel , validations, and listeners
   TextEditor::Listener* this_text_listener = static_cast<TextEditor::Listener*>(this) ;
-  main_content->configureTextEditor(this->chatEntryText , this_text_listener ,
-                                    GUI::MAX_MOTD_LEN   , String::empty      ) ;
+  main_content->configureTextEditor(this->chatEntryText.get() , this_text_listener ,
+                                    GUI::MAX_MOTD_LEN   , String()           ) ;
   this->chatEntryText->setTextToShowWhenEmpty(GUI::CHAT_PROMPT_TEXT , GUI::TEXT_EMPTY_COLOR) ;
   setFontSize() ;
 
@@ -125,8 +131,14 @@ void Chat::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff282828));
-    g.fillRoundedRectangle (20.0f, 18.0f, static_cast<float> (getWidth() - 40), static_cast<float> (getHeight() - 36), 4.000f);
+    {
+        float x = 20.0f, y = 18.0f, width = static_cast<float> (getWidth() - 40), height = static_cast<float> (getHeight() - 36);
+        Colour fillColour = Colour (0xff282828);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 4.000f);
+    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -171,12 +183,12 @@ DEBUG_TRACE_CHAT_VISIBILITY
 #ifndef DISABLE_CHAT
 void Chat::addChatLine(String prefix , String nick , String message)
 {
-  String newline = (this->chatHistoryText->getText().isEmpty()) ? String::empty : newLine ;
+  String newline = (this->chatHistoryText->getText().isEmpty()) ? String() : newLine ;
   prefix         = prefix .trim() ;
   nick           = nick   .trim() ;
   message        = message.trim() ;
-  prefix         = (prefix.isEmpty()        ) ? String::empty : prefix + " " ;
-  nick           = (nick == GUI::CLIENT_NICK) ? String::empty : nick   + ": " ;
+  prefix         = (prefix.isEmpty()        ) ? String() : prefix + " " ;
+  nick           = (nick == GUI::CLIENT_NICK) ? String() : nick   + ": " ;
 
   const MessageManagerLock mmLock ;
   this->chatHistoryText->moveCaretToEnd() ;
@@ -189,7 +201,7 @@ void Chat::addChatLine(String prefix , String nick , String message)
 
 void Chat::textEditorReturnKeyPressed(TextEditor& a_text_editor)
 {
-  if (&a_text_editor != this->chatEntryText) return ;
+  if (&a_text_editor != this->chatEntryText.get()) return ;
 
 #ifndef DISABLE_CHAT
   AvCaster::SendChat(this->chatEntryText->getText()) ;
@@ -242,7 +254,7 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="20 18 40M 36M" cornerSize="4" fill="solid: ff282828" hasStroke="0"/>
+    <ROUNDRECT pos="20 18 40M 36M" cornerSize="4.0" fill="solid: ff282828" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="chatGroup" id="6607ba656d5c8919" memberName="chatGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 8 32M 24M" outlinecol="ffffffff"
@@ -273,3 +285,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

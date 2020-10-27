@@ -23,18 +23,14 @@
 #include "../Trace/TraceAvCaster.h"
 
 
-/* AvCaster public class variables */
-
-ScopedPointer<AvCasterStore> AvCaster::Store ; // Initialize()
-
-
 /* AvCaster private class variables */
 
 JUCEApplicationBase*     AvCaster::App            = nullptr ; // Initialize()
 MainContent*             AvCaster::Gui            = nullptr ; // Initialize()
 #ifndef DISABLE_CHAT
-ScopedPointer<IrcClient> AvCaster::Irc ;                      // Initialize()
+std::unique_ptr<IrcClient>     AvCaster::Irc ;                      // Initialize()
 #endif // DISABLE_CHAT
+std::unique_ptr<AvCasterStore> AvCaster::Store ;                    // Initialize()
 bool                     AvCaster::IsInitialized  = false ;   // Initialize()
 bool                     AvCaster::IsMediaEnabled = true ;    // Initialize()
 bool                     AvCaster::IsChatEnabled  = true ;    // Initialize()
@@ -58,7 +54,7 @@ void AvCaster::AddChatLine(String prefix , String nick , String message)
 void AvCaster::SendChat(String chat_message)
 {
   Irc->sendChat(chat_message) ;
-  IrcClient::AddUserChat(String::empty , IRC::YOU_NICK , chat_message) ;
+  IrcClient::AddUserChat(String() , IRC::YOU_NICK , chat_message) ;
 }
 #endif // DISABLE_CHAT
 
@@ -93,7 +89,7 @@ void AvCaster::SetValue(const Identifier& a_key , const var a_value)
   ValueTree storage_node = (CONFIG::RootKeys()   .contains(a_key)) ? Store->root        :
                            (CONFIG::PresetKeys() .contains(a_key)) ? Store->config      :
                            (CONFIG::NetworkKeys().contains(a_key)) ? Store->network     :
-                                                                     ValueTree::invalid ;
+                                                                     ValueTree()        ;
 
   Store->setValueViaGui(storage_node , a_key , a_value) ;
 }
@@ -185,7 +181,7 @@ DEBUG_TRACE_INIT_PHASE_1
 DEBUG_TRACE_INIT_PHASE_2
 
   // load persistent configuration
-  if ((Store = new AvCasterStore()) == nullptr) return false ;
+  Store.reset(new AvCasterStore()) ; if (!(bool)Store) return false ;
 
 DEBUG_TRACE_INIT_PHASE_3
 DEBUG_DISABLE_FEATURES
@@ -215,7 +211,11 @@ DEBUG_SEED_IRC_NETWORKS
 
   // initialize libircclient
 #ifndef DISABLE_CHAT
-  if (IsChatEnabled && (Irc = new IrcClient(Store->network) == nullptr) return false ;
+  if (IsChatEnabled)
+  {
+    Irc.reset(new IrcClient(Store->network)) ;
+    if (!(bool)Irc) return false ;
+  }
 #endif // DISABLE_CHAT
 
 DEBUG_TRACE_INIT_PHASE_7
@@ -239,7 +239,7 @@ DEBUG_TRACE_SHUTDOWN_PHASE_1
 
 #ifndef DISABLE_CHAT
   // shutdown network
-  if (Irc != nullptr) Irc->waitForThreadToExit(5000) ; Irc = nullptr ;
+  if ((bool)Irc) Irc->waitForThreadToExit(5000) ; Irc.reset() ;
 #endif // DISABLE_CHAT
 
 DEBUG_TRACE_SHUTDOWN_PHASE_2
@@ -250,7 +250,7 @@ DEBUG_TRACE_SHUTDOWN_PHASE_2
 DEBUG_TRACE_SHUTDOWN_PHASE_3
 
   // shutdown storage
-  if (Store != nullptr) Store->shutdown() ; Store = nullptr ;
+  if ((bool)Store) Store->shutdown() ; Store.reset() ;
 
   IsInitialized = false ;
 }
@@ -312,11 +312,11 @@ void AvCaster::RefreshGui()
 {
   bool       is_config_pending = bool(Store->root  [CONFIG::IS_PENDING_ID]) ;
   bool       is_preview_on     = bool(Store->config[CONFIG::PREVIEW_ID   ]) ;
-  Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets ) :
-                                                       static_cast<Component*>(Gui->controls) ;
-  Component* front_component   = (is_config_pending) ? static_cast<Component*>(Gui->config  ) :
-                                 (is_preview_on    ) ? static_cast<Component*>(Gui->preview ) :
-                                                       static_cast<Component*>(Gui->chat    ) ;
+  Component* control_component = (is_config_pending) ? static_cast<Component*>(Gui->presets .get()) :
+                                                       static_cast<Component*>(Gui->controls.get()) ;
+  Component* front_component   = (is_config_pending) ? static_cast<Component*>(Gui->config  .get()) :
+                                 (is_preview_on    ) ? static_cast<Component*>(Gui->preview .get()) :
+                                                       static_cast<Component*>(Gui->chat    .get()) ;
 
 DEBUG_TRACE_REFRESH_GUI
 
@@ -333,7 +333,7 @@ void AvCaster::UpdateStatus()
   bool   is_output_active = bool(Store->config[CONFIG::OUTPUT_ID     ]) ;
   int    sink_idx         = int (Store->config[CONFIG::OUTPUT_SINK_ID]) ;
   String title_text       = APP::APP_NAME + " - " ;
-  String status_text      = String::empty ;
+  String status_text      = String() ;
 
   // titlebar text
   if      (!is_output_active                  ) title_text += GUI::IDLE_TITLE_TEXT ;
@@ -357,13 +357,14 @@ bool AvCaster::HandleCliParams(StringArray cli_params)
   String token = (cli_params.contains(APP::CLI_HELP_TOKEN   )) ? APP::CLI_HELP_TOKEN    :
                  (cli_params.contains(APP::CLI_VERSION_TOKEN)) ? APP::CLI_VERSION_TOKEN :
                  (cli_params.contains(APP::CLI_PRESETS_TOKEN)) ? APP::CLI_PRESETS_TOKEN :
-                                                                 String::empty          ;
+                                                                 String()               ;
 
 DEBUG_TRACE_HANDLE_CLI_PARAMS
 
   if (token.isEmpty()) return false ;
 
   StringArray cli_output ;
+  int         n_presets ;
 
   // handle terminating CLI params
   if      (token == APP::CLI_HELP_TOKEN   ) cli_output = APP::CLI_USAGE_MSG ;
@@ -371,8 +372,9 @@ DEBUG_TRACE_HANDLE_CLI_PARAMS
   else if (token == APP::CLI_PRESETS_TOKEN)
   {
     // load persistent configuration as normal
-    Store = new AvCasterStore() ; int n_presets = Store->presets.getNumChildren() ;
-    if (Store != nullptr && n_presets > 0)
+    Store.reset(new AvCasterStore()) ;
+
+    if ((bool)Store && (n_presets = Store->presets.getNumChildren()) > 0)
     {
       // dump preset indices and names
       cli_output.add("Presets:") ;
@@ -426,14 +428,14 @@ DEBUG_TRACE_PROCESS_CLI_PARAMS
     else if (*token == APP::CLI_DISABLE_AUDIO_TOKEN  ) is_audio_enabled   = false ;
     else if (*token == APP::CLI_DISABLE_CHAT_TOKEN   ) is_chat_enabled    = false ;
 
-  if (!is_screen_enabled ) DisabledFeatures.set(CONFIG::SCREEN_ID  , var::null) ;
-  if (!is_camera_enabled ) DisabledFeatures.set(CONFIG::CAMERA_ID  , var::null) ;
-  if (!is_text_enabled   ) DisabledFeatures.set(CONFIG::TEXT_ID    , var::null) ;
-  if (!is_image_enabled  ) DisabledFeatures.set(CONFIG::IMAGE_ID   , var::null) ;
-  if (!is_preview_enabled) DisabledFeatures.set(CONFIG::PREVIEW_ID , var::null) ;
-  if (!is_audio_enabled  ) DisabledFeatures.set(CONFIG::AUDIO_ID   , var::null) ;
-  if (!is_media_enabled  ) DisabledFeatures.set(CONFIG::OUTPUT_ID  , var::null) ;
-  if (!is_chat_enabled   ) DisabledFeatures.set(CONFIG::NETWORK_ID , var::null) ;
+  if (!is_screen_enabled ) DisabledFeatures.set(CONFIG::SCREEN_ID  , var()) ;
+  if (!is_camera_enabled ) DisabledFeatures.set(CONFIG::CAMERA_ID  , var()) ;
+  if (!is_text_enabled   ) DisabledFeatures.set(CONFIG::TEXT_ID    , var()) ;
+  if (!is_image_enabled  ) DisabledFeatures.set(CONFIG::IMAGE_ID   , var()) ;
+  if (!is_preview_enabled) DisabledFeatures.set(CONFIG::PREVIEW_ID , var()) ;
+  if (!is_audio_enabled  ) DisabledFeatures.set(CONFIG::AUDIO_ID   , var()) ;
+  if (!is_media_enabled  ) DisabledFeatures.set(CONFIG::OUTPUT_ID  , var()) ;
+  if (!is_chat_enabled   ) DisabledFeatures.set(CONFIG::NETWORK_ID , var()) ;
 }
 
 bool AvCaster::ValidateEnvironment()

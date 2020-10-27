@@ -38,31 +38,42 @@ Presets::Presets (MainContent* main_content)
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (presetsGroup = new GroupComponent ("presetsGroup",
-                                                          TRANS("Presets")));
+    presetsGroup.reset (new GroupComponent ("presetsGroup",
+                                            TRANS("Presets")));
+    addAndMakeVisible (presetsGroup.get());
     presetsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     presetsGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (newPresetButton = new TextButton ("newPresetButton"));
+    newPresetButton.reset (new TextButton ("newPresetButton"));
+    addAndMakeVisible (newPresetButton.get());
     newPresetButton->setExplicitFocusOrder (1);
     newPresetButton->setButtonText (TRANS("New Preset"));
     newPresetButton->addListener (this);
 
-    addAndMakeVisible (deletePresetButton = new TextButton ("deletePresetButton"));
+    newPresetButton->setBounds (268, 36, 96, 24);
+
+    deletePresetButton.reset (new TextButton ("deletePresetButton"));
+    addAndMakeVisible (deletePresetButton.get());
     deletePresetButton->setExplicitFocusOrder (2);
     deletePresetButton->setButtonText (TRANS("Delete Preset"));
     deletePresetButton->addListener (this);
 
-    addAndMakeVisible (presetLabel = new Label ("presetLabel",
-                                                TRANS("Preset:")));
-    presetLabel->setFont (Font (15.00f, Font::plain));
+    deletePresetButton->setBounds (388, 36, 96, 24);
+
+    presetLabel.reset (new Label ("presetLabel",
+                                  TRANS("Preset:")));
+    addAndMakeVisible (presetLabel.get());
+    presetLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     presetLabel->setJustificationType (Justification::centredLeft);
     presetLabel->setEditable (false, false, false);
     presetLabel->setColour (Label::textColourId, Colours::white);
     presetLabel->setColour (TextEditor::textColourId, Colours::black);
     presetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (presetsCombo = new ComboBox ("presetsCombo"));
+    presetLabel->setBounds (500, 36, 48, 24);
+
+    presetsCombo.reset (new ComboBox ("presetsCombo"));
+    addAndMakeVisible (presetsCombo.get());
     presetsCombo->setExplicitFocusOrder (3);
     presetsCombo->setEditableText (true);
     presetsCombo->setJustificationType (Justification::centredLeft);
@@ -70,7 +81,10 @@ Presets::Presets (MainContent* main_content)
     presetsCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     presetsCombo->addListener (this);
 
-    addAndMakeVisible (configButton = new ImageButton ("configButton"));
+    presetsCombo->setBounds (560, 36, 128, 24);
+
+    configButton.reset (new ImageButton ("configButton"));
+    addAndMakeVisible (configButton.get());
     configButton->setExplicitFocusOrder (4);
     configButton->addListener (this);
 
@@ -78,6 +92,8 @@ Presets::Presets (MainContent* main_content)
                              ImageCache::getFromMemory (BinaryData::config_png, BinaryData::config_pngSize), 1.000f, Colour (0x00000000),
                              ImageCache::getFromMemory (BinaryData::confighover_png, BinaryData::confighover_pngSize), 1.000f, Colour (0x00000000),
                              ImageCache::getFromMemory (BinaryData::configpushed_png, BinaryData::configpushed_pngSize), 1.000f, Colour (0x00000000));
+    configButton->setBounds (696, 36, 24, 24);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -87,7 +103,7 @@ Presets::Presets (MainContent* main_content)
 
     //[Constructor] You can add your own custom stuff here..
 
-  this->mainContent->configureCombobox(this->presetsCombo) ;
+  this->mainContent->configureCombobox(this->presetsCombo.get()) ;
 
     //[/Constructor]
 }
@@ -115,8 +131,14 @@ void Presets::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff282828));
-    g.fillRoundedRectangle (20.0f, 22.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
+    {
+        float x = 20.0f, y = 22.0f, width = static_cast<float> (getWidth() - 40), height = 52.0f;
+        Colour fillColour = Colour (0xff282828);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 4.000f);
+    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -128,11 +150,6 @@ void Presets::resized()
     //[/UserPreResize]
 
     presetsGroup->setBounds (16, 12, getWidth() - 32, 64);
-    newPresetButton->setBounds (268, 36, 96, 24);
-    deletePresetButton->setBounds (388, 36, 96, 24);
-    presetLabel->setBounds (500, 36, 48, 24);
-    presetsCombo->setBounds (560, 36, 128, 24);
-    configButton->setBounds (696, 36, 24, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -146,7 +163,7 @@ void Presets::buttonClicked (Button* buttonThatWasClicked)
 
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == newPresetButton)
+    if (buttonThatWasClicked == newPresetButton.get())
     {
         //[UserButtonCode_newPresetButton] -- add your button handler code here..
 
@@ -154,7 +171,7 @@ void Presets::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_newPresetButton]
     }
-    else if (buttonThatWasClicked == deletePresetButton)
+    else if (buttonThatWasClicked == deletePresetButton.get())
     {
         //[UserButtonCode_deletePresetButton] -- add your button handler code here..
 
@@ -162,7 +179,7 @@ void Presets::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_deletePresetButton]
     }
-    else if (buttonThatWasClicked == configButton)
+    else if (buttonThatWasClicked == configButton.get())
     {
         //[UserButtonCode_configButton] -- add your button handler code here..
 
@@ -185,7 +202,7 @@ void Presets::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == presetsCombo)
+    if (comboBoxThatHasChanged == presetsCombo.get())
     {
         //[UserComboBoxCode_presetsCombo] -- add your combo box handling code here..
 
@@ -204,12 +221,13 @@ void Presets::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 void Presets::broughtToFront()
 {
-  this->mainContent->loadPresetsCombo(this->presetsCombo) ; setCreatePresetMode(false) ;
+  this->mainContent->loadPresetsCombo(this->presetsCombo.get()) ;
+  setCreatePresetMode(false) ;
 }
 
 void Presets::handleNewButton()
 {
-  this->presetsCombo->setText(String::empty , juce::dontSendNotification) ;
+  this->presetsCombo->setText(String() , juce::dontSendNotification) ;
   this->presetsCombo->grabKeyboardFocus() ;
   setCreatePresetMode(true) ;
 }
@@ -321,7 +339,7 @@ BEGIN_JUCER_METADATA
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="0"
                  initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="20 22 40M 52" cornerSize="4" fill="solid: ff282828" hasStroke="0"/>
+    <ROUNDRECT pos="20 22 40M 52" cornerSize="4.0" fill="solid: ff282828" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="presetsGroup" id="5f4ffe47101cb73b" memberName="presetsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"
@@ -336,16 +354,17 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="500 36 48 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Preset:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="presetsCombo" id="94d77976c2b2f37" memberName="presetsCombo"
             virtualName="" explicitFocusOrder="3" pos="560 36 128 24" editable="1"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
                virtualName="" explicitFocusOrder="4" pos="696 36 24 24" buttonText="configButton"
                connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="1"
-               resourceNormal="BinaryData::config_png" opacityNormal="1" colourNormal="0"
-               resourceOver="BinaryData::confighover_png" opacityOver="1" colourOver="0"
-               resourceDown="BinaryData::configpushed_png" opacityDown="1" colourDown="0"/>
+               resourceNormal="BinaryData::config_png" opacityNormal="1.0" colourNormal="0"
+               resourceOver="BinaryData::confighover_png" opacityOver="1.0"
+               colourOver="0" resourceDown="BinaryData::configpushed_png" opacityDown="1.0"
+               colourDown="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -355,3 +374,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

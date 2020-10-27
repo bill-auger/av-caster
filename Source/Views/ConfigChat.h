@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONFIGCHAT_H_
-#define _CONFIGCHAT_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -44,14 +43,14 @@ class ConfigChat  : public Component
 public:
     //==============================================================================
     ConfigChat ();
-    ~ConfigChat();
+    ~ConfigChat() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
+    void paint (Graphics& g) override;
+    void resized() override;
 
 
 
@@ -66,20 +65,20 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<ToggleButton> timestampToggle;
-    ScopedPointer<ToggleButton> joinPartToggle;
-    ScopedPointer<Label> networkLabel;
-    ScopedPointer<Label> portLabel;
-    ScopedPointer<TextEditor> portText;
-    ScopedPointer<Label> nickLabel;
-    ScopedPointer<TextEditor> nickText;
-    ScopedPointer<Label> passLabel;
-    ScopedPointer<TextEditor> passText;
-    ScopedPointer<Label> channelLabel;
-    ScopedPointer<TextEditor> channelText;
-    ScopedPointer<Label> greetingLabel;
-    ScopedPointer<TextEditor> greetingText;
-    ScopedPointer<TextEditor> networkText;
+    std::unique_ptr<ToggleButton> timestampToggle;
+    std::unique_ptr<ToggleButton> joinPartToggle;
+    std::unique_ptr<Label> networkLabel;
+    std::unique_ptr<Label> portLabel;
+    std::unique_ptr<TextEditor> portText;
+    std::unique_ptr<Label> nickLabel;
+    std::unique_ptr<TextEditor> nickText;
+    std::unique_ptr<Label> passLabel;
+    std::unique_ptr<TextEditor> passText;
+    std::unique_ptr<Label> channelLabel;
+    std::unique_ptr<TextEditor> channelText;
+    std::unique_ptr<Label> greetingLabel;
+    std::unique_ptr<TextEditor> greetingText;
+    std::unique_ptr<TextEditor> networkText;
 
 
     //==============================================================================
@@ -89,4 +88,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIGCHAT_H_

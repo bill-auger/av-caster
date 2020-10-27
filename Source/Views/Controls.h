@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONTROLS_H_
-#define _CONTROLS_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -40,13 +39,13 @@ class MainContent ;
                                                                     //[/Comments]
 */
 class Controls  : public Component,
-                  public ButtonListener,
-                  public ComboBoxListener
+                  public Button::Listener,
+                  public ComboBox::Listener
 {
 public:
     //==============================================================================
     Controls (MainContent* main_content);
-    ~Controls();
+    ~Controls() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -80,16 +79,16 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> controlsGroup;
-    ScopedPointer<ToggleButton> screenToggle;
-    ScopedPointer<ToggleButton> cameraToggle;
-    ScopedPointer<ToggleButton> textToggle;
-    ScopedPointer<ToggleButton> imageToggle;
-    ScopedPointer<ToggleButton> previewToggle;
-    ScopedPointer<ToggleButton> audioToggle;
-    ScopedPointer<ToggleButton> outputToggle;
-    ScopedPointer<ComboBox> presetsCombo;
-    ScopedPointer<ImageButton> configButton;
+    std::unique_ptr<GroupComponent> controlsGroup;
+    std::unique_ptr<ToggleButton> screenToggle;
+    std::unique_ptr<ToggleButton> cameraToggle;
+    std::unique_ptr<ToggleButton> textToggle;
+    std::unique_ptr<ToggleButton> imageToggle;
+    std::unique_ptr<ToggleButton> previewToggle;
+    std::unique_ptr<ToggleButton> audioToggle;
+    std::unique_ptr<ToggleButton> outputToggle;
+    std::unique_ptr<ComboBox> presetsCombo;
+    std::unique_ptr<ImageButton> configButton;
 
 
     //==============================================================================
@@ -99,4 +98,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _CONTROLS_H_

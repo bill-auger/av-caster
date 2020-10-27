@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _MAINCONTENT_H_
-#define _MAINCONTENT_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -46,7 +45,7 @@ class MainContent  : public Component
 public:
     //==============================================================================
     MainContent ();
-    ~MainContent();
+    ~MainContent() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -75,8 +74,8 @@ private:
 
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
+    void paint (Graphics& g) override;
+    void resized() override;
 
 
 
@@ -85,19 +84,19 @@ private:
 
   DocumentWindow*                        mainWindow ;
 #ifdef TRAY_ICON
-  ScopedPointer<SystemTrayIconComponent> trayIcon ;
+  std::unique_ptr<SystemTrayIconComponent> trayIcon ;
 #endif // TRAY_ICON
 
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Background> background;
-    ScopedPointer<Controls> controls;
-    ScopedPointer<Chat> chat;
-    ScopedPointer<Preview> preview;
-    ScopedPointer<Presets> presets;
-    ScopedPointer<Config> config;
-    ScopedPointer<Statusbar> statusbar;
+    std::unique_ptr<Background> background;
+    std::unique_ptr<Controls> controls;
+    std::unique_ptr<Chat> chat;
+    std::unique_ptr<Preview> preview;
+    std::unique_ptr<Presets> presets;
+    std::unique_ptr<Config> config;
+    std::unique_ptr<Statusbar> statusbar;
 
 
     //==============================================================================
@@ -162,4 +161,3 @@ private:
 
 //[/EndFile]
 
-#endif // _MAINCONTENT_H_

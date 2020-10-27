@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CHATLIST_H_
-#define _CHATLIST_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -41,7 +40,7 @@ class ChatList  : public Component,
 public:
     //==============================================================================
     ChatList ();
-    ~ChatList();
+    ~ChatList() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -82,8 +81,8 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> chattersGroup;
-    ScopedPointer<ChatListItem> dummyChatListItem;
+    std::unique_ptr<GroupComponent> chattersGroup;
+    std::unique_ptr<ChatListItem> dummyChatListItem;
 
 
     //==============================================================================
@@ -93,4 +92,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _CHATLIST_H_

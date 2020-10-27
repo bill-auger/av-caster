@@ -63,11 +63,17 @@ void Background::paint (Graphics& g)
 
     g.fillAll (Colour (0xff101010));
 
-    g.setColour (Colour (0xff202020));
-    g.fillRoundedRectangle (8.0f, 8.0f, static_cast<float> (getWidth() - 16), static_cast<float> (getHeight() - 40), 10.000f);
-
-    g.setColour (Colours::white);
-    g.drawRoundedRectangle (8.0f, 8.0f, static_cast<float> (getWidth() - 16), static_cast<float> (getHeight() - 40), 10.000f, 1.000f);
+    {
+        float x = 8.0f, y = 8.0f, width = static_cast<float> (getWidth() - 16), height = static_cast<float> (getHeight() - 40);
+        Colour fillColour = Colour (0xff202020);
+        Colour strokeColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 10.000f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 10.000f, 1.000f);
+    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -102,7 +108,7 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="ff101010">
-    <ROUNDRECT pos="8 8 16M 40M" cornerSize="10" fill="solid: ff202020" hasStroke="1"
+    <ROUNDRECT pos="8 8 16M 40M" cornerSize="10.0" fill="solid: ff202020" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffffffff"/>
   </BACKGROUND>
 </JUCER_COMPONENT>
@@ -114,3 +120,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

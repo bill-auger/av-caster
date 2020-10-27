@@ -34,9 +34,9 @@ public:
 
 DEBUG_TRACE_INIT_VERSION
 
-    this->mainWindow = new MainWindow() ;
+    this->mainWindow.reset(new MainWindow()) ;
 
-    if (AvCaster::Initialize(this , this->mainWindow->mainContent , cli_params))
+    if (AvCaster::Initialize(this , this->mainWindow->mainContent.get() , cli_params))
     {
 #ifdef JUCE_LINUX
       // create desktop launch file
@@ -114,8 +114,8 @@ DEBUG_TRACE_SHUTDOWN_OUT
     MainWindow() : DocumentWindow(APP::APP_NAME , Colour(0xff202020) , GUI::TITLEBAR_BTNS)
     {
       // main content
-      this->mainContent = new MainContent() ;
-      setContentOwned(this->mainContent , true) ;
+      this->mainContent.reset(new MainContent()) ;
+      setContentOwned(this->mainContent.get() , true) ;
 
       // this main desktop window
       Image icon_image = ImageCache::getFromMemory(BinaryData::avcasterlogo48_png    ,
@@ -151,7 +151,7 @@ DEBUG_TRACE_SHUTDOWN_OUT
 
   private:
 
-    ScopedPointer<MainContent> mainContent ;
+    std::unique_ptr<MainContent> mainContent ;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainWindow)
   } ;
@@ -169,7 +169,7 @@ private:
   }
 #endif // DEBUG_QUIT_AFTER_MAIN_LOOP
 
-  ScopedPointer<MainWindow> mainWindow ;
+  std::unique_ptr<MainWindow> mainWindow ;
 } ;
 
 

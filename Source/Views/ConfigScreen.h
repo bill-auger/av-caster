@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONFIGSCREEN_H_
-#define _CONFIGSCREEN_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -40,12 +39,12 @@ class MainContent ;
                                                                     //[/Comments]
 */
 class ConfigScreen  : public Component,
-                      public SliderListener
+                      public Slider::Listener
 {
 public:
     //==============================================================================
     ConfigScreen ();
-    ~ConfigScreen();
+    ~ConfigScreen() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -68,18 +67,18 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> displayLabel;
-    ScopedPointer<Slider> displaySlider;
-    ScopedPointer<Label> screenLabel;
-    ScopedPointer<Slider> screenSlider;
-    ScopedPointer<Label> screenWidthLabel;
-    ScopedPointer<TextEditor> screenWidthText;
-    ScopedPointer<Label> screenHeightLabel;
-    ScopedPointer<TextEditor> screenHeightText;
-    ScopedPointer<Label> xOffsetLabel;
-    ScopedPointer<TextEditor> xOffsetText;
-    ScopedPointer<Label> yOffsetLabel;
-    ScopedPointer<TextEditor> yOffsetText;
+    std::unique_ptr<Label> displayLabel;
+    std::unique_ptr<Slider> displaySlider;
+    std::unique_ptr<Label> screenLabel;
+    std::unique_ptr<Slider> screenSlider;
+    std::unique_ptr<Label> screenWidthLabel;
+    std::unique_ptr<TextEditor> screenWidthText;
+    std::unique_ptr<Label> screenHeightLabel;
+    std::unique_ptr<TextEditor> screenHeightText;
+    std::unique_ptr<Label> xOffsetLabel;
+    std::unique_ptr<TextEditor> xOffsetText;
+    std::unique_ptr<Label> yOffsetLabel;
+    std::unique_ptr<TextEditor> yOffsetText;
 
 
     //==============================================================================
@@ -89,4 +88,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _CONFIGSCREEN_H_

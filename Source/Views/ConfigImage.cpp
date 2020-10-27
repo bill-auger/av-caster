@@ -30,16 +30,23 @@
 //==============================================================================
 ConfigImage::ConfigImage ()
 {
-    addAndMakeVisible (locationLabel = new Label ("locationLabel",
-                                                  TRANS("Location:")));
-    locationLabel->setFont (Font (15.00f, Font::plain));
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
+    locationLabel.reset (new Label ("locationLabel",
+                                    TRANS("Location:")));
+    addAndMakeVisible (locationLabel.get());
+    locationLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     locationLabel->setJustificationType (Justification::centredLeft);
     locationLabel->setEditable (false, false, false);
     locationLabel->setColour (Label::textColourId, Colours::white);
     locationLabel->setColour (TextEditor::textColourId, Colours::black);
     locationLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (interstitialText = new TextEditor ("interstitialText"));
+    locationLabel->setBounds (0, 8, 80, 24);
+
+    interstitialText.reset (new TextEditor ("interstitialText"));
+    addAndMakeVisible (interstitialText.get());
     interstitialText->setExplicitFocusOrder (1);
     interstitialText->setMultiLine (false);
     interstitialText->setReturnKeyStartsNewLine (false);
@@ -47,11 +54,16 @@ ConfigImage::ConfigImage ()
     interstitialText->setScrollbarsShown (true);
     interstitialText->setCaretVisible (true);
     interstitialText->setPopupMenuEnabled (true);
-    interstitialText->setText (String::empty);
+    interstitialText->setText (String());
 
-    addAndMakeVisible (browseButton = new TextButton ("browseButton"));
+    interstitialText->setBounds (88, 8, 312, 24);
+
+    browseButton.reset (new TextButton ("browseButton"));
+    addAndMakeVisible (browseButton.get());
     browseButton->setExplicitFocusOrder (2);
     browseButton->setButtonText (TRANS("Browse"));
+
+    browseButton->setBounds (416, 8, 80, 24);
 
 
     //[UserPreSize]
@@ -93,9 +105,6 @@ void ConfigImage::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    locationLabel->setBounds (0, 8, 80, 24);
-    interstitialText->setBounds (88, 8, 312, 24);
-    browseButton->setBounds (416, 8, 80, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -108,9 +117,9 @@ void ConfigImage::resized()
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -124,7 +133,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 8 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Location:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="interstitialText" id="7634583caff4457b" memberName="interstitialText"
               virtualName="" explicitFocusOrder="1" pos="88 8 312 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
@@ -141,3 +150,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

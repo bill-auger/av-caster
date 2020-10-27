@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONFIGCAMERA_H_
-#define _CONFIGCAMERA_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -40,12 +39,12 @@ class MainContent ;
                                                                     //[/Comments]
 */
 class ConfigCamera  : public Component,
-                      public ComboBoxListener
+                      public ComboBox::Listener
 {
 public:
     //==============================================================================
     ConfigCamera ();
-    ~ConfigCamera();
+    ~ConfigCamera() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -68,10 +67,10 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> cameraDevLabel;
-    ScopedPointer<ComboBox> cameraDevCombo;
-    ScopedPointer<Label> cameraResLabel;
-    ScopedPointer<ComboBox> cameraResCombo;
+    std::unique_ptr<Label> cameraDevLabel;
+    std::unique_ptr<ComboBox> cameraDevCombo;
+    std::unique_ptr<Label> cameraResLabel;
+    std::unique_ptr<ComboBox> cameraResCombo;
 
 
     //==============================================================================
@@ -81,4 +80,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _CONFIGCAMERA_H_

@@ -59,11 +59,11 @@ static void PopulateEventCodes()
 
 #  define DEBUG_TRACE_CREATE_SESSION                                                   \
   String dbg = " session for network '" + String(network) + "'" ;                      \
-  String err = (network.isEmpty())       ? String::empty :                             \
-               String((is_valid_session) ? String::empty : " session invalid") +       \
-               String((is_valid_port   ) ? String::empty : " port invalid"   ) +       \
-               String((is_valid_nick   ) ? String::empty : " nick invalid"   ) +       \
-               String((is_valid_channel) ? String::empty : " channel invalid") ;       \
+  String err = (network.isEmpty())       ? String() :                                  \
+               String((is_valid_session) ? String() : " session invalid") +            \
+               String((is_valid_port   ) ? String() : " port invalid"   ) +            \
+               String((is_valid_nick   ) ? String() : " nick invalid"   ) +            \
+               String((is_valid_channel) ? String() : " channel invalid") ;            \
   if      (err.isNotEmpty()) Trace::TraceError("error creating" + dbg + " - " + err) ; \
   else if (is_valid_network) Trace::TraceChat("created" + dbg)                         ;
 

@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _STATUSBAR_H_
-#define _STATUSBAR_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -41,7 +40,7 @@ class Statusbar  : public Component
 public:
     //==============================================================================
     Statusbar ();
-    ~Statusbar();
+    ~Statusbar() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -62,9 +61,9 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> statusLLabel;
-    ScopedPointer<Label> statusCLabel;
-    ScopedPointer<Label> statusRLabel;
+    std::unique_ptr<Label> statusLLabel;
+    std::unique_ptr<Label> statusCLabel;
+    std::unique_ptr<Label> statusRLabel;
 
 
     //==============================================================================
@@ -74,4 +73,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _STATUSBAR_H_

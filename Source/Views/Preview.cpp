@@ -33,8 +33,9 @@ Preview::Preview ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (previewGroup = new GroupComponent ("previewGroup",
-                                                          TRANS("Preview")));
+    previewGroup.reset (new GroupComponent ("previewGroup",
+                                            TRANS("Preview")));
+    addAndMakeVisible (previewGroup.get());
     previewGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     previewGroup->setColour (GroupComponent::textColourId, Colours::white);
 
@@ -69,14 +70,25 @@ void Preview::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colours::black);
-    g.fillRoundedRectangle (18.0f, 18.0f, static_cast<float> (getWidth() - 36), static_cast<float> (getHeight() - 36), 5.000f);
+    {
+        float x = 18.0f, y = 18.0f, width = static_cast<float> (getWidth() - 36), height = static_cast<float> (getHeight() - 36);
+        Colour fillColour = Colours::black;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 5.000f);
+    }
 
-    g.setColour (Colours::black);
-    jassert (drawable1 != 0);
-    if (drawable1 != 0)
-        drawable1->drawWithin (g, Rectangle<float> (proportionOfWidth (0.5000f) - (100 / 2), proportionOfHeight (0.5000f) - (100 / 2), 100, 100),
-                               RectanglePlacement::stretchToFit, 1.000f);
+    {
+        int x = proportionOfWidth (0.5000f) - (100 / 2), y = proportionOfHeight (0.5000f) - (100 / 2), width = 100, height = 100;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (Colours::black);
+        jassert (drawable1 != nullptr);
+        if (drawable1 != nullptr)
+            drawable1->drawWithin (g, Rectangle<int> (x, y, width, height).toFloat(),
+                                   RectanglePlacement::stretchToFit, 1.000f);
+    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -112,9 +124,9 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="18 18 36M 36M" cornerSize="5" fill="solid: ff000000" hasStroke="0"/>
+    <ROUNDRECT pos="18 18 36M 36M" cornerSize="5.0" fill="solid: ff000000" hasStroke="0"/>
     <IMAGE pos="50%c 50%c 100 100" resource="BinaryData::avcasterlogo128_png"
-           opacity="1" mode="0"/>
+           opacity="1.0" mode="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="previewGroup" id="6607ba656d5c8919" memberName="previewGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 8 32M 24M" outlinecol="ffffffff"
@@ -128,3 +140,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

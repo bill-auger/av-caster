@@ -137,10 +137,10 @@ void Trace::WriteConfigXml(ValueTree config_node , String node_desc)
   return ;
 #endif // DEBUG_DUMP_CONFIG_XML
 
-  String      file_name = "config-dump-" + node_desc + ".xml" ;
-  XmlElement* xml       = config_node.createXml() ;
+  String                      file_name = "config-dump-" + node_desc + ".xml" ;
+  std::unique_ptr<XmlElement> xml       = config_node.createXml() ;
 
-  xml->writeToFile(File(file_name) , StringRef()) ; delete xml ;
+  xml->writeTo(File(file_name)) ; xml.reset() ;
   Trace::TraceConfig("wrote config XML to file '" + file_name           +
                      "' per "                     + String(__FUNCTION__)) ;
 }
@@ -191,7 +191,7 @@ String Trace::TraceSetValue(ValueTree a_node , const Identifier& a_key , var a_v
                       "'] changing from (" + prev_type + ")'"  + prev_val +
                       "' to ("             + next_type + ")'"  + next_val + "'" ;
 
-  return (next_type != prev_type || next_val != prev_val) ? change_msg : String::empty ;
+  return (next_type != prev_type || next_val != prev_val) ? change_msg : String() ;
 }
 
 #endif // DEBUG_TRACE

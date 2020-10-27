@@ -38,54 +38,77 @@ Controls::Controls (MainContent* main_content)
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (controlsGroup = new GroupComponent ("controlsGroup",
-                                                           TRANS("Controls")));
+    controlsGroup.reset (new GroupComponent ("controlsGroup",
+                                             TRANS("Controls")));
+    addAndMakeVisible (controlsGroup.get());
     controlsGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     controlsGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (screenToggle = new ToggleButton ("screenToggle"));
+    screenToggle.reset (new ToggleButton ("screenToggle"));
+    addAndMakeVisible (screenToggle.get());
     screenToggle->setExplicitFocusOrder (1);
     screenToggle->setButtonText (TRANS("Screen"));
     screenToggle->addListener (this);
     screenToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (cameraToggle = new ToggleButton ("cameraToggle"));
+    screenToggle->setBounds (32, 36, 72, 24);
+
+    cameraToggle.reset (new ToggleButton ("cameraToggle"));
+    addAndMakeVisible (cameraToggle.get());
     cameraToggle->setExplicitFocusOrder (2);
     cameraToggle->setButtonText (TRANS("Camera"));
     cameraToggle->addListener (this);
     cameraToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (textToggle = new ToggleButton ("textToggle"));
+    cameraToggle->setBounds (108, 36, 76, 24);
+
+    textToggle.reset (new ToggleButton ("textToggle"));
+    addAndMakeVisible (textToggle.get());
     textToggle->setExplicitFocusOrder (3);
     textToggle->setButtonText (TRANS("Text"));
     textToggle->addListener (this);
     textToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (imageToggle = new ToggleButton ("imageToggle"));
+    textToggle->setBounds (188, 36, 52, 24);
+
+    imageToggle.reset (new ToggleButton ("imageToggle"));
+    addAndMakeVisible (imageToggle.get());
     imageToggle->setExplicitFocusOrder (4);
     imageToggle->setButtonText (TRANS("Pause"));
     imageToggle->addListener (this);
     imageToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (previewToggle = new ToggleButton ("previewToggle"));
+    imageToggle->setBounds (244, 36, 64, 24);
+
+    previewToggle.reset (new ToggleButton ("previewToggle"));
+    addAndMakeVisible (previewToggle.get());
     previewToggle->setExplicitFocusOrder (5);
     previewToggle->setButtonText (TRANS("Preview"));
     previewToggle->addListener (this);
     previewToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (audioToggle = new ToggleButton ("audioToggle"));
+    previewToggle->setBounds (314, 36, 78, 24);
+
+    audioToggle.reset (new ToggleButton ("audioToggle"));
+    addAndMakeVisible (audioToggle.get());
     audioToggle->setExplicitFocusOrder (6);
     audioToggle->setButtonText (TRANS("Audio"));
     audioToggle->addListener (this);
     audioToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (outputToggle = new ToggleButton ("outputToggle"));
+    audioToggle->setBounds (396, 36, 64, 24);
+
+    outputToggle.reset (new ToggleButton ("outputToggle"));
+    addAndMakeVisible (outputToggle.get());
     outputToggle->setExplicitFocusOrder (7);
     outputToggle->setButtonText (TRANS("Transmit"));
     outputToggle->addListener (this);
     outputToggle->setColour (ToggleButton::textColourId, Colours::white);
 
-    addAndMakeVisible (presetsCombo = new ComboBox ("presetsCombo"));
+    outputToggle->setBounds (464, 36, 90, 24);
+
+    presetsCombo.reset (new ComboBox ("presetsCombo"));
+    addAndMakeVisible (presetsCombo.get());
     presetsCombo->setExplicitFocusOrder (8);
     presetsCombo->setEditableText (true);
     presetsCombo->setJustificationType (Justification::centredLeft);
@@ -93,7 +116,10 @@ Controls::Controls (MainContent* main_content)
     presetsCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     presetsCombo->addListener (this);
 
-    addAndMakeVisible (configButton = new ImageButton ("configButton"));
+    presetsCombo->setBounds (560, 36, 128, 24);
+
+    configButton.reset (new ImageButton ("configButton"));
+    addAndMakeVisible (configButton.get());
     configButton->setExplicitFocusOrder (9);
     configButton->addListener (this);
 
@@ -101,6 +127,8 @@ Controls::Controls (MainContent* main_content)
                              ImageCache::getFromMemory (BinaryData::config_png, BinaryData::config_pngSize), 1.000f, Colour (0x00000000),
                              ImageCache::getFromMemory (BinaryData::confighover_png, BinaryData::confighover_pngSize), 1.000f, Colour (0x00000000),
                              ImageCache::getFromMemory (BinaryData::configpushed_png, BinaryData::configpushed_pngSize), 1.000f, Colour (0x00000000));
+    configButton->setBounds (696, 36, 24, 24);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -110,7 +138,7 @@ Controls::Controls (MainContent* main_content)
 
     //[Constructor] You can add your own custom stuff here..
 
-  this->mainContent->configureCombobox(this->presetsCombo) ;
+  this->mainContent->configureCombobox(this->presetsCombo.get()) ;
 
     //[/Constructor]
 }
@@ -142,8 +170,14 @@ void Controls::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff282828));
-    g.fillRoundedRectangle (20.0f, 22.0f, static_cast<float> (getWidth() - 40), 52.0f, 4.000f);
+    {
+        float x = 20.0f, y = 22.0f, width = static_cast<float> (getWidth() - 40), height = 52.0f;
+        Colour fillColour = Colour (0xff282828);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 4.000f);
+    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -155,15 +189,6 @@ void Controls::resized()
     //[/UserPreResize]
 
     controlsGroup->setBounds (16, 12, getWidth() - 32, 64);
-    screenToggle->setBounds (32, 36, 72, 24);
-    cameraToggle->setBounds (108, 36, 76, 24);
-    textToggle->setBounds (188, 36, 52, 24);
-    imageToggle->setBounds (244, 36, 64, 24);
-    previewToggle->setBounds (314, 36, 78, 24);
-    audioToggle->setBounds (396, 36, 64, 24);
-    outputToggle->setBounds (464, 36, 90, 24);
-    presetsCombo->setBounds (560, 36, 128, 24);
-    configButton->setBounds (696, 36, 24, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -177,7 +202,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == screenToggle)
+    if (buttonThatWasClicked == screenToggle.get())
     {
         //[UserButtonCode_screenToggle] -- add your button handler code here..
 
@@ -185,7 +210,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_screenToggle]
     }
-    else if (buttonThatWasClicked == cameraToggle)
+    else if (buttonThatWasClicked == cameraToggle.get())
     {
         //[UserButtonCode_cameraToggle] -- add your button handler code here..
 
@@ -193,7 +218,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_cameraToggle]
     }
-    else if (buttonThatWasClicked == textToggle)
+    else if (buttonThatWasClicked == textToggle.get())
     {
         //[UserButtonCode_textToggle] -- add your button handler code here..
 
@@ -201,7 +226,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_textToggle]
     }
-    else if (buttonThatWasClicked == imageToggle)
+    else if (buttonThatWasClicked == imageToggle.get())
     {
         //[UserButtonCode_imageToggle] -- add your button handler code here..
 
@@ -209,7 +234,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_imageToggle]
     }
-    else if (buttonThatWasClicked == previewToggle)
+    else if (buttonThatWasClicked == previewToggle.get())
     {
         //[UserButtonCode_previewToggle] -- add your button handler code here..
 
@@ -217,7 +242,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_previewToggle]
     }
-    else if (buttonThatWasClicked == audioToggle)
+    else if (buttonThatWasClicked == audioToggle.get())
     {
         //[UserButtonCode_audioToggle] -- add your button handler code here..
 
@@ -225,7 +250,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_audioToggle]
     }
-    else if (buttonThatWasClicked == outputToggle)
+    else if (buttonThatWasClicked == outputToggle.get())
     {
         //[UserButtonCode_outputToggle] -- add your button handler code here..
 
@@ -233,7 +258,7 @@ void Controls::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_outputToggle]
     }
-    else if (buttonThatWasClicked == configButton)
+    else if (buttonThatWasClicked == configButton.get())
     {
         //[UserButtonCode_configButton] -- add your button handler code here..
 
@@ -255,7 +280,7 @@ void Controls::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == presetsCombo)
+    if (comboBoxThatHasChanged == presetsCombo.get())
     {
         //[UserComboBoxCode_presetsCombo] -- add your combo box handling code here..
 
@@ -314,7 +339,7 @@ void Controls::loadConfig()
   Colour output_tick_color  = this->mainContent->btnTickColor(is_output_active ) ;
   String xmit_btn_text      = (sink_idx == CONFIG::FILE_OUTPUT_IDX) ? GUI::FILE_XMIT_TEXT :
                               (sink_idx == CONFIG::RTMP_OUTPUT_IDX) ? GUI::RTMP_XMIT_TEXT :
-                                                                      String::empty       ;
+                                                                      String()            ;
 
 DEBUG_TRACE_CONTROLS_LOAD_CONFIG
 
@@ -338,7 +363,7 @@ DEBUG_TRACE_CONTROLS_LOAD_CONFIG
   this->outputToggle ->setColour       (ToggleButton::textColourId , output_text_color ) ;
   this->outputToggle ->setColour       (ToggleButton::tickColourId , output_tick_color ) ;
   this->outputToggle ->setButtonText   (xmit_btn_text) ;
-  this->mainContent  ->loadPresetsCombo(this->presetsCombo) ;
+  this->mainContent  ->loadPresetsCombo(this->presetsCombo.get()) ;
   this->presetsCombo ->setEditableText (false) ;
 }
 
@@ -368,7 +393,7 @@ BEGIN_JUCER_METADATA
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="0"
                  initialWidth="1" initialHeight="1">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="20 22 40M 52" cornerSize="4" fill="solid: ff282828" hasStroke="0"/>
+    <ROUNDRECT pos="20 22 40M 52" cornerSize="4.0" fill="solid: ff282828" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="controlsGroup" id="5f4ffe47101cb73b" memberName="controlsGroup"
                   virtualName="" explicitFocusOrder="0" pos="16 12 32M 64" outlinecol="ffffffff"
@@ -407,9 +432,10 @@ BEGIN_JUCER_METADATA
   <IMAGEBUTTON name="configButton" id="19b48645d13bf310" memberName="configButton"
                virtualName="" explicitFocusOrder="9" pos="696 36 24 24" buttonText="configButton"
                connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="1"
-               resourceNormal="BinaryData::config_png" opacityNormal="1" colourNormal="0"
-               resourceOver="BinaryData::confighover_png" opacityOver="1" colourOver="0"
-               resourceDown="BinaryData::configpushed_png" opacityDown="1" colourDown="0"/>
+               resourceNormal="BinaryData::config_png" opacityNormal="1.0" colourNormal="0"
+               resourceOver="BinaryData::confighover_png" opacityOver="1.0"
+               colourOver="0" resourceDown="BinaryData::configpushed_png" opacityDown="1.0"
+               colourDown="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -419,3 +445,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

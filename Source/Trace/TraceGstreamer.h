@@ -46,15 +46,15 @@
   if (!is_config_sane || Trace::MediaVbEnabled)                                \
     Trace::TraceMedia(String("pipeline configuration params =>")             + \
                       "\n\tn_video_inputs="     + String(n_video_inputs    ) + \
-                      "\n\tis_media_enabled="   + String(is_media_enabled  ) + \
-                      "\n\tis_screen_enabled="  + String(is_screen_enabled ) + \
-                      "\n\tis_camera_enabled="  + String(is_camera_enabled ) + \
-                      "\n\tis_text_enabled="    + String(is_text_enabled   ) + \
-                      "\n\tis_image_enabled="   + String(is_image_enabled  ) + \
-                      "\n\tis_vmixer_enabled="  + String(is_vmixer_enabled ) + \
-                      "\n\tis_preview_enabled=" + String(is_preview_enabled) + \
-                      "\n\tis_audio_enabled="   + String(is_audio_enabled  ) + \
-                      "\n\tis_config_sane="     + String(is_config_sane    ) ) ;
+                      "\n\tis_media_enabled="   + BOOL2STR(is_media_enabled  ) + \
+                      "\n\tis_screen_enabled="  + BOOL2STR(is_screen_enabled ) + \
+                      "\n\tis_camera_enabled="  + BOOL2STR(is_camera_enabled ) + \
+                      "\n\tis_text_enabled="    + BOOL2STR(is_text_enabled   ) + \
+                      "\n\tis_image_enabled="   + BOOL2STR(is_image_enabled  ) + \
+                      "\n\tis_vmixer_enabled="  + BOOL2STR(is_vmixer_enabled ) + \
+                      "\n\tis_preview_enabled=" + BOOL2STR(is_preview_enabled) + \
+                      "\n\tis_audio_enabled="   + BOOL2STR(is_audio_enabled  ) + \
+                      "\n\tis_config_sane="     + BOOL2STR(is_config_sane    ) ) ;
 
 #  define DEBUG_TRACE_DISABLED_BINS                                      \
   if (!is_screen_enabled ) Trace::TraceState("ScreencapBin disabled") ;  \
@@ -133,7 +133,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
                 is_pulse_init_error ||                                            \
                 is_jack_init_error   ) ? "deactivating audio"   :                 \
                (is_xv_init_error     ) ? "deactivating preview" :                 \
-               (is_file_sink_error   ) ? "deactivating output"  : String::empty ; \
+               (is_file_sink_error   ) ? "deactivating output"  : String() ;      \
   String is_handled_msg = (err.isNotEmpty()) ? "" : " (unhandled)" ;              \
   Trace::TraceError("GSTError:" + is_handled_msg + " '" + error_message + "'") ;  \
   if (err.isNotEmpty()) Trace::TraceMedia(err)                                    ;
@@ -203,7 +203,7 @@ gboolean DumpMessage(GQuark field_id , const GValue* gvalue , gpointer user_data
   String plugin_id = (next_sink == OutputFileSink) ? GST::FILESINK_PLUGIN_ID : \
                      (next_sink == OutputRtmpSink) ? GST::RTMPSINK_PLUGIN_ID : \
                      (next_sink == OutputFauxSink) ? GST::FAUXSINK_PLUGIN_ID : \
-                                                     String::empty           ; \
+                                                     String()                ; \
   String url       = output_url.upToFirstOccurrenceOf("?" , true  , true) ;    \
   String server    = (next_sink == OutputFauxSink) ? ""                   :    \
                      " => '" + url + ((url.endsWith("?")) ? "...'" : "'") ;    \

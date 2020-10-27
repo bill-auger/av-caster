@@ -209,12 +209,12 @@ StringArray CONFIG::VideoBitRates()     { return StringArray::fromLines(String("
 
 // filter keys
 #define ROOT_PERSISTENT_NODE_IDS    STRING(PRESETS_ID       )
-#define ROOT_TRANSIENT_NODE_IDS     String::empty
+#define ROOT_TRANSIENT_NODE_IDS     String()
 #define ROOT_PERSISTENT_IDS         STRING(CONFIG_VERSION_ID) + newLine + STRING(PRESET_ID       ) + newLine + \
                                     STRING(PRESETS_ID       )
 #define ROOT_TRANSIENT_IDS          STRING(IS_PENDING_ID    )
 #define PRESET_PERSISTENT_NODE_IDS  STRING(NETWORK_ID       )
-#define PRESET_TRANSIENT_NODE_IDS   String::empty
+#define PRESET_TRANSIENT_NODE_IDS   String()
 #define PRESET_PERSISTENT_IDS       STRING(PRESET_NAME_ID   ) + newLine + STRING(CONFIG_PANE_ID  ) + newLine + \
                                     STRING(SCREEN_ID        ) + newLine + STRING(CAMERA_ID       ) + newLine + \
                                     STRING(TEXT_ID          ) + newLine + STRING(IMAGE_ID        ) + newLine + \
@@ -234,7 +234,7 @@ StringArray CONFIG::VideoBitRates()     { return StringArray::fromLines(String("
                                     STRING(FRAMERATE_ID     ) + newLine + STRING(VIDEO_BITRATE_ID) + newLine + \
                                     STRING(OUTPUT_DEST_ID   )
 #define PRESET_TRANSIENT_IDS        STRING(OUTPUT_ID        )
-#define NETWORK_PERSISTENT_NODE_IDS String::empty
+#define NETWORK_PERSISTENT_NODE_IDS String()
 #define NETWORK_TRANSIENT_NODE_IDS  STRING(CHATTERS_ID      )
 #define NETWORK_PERSISTENT_IDS      STRING(NETWORK_ID       ) + newLine + STRING(PORT_ID         ) + newLine + \
                                     STRING(NICK_ID          ) + newLine + STRING(PASS_ID         ) + newLine + \
@@ -242,8 +242,8 @@ StringArray CONFIG::VideoBitRates()     { return StringArray::fromLines(String("
                                     STRING(JOINPARTS_ID     ) + newLine + STRING(GREETING_ID     )
 #define NETWORK_TRANSIENT_IDS       STRING(HOST_ID          ) + newLine + STRING(RETRIES_ID      )
 #define CHATTER_TRANSIENT_IDS       STRING(NICK_ID          )
-#define CAMERA_TRANSIENT_IDS        String::empty
-#define AUDIO_TRANSIENT_IDS         String::empty
+#define CAMERA_TRANSIENT_IDS        String()
+#define AUDIO_TRANSIENT_IDS         String()
 #define MEDIA_TOGGLE_IDS            STRING(SCREEN_ID        ) + newLine + STRING(CAMERA_ID       ) + newLine + \
                                     STRING(TEXT_ID          ) + newLine + STRING(IMAGE_ID        ) + newLine + \
                                     STRING(PREVIEW_ID       ) + newLine + STRING(AUDIO_ID        ) + newLine + \

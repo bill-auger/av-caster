@@ -45,11 +45,11 @@
 #  define CBLUE   String("\033[1;34m")
 #  define CEND    String("\033[0m"   )
 #else // DEBUG_ANSI_COLORS
-#  define CGREEN  String::empty
-#  define CYELLOW String::empty
-#  define CRED    String::empty
-#  define CBLUE   String::empty
-#  define CEND    String::empty
+#  define CGREEN  String()
+#  define CYELLOW String()
+#  define CRED    String()
+#  define CBLUE   String()
+#  define CEND    String()
 #endif // DEBUG_ANSI_COLORS
 
 #define LOG(msg) Logger::outputDebugString(msg)

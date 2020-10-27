@@ -102,11 +102,11 @@ private:
   static JUCEApplicationBase*     App ;
   static MainContent*             Gui ;
 #ifndef DISABLE_CHAT
-  static ScopedPointer<IrcClient> Irc ;
+  static std::unique_ptr<IrcClient> Irc ;
 #endif // DISABLE_CHAT
 
   // model/persistence
-  static ScopedPointer<AvCasterStore> Store ;
+  static std::unique_ptr<AvCasterStore> Store ;
 
   // intialization flags
   static bool          IsInitialized ;

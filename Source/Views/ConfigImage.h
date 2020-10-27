@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONFIGIMAGE_H_
-#define _CONFIGIMAGE_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -44,14 +43,14 @@ class ConfigImage  : public Component
 public:
     //==============================================================================
     ConfigImage ();
-    ~ConfigImage();
+    ~ConfigImage() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
+    void paint (Graphics& g) override;
+    void resized() override;
 
 
 
@@ -66,9 +65,9 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> locationLabel;
-    ScopedPointer<TextEditor> interstitialText;
-    ScopedPointer<TextButton> browseButton;
+    std::unique_ptr<Label> locationLabel;
+    std::unique_ptr<TextEditor> interstitialText;
+    std::unique_ptr<TextButton> browseButton;
 
 
     //==============================================================================
@@ -78,4 +77,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIGIMAGE_H_

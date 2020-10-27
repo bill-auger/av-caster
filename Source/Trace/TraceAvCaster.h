@@ -70,9 +70,9 @@ StringArray DisableFeatures()
   for (int switch_n = 0 ; switch_n < featureswitches.size() ; ++switch_n)     \
     Trace::TraceState(dbg + featureswitches[switch_n] + "'") ;                \
   if (TEXT_BIN_NYI ) { Trace::TraceState(dbg + "TEXT_BIN_NYI'" ) ;            \
-                       DisabledFeatures.set(CONFIG::TEXT_ID  , var::null) ; } \
+                       DisabledFeatures.set(CONFIG::TEXT_ID  , var()) ; }    \
   if (IMAGE_BIN_NYI) { Trace::TraceState(dbg + "IMAGE_BIN_NYI'") ;            \
-                       DisabledFeatures.set(CONFIG::IMAGE_ID , var::null) ; }
+                       DisabledFeatures.set(CONFIG::IMAGE_ID , var()) ; }
 
 
 void SeedIrcNetworks()
@@ -172,18 +172,18 @@ void SeedIrcNetworks()
   String chat_state                = (should_login_chat) ? "into" : "out of" ;              \
   String pad                       = "\n              " ;                                   \
   Trace::TraceConfigVb(handled + "handling config value change '" + STRING(a_key) + "'" +   \
-      pad + "is_media_toggle          = " + String(is_media_toggle         )            +   \
-      pad + "is_preset_control        = " + String(is_preset_control       )            +   \
-      pad + "is_stream_active         = " + String(is_stream_active        )            +   \
-      pad + "is_config_pending        = " + String(is_config_pending       )            +   \
-      pad + "should_stop_stream       = " + String(should_stop_stream      )            +   \
-      pad + "should_reconfigure_media = " + String(should_reconfigure_media)            +   \
-      pad + "should_reconfigure_chat  = " + String(should_reconfigure_chat )            +   \
-      pad + "is_swapping_presets      = " + String(is_swapping_presets     )            +   \
-      pad + "is_entering_config_mode  = " + String(is_entering_config_mode )            +   \
-      pad + "is_exiting_config_mode   = " + String(is_exiting_config_mode  )            +   \
-      pad + "should_logout_chat       = " + String(should_logout_chat      )            +   \
-      pad + "should_login_chat        = " + String(should_login_chat       )            ) ; \
+      pad + "is_media_toggle          = " + BOOL2STR(is_media_toggle         )          +   \
+      pad + "is_preset_control        = " + BOOL2STR(is_preset_control       )          +   \
+      pad + "is_stream_active         = " + BOOL2STR(is_stream_active        )          +   \
+      pad + "is_config_pending        = " + BOOL2STR(is_config_pending       )          +   \
+      pad + "should_stop_stream       = " + BOOL2STR(should_stop_stream      )          +   \
+      pad + "should_reconfigure_media = " + BOOL2STR(should_reconfigure_media)          +   \
+      pad + "should_reconfigure_chat  = " + BOOL2STR(should_reconfigure_chat )          +   \
+      pad + "is_swapping_presets      = " + BOOL2STR(is_swapping_presets     )          +   \
+      pad + "is_entering_config_mode  = " + BOOL2STR(is_entering_config_mode )          +   \
+      pad + "is_exiting_config_mode   = " + BOOL2STR(is_exiting_config_mode  )          +   \
+      pad + "should_logout_chat       = " + BOOL2STR(should_logout_chat      )          +   \
+      pad + "should_login_chat        = " + BOOL2STR(should_login_chat       )          ) ; \
   if (is_swapping_presets    ) Trace::TraceConfig("swapping presets"    ) ;                 \
   if (is_entering_config_mode) Trace::TraceConfig("entering config mode") ;                 \
   if (is_exiting_config_mode ) Trace::TraceConfig("exitng config mode"  ) ;                 \

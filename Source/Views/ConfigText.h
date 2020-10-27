@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONFIGTEXT_H_
-#define _CONFIGTEXT_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -40,12 +39,12 @@ class MainContent ;
                                                                     //[/Comments]
 */
 class ConfigText  : public Component,
-                    public ComboBoxListener
+                    public ComboBox::Listener
 {
 public:
     //==============================================================================
     ConfigText ();
-    ~ConfigText();
+    ~ConfigText() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -68,12 +67,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> motdLabel;
-    ScopedPointer<TextEditor> motdText;
-    ScopedPointer<Label> textStyleLabel;
-    ScopedPointer<ComboBox> textStyleCombo;
-    ScopedPointer<Label> textPosLabel;
-    ScopedPointer<ComboBox> textPosCombo;
+    std::unique_ptr<Label> motdLabel;
+    std::unique_ptr<TextEditor> motdText;
+    std::unique_ptr<Label> textStyleLabel;
+    std::unique_ptr<ComboBox> textStyleCombo;
+    std::unique_ptr<Label> textPosLabel;
+    std::unique_ptr<ComboBox> textPosCombo;
 
 
     //==============================================================================
@@ -83,4 +82,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _CONFIGTEXT_H_

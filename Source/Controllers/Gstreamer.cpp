@@ -63,7 +63,7 @@ GstElement* Gstreamer::OutputQueue             = nullptr ;            // BuildOu
 GstElement* Gstreamer::OutputFileSink          = nullptr ;            // BuildOutputBin()
 GstElement* Gstreamer::OutputRtmpSink          = nullptr ;            // BuildOutputBin()
 GstElement* Gstreamer::OutputFauxSink          = nullptr ;            // BuildOutputBin()
-ValueTree   Gstreamer::ConfigStore             = ValueTree::invalid ; // Initialize()
+ValueTree   Gstreamer::ConfigStore             = ValueTree() ; // Initialize()
 guintptr    Gstreamer::PreviewXwin             = 0 ;                  // Initialize()
 
 
@@ -211,7 +211,7 @@ void Gstreamer::Shutdown()
   if (!IsInBin(OutputBin    , OutputFauxSink  )) DestroyElement(OutputFauxSink  ) ;
   DestroyElement(Pipeline) ;
 
-  ConfigStore = ValueTree::invalid ;
+  ConfigStore = ValueTree() ;
 }
 
 bool Gstreamer::BuildScreencapBin()
@@ -290,7 +290,7 @@ DEBUG_TRACE_BUILD_TEXT_BIN
   String motd_text      = STRING(ConfigStore[CONFIG::MOTD_TEXT_ID    ]) ;
   int    text_style_idx = int   (ConfigStore[CONFIG::TEXT_STYLE_ID   ]) ;
   int    text_pos_idx   = int   (ConfigStore[CONFIG::TEXT_POSITION_ID]) ;
-//   String display_text   = (is_enabled) ? motd_text : String::empty ;
+//   String display_text   = (is_enabled) ? motd_text : String() ;
 
 /* TODO: include custom font
 #include <fontconfig/fontconfig.h>
@@ -1200,7 +1200,7 @@ DEBUG_TRACE_GST_ERROR_MESSAGE
   {
     String warning_msg = (is_alsa_init_error ) ? GUI::ALSA_INIT_ERROR_MSG  :
                          (is_pulse_init_error) ? GUI::PULSE_INIT_ERROR_MSG :
-                         (is_jack_init_error ) ? GUI::JACK_INIT_ERROR_MSG  : String::empty ;
+                         (is_jack_init_error ) ? GUI::JACK_INIT_ERROR_MSG  : String() ;
     AvCaster::Warning(warning_msg + error_message) ;
 
     AvCaster::DeactivateControl(CONFIG::AUDIO_ID) ; ConfigureAudioBin() ;

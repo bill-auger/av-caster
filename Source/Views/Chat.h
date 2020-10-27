@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CHAT_H_
-#define _CHAT_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -45,7 +44,7 @@ class Chat  : public Component,
 public:
     //==============================================================================
     Chat (MainContent* main_content);
-    ~Chat();
+    ~Chat() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -78,12 +77,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> chatGroup;
-    ScopedPointer<GroupComponent> chatHistoryGroup;
-    ScopedPointer<TextEditor> chatHistoryText;
-    ScopedPointer<GroupComponent> chatEntryGroup;
-    ScopedPointer<TextEditor> chatEntryText;
-    ScopedPointer<ChatList> chatList;
+    std::unique_ptr<GroupComponent> chatGroup;
+    std::unique_ptr<GroupComponent> chatHistoryGroup;
+    std::unique_ptr<TextEditor> chatHistoryText;
+    std::unique_ptr<GroupComponent> chatEntryGroup;
+    std::unique_ptr<TextEditor> chatEntryText;
+    std::unique_ptr<ChatList> chatList;
 
 
     //==============================================================================
@@ -93,4 +92,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _CHAT_H_

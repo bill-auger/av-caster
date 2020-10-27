@@ -50,12 +50,12 @@
       pad + "stored_preset_name    = '" + String(stored_name          ) + "'" +          \
       pad + "option_n              = "  + String(option_n             )       +          \
       pad + "stored_option_n       = "  + String(stored_idx           )       +          \
-      pad + "is_valid_option       = "  + String(is_valid_option      )       +          \
-      pad + "is_static_preset      = "  + String(is_static_preset     )       +          \
-      pad + "is_empty_preset_name  = "  + String(is_empty_preset_name )       +          \
-      pad + "has_selection_changed = "  + String(has_selection_changed)       +          \
-      pad + "has_name_changed      = "  + String(has_name_changed     )       +          \
-      pad + "is_static_preset      = "  + String(is_static_preset     )       )          ;
+      pad + "is_valid_option       = "  + BOOL2STR(is_valid_option      )       +          \
+      pad + "is_static_preset      = "  + BOOL2STR(is_static_preset     )       +          \
+      pad + "is_empty_preset_name  = "  + BOOL2STR(is_empty_preset_name )       +          \
+      pad + "has_selection_changed = "  + BOOL2STR(has_selection_changed)       +          \
+      pad + "has_name_changed      = "  + BOOL2STR(has_name_changed     )       +          \
+      pad + "is_static_preset      = "  + BOOL2STR(is_static_preset     )       )          ;
 
 #else // DEBUG_TRACE
 

@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _PRESETS_H_
-#define _PRESETS_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -40,13 +39,13 @@ class MainContent ;
                                                                     //[/Comments]
 */
 class Presets  : public Component,
-                 public ButtonListener,
-                 public ComboBoxListener
+                 public Button::Listener,
+                 public ComboBox::Listener
 {
 public:
     //==============================================================================
     Presets (MainContent* main_content);
-    ~Presets();
+    ~Presets() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -79,12 +78,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<GroupComponent> presetsGroup;
-    ScopedPointer<TextButton> newPresetButton;
-    ScopedPointer<TextButton> deletePresetButton;
-    ScopedPointer<Label> presetLabel;
-    ScopedPointer<ComboBox> presetsCombo;
-    ScopedPointer<ImageButton> configButton;
+    std::unique_ptr<GroupComponent> presetsGroup;
+    std::unique_ptr<TextButton> newPresetButton;
+    std::unique_ptr<TextButton> deletePresetButton;
+    std::unique_ptr<Label> presetLabel;
+    std::unique_ptr<ComboBox> presetsCombo;
+    std::unique_ptr<ImageButton> configButton;
 
 
     //==============================================================================
@@ -94,4 +93,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _PRESETS_H_

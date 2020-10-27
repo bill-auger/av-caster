@@ -33,16 +33,20 @@ ConfigCamera::ConfigCamera ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (cameraDevLabel = new Label ("cameraDevLabel",
-                                                   TRANS("Device:")));
-    cameraDevLabel->setFont (Font (15.00f, Font::plain));
+    cameraDevLabel.reset (new Label ("cameraDevLabel",
+                                     TRANS("Device:")));
+    addAndMakeVisible (cameraDevLabel.get());
+    cameraDevLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     cameraDevLabel->setJustificationType (Justification::centredLeft);
     cameraDevLabel->setEditable (false, false, false);
     cameraDevLabel->setColour (Label::textColourId, Colours::white);
     cameraDevLabel->setColour (TextEditor::textColourId, Colours::black);
     cameraDevLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (cameraDevCombo = new ComboBox ("cameraDevCombo"));
+    cameraDevLabel->setBounds (0, 8, 80, 24);
+
+    cameraDevCombo.reset (new ComboBox ("cameraDevCombo"));
+    addAndMakeVisible (cameraDevCombo.get());
     cameraDevCombo->setExplicitFocusOrder (1);
     cameraDevCombo->setEditableText (false);
     cameraDevCombo->setJustificationType (Justification::centredLeft);
@@ -50,22 +54,30 @@ ConfigCamera::ConfigCamera ()
     cameraDevCombo->setTextWhenNoChoicesAvailable (TRANS("(no camera devices)"));
     cameraDevCombo->addListener (this);
 
-    addAndMakeVisible (cameraResLabel = new Label ("cameraResLabel",
-                                                   TRANS("Resolution:")));
-    cameraResLabel->setFont (Font (15.00f, Font::plain));
+    cameraDevCombo->setBounds (88, 8, 200, 24);
+
+    cameraResLabel.reset (new Label ("cameraResLabel",
+                                     TRANS("Resolution:")));
+    addAndMakeVisible (cameraResLabel.get());
+    cameraResLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     cameraResLabel->setJustificationType (Justification::centredLeft);
     cameraResLabel->setEditable (false, false, false);
     cameraResLabel->setColour (Label::textColourId, Colours::white);
     cameraResLabel->setColour (TextEditor::textColourId, Colours::black);
     cameraResLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (cameraResCombo = new ComboBox ("cameraResCombo"));
+    cameraResLabel->setBounds (0, 48, 80, 24);
+
+    cameraResCombo.reset (new ComboBox ("cameraResCombo"));
+    addAndMakeVisible (cameraResCombo.get());
     cameraResCombo->setExplicitFocusOrder (2);
     cameraResCombo->setEditableText (false);
     cameraResCombo->setJustificationType (Justification::centredLeft);
     cameraResCombo->setTextWhenNothingSelected (String());
     cameraResCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     cameraResCombo->addListener (this);
+
+    cameraResCombo->setBounds (88, 48, 200, 24);
 
 
     //[UserPreSize]
@@ -108,10 +120,6 @@ void ConfigCamera::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    cameraDevLabel->setBounds (0, 8, 80, 24);
-    cameraDevCombo->setBounds (88, 8, 200, 24);
-    cameraResLabel->setBounds (0, 48, 80, 24);
-    cameraResCombo->setBounds (88, 48, 200, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -121,7 +129,7 @@ void ConfigCamera::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == cameraDevCombo)
+    if (comboBoxThatHasChanged == cameraDevCombo.get())
     {
         //[UserComboBoxCode_cameraDevCombo] -- add your combo box handling code here..
 
@@ -129,7 +137,7 @@ void ConfigCamera::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
         //[/UserComboBoxCode_cameraDevCombo]
     }
-    else if (comboBoxThatHasChanged == cameraResCombo)
+    else if (comboBoxThatHasChanged == cameraResCombo.get())
     {
         //[UserComboBoxCode_cameraResCombo] -- add your combo box handling code here..
 
@@ -166,7 +174,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 8 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Device:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="cameraDevCombo" id="f143a9d8fad92dd2" memberName="cameraDevCombo"
             virtualName="" explicitFocusOrder="1" pos="88 8 200 24" editable="0"
             layout="33" items="" textWhenNonSelected="(no camera devices)"
@@ -175,7 +183,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 48 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Resolution:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="cameraResCombo" id="bcc0c59e13c46f76" memberName="cameraResCombo"
             virtualName="" explicitFocusOrder="2" pos="88 48 200 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
@@ -188,3 +196,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

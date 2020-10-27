@@ -38,22 +38,28 @@ ChatListItem::ChatListItem (ValueTree chatter_store)
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (kickButton = new TextButton ("kickButton"));
+    kickButton.reset (new TextButton ("kickButton"));
+    addAndMakeVisible (kickButton.get());
     kickButton->setButtonText (TRANS("X"));
     kickButton->addListener (this);
     kickButton->setColour (TextButton::buttonColourId, Colour (0xff400000));
     kickButton->setColour (TextButton::buttonOnColourId, Colours::maroon);
-    kickButton->setColour (TextButton::textColourOnId, Colours::red);
     kickButton->setColour (TextButton::textColourOffId, Colours::red);
+    kickButton->setColour (TextButton::textColourOnId, Colours::red);
 
-    addAndMakeVisible (nickLabel = new Label ("nickLabel",
-                                              TRANS("(connecting)")));
-    nickLabel->setFont (Font (15.00f, Font::plain));
+    kickButton->setBounds (4, 4, 15, 16);
+
+    nickLabel.reset (new Label ("nickLabel",
+                                TRANS("(connecting)")));
+    addAndMakeVisible (nickLabel.get());
+    nickLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     nickLabel->setJustificationType (Justification::centredLeft);
     nickLabel->setEditable (false, false, false);
     nickLabel->setColour (Label::textColourId, Colours::white);
     nickLabel->setColour (TextEditor::textColourId, Colours::black);
     nickLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    nickLabel->setBounds (24, 4, 72, 16);
 
 
     //[UserPreSize]
@@ -101,11 +107,17 @@ void ChatListItem::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff303030));
-    g.fillRoundedRectangle (1.0f, 1.0f, 102.0f, 22.0f, 10.000f);
-
-    g.setColour (Colours::white);
-    g.drawRoundedRectangle (1.0f, 1.0f, 102.0f, 22.0f, 10.000f, 1.000f);
+    {
+        float x = 1.0f, y = 1.0f, width = 102.0f, height = 22.0f;
+        Colour fillColour = Colour (0xff303030);
+        Colour strokeColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 10.000f);
+        g.setColour (strokeColour);
+        g.drawRoundedRectangle (x, y, width, height, 10.000f, 1.000f);
+    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -116,8 +128,6 @@ void ChatListItem::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    kickButton->setBounds (4, 4, 15, 16);
-    nickLabel->setBounds (24, 4, 72, 16);
     //[UserResized] Add your own custom resize handling here..
 
 #ifdef CHATLIST_KICK_BTN_NYI
@@ -132,7 +142,7 @@ void ChatListItem::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == kickButton)
+    if (buttonThatWasClicked == kickButton.get())
     {
         //[UserButtonCode_kickButton] -- add your button handler code here..
 
@@ -168,7 +178,7 @@ BEGIN_JUCER_METADATA
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
                  initialWidth="104" initialHeight="24">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="1 1 102 22" cornerSize="10" fill="solid: ff303030" hasStroke="1"
+    <ROUNDRECT pos="1 1 102 22" cornerSize="10.0" fill="solid: ff303030" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffffffff"/>
   </BACKGROUND>
   <TEXTBUTTON name="kickButton" id="5ea28eb29c334aeb" memberName="kickButton"
@@ -179,7 +189,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="24 4 72 16" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="(connecting)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -189,3 +199,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

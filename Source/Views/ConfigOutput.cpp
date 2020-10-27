@@ -30,33 +30,46 @@
 //==============================================================================
 ConfigOutput::ConfigOutput ()
 {
-    addAndMakeVisible (outputStreamLabel = new Label ("outputStreamLabel",
-                                                      TRANS("Stream:")));
-    outputStreamLabel->setFont (Font (15.00f, Font::plain));
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
+    outputStreamLabel.reset (new Label ("outputStreamLabel",
+                                        TRANS("Stream:")));
+    addAndMakeVisible (outputStreamLabel.get());
+    outputStreamLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     outputStreamLabel->setJustificationType (Justification::centredLeft);
     outputStreamLabel->setEditable (false, false, false);
     outputStreamLabel->setColour (Label::textColourId, Colours::white);
     outputStreamLabel->setColour (TextEditor::textColourId, Colours::black);
     outputStreamLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (outputSinkCombo = new ComboBox ("outputSinkCombo"));
+    outputStreamLabel->setBounds (0, 8, 80, 24);
+
+    outputSinkCombo.reset (new ComboBox ("outputSinkCombo"));
+    addAndMakeVisible (outputSinkCombo.get());
     outputSinkCombo->setExplicitFocusOrder (1);
     outputSinkCombo->setEditableText (false);
     outputSinkCombo->setJustificationType (Justification::centredLeft);
-    outputSinkCombo->setTextWhenNothingSelected (String::empty);
+    outputSinkCombo->setTextWhenNothingSelected (String());
     outputSinkCombo->setTextWhenNoChoicesAvailable (TRANS("(no devices)"));
     outputSinkCombo->addListener (this);
 
-    addAndMakeVisible (outputWidthLabel = new Label ("outputWidthLabel",
-                                                     TRANS("Width:")));
-    outputWidthLabel->setFont (Font (15.00f, Font::plain));
+    outputSinkCombo->setBounds (88, 8, 64, 24);
+
+    outputWidthLabel.reset (new Label ("outputWidthLabel",
+                                       TRANS("Width:")));
+    addAndMakeVisible (outputWidthLabel.get());
+    outputWidthLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     outputWidthLabel->setJustificationType (Justification::centredLeft);
     outputWidthLabel->setEditable (false, false, false);
     outputWidthLabel->setColour (Label::textColourId, Colours::white);
     outputWidthLabel->setColour (TextEditor::textColourId, Colours::black);
     outputWidthLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (outputWidthText = new TextEditor ("outputWidthText"));
+    outputWidthLabel->setBounds (0, 48, 64, 24);
+
+    outputWidthText.reset (new TextEditor ("outputWidthText"));
+    addAndMakeVisible (outputWidthText.get());
     outputWidthText->setExplicitFocusOrder (2);
     outputWidthText->setMultiLine (false);
     outputWidthText->setReturnKeyStartsNewLine (false);
@@ -64,18 +77,24 @@ ConfigOutput::ConfigOutput ()
     outputWidthText->setScrollbarsShown (false);
     outputWidthText->setCaretVisible (false);
     outputWidthText->setPopupMenuEnabled (true);
-    outputWidthText->setText (String::empty);
+    outputWidthText->setText (String());
 
-    addAndMakeVisible (outputHeightLabel = new Label ("outputHeightLabel",
-                                                      TRANS("Height:")));
-    outputHeightLabel->setFont (Font (15.00f, Font::plain));
+    outputWidthText->setBounds (88, 48, 48, 24);
+
+    outputHeightLabel.reset (new Label ("outputHeightLabel",
+                                        TRANS("Height:")));
+    addAndMakeVisible (outputHeightLabel.get());
+    outputHeightLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     outputHeightLabel->setJustificationType (Justification::centredLeft);
     outputHeightLabel->setEditable (false, false, false);
     outputHeightLabel->setColour (Label::textColourId, Colours::white);
     outputHeightLabel->setColour (TextEditor::textColourId, Colours::black);
     outputHeightLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (outputHeightText = new TextEditor ("outputHeightText"));
+    outputHeightLabel->setBounds (0, 88, 64, 24);
+
+    outputHeightText.reset (new TextEditor ("outputHeightText"));
+    addAndMakeVisible (outputHeightText.get());
     outputHeightText->setExplicitFocusOrder (3);
     outputHeightText->setMultiLine (false);
     outputHeightText->setReturnKeyStartsNewLine (false);
@@ -83,52 +102,70 @@ ConfigOutput::ConfigOutput ()
     outputHeightText->setScrollbarsShown (false);
     outputHeightText->setCaretVisible (false);
     outputHeightText->setPopupMenuEnabled (true);
-    outputHeightText->setText (String::empty);
+    outputHeightText->setText (String());
 
-    addAndMakeVisible (framerateLabel = new Label ("framerateLabel",
-                                                   TRANS("FPS:")));
-    framerateLabel->setFont (Font (15.00f, Font::plain));
+    outputHeightText->setBounds (88, 88, 48, 24);
+
+    framerateLabel.reset (new Label ("framerateLabel",
+                                     TRANS("FPS:")));
+    addAndMakeVisible (framerateLabel.get());
+    framerateLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     framerateLabel->setJustificationType (Justification::centredLeft);
     framerateLabel->setEditable (false, false, false);
     framerateLabel->setColour (Label::textColourId, Colours::white);
     framerateLabel->setColour (TextEditor::textColourId, Colours::black);
     framerateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (framerateCombo = new ComboBox ("framerateCombo"));
+    framerateLabel->setBounds (0, 128, 40, 24);
+
+    framerateCombo.reset (new ComboBox ("framerateCombo"));
+    addAndMakeVisible (framerateCombo.get());
     framerateCombo->setExplicitFocusOrder (4);
     framerateCombo->setEditableText (false);
     framerateCombo->setJustificationType (Justification::centredLeft);
-    framerateCombo->setTextWhenNothingSelected (String::empty);
+    framerateCombo->setTextWhenNothingSelected (String());
     framerateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     framerateCombo->addListener (this);
 
-    addAndMakeVisible (bitrateLabel = new Label ("bitrateLabel",
-                                                 TRANS("Bitrate:")));
-    bitrateLabel->setFont (Font (15.00f, Font::plain));
+    framerateCombo->setBounds (88, 128, 48, 24);
+
+    bitrateLabel.reset (new Label ("bitrateLabel",
+                                   TRANS("Bitrate:")));
+    addAndMakeVisible (bitrateLabel.get());
+    bitrateLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     bitrateLabel->setJustificationType (Justification::centredLeft);
     bitrateLabel->setEditable (false, false, false);
     bitrateLabel->setColour (Label::textColourId, Colours::white);
     bitrateLabel->setColour (TextEditor::textColourId, Colours::black);
     bitrateLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (videoBitrateCombo = new ComboBox ("videoBitrateCombo"));
+    bitrateLabel->setBounds (0, 168, 64, 24);
+
+    videoBitrateCombo.reset (new ComboBox ("videoBitrateCombo"));
+    addAndMakeVisible (videoBitrateCombo.get());
     videoBitrateCombo->setExplicitFocusOrder (5);
     videoBitrateCombo->setEditableText (false);
     videoBitrateCombo->setJustificationType (Justification::centredLeft);
-    videoBitrateCombo->setTextWhenNothingSelected (String::empty);
+    videoBitrateCombo->setTextWhenNothingSelected (String());
     videoBitrateCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     videoBitrateCombo->addListener (this);
 
-    addAndMakeVisible (outputDestLabel = new Label ("outputDestLabel",
-                                                    TRANS("Destination:")));
-    outputDestLabel->setFont (Font (15.00f, Font::plain));
+    videoBitrateCombo->setBounds (88, 168, 80, 24);
+
+    outputDestLabel.reset (new Label ("outputDestLabel",
+                                      TRANS("Destination:")));
+    addAndMakeVisible (outputDestLabel.get());
+    outputDestLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     outputDestLabel->setJustificationType (Justification::centredLeft);
     outputDestLabel->setEditable (false, false, false);
     outputDestLabel->setColour (Label::textColourId, Colours::white);
     outputDestLabel->setColour (TextEditor::textColourId, Colours::black);
     outputDestLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (outputDestText = new TextEditor ("outputDestText"));
+    outputDestLabel->setBounds (0, 208, 80, 24);
+
+    outputDestText.reset (new TextEditor ("outputDestText"));
+    addAndMakeVisible (outputDestText.get());
     outputDestText->setExplicitFocusOrder (6);
     outputDestText->setMultiLine (false);
     outputDestText->setReturnKeyStartsNewLine (false);
@@ -136,7 +173,9 @@ ConfigOutput::ConfigOutput ()
     outputDestText->setScrollbarsShown (true);
     outputDestText->setCaretVisible (true);
     outputDestText->setPopupMenuEnabled (true);
-    outputDestText->setText (String::empty);
+    outputDestText->setText (String());
+
+    outputDestText->setBounds (88, 208, 408, 24);
 
 
     //[UserPreSize]
@@ -187,18 +226,6 @@ void ConfigOutput::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    outputStreamLabel->setBounds (0, 8, 80, 24);
-    outputSinkCombo->setBounds (88, 8, 64, 24);
-    outputWidthLabel->setBounds (0, 48, 64, 24);
-    outputWidthText->setBounds (88, 48, 48, 24);
-    outputHeightLabel->setBounds (0, 88, 64, 24);
-    outputHeightText->setBounds (88, 88, 48, 24);
-    framerateLabel->setBounds (0, 128, 40, 24);
-    framerateCombo->setBounds (88, 128, 48, 24);
-    bitrateLabel->setBounds (0, 168, 64, 24);
-    videoBitrateCombo->setBounds (88, 168, 80, 24);
-    outputDestLabel->setBounds (0, 208, 80, 24);
-    outputDestText->setBounds (88, 208, 408, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -208,7 +235,7 @@ void ConfigOutput::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == outputSinkCombo)
+    if (comboBoxThatHasChanged == outputSinkCombo.get())
     {
         //[UserComboBoxCode_outputSinkCombo] -- add your combo box handling code here..
 
@@ -216,7 +243,7 @@ void ConfigOutput::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
         //[/UserComboBoxCode_outputSinkCombo]
     }
-    else if (comboBoxThatHasChanged == framerateCombo)
+    else if (comboBoxThatHasChanged == framerateCombo.get())
     {
         //[UserComboBoxCode_framerateCombo] -- add your combo box handling code here..
 
@@ -224,7 +251,7 @@ void ConfigOutput::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
         //[/UserComboBoxCode_framerateCombo]
     }
-    else if (comboBoxThatHasChanged == videoBitrateCombo)
+    else if (comboBoxThatHasChanged == videoBitrateCombo.get())
     {
         //[UserComboBoxCode_videoBitrateCombo] -- add your combo box handling code here..
 
@@ -245,9 +272,9 @@ void ConfigOutput::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -261,7 +288,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 8 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Stream:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="outputSinkCombo" id="12e0750a2c746a13" memberName="outputSinkCombo"
             virtualName="" explicitFocusOrder="1" pos="88 8 64 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no devices)"/>
@@ -269,7 +296,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 48 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Width:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="outputWidthText" id="57d131f0667f6b73" memberName="outputWidthText"
               virtualName="" explicitFocusOrder="2" pos="88 48 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
@@ -278,7 +305,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 88 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Height:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="outputHeightText" id="7e14834485ae7a91" memberName="outputHeightText"
               virtualName="" explicitFocusOrder="3" pos="88 88 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
@@ -287,7 +314,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 128 40 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="FPS:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="framerateCombo" id="2560e172b011e11c" memberName="framerateCombo"
             virtualName="" explicitFocusOrder="4" pos="88 128 48 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
@@ -295,7 +322,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 168 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Bitrate:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="videoBitrateCombo" id="54c30dff37473763" memberName="videoBitrateCombo"
             virtualName="" explicitFocusOrder="5" pos="88 168 80 24" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
@@ -303,7 +330,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 208 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Destination:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="outputDestText" id="569abe636085fb4a" memberName="outputDestText"
               virtualName="" explicitFocusOrder="6" pos="88 208 408 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
@@ -317,3 +344,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

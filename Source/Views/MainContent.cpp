@@ -40,25 +40,35 @@ bool          Alert::IsAlertModal = false ; // Display() , OnModalDismissed()
 //==============================================================================
 MainContent::MainContent ()
 {
-    addAndMakeVisible (background = new Background());
+    //[Constructor_pre] You can add your own custom stuff here..
+    //[/Constructor_pre]
+
+    background.reset (new Background());
+    addAndMakeVisible (background.get());
     background->setName ("background");
 
-    addAndMakeVisible (controls = new Controls (this));
+    controls.reset (new Controls (this));
+    addAndMakeVisible (controls.get());
     controls->setName ("controls");
 
-    addAndMakeVisible (chat = new Chat (this));
+    chat.reset (new Chat (this));
+    addAndMakeVisible (chat.get());
     chat->setName ("chat");
 
-    addAndMakeVisible (preview = new Preview());
+    preview.reset (new Preview());
+    addAndMakeVisible (preview.get());
     preview->setName ("preview");
 
-    addAndMakeVisible (presets = new Presets (this));
+    presets.reset (new Presets (this));
+    addAndMakeVisible (presets.get());
     presets->setName ("presets");
 
-    addAndMakeVisible (config = new Config (this));
+    config.reset (new Config (this));
+    addAndMakeVisible (config.get());
     config->setName ("config");
 
-    addAndMakeVisible (statusbar = new Statusbar());
+    statusbar.reset (new Statusbar());
+    addAndMakeVisible (statusbar.get());
     statusbar->setName ("statusbar");
 
 
@@ -74,7 +84,7 @@ MainContent::MainContent ()
 
   this->mainWindow = static_cast<DocumentWindow*>(getTopLevelComponent()) ;
 #ifdef TRAY_ICON
-  this->trayIcon = new AvCasterTrayIconComponent(this->mainWindow) ;
+  this->trayIcon.reset(new AvCasterTrayIconComponent(this->mainWindow)) ;
 #endif // TRAY_ICON
 
   this->background->toFront(true) ;
@@ -277,7 +287,7 @@ void Alert::Warning(String message_text)
   ModalComponentManager::Callback* callback = ModalCallbackFunction::create(OnModalDismissed , 0) ;
 
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon , GUI::MODAL_WARNING_TITLE ,
-                                   message_text          , String::empty            ,
+                                   message_text          , String()                 ,
                                    nullptr               , callback                 ) ;
 }
 
@@ -286,7 +296,7 @@ void Alert::Error(String message_text)
   ModalComponentManager::Callback* callback = ModalCallbackFunction::create(OnModalDismissed , 0) ;
 
   AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon , GUI::MODAL_ERROR_TITLE ,
-                                   message_text             , String::empty          ,
+                                   message_text             , String()               ,
                                    nullptr                  , callback               ) ;
 }
 
@@ -297,9 +307,9 @@ void Alert::OnModalDismissed(int /*result*/ , int /*unused*/) { IsAlertModal = f
 
 //==============================================================================
 #if 0
-/*  -- Introjucer information section --
+/*  -- Projucer information section --
 
-    This is where the Introjucer stores the metadata that describe this GUI layout, so
+    This is where the Projucer stores the metadata that describe this GUI layout, so
     make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
@@ -334,3 +344,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONFIGAUDIO_H_
-#define _CONFIGAUDIO_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -40,13 +39,13 @@ class MainContent ;
                                                                     //[/Comments]
 */
 class ConfigAudio  : public Component,
-                     public ComboBoxListener,
-                     public SliderListener
+                     public ComboBox::Listener,
+                     public Slider::Listener
 {
 public:
     //==============================================================================
     ConfigAudio ();
-    ~ConfigAudio();
+    ~ConfigAudio() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -70,18 +69,18 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> audioApiLabel;
-    ScopedPointer<ComboBox> audioApiCombo;
-    ScopedPointer<Label> audioDevLabel;
-    ScopedPointer<ComboBox> audioDevCombo;
-    ScopedPointer<Label> audioCodecLabel;
-    ScopedPointer<ComboBox> audioCodecCombo;
-    ScopedPointer<Label> nChannelsLabel;
-    ScopedPointer<Slider> nChannelsSlider;
-    ScopedPointer<Label> samplerateLabel;
-    ScopedPointer<ComboBox> samplerateCombo;
-    ScopedPointer<Label> audioBitrateLabel;
-    ScopedPointer<ComboBox> audioBitrateCombo;
+    std::unique_ptr<Label> audioApiLabel;
+    std::unique_ptr<ComboBox> audioApiCombo;
+    std::unique_ptr<Label> audioDevLabel;
+    std::unique_ptr<ComboBox> audioDevCombo;
+    std::unique_ptr<Label> audioCodecLabel;
+    std::unique_ptr<ComboBox> audioCodecCombo;
+    std::unique_ptr<Label> nChannelsLabel;
+    std::unique_ptr<Slider> nChannelsSlider;
+    std::unique_ptr<Label> samplerateLabel;
+    std::unique_ptr<ComboBox> samplerateCombo;
+    std::unique_ptr<Label> audioBitrateLabel;
+    std::unique_ptr<ComboBox> audioBitrateCombo;
 
 
     //==============================================================================
@@ -91,4 +90,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIGAUDIO_H_

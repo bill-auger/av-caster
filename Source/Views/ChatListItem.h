@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CHATLISTITEM_H_
-#define _CHATLISTITEM_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
@@ -35,12 +34,12 @@
                                                                     //[/Comments]
 */
 class ChatListItem  : public Component,
-                      public ButtonListener
+                      public Button::Listener
 {
 public:
     //==============================================================================
     ChatListItem (ValueTree chatter_store);
-    ~ChatListItem();
+    ~ChatListItem() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -60,8 +59,8 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextButton> kickButton;
-    ScopedPointer<Label> nickLabel;
+    std::unique_ptr<TextButton> kickButton;
+    std::unique_ptr<Label> nickLabel;
 
 
     //==============================================================================
@@ -71,4 +70,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // _CHATLISTITEM_H_

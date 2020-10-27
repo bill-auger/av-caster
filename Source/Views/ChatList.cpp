@@ -37,14 +37,20 @@ ChatList::ChatList ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (chattersGroup = new GroupComponent ("chattersGroup",
-                                                           TRANS("Nicks")));
+    chattersGroup.reset (new GroupComponent ("chattersGroup",
+                                             TRANS("Nicks")));
+    addAndMakeVisible (chattersGroup.get());
     chattersGroup->setTextLabelPosition (Justification::centred);
     chattersGroup->setColour (GroupComponent::outlineColourId, Colours::white);
     chattersGroup->setColour (GroupComponent::textColourId, Colours::white);
 
-    addAndMakeVisible (dummyChatListItem = new ChatListItem (ValueTree::invalid));
+    chattersGroup->setBounds (0, 0, 128, 48);
+
+    dummyChatListItem.reset (new ChatListItem (ValueTree()));
+    addAndMakeVisible (dummyChatListItem.get());
     dummyChatListItem->setName ("dummyChatListItem");
+
+    dummyChatListItem->setBounds (12, 16, 104, 24);
 
 
     //[UserPreSize]
@@ -79,8 +85,14 @@ void ChatList::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.setColour (Colour (0xff202020));
-    g.fillRoundedRectangle (4.0f, 10.0f, 120.0f, 34.0f, 4.000f);
+    {
+        float x = 4.0f, y = 10.0f, width = 120.0f, height = 34.0f;
+        Colour fillColour = Colour (0xff202020);
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.fillRoundedRectangle (x, y, width, height, 4.000f);
+    }
 
     //[UserPaint] Add your own custom painting code here..
 
@@ -94,8 +106,6 @@ void ChatList::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    chattersGroup->setBounds (0, 0, 128, 48);
-    dummyChatListItem->setBounds (12, 16, 104, 24);
     //[UserResized] Add your own custom resize handling here..
 
   this->chattersGroup->setSize(getWidth() , getHeight()) ;
@@ -222,14 +232,14 @@ BEGIN_JUCER_METADATA
                  snapShown="1" overlayOpacity="0.330" fixedSize="0" initialWidth="128"
                  initialHeight="48">
   <BACKGROUND backgroundColour="0">
-    <ROUNDRECT pos="4 10 120 34" cornerSize="4" fill="solid: ff202020" hasStroke="0"/>
+    <ROUNDRECT pos="4 10 120 34" cornerSize="4.0" fill="solid: ff202020" hasStroke="0"/>
   </BACKGROUND>
   <GROUPCOMPONENT name="chattersGroup" id="49d2cfd1b8779149" memberName="chattersGroup"
                   virtualName="" explicitFocusOrder="0" pos="0 0 128 48" outlinecol="ffffffff"
                   textcol="ffffffff" title="Nicks" textpos="36"/>
   <GENERICCOMPONENT name="dummyChatListItem" id="56b906e64be2f4b6" memberName="dummyChatListItem"
                     virtualName="" explicitFocusOrder="0" pos="12 16 104 24" class="ChatListItem"
-                    params="ValueTree::invalid"/>
+                    params="ValueTree()"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -239,3 +249,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

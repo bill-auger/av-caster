@@ -18,8 +18,7 @@
 \*/
 
 
-#ifndef _CONFIGOUTPUT_H_
-#define _CONFIGOUTPUT_H_
+#pragma once
 
 //[Headers]     -- You can add your own extra header files here --
 
@@ -40,20 +39,20 @@ class MainContent ;
                                                                     //[/Comments]
 */
 class ConfigOutput  : public Component,
-                      public ComboBoxListener
+                      public ComboBox::Listener
 {
 public:
     //==============================================================================
     ConfigOutput ();
-    ~ConfigOutput();
+    ~ConfigOutput() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     //[/UserMethods]
 
-    void paint (Graphics& g);
-    void resized();
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void paint (Graphics& g) override;
+    void resized() override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
 
 
@@ -68,18 +67,18 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> outputStreamLabel;
-    ScopedPointer<ComboBox> outputSinkCombo;
-    ScopedPointer<Label> outputWidthLabel;
-    ScopedPointer<TextEditor> outputWidthText;
-    ScopedPointer<Label> outputHeightLabel;
-    ScopedPointer<TextEditor> outputHeightText;
-    ScopedPointer<Label> framerateLabel;
-    ScopedPointer<ComboBox> framerateCombo;
-    ScopedPointer<Label> bitrateLabel;
-    ScopedPointer<ComboBox> videoBitrateCombo;
-    ScopedPointer<Label> outputDestLabel;
-    ScopedPointer<TextEditor> outputDestText;
+    std::unique_ptr<Label> outputStreamLabel;
+    std::unique_ptr<ComboBox> outputSinkCombo;
+    std::unique_ptr<Label> outputWidthLabel;
+    std::unique_ptr<TextEditor> outputWidthText;
+    std::unique_ptr<Label> outputHeightLabel;
+    std::unique_ptr<TextEditor> outputHeightText;
+    std::unique_ptr<Label> framerateLabel;
+    std::unique_ptr<ComboBox> framerateCombo;
+    std::unique_ptr<Label> bitrateLabel;
+    std::unique_ptr<ComboBox> videoBitrateCombo;
+    std::unique_ptr<Label> outputDestLabel;
+    std::unique_ptr<TextEditor> outputDestText;
 
 
     //==============================================================================
@@ -89,4 +88,3 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif // _CONFIGOUTPUT_H_

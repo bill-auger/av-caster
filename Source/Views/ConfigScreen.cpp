@@ -33,48 +33,64 @@ ConfigScreen::ConfigScreen ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (displayLabel = new Label ("displayLabel",
-                                                 TRANS("Display #:")));
-    displayLabel->setFont (Font (15.00f, Font::plain));
+    displayLabel.reset (new Label ("displayLabel",
+                                   TRANS("Display #:")));
+    addAndMakeVisible (displayLabel.get());
+    displayLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     displayLabel->setJustificationType (Justification::centredLeft);
     displayLabel->setEditable (false, false, false);
     displayLabel->setColour (Label::textColourId, Colours::white);
     displayLabel->setColour (TextEditor::textColourId, Colours::black);
     displayLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (displaySlider = new Slider ("displaySlider"));
+    displayLabel->setBounds (0, 8, 80, 24);
+
+    displaySlider.reset (new Slider ("displaySlider"));
+    addAndMakeVisible (displaySlider.get());
     displaySlider->setExplicitFocusOrder (1);
     displaySlider->setRange (0, 10, 0);
     displaySlider->setSliderStyle (Slider::IncDecButtons);
     displaySlider->setTextBoxStyle (Slider::TextBoxLeft, false, 24, 20);
     displaySlider->addListener (this);
 
-    addAndMakeVisible (screenLabel = new Label ("screenLabel",
-                                                TRANS("Screen #:")));
-    screenLabel->setFont (Font (15.00f, Font::plain));
+    displaySlider->setBounds (88, 8, 64, 24);
+
+    screenLabel.reset (new Label ("screenLabel",
+                                  TRANS("Screen #:")));
+    addAndMakeVisible (screenLabel.get());
+    screenLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     screenLabel->setJustificationType (Justification::centredLeft);
     screenLabel->setEditable (false, false, false);
     screenLabel->setColour (Label::textColourId, Colours::white);
     screenLabel->setColour (TextEditor::textColourId, Colours::black);
     screenLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (screenSlider = new Slider ("screenSlider"));
+    screenLabel->setBounds (0, 48, 80, 24);
+
+    screenSlider.reset (new Slider ("screenSlider"));
+    addAndMakeVisible (screenSlider.get());
     screenSlider->setExplicitFocusOrder (2);
     screenSlider->setRange (0, 10, 0);
     screenSlider->setSliderStyle (Slider::IncDecButtons);
     screenSlider->setTextBoxStyle (Slider::TextBoxLeft, false, 24, 20);
     screenSlider->addListener (this);
 
-    addAndMakeVisible (screenWidthLabel = new Label ("screenWidthLabel",
-                                                     TRANS("Width:")));
-    screenWidthLabel->setFont (Font (15.00f, Font::plain));
+    screenSlider->setBounds (88, 48, 64, 24);
+
+    screenWidthLabel.reset (new Label ("screenWidthLabel",
+                                       TRANS("Width:")));
+    addAndMakeVisible (screenWidthLabel.get());
+    screenWidthLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     screenWidthLabel->setJustificationType (Justification::centredLeft);
     screenWidthLabel->setEditable (false, false, false);
     screenWidthLabel->setColour (Label::textColourId, Colours::white);
     screenWidthLabel->setColour (TextEditor::textColourId, Colours::black);
     screenWidthLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (screenWidthText = new TextEditor ("screenWidthText"));
+    screenWidthLabel->setBounds (0, 88, 64, 24);
+
+    screenWidthText.reset (new TextEditor ("screenWidthText"));
+    addAndMakeVisible (screenWidthText.get());
     screenWidthText->setExplicitFocusOrder (3);
     screenWidthText->setMultiLine (false);
     screenWidthText->setReturnKeyStartsNewLine (false);
@@ -84,16 +100,22 @@ ConfigScreen::ConfigScreen ()
     screenWidthText->setPopupMenuEnabled (true);
     screenWidthText->setText (String());
 
-    addAndMakeVisible (screenHeightLabel = new Label ("screenHeightLabel",
-                                                      TRANS("Height:")));
-    screenHeightLabel->setFont (Font (15.00f, Font::plain));
+    screenWidthText->setBounds (88, 88, 48, 24);
+
+    screenHeightLabel.reset (new Label ("screenHeightLabel",
+                                        TRANS("Height:")));
+    addAndMakeVisible (screenHeightLabel.get());
+    screenHeightLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     screenHeightLabel->setJustificationType (Justification::centredLeft);
     screenHeightLabel->setEditable (false, false, false);
     screenHeightLabel->setColour (Label::textColourId, Colours::white);
     screenHeightLabel->setColour (TextEditor::textColourId, Colours::black);
     screenHeightLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (screenHeightText = new TextEditor ("screenHeightText"));
+    screenHeightLabel->setBounds (0, 128, 64, 24);
+
+    screenHeightText.reset (new TextEditor ("screenHeightText"));
+    addAndMakeVisible (screenHeightText.get());
     screenHeightText->setExplicitFocusOrder (4);
     screenHeightText->setMultiLine (false);
     screenHeightText->setReturnKeyStartsNewLine (false);
@@ -103,16 +125,22 @@ ConfigScreen::ConfigScreen ()
     screenHeightText->setPopupMenuEnabled (true);
     screenHeightText->setText (String());
 
-    addAndMakeVisible (xOffsetLabel = new Label ("xOffsetLabel",
-                                                 TRANS("Offset X:")));
-    xOffsetLabel->setFont (Font (15.00f, Font::plain));
+    screenHeightText->setBounds (88, 128, 48, 24);
+
+    xOffsetLabel.reset (new Label ("xOffsetLabel",
+                                   TRANS("Offset X:")));
+    addAndMakeVisible (xOffsetLabel.get());
+    xOffsetLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     xOffsetLabel->setJustificationType (Justification::centredLeft);
     xOffsetLabel->setEditable (false, false, false);
     xOffsetLabel->setColour (Label::textColourId, Colours::white);
     xOffsetLabel->setColour (TextEditor::textColourId, Colours::black);
     xOffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (xOffsetText = new TextEditor ("xOffsetText"));
+    xOffsetLabel->setBounds (0, 168, 64, 24);
+
+    xOffsetText.reset (new TextEditor ("xOffsetText"));
+    addAndMakeVisible (xOffsetText.get());
     xOffsetText->setExplicitFocusOrder (5);
     xOffsetText->setMultiLine (false);
     xOffsetText->setReturnKeyStartsNewLine (false);
@@ -122,16 +150,22 @@ ConfigScreen::ConfigScreen ()
     xOffsetText->setPopupMenuEnabled (true);
     xOffsetText->setText (String());
 
-    addAndMakeVisible (yOffsetLabel = new Label ("yOffsetLabel",
-                                                 TRANS("Offset Y:")));
-    yOffsetLabel->setFont (Font (15.00f, Font::plain));
+    xOffsetText->setBounds (88, 168, 48, 24);
+
+    yOffsetLabel.reset (new Label ("yOffsetLabel",
+                                   TRANS("Offset Y:")));
+    addAndMakeVisible (yOffsetLabel.get());
+    yOffsetLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     yOffsetLabel->setJustificationType (Justification::centredLeft);
     yOffsetLabel->setEditable (false, false, false);
     yOffsetLabel->setColour (Label::textColourId, Colours::white);
     yOffsetLabel->setColour (TextEditor::textColourId, Colours::black);
     yOffsetLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (yOffsetText = new TextEditor ("yOffsetText"));
+    yOffsetLabel->setBounds (0, 208, 64, 24);
+
+    yOffsetText.reset (new TextEditor ("yOffsetText"));
+    addAndMakeVisible (yOffsetText.get());
     yOffsetText->setExplicitFocusOrder (6);
     yOffsetText->setMultiLine (false);
     yOffsetText->setReturnKeyStartsNewLine (false);
@@ -140,6 +174,8 @@ ConfigScreen::ConfigScreen ()
     yOffsetText->setCaretVisible (true);
     yOffsetText->setPopupMenuEnabled (true);
     yOffsetText->setText (String());
+
+    yOffsetText->setBounds (88, 208, 48, 24);
 
 
     //[UserPreSize]
@@ -190,18 +226,6 @@ void ConfigScreen::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    displayLabel->setBounds (0, 8, 80, 24);
-    displaySlider->setBounds (88, 8, 64, 24);
-    screenLabel->setBounds (0, 48, 80, 24);
-    screenSlider->setBounds (88, 48, 64, 24);
-    screenWidthLabel->setBounds (0, 88, 64, 24);
-    screenWidthText->setBounds (88, 88, 48, 24);
-    screenHeightLabel->setBounds (0, 128, 64, 24);
-    screenHeightText->setBounds (88, 128, 48, 24);
-    xOffsetLabel->setBounds (0, 168, 64, 24);
-    xOffsetText->setBounds (88, 168, 48, 24);
-    yOffsetLabel->setBounds (0, 208, 64, 24);
-    yOffsetText->setBounds (88, 208, 48, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -211,7 +235,7 @@ void ConfigScreen::sliderValueChanged (Slider* sliderThatWasMoved)
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == displaySlider)
+    if (sliderThatWasMoved == displaySlider.get())
     {
         //[UserSliderCode_displaySlider] -- add your slider handling code here..
 
@@ -219,7 +243,7 @@ void ConfigScreen::sliderValueChanged (Slider* sliderThatWasMoved)
 
         //[/UserSliderCode_displaySlider]
     }
-    else if (sliderThatWasMoved == screenSlider)
+    else if (sliderThatWasMoved == screenSlider.get())
     {
         //[UserSliderCode_screenSlider] -- add your slider handling code here..
 
@@ -256,27 +280,27 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 8 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Display #:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="displaySlider" id="2250b6248ed28fc6" memberName="displaySlider"
-          virtualName="" explicitFocusOrder="1" pos="88 8 64 24" min="0"
-          max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"
+          virtualName="" explicitFocusOrder="1" pos="88 8 64 24" min="0.0"
+          max="10.0" int="0.0" style="IncDecButtons" textBoxPos="TextBoxLeft"
+          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="screenLabel" id="68a950dbc12277f7" memberName="screenLabel"
          virtualName="" explicitFocusOrder="0" pos="0 48 80 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Screen #:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="screenSlider" id="74df429060e256ad" memberName="screenSlider"
-          virtualName="" explicitFocusOrder="2" pos="88 48 64 24" min="0"
-          max="10" int="0" style="IncDecButtons" textBoxPos="TextBoxLeft"
-          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1"
+          virtualName="" explicitFocusOrder="2" pos="88 48 64 24" min="0.0"
+          max="10.0" int="0.0" style="IncDecButtons" textBoxPos="TextBoxLeft"
+          textBoxEditable="1" textBoxWidth="24" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="screenWidthLabel" id="1a8ebe15d549d3a2" memberName="screenWidthLabel"
          virtualName="" explicitFocusOrder="0" pos="0 88 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Width:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="screenWidthText" id="179a2a3eef834bff" memberName="screenWidthText"
               virtualName="" explicitFocusOrder="3" pos="88 88 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
@@ -285,7 +309,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 128 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Height:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="screenHeightText" id="fabfd798833e0222" memberName="screenHeightText"
               virtualName="" explicitFocusOrder="4" pos="88 128 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
@@ -294,7 +318,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 168 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Offset X:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="xOffsetText" id="a370562e4f63e34" memberName="xOffsetText"
               virtualName="" explicitFocusOrder="5" pos="88 168 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
@@ -303,7 +327,7 @@ BEGIN_JUCER_METADATA
          virtualName="" explicitFocusOrder="0" pos="0 208 64 24" textCol="ffffffff"
          edTextCol="ff000000" edBkgCol="0" labelText="Offset Y:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="33"/>
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="yOffsetText" id="e4bb3613f81dc5f4" memberName="yOffsetText"
               virtualName="" explicitFocusOrder="6" pos="88 208 48 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
@@ -317,3 +341,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

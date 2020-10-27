@@ -93,11 +93,11 @@ Seeds::Seeds()
   this->greeting            = CONFIG::DEFAULT_GREETING ;
 
   // subclass responsibility
-  this->presetStore   = ValueTree::invalid ;
+  this->presetStore   = ValueTree() ;
   this->presetId      = Identifier::null ;
-  this->presetName    = String::empty ;
+  this->presetName    = String() ;
   this->outputSinkIdx = -1 ;
-  this->outputDest    = String::empty ;
+  this->outputDest    = String() ;
 }
 
 void Seeds::createPreset()
@@ -174,7 +174,7 @@ RtmpSeed::RtmpSeed()
   presetId      = CONFIG::RTMP_PRESET_ID ;
   presetName    = CONFIG::RTMP_PRESET_NAME ;
   outputSinkIdx = CONFIG::RTMP_OUTPUT_IDX ;
-  outputDest    = String::empty ;
+  outputDest    = String() ;
   createPreset() ;
 }
 
@@ -183,6 +183,6 @@ LctvSeed::LctvSeed()
   presetId      = CONFIG::LCTV_PRESET_ID ;
   presetName    = CONFIG::LCTV_PRESET_NAME ;
   outputSinkIdx = CONFIG::RTMP_OUTPUT_IDX ;
-  outputDest    = String::empty ;
+  outputDest    = String() ;
   createPreset() ;
 }
