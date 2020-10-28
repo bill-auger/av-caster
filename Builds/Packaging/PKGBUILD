@@ -2,29 +2,29 @@
 
 
 pkgname=av-caster
-pkgver=0.16.005
+pkgver=0.16.005pre6rc3
 pkgrel=1
 pkgdesc="A light-weight native gStreamer GUI for screencast, webcam, and audio recording and streaming"
-arch=('i686' 'x86_64')
+arch=(armv7h i686 x86_64)
 url=https://github.com/bill-auger/av-caster
-license=('GPL3')
+license=(GPL3)
 
-depends=('gst-plugins-bad' 'gst-plugins-base' 'gst-plugins-good' 'gst-plugins-ugly' 'gstreamer')
-makedepends=('libircclient' 'libxinerama' 'libxrandr')
+depends=(gst-plugins-bad gst-plugins-base gst-plugins-ugly juce libircclient libxrandr)
+source=(${pkgname}-${pkgver}.tar.gz::https://github.com/bill-auger/av-caster/archive/v${pkgver}.tar.gz)
 
-_builddir=${pkgname}-${pkgver}/Builds/Makefile
-source=(https://github.com/bill-auger/av-caster/archive/v${pkgver}.tar.gz)
-sha256sums=('6f5f8a24c9ae9d8a43672f56586b8a8bca94282680860970f8f7dacfc970b0e2')
+sha256sums=('78be8e675a97725ddd82f67d539129d0ed6a0d27281693bc0960231714e134fb')
 
 
 build()
 {
-  cd ${_builddir}
+  cd ${pkgname}-${pkgver}/Builds/Makefile
 
   make CONFIG=Release
 }
 
 package()
 {
-  install -Dm 755 ${_builddir}/build/av-caster ${pkgdir}/usr/bin/av-caster
+  cd ${pkgname}-${pkgver}/Builds/Makefile
+
+  make DESTDIR="${pkgdir}" install
 }

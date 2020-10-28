@@ -1,7 +1,7 @@
 language: cpp
-compiler: clang
+compiler: gcc
 sudo:     required
-dist:     trusty
+dist:     bionic
 group:    edge
 
 git:
@@ -24,26 +24,23 @@ notifications:
     on_start:   never
 
 before_install:
-  - PROJECT_NAME='av-caster'
-  - DEPS='libfreetype6-dev libgstreamer-plugins-base1.0-dev libx11-dev
-          libxcursor-dev libxinerama-dev libxrandr-dev'
-  - # the trusty version of libircclient is incompatible
-  - LIBIRCCLIENT_MIRROR="http://mirrors.kernel.org/ubuntu/pool/universe/libi/libircclient"
-  - LIBIRCCLIENT="libircclient1_1.8-2_amd64.deb"
-  - LIBIRCCLIENTDEV="libircclient-dev_1.8-2_amd64.deb"
+  - BIN_NAME='av-caster'
+  - DEPS='libfreetype6-dev libgstreamer-plugins-base1.0-dev libircclient-dev
+          libx11-dev libxcursor-dev libxinerama-dev libxrandr-dev'
   - BUILD_DIR=$TRAVIS_BUILD_DIR/Builds/Makefile
 
+install:
+  - echo "preparing build environment"
+  - sudo apt-get -qq update
+  - sudo apt-get -y  install $DEPS
+
 script:
-  - echo "building 64-bit $PROJECT_NAME"
+  - echo "building 64-bit $BIN_NAME"
   - cd $BUILD_DIR
-  - sudo apt-get update -qq
-  - sudo apt-get install -y $DEPS
-  - wget $LIBIRCCLIENT_MIRROR/$LIBIRCCLIENT
-  - wget $LIBIRCCLIENT_MIRROR/$LIBIRCCLIENTDEV
-  - sudo dpkg -i $LIBIRCCLIENT
-  - sudo dpkg -i $LIBIRCCLIENTDEV
-  - CFLAGS="-Wno-dangling-else -Wno-deprecated-register" make
+  - make CONFIG=Release
+  - make DESTDIR=$BUILD_DIR/destdir PREFIX=prefix install
 
 after_script:
-  - echo "build stage ended"
-  - ls -l $BUILD_DIR/build/
+  - echo "verifying build"
+  - [[ -x $BUILD_DIR/build/$BIN_NAME              ]]
+  - [[ -x $BUILD_DIR/destdir/prefix/bin/$BIN_NAME ]]
