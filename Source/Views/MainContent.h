@@ -83,9 +83,9 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
   DocumentWindow*                          mainWindow ;
-#ifdef TRAY_ICON
+#ifndef TRAY_ICON_NYI
   std::unique_ptr<SystemTrayIconComponent> trayIcon ;
-#endif // TRAY_ICON
+#endif // TRAY_ICON_NYI
 
     //[/UserVariables]
 

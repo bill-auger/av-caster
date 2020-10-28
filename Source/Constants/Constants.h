@@ -27,7 +27,7 @@
 // #define CAMERA_ONLY
 // #define TEXT_ONLY
 // #define IMAGE_ONLY
-// #define TRAY_ICON // TODO: requires juce_gui_extras package
+#define TRAY_ICON_NYI // TODO: requires juce_gui_extras package
 #define TEXT_BIN_NYI  1
 #define IMAGE_BIN_NYI 0 // faux src
 #define DISABLE_GUI_CONFIG_NYI

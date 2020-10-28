@@ -83,9 +83,9 @@ MainContent::MainContent ()
   setSize(GUI::WINDOW_W , GUI::WINDOW_H) ;
 
   this->mainWindow = static_cast<DocumentWindow*>(getTopLevelComponent()) ;
-#ifdef TRAY_ICON
+#ifndef TRAY_ICON_NYI
   this->trayIcon.reset(new AvCasterTrayIconComponent(this->mainWindow)) ;
-#endif // TRAY_ICON
+#endif // TRAY_ICON_NYI
 
   this->background->toFront(true) ;
   this->statusbar ->setAlwaysOnTop(true) ;

@@ -47,9 +47,9 @@ const int    GUI::TITLEBAR_BTNS   = DocumentWindow::minimiseButton | DocumentWin
 const String GUI::IDLE_TITLE_TEXT = "(Idle)" ;
 const String GUI::FILE_TITLE_TEXT = "(Recording)" ;
 const String GUI::RTMP_TITLE_TEXT = "(Broadcasting)" ;
-#ifdef TRAY_ICON
+#ifndef TRAY_ICON_NYI
 const String GUI::TRAY_TOOTIP     = "\nClick to show/hide\nRight-click for menu" ;
-#endif // TRAY_ICON
+#endif // TRAY_ICON_NYI
 
 // Controls
 const String GUI::FILE_XMIT_TEXT = "Record" ;

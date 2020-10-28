@@ -346,9 +346,9 @@ void AvCaster::UpdateStatus()
 
   Gui->mainWindow->setName       (title_text ) ;
   Gui->statusbar ->setStatusL    (status_text) ;
-#ifdef TRAY_ICON
+#ifndef TRAY_ICON_NYI
   Gui->trayIcon  ->setIconTooltip(title_text + GUI::TRAY_TOOTIP) ;
-#endif // TRAY_ICON
+#endif // TRAY_ICON_NYI
 }
 
 bool AvCaster::HandleCliParams(StringArray cli_params)

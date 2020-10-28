@@ -57,9 +57,9 @@ public:
   static const String IDLE_TITLE_TEXT ;
   static const String FILE_TITLE_TEXT ;
   static const String RTMP_TITLE_TEXT ;
-#ifdef TRAY_ICON
+#ifndef TRAY_ICON_NYI
   static const String TRAY_TOOTIP ;
-#endif // TRAY_ICON
+#endif // TRAY_ICON_NYI
 
   // Controls
   static const String FILE_XMIT_TEXT ;
