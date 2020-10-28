@@ -2,7 +2,6 @@ language: cpp
 compiler: gcc
 sudo:     required
 dist:     bionic
-group:    edge
 
 git:
   depth: 1
@@ -23,11 +22,21 @@ notifications:
     on_failure: always
     on_start:   never
 
+addons:
+  coverity_scan:
+    project:
+      name: "bill-auger/av-caster"
+      description: "A light-weight native gStreamer GUI for screencast, webcam, and audio recording and streaming"
+    build_command: "make CONFIG=Release"
+    branch_pattern: development
+
+
 before_install:
   - BIN_NAME='av-caster'
   - DEPS='libfreetype6-dev libgstreamer-plugins-base1.0-dev libircclient-dev
           libx11-dev libxcursor-dev libxinerama-dev libxrandr-dev'
   - BUILD_DIR=$TRAVIS_BUILD_DIR/Builds/Makefile
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 
 install:
   - echo "preparing build environment"
