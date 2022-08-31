@@ -113,7 +113,7 @@ String APP::DesktopText()     { return String("[Desktop Entry]\r\n")            
                                               "Name=AvCaster\r\n"                                     +
                                               "GenericName=\r\n"                                      +
                                               "Comment=Desktop, webcam, and audio streaming tool\r\n" +
-                                              "Categories=AudioVideo;\r\n"                            +
+                                              "Categories=AudioVideo;Audio;Video;\r\n"                            +
                                               "Exec=" + BinFile() .getFullPathName() + "\r\n" +       +
                                               "Icon=" + IconFile().getFullPathName() + "\r\n" +       +
                                               "StartupNotify=true\r\n"                                +

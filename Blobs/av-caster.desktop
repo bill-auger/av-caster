@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=AvCaster
 Comment=Desktop, webcam, and audio streaming tool
-Categories=AudioVideo;Network;
+Categories=AudioVideo;Audio;Video;Network;
 Exec=av-caster
 Icon=avcaster-logo-48
 StartupNotify=true
